@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 1.0
+ Version: 1.0.1
  Author: Jacob M Goldman (C. Murray Consulting)
  Author URI: http://www.cmurrayconsulting.com
 
@@ -58,7 +58,9 @@ if(is_admin()) add_filter("plugin_action_links_".$plugin, 'rsa_plugin_actlinks' 
 
 function restricted_site_access() {
 	//logged in users can stay, can stay if plug-in not active
-	if (is_user_logged_in() || get_option('rsa_is_active') != 1 || strstr($_SERVER['REQUEST_URI'],"wp-login.php")) return false;
+	if (is_user_logged_in() || get_option('rsa_is_active') != 1) return false;
+	//if we're not on a front end page, stay put
+	if (!is_singular() && !is_archive() && !is_feed() && !is_home()) return false;
 	//check if the IP is allowed
 	if (strstr(get_option('rsa_allowed_ips'),$_SERVER['REMOTE_ADDR'])) return false;
 	
@@ -87,7 +89,7 @@ function restricted_site_access() {
 			exit("Access to this site is restricted.");
 	}
 }
-if(!is_admin()) add_action('init','restricted_site_access');
+if(!is_admin()) add_action('wp','restricted_site_access');
 
 //************************//
 //** ADMIN CONTROL PANEL *//
