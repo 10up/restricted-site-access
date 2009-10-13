@@ -49,7 +49,9 @@ folder to the `/wp-content/plugins/` directory
 == Changelog ==
 
 v1.0.1 - Important fundamental change related to handling of what should be restricted
-v1.o.2 - Fix login redirect to home; improve redirect handling to take advantage of wp_redirect function
+
+v1.0.2 - Fix login redirect to home; improve redirect handling to take advantage of wp_redirect function
+
 
 == Coming soon ==
 
