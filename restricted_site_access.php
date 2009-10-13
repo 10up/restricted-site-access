@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 1.0.1
+ Version: 1.0.2
  Author: Jacob M Goldman (C. Murray Consulting)
  Author URI: http://www.cmurrayconsulting.com
 
@@ -67,7 +67,8 @@ function restricted_site_access() {
 	$rsa_restrict_approach = intval(get_option('rsa_restrict_approach'));
 	switch ($rsa_restrict_approach) {
 		case 1:
-			header('Location: '.wp_login_url(get_permalink()));
+			$new_url = (is_home()) ? get_bloginfo("url") : get_permalink(); 
+			wp_redirect(wp_login_url($new_url));
 			exit;
 		case 2:
 			// get base url
@@ -75,15 +76,18 @@ function restricted_site_access() {
 			if (!$rsa_redirect_url) return false;
 			
 			// if redirecting to same path get info
-			if(get_option('rsa_redirect_path') == 1) {
-				$url_path = $_SERVER["REQUEST_URI"];
-				$rsa_redirect_url = $rsa_redirect_url.$url_path;
-			}
+			if(get_option('rsa_redirect_path') == 1) $rsa_redirect_url = $rsa_redirect_url.$_SERVER["REQUEST_URI"];
 			
 			$rsa_redirect_head = get_option('rsa_redirect_head');
-			if($rsa_redirect_head) header($rsa_redirect_head);
 			
-			header ('Location: '.$rsa_redirect_url);
+			//backwards compability for WordPress upgrades from 1.0.1 and earlier
+			if (strlen($rsa_redirect_head) > 3) {
+				$rsa_redirect_head = substr($rsa_redirect_head, 0, 3);
+				update_option("rsa_redirect_head",$rsa_redirect_head);
+			}
+			$rsa_redirect_head = (!$rsa_redirect_head) ? 302 : intval($rsa_redirect_head);
+			
+			wp_redirect($rsa_redirect_url, $rsa_redirect_head);
 			exit;
 		case 3:
 			exit("Access to this site is restricted.");
@@ -187,11 +191,10 @@ function rsa_options() {
 								<th scope="row" style="vertical-align: middle; padding-top: 0;">Redirect type header [<a href="#" onclick="alert('Redirect type headers can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that the page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.'); return false;" style="cursor: help;">?</a>]</th>
 								<td style="padding-top: 0;">
 									<select name="rsa_redirect_head" id="rsa_redirect_head">
-										<?php $rsa_redirect_head = substr(get_option('rsa_redirect_head'),0,3); ?>
-										<option value="0"<?php if (!$rsa_redirect_head) echo ' selected="selected"'; ?>>none</option>
-										<option value="301 Moved Permanently HTTP/1.1"<?php if ($rsa_redirect_head == "301") echo ' selected="selected"'; ?>>301 Permanent</option>
-										<option value="302 Found HTTP/1.1"<?php if ($rsa_redirect_head == "302") echo ' selected="selected"'; ?>>302 Undefined</option>
-										<option value="307 Temporary Redirect HTTP/1.1"<?php if ($rsa_redirect_head == "307") echo ' selected="selected"'; ?>>307 Temporary</option>
+										<?php $rsa_redirect_head = get_option('rsa_redirect_head'); ?>
+										<option value="301"<?php if ($rsa_redirect_head == "301") echo ' selected="selected"'; ?>>301 Permanent</option>
+										<option value="302"<?php if ($rsa_redirect_head == "302" || !$rsa_redirect_head) echo ' selected="selected"'; ?>>302 Undefined</option>
+										<option value="307"<?php if ($rsa_redirect_head == "307") echo ' selected="selected"'; ?>>307 Temporary</option>
 									</select>
 								</td>
 							</tr>

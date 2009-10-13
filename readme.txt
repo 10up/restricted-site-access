@@ -4,7 +4,7 @@ Donate link: http://www.cmurrayconsulting.com/software/wordpress-restricted-site
 Tags: restricted, limited, permissions, security
 Requires at least: 2.8
 Tested up to: 2.8.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Limit access to your site to visitors who are logged in or accessing the site from a set of specific IP addresses. 
 Send restricted visitors to the log in page, redirect them, or display a message. Powerful control over 
@@ -48,7 +48,8 @@ folder to the `/wp-content/plugins/` directory
 
 == Changelog ==
 
-v1.01 - Important fundamental change related to handling of what should be restricted
+v1.0.1 - Important fundamental change related to handling of what should be restricted
+v1.o.2 - Fix login redirect to home; improve redirect handling to take advantage of wp_redirect function
 
 == Coming soon ==
 
