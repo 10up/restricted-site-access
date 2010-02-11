@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 2.0
+ Version: 2.1
  Author: Jacob M Goldman (C. Murray Consulting)
  Author URI: http://www.cmurrayconsulting.com
 
@@ -32,11 +32,10 @@ function rsa_activation()
 	if (get_option('rsa_restrict_approach')) 
 	{
 		//convert textarea ips to array
-		$allowed = get_option('rsa_allowed_ips');
-		$arrAllowed = array();	
-		if (!empty($allowed)) {
-			foreach(preg_split('/\s+/', $$allowed) as $ip) $arrAllowed[] = $ip;
-			if (empty($arrAllowed)) $arrAllowed[] = $allowed;
+		$allowed = get_option('rsa_allowed_ips');	
+		if ($allowed) {
+			$arrAllowed = preg_split('/\s+/', $allowed);
+			if (empty($arrAllowed)) $arrAllowed = array($allowed);
 		}
 		
 		$rsa_options = array(
@@ -83,7 +82,8 @@ function rsa_validate($input)
 	$input['approach'] = intval($input['approach']);
 	if ($input['approach'] > 3 || $input['approach'] < 0) $input['approach'] = 0;
 	$input['redirect_path'] = ($input['redirect_path'] == 1) ? 1 : 0; 
-	if ($input['head_code'] != '301' && $input['head_code'] != '302' && $input['head_code'] != '307') $input['head_code'] = '302';  
+	if ($input['head_code'] != '301' && $input['head_code'] != '302' && $input['head_code'] != '307') $input['head_code'] = '302';
+	$input['message'] = trim($input['message']);  
 	
 	return $input;
 }
@@ -111,7 +111,7 @@ function restricted_site_access()
 	//logged in users can stay, can stay if plug-in not active
 	if (is_user_logged_in() || !$rsa_options['active']) return false;
 	//if we're not on a front end page, stay put
-	if (!is_singular() && !is_archive() && !is_feed() && !is_home()) return false;
+	//if (!is_singular() && !is_archive() && !is_feed() && !is_home()) return false;
 	
 	// check for the allow list, if its empty block everything
 	if(($list = $rsa_options['allowed']) && function_exists('inet_pton'))
@@ -168,7 +168,8 @@ function restricted_site_access()
 			wp_redirect($rsa_redirect_url, $rsa_redirect_head);
 			exit;
 		case 3:
-			exit("Access to this site is restricted.");
+			$message = (isset($rsa_options['message']) && $rsa_options['message']) ? $rsa_options['message'] : "Access to this site is restricted.";  
+			wp_die($message);
 	}
 }
 if(!is_admin()) add_action('wp','restricted_site_access');
@@ -188,7 +189,8 @@ function rsa_options() {
 			var ip_used = false;
 			jQuery('#ip_list input').each(function(){
 				if (jQuery(this).val() == ip) {
-					jQuery('h2').after('<div id="message" class="error"><p><strong>IP address already in list.</strong></p></div>');
+					jQuery('h2').after('<div id="message" class="error"><p><strong>IP address '+ip+' already in list.</strong></p></div>');
+					scroll(0,0);
 					ip_used = true;
 					return false; 
 				}
@@ -207,6 +209,8 @@ function rsa_options() {
 		function change_approach(approach_choice) {
 			if (approach_choice == 2) jQuery(".redirect_field").fadeIn(500);
 			else jQuery(".redirect_field").fadeOut(500);
+			if (approach_choice == 3) jQuery(".message_field").fadeIn(500);
+			else jQuery(".message_field").fadeOut(500);
 		}
 		
 		function check_redirect() {
@@ -334,6 +338,18 @@ function rsa_options() {
 								<option value="307"<?php if ($rsa_redirect_head == "307") echo ' selected="selected"'; ?>>307 Temporary</option>
 							</select>
 							<span class="description">Open help tab for more explanation.</span>
+						</td>
+					</tr>
+				</table>
+				
+				<h3 class="message_field"<?php if ($rsa_restrict_approach != 3) echo ' style="display: none;"'; ?>>Blocked Access Message</h3>
+				
+				<table class="form-table message_field" style="clear: none; width: auto;<?php if ($rsa_restrict_approach != 3) echo ' display: none;'; ?>">	
+					<tr valign="top"> 
+						<th scope="row"><label for="rsa_options[message]">Message</label></th>
+						<td>
+							<input type="text" name="rsa_options[message]" id="rsa_message" value="<?php echo esc_html($rsa_options['message']); ?>" class="regular-text" /><br />
+							<span class="description">Blank = "Access to this site is restricted."</span>
 						</td>
 					</tr>
 				</table>
