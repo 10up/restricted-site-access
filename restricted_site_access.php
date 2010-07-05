@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 2.1
+ Version: 3.0
  Author: Jacob M Goldman (C. Murray Consulting)
  Author URI: http://www.cmurrayconsulting.com
 
@@ -27,10 +27,24 @@
 /**
  * rsa_activation() handles plugin activation and conversion of pre 1.1 config options
  */
+ 
+register_activation_hook(__FILE__,'rsa_activation'); 
+ 
 function rsa_activation() 
 {
+	$blog_public = 2; //default new blog public option
+	
+	// if upgrading from previous version, update the blog_public option
+	if ( get_option('rsa_options') ) {
+		if ( isset($rsa_options['active']) && !$rsa_options['active'] ) $blog_public = 1;
+	}
+	
+	// upgrading pre 1.1
 	if (get_option('rsa_restrict_approach')) 
 	{
+		//visibility
+		if ( !get_option('rsa_is_active') ) $blog_public = 1;
+		
 		//convert textarea ips to array
 		$allowed = get_option('rsa_allowed_ips');	
 		if ($allowed) {
@@ -39,14 +53,8 @@ function rsa_activation()
 		}
 		
 		$rsa_options = array(
-			'active' => (get_option('rsa_is_active')),
 			'allowed' => $arrAllowed,
 			'approach' => (get_option('rsa_restrict_approach')),
-			/*
-			1: send to login page
-			2: redirect to URL
-			3: show restricted access message and exit
-			*/
 			'redirect_path' => (get_option('rsa_redirect_path')),
 			'redirect_url' => (get_option('rsa_redirect_url')),
 			'head_code' => (get_option('rsa_redirect_head')) 
@@ -60,67 +68,256 @@ function rsa_activation()
 		delete_option('rsa_redirect_url');
 		delete_option('rsa_redirect_head');
 	}
+	
+ 	update_option( 'blog_public', $blog_public );	// set blog visibility
 }
 
-register_activation_hook(__FILE__,'rsa_activation');
+/**
+ * Supercede search engines blocked info (WP3.0)
+ */
+
+add_filter( 'privacy_on_link_text', 'rsa_privacy_on_link_text' );
+
+function rsa_privacy_on_link_text( $text ) 
+{
+	if ( get_option('blog_public') == 2 ) $text = __('Site Access Restricted');
+	return $text;
+}
+
+add_filter( 'privacy_on_link_title', 'rsa_privacy_on_link_title' );
+
+function rsa_privacy_on_link_title( $text ) 
+{
+	if ( get_option('blog_public') == 2 ) $text = __('Restricted Site Access plug-in is blocking public access to this site.');
+	return $text;
+}
 
 /**
  * rsa_admin_init() initializes plugin settings
  */
 function rsa_admin_init() {
-	register_setting('restricted_site_access_options','rsa_options','rsa_validate'); //array of fundamental options including ID and caching info
+	register_setting( 'privacy', 'rsa_options', 'rsa_validate' ); //array of fundamental options including ID and caching info
+	add_settings_section( 'rsa-settings-section', __('Restricted Site Access'), 'rsa_options', 'privacy' );
+	
+	if ( function_exists('inet_pton') ) {
+		add_settings_field( 'approach', __('Handling'), 'rsa_handling_field', 'privacy', 'rsa-settings-section' );
+		add_settings_field( 'allowed', __('Allowed IPs'), 'rsa_allowed_field', 'privacy', 'rsa-settings-section' );
+		add_settings_field( 'message', __('Message'), 'rsa_message_field', 'privacy', 'rsa-settings-section' );
+		add_settings_field( 'redirect', __('Redirect visitor to'), 'rsa_redirect_field', 'privacy', 'rsa-settings-section' );
+		add_settings_field( 'redirect_path', __('Redirect to same path'), 'rsa_redirect_path_field', 'privacy', 'rsa-settings-section' );
+		add_settings_field( 'redirect_code', __('Redirection type'), 'rsa_redirect_code_field', 'privacy', 'rsa-settings-section' );
+		
+		add_action( 'blog_privacy_selector', 'rsa_blog_privacy_selector' );
+	}
 }
 
 add_action( 'admin_init', 'rsa_admin_init' );
 
 /**
- * rsa_validate() handles validation of settings
+ * handles validation of settings
  */
+ 
 function rsa_validate($input) 
 {
-	$input['active'] = ($input['active'] == 1) ? 1 : 0;
-	$input['approach'] = intval($input['approach']);
-	if ($input['approach'] > 3 || $input['approach'] < 0) $input['approach'] = 0;
-	$input['redirect_path'] = ($input['redirect_path'] == 1) ? 1 : 0; 
-	if ($input['head_code'] != '301' && $input['head_code'] != '302' && $input['head_code'] != '307') $input['head_code'] = '302';
-	$input['message'] = trim($input['message']);  
+	// $new_input['active'] = ($input['active'] == 1) ? 1 : 0;
+	$new_input['approach'] = intval($input['approach']);
+	if ( !in_array( $new_input['approach'], array(1,2,3) ) ) $new_input['approach'] = 1;
 	
-	return $input;
+	$new_input['redirect_path'] = ($input['redirect_path'] == 1) ? 1 : 0;
+	$new_input['head_code'] = !in_array( $input['head_code'], array('301','302','307') ) ? $new_input['head_code'] = '302' : $input['head_code'] ;
+	$new_input['message'] = trim( $input['message'] );
+	$new_input['redirect_url'] = esc_url( $input['redirect_url'], array('http','https') );
+	
+	$new_input['allowed'] = $input['allowed'];   // probably need regex at some point
+	
+	return $new_input;
+}
+
+/**
+ * add new privacy option
+ */
+
+function rsa_blog_privacy_selector() {
+?>
+	<br />
+	<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked('2', get_option('blog_public')); ?> />
+	<label for="blog-restricted"><?php _e('I would like to block all visitors who are not logged in or allowed by IP address'); ?> (<strong><?php _e('Restricted Site Access'); ?></strong>)</label>
+<?php
+}
+
+/**
+ * new fields
+ */
+
+function rsa_handling_field($value) {
+	$rsa_options = get_option('rsa_options');
+?>
+	<select name="rsa_options[approach]" id="allowed">
+		<option value="1" <?php selected( $rsa_options['approach'], '1' ); ?>><?php _e('Send to login page'); ?></option>
+		<option value="2" <?php selected( $rsa_options['approach'], '2' ); ?>><?php _e('Redirect visitor'); ?></option>
+		<option value="3" <?php selected( $rsa_options['approach'], '3' ); ?>><?php _e('Display message'); ?></option>
+	</select>
+	<span class="description"><?php _e('Method for handling visitors who do not have access.'); ?></span>
+<?php
+}
+
+function rsa_allowed_field($value) {
+	$rsa_options = get_option('rsa_options');
+?>
+	<div id="ip_list">
+	<?php
+		$ips = $rsa_options['allowed'];	
+		if (!empty($ips)) {			
+			foreach ($ips as $key => $ip) {
+				if (empty($ip)) continue;
+				echo '<span><input type="text" name="rsa_options[allowed][]" value="'.$ip.'" readonly="true" /><input type="button" class="button" onclick="remove_ip(this);" value="remove" /><br /></span>';
+			}
+		}
+	?>
+	</div>
+	<input type="text" name="newip" id="newip" value="" /><input class="button" type="button" onclick="add_ip(jQuery('#newip').val());" value="add" />
+	<span class="description"><?php _e('Enter a single IP or a range using a subnet prefix. See help tab for more.'); ?></span>
+	<br />
+	<input class="button" type="button" onclick="add_ip('<?php echo $_SERVER['REMOTE_ADDR']; ?>');" value="add my current IP" style="margin: 5px 0;" /><br />
+<?php
+}
+
+function rsa_message_field($value) {
+	$rsa_options = get_option('rsa_options');
+?>
+	<input type="text" name="rsa_options[message]" id="message" value="<?php echo esc_attr( $rsa_options['message'] ); ?>" class="regular-text" />
+	<span class="description"><?php _e('Default (blank): "Access to this site is restricted."'); ?></span>
+<?php
+}
+
+function rsa_redirect_field($value) {
+	$rsa_options = get_option('rsa_options');
+?>
+	<input type="text" name="rsa_options[redirect_url]" id="redirect" value="<?php echo esc_attr( $rsa_options['redirect_url'] ); ?>" class="regular-text" />
+<?php
+}
+
+function rsa_redirect_path_field($value) {
+	$rsa_options = get_option('rsa_options');
+?>
+	<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" <?php checked( $rsa_options['redirect_path'] ); ?> />
+	<?php _e('Send visitor to same relative URL at redirection site (help tab for more)'); ?>
+<?php
+}
+
+function rsa_redirect_code_field($value) {
+	$rsa_options = get_option('rsa_options');
+?>
+	<select name="rsa_options[head_code]" id="redirect_code">
+		<option value="301" <?php selected( $rsa_options['head_code'], '301' ); ?>><?php _e('301 Permanent'); ?></option>
+		<option value="302" <?php selected( $rsa_options['head_code'], '302' ); ?>><?php _e('302 Undefined'); ?></option>
+		<option value="307" <?php selected( $rsa_options['head_code'], '307' ); ?>><?php _e('307 Temporary'); ?></option>
+	</select>
+	<span class="description"><?php _e('Redirect HTTP code (see help tab for more information)'); ?></span>
+<?php
+}
+
+/**
+ * settings section
+ */
+
+function rsa_options() 
+{	
+	if ( !function_exists('inet_pton') ) {
+		echo '<p>Restricted Site Access plug-in 2.0 and newer require PHP 5.1 or newer to support IPv6 (as well as IPv4) ranges. If you are using an older version of PHP, your host cannot be upgraded, and you do not need IP range support, you can always manually <a href="http://downloads.wordpress.org/plugin/restricted-site-access.1.0.2.zip">download and install version 1.0.2</a>.</p>';
+		return false;	
+	}
+?>
+<script type="text/javascript" language="javascript">
+function add_ip(ip) {
+	if (!jQuery.trim(ip)) return false;
+	
+	jQuery('#message').remove();
+	
+	var ip_used = false;
+	jQuery('#ip_list input').each(function(){
+		if (jQuery(this).val() == ip) {
+			jQuery('h2').after('<div id="message" class="error"><p><strong>IP address '+ip+' already in list.</strong></p></div>');
+			scroll(0,0);
+			ip_used = true;
+			return false; 
+		}
+	});
+	if (ip_used) return false;
+	
+	jQuery('<span style="display: none;"><input type="text" name="rsa_options[allowed][]" value="'+ip+'" readonly="true" /><input type="button" class="button" onclick="remove_ip(this);" value="remove" /><br /></span>').appendTo('#ip_list').slideDown();
+}
+
+function remove_ip(btnObj) {
+	if (confirm('Are you certain you want to remove this IP?')) jQuery(btnObj).parent().slideUp(250,function(){ jQuery(this).remove() });
+}
+</script>
+<?php 
+}
+
+/**
+ * special contextual help
+ */
+
+add_action( 'load-options-privacy.php', 'rsa_header' );
+
+function rsa_header() {
+	add_filter('contextual_help','rsa_context_help');
+}
+
+function rsa_context_help($text) 
+{
+	return $text . '
+		<h5>Restricted Site Access</h5>
+		<p>Restricted Site Access is a plug-in by Jake Goldman (<a href="http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/" target="_blank">C. Murray Consulting</a>) that  allows you to restrict access to logged in users and a set of IP addresses with flexible restricted access behavior.</p>
+		
+		<h5>Restriction Options</h5>
+		<p><strong>Restrict access</strong> - you can enable and disable restriction at will without deactivating the plug-in.</p>
+		<p><strong>Handling</strong> - send the visitor the WordPress login screen, redirect the visitor (choosing this will offer some new options), or display a message indicating that the site is restricted.</p> 
+		<p><strong>Allowed IPs</strong> - enter a single IP address (such as 192.168.1.105) or an IP range using a network prefix (such as 10.0.0.1/24). In the current version, no validation is completed on these free form fields intended to hold IP addresses or IP ranges. A future version may check for valid entries. Here\'s a <a href="http://www.csgnetwork.com/ipinfocalc.html" target="_blank">handy calculator</a> to check your prefix.</p>
+		
+		<h5>Redirection Options</h5>
+		<p>This field set will only appear if you are using the "redirect visitor" handler.</p>
+		<p><strong>Redirect visitor to</strong> - the web site address of the site you want the visitor redirected to.</p>
+		<p><strong>...with same path</strong> - if you would like to redirect the visitor to the same path (URI) he or she entered this site at (the rest of the URL after the base URL), check this option. This is typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server open to the Internet but not intended for the public.</p>
+		<p><strong>Redirect type</strong> - redirect type headers can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that the page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.</p>
+			
+		<h5><a href="http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/" target="_blank">Restricted Site Access support</a></h5>
+	';	
 }
 
 /**
  * rsa_plugin_actlinks() adds direct settings link to plug-in page
  */
+
+add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'rsa_plugin_actlinks' ); 
+   
 function rsa_plugin_actlinks( $links ) 
 { 
-	// Add a link to this plugin's settings page
-	$plugin = plugin_basename(__FILE__);
-	$settings_link = sprintf( '<a href="options-general.php?page=%s">%s</a>', $plugin, __('Settings') ); 
-	array_unshift( $links, $settings_link ); 
+	array_unshift( $links, '<a href="options-privacy.php">'.__('Settings').'</a>' ); 
 	return $links; 
 }
-if(is_admin()) add_filter("plugin_action_links_".$plugin, 'rsa_plugin_actlinks' );
+
 
 /**
- * restricted_site_access() is the core function that blocks a page if appropriate
+ * THE CORE FUNCTION FOR BLOCKING ACCESSS
  */
+ 
+if( !is_admin() ) add_action( 'wp', 'restricted_site_access' ); 
+ 
 function restricted_site_access() 
-{
+{	
+	//logged in users can stay, can stay if plug-in not active
+	if ( is_user_logged_in() || get_option('blog_public') != 2 ) return false;
+	
 	$rsa_options = get_option('rsa_options');
 	
-	//logged in users can stay, can stay if plug-in not active
-	if (is_user_logged_in() || !$rsa_options['active']) return false;
-	//if we're not on a front end page, stay put
-	//if (!is_singular() && !is_archive() && !is_feed() && !is_home()) return false;
-	
 	// check for the allow list, if its empty block everything
-	if(($list = $rsa_options['allowed']) && function_exists('inet_pton'))
+	if( ($list = $rsa_options['allowed']) && function_exists('inet_pton'))
 	{
 		$remote_ip = $_SERVER['REMOTE_ADDR'];  //save the remote ip
 		if(strpos($remote_ip, '.')) $remote_ip = str_replace('::ffff:', '', $remote_ip); //handle dual-stack addresses
 		$remote_ip = inet_pton($remote_ip); //parse the remote ip
-		
-		//var_dump($list);
 		
 		// iterate through the allow list
 		foreach($list as $line)
@@ -149,250 +346,48 @@ function restricted_site_access()
 	}
 	
 	$rsa_restrict_approach = intval($rsa_options['approach']);
-	switch ($rsa_restrict_approach) {
-		case 1:
-			$new_url = (is_home()) ? get_bloginfo("url") : get_permalink(); 
-			wp_redirect(wp_login_url($new_url));
-			exit;
-		case 2:
-			// get base url
-			$rsa_redirect_url = $rsa_options['redirect_url'];
-			if (!$rsa_redirect_url) return false;
-			
-			// if redirecting to same path get info
-			if($rsa_options['redirect_path']) $rsa_redirect_url .= $_SERVER["REQUEST_URI"];
-			
-			$rsa_redirect_head = $rsa_options['head_code'];
-			$rsa_redirect_head = (!$rsa_redirect_head) ? 302 : intval($rsa_redirect_head);
-			
-			wp_redirect($rsa_redirect_url, $rsa_redirect_head);
-			exit;
-		case 3:
-			$message = (isset($rsa_options['message']) && $rsa_options['message']) ? $rsa_options['message'] : "Access to this site is restricted.";  
-			wp_die($message);
-	}
-}
-if(!is_admin()) add_action('wp','restricted_site_access');
-
-//************************//
-//** ADMIN CONTROL PANEL *//
-//************************//
-
-function rsa_options() {
-?>
-	<script type="text/javascript" language="javascript">
-		function add_ip(ip) {
-			if (!jQuery.trim(ip)) return false;
-			
-			jQuery('#message').remove();
-			
-			var ip_used = false;
-			jQuery('#ip_list input').each(function(){
-				if (jQuery(this).val() == ip) {
-					jQuery('h2').after('<div id="message" class="error"><p><strong>IP address '+ip+' already in list.</strong></p></div>');
-					scroll(0,0);
-					ip_used = true;
-					return false; 
-				}
-			});
-			if (ip_used) return false;
-			
-			jQuery('#ip_list').append('<span><input type="text" name="rsa_options[allowed][]" value="'+ip+'" readonly="true" /><input type="button" class="button" onclick="remove_ip(this);" value="remove" /><br /></span>');
-			jQuery('h2').after('<div id="message" class="updated"><p><strong>IP added to exception list.</strong></p></div>');
-		}
-		
-		function remove_ip(btnObj) {
-			if (!confirm('Are you certain you want to remove this IP?')) return false;
-			jQuery(btnObj).parent().remove();
-		}
-		
-		function change_approach(approach_choice) {
-			if (approach_choice == 2) jQuery(".redirect_field").fadeIn(500);
-			else jQuery(".redirect_field").fadeOut(500);
-			if (approach_choice == 3) jQuery(".message_field").fadeIn(500);
-			else jQuery(".message_field").fadeOut(500);
-		}
-		
-		function check_redirect() {
-			if (jQuery("#rsa_is_active:checked").val() == 1 && jQuery("#rsa_restrict_approach").val() == 0) {
-				alert('When restricted access is turned on, restriction handling must be selected.');
-				jQuery("#rsa_restrict_approach").focus();
-				return false;	
-			}
-			if (jQuery("#rsa_restrict_approach").val() != 2) return true;
-			var redirect_url = jQuery("#rsa_redirect_url").val();
-			if (redirect_url.substring(0,7) != "http://" && redirect_url.substring(0,8) != "https://") {
-				alert('The redirect location must be a valid URL starting with http:// or https://.');
-				jQuery("#rsa_redirect_url").focus();
-				return false;
-			}
-			return true;
-		}
-	</script>
-	<div class="wrap">
-		<div class="icon32" id="icon-options-general"><br/></div>
-		<h2>Restricted Site Access Configuration</h2>
-		
-		<?php	
-		if (!function_exists('inet_pton')) {
-			echo '<p>Version 2.0 of this plug-in requires a server running PHP 5.1 or newer in order to support IPv6 (as well as IPv4) ranges. If you are using an older version of PHP and your host cannot be upgraded, and you do not need IP range support, you can always manually <a href="http://downloads.wordpress.org/plugin/restricted-site-access.1.0.2.zip">download and install version 1.0.2</a>.</p>';
-			return false;	
-		}
-		?>
 	
-		<div id="poststuff" style="margin-top: 20px;">
+	do_action( 'restrict_site_access_handling', $rsa_restrict_approach ); // allow users to hook handling
 	
-			<div class="postbox" style="width: 200px; min-width: 200px; float: right;">
-				<h3 class="hndle">Support us</h3>
-				<div class="inside">
-					<p>Help support continued development of Restricted Site Access and our other plugins.</p>
-					<p>The best thing you can do is <strong>refer someone looking for web development or strategy work <a href="http://www.cmurrayconsulting.com" target="_blank">to our company</a></strong>. Learn more about our <a href="http://www.cmurrayconsulting.com/services/partners/wordpress-developer/" target="_blank">Wordpress experience and services</a>.</p>
-					<p>Short of that, please consider a donation. If you cannot afford even a small donation, please consider providing a link to our website, maybe in a blog post acknowledging this plugin.</p>
-					<form method="post" action="https://www.paypal.com/cgi-bin/webscr" style="text-align: left;">
-					<input type="hidden" value="_s-xclick" name="cmd"/>
-					<input type="hidden" value="3377715" name="hosted_button_id"/>
-					<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online!"/> <img height="1" border="0" width="1" alt="" src="https://www.paypal.com/en_US/i/scr/pixel.gif"/><br/>
-					</form>
-					<p><strong><a href="http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/">Support page</a></strong></p>
-				</div>
-			</div>
-			
-			<form method="post" action="options.php" onsubmit="return check_redirect();">
-			<?php 
-				settings_fields('restricted_site_access_options');
-				$rsa_options = get_option('rsa_options'); 
-			?>			
-				<h3 class="hndle">Restriction Options</h3>
-						
-				<table class="form-table" style="clear: none; width: auto;">
-					<tr valign="top">
-						<th scope="row"><label for="rsa_options[active]">Restrict access</label></th>
-						<td>
-							<input type="checkbox" name="rsa_options[active]" value="1" id="rsa_is_active"<?php if ($rsa_options['active']) echo ' checked="true"'; ?> />
-							Activates the plug-in and restriction rules.
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><label for="rsa_options[approach]">Handling</label></th>
-						<td>
-							<select name="rsa_options[approach]" id="rsa_restrict_approach" onchange="change_approach(selectedIndex);">
-								<?php 
-									$rsa_restrict_approach = intval($rsa_options['approach']);
-									$restrict_choices = array('Select handling','Send to login page','Redirect visitor','Display message');
-									foreach($restrict_choices as $key=>$value) {
-										echo '<option value="'.$key.'"';
-										if ($rsa_restrict_approach == $key) echo ' selected="selected"';
-										echo '>'.$value."</option>\n";
-									} 
-								?>
-							</select>
-							<span class="description">Method for handling visitors who do not have access.</span>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><label for="newip">Allowed IPs</label></th>
-						<td>
-							<div id="ip_list">
-							<?php
-								$ips = $rsa_options['allowed'];	
-								if (!empty($ips)) {			
-									foreach ($ips as $key => $ip) {
-										if (empty($ip)) continue;
-										echo '<span><input type="text" name="rsa_options[allowed][]" value="'.$ip.'" readonly="true" /><input type="button" class="button" onclick="remove_ip(this);" value="remove" /><br /></span>';
-									}
-								}
-							?>
-							</div>
-							<input type="text" name="newip" id="newip" value="" /><input class="button" type="button" onclick="add_ip(jQuery('#newip').val());" value="add" /><br />
-							<input class="button" type="button" onclick="add_ip('<?php echo $_SERVER['REMOTE_ADDR']; ?>');" value="add my current IP" style="margin: 5px 0;" /><br />
-							<span class="description">May enter ranges using subnet prefix or single IPs. Open help tab for details.</span>
-						</td>
-					</tr>
-				</table>
-				
-				<h3 class="redirect_field"<?php if ($rsa_restrict_approach != 2) echo ' style="display: none;"'; ?>>Redirection Options</h3>
-				
-				<table class="form-table redirect_field" style="clear: none; width: auto;<?php if ($rsa_restrict_approach != 2) echo ' display: none;'; ?>">	
-					<tr valign="top"> 
-						<th scope="row"><label for="rsa_options[redirect_url]">Redirect visitor to</label></th>
-						<td>
-							<input type="text" name="rsa_options[redirect_url]" id="rsa_redirect_url" value="<?php echo $rsa_options['redirect_url']; ?>" class="regular-text" />
-						</td>
-					</tr>
-					
-					<tr valign="top">
-						<th scope="row"><label for="rsa_options[redirect_path]"><em>...with same path</em></label></th>
-						<td>
-							<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="rsa_redirect_path"<?php if ($rsa_options['redirect_path']) echo ' checked="true"'; ?> />
-							Redirect to same path entered at this site (help tab for more)
-						</td>
-					</tr>
-					
-					<tr valign="top">
-						<th scope="row"><label for="rsa_options[head_code]">Redirect type</label></th>
-						<td>
-							<select name="rsa_options[head_code]" id="rsa_redirect_head">
-								<?php $rsa_redirect_head = $rsa_options['head_code']; ?>
-								<option value="301"<?php if ($rsa_redirect_head == "301") echo ' selected="selected"'; ?>>301 Permanent</option>
-								<option value="302"<?php if ($rsa_redirect_head == "302" || !$rsa_redirect_head) echo ' selected="selected"'; ?>>302 Undefined</option>
-								<option value="307"<?php if ($rsa_redirect_head == "307") echo ' selected="selected"'; ?>>307 Temporary</option>
-							</select>
-							<span class="description">Open help tab for more explanation.</span>
-						</td>
-					</tr>
-				</table>
-				
-				<h3 class="message_field"<?php if ($rsa_restrict_approach != 3) echo ' style="display: none;"'; ?>>Blocked Access Message</h3>
-				
-				<table class="form-table message_field" style="clear: none; width: auto;<?php if ($rsa_restrict_approach != 3) echo ' display: none;'; ?>">	
-					<tr valign="top"> 
-						<th scope="row"><label for="rsa_options[message]">Message</label></th>
-						<td>
-							<input type="text" name="rsa_options[message]" id="rsa_message" value="<?php echo esc_html($rsa_options['message']); ?>" class="regular-text" /><br />
-							<span class="description">Blank = "Access to this site is restricted."</span>
-						</td>
-					</tr>
-				</table>
-				
-				<p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
-			</form>	
-		</div>
-	</div>	
-<?php 
+	if ( $rsa_restrict_approach == 2 ) 
+	{
+		if ( !$rsa_redirect_url = $rsa_options['redirect_url'] ) return false;							// base url
+		if( $rsa_options['redirect_path'] ) $rsa_redirect_url .= $_SERVER["REQUEST_URI"]; 				// path
+		$rsa_redirect_head = ( !$rsa_options['head_code'] ) ? 302 : intval($rsa_options['head_code']);	// code
+		
+		wp_redirect( $rsa_redirect_url, $rsa_redirect_head );
+		exit;
 	}
-
-function rsa_admin_menu() {
-	$plugin_page = add_options_page('Restricted Site Access Configuration', 'Restricted Access', 8, __FILE__, 'rsa_options');
-	add_action('admin_head-'.$plugin_page,'rsa_header');
+	elseif ( $rsa_restrict_approach == 3 )
+	{
+		$message = ( isset($rsa_options['message']) && $rsa_options['message'] ) ? $rsa_options['message'] : "Access to this site is restricted.";  
+		wp_die($message);
+	}
+	
+	$new_url = is_front_page() ? get_bloginfo("url") : get_permalink();
+	wp_redirect( wp_login_url($new_url) );
+	exit;
 }
-add_action('admin_menu', 'rsa_admin_menu');
 
-function rsa_header() {
-	add_filter('contextual_help','rsa_context_help');
+/**
+ * upon deactivation restore blog_public option
+ */
+ 
+register_deactivation_hook( __FILE__, 'rsa_deactivation_hook' );
+
+function rsa_deactivation_hook() {
+	if ( get_option('blog_public') == 2 ) update_option( 'blog_public', 1 );
 }
 
-function rsa_context_help() 
+/**
+ * uninstall method
+ */
+ 
+register_uninstall_hook(__FILE__, 'rsa_uninstall_hook');
+
+function my_uninstall_hook()
 {
-	echo '
-		<h5>Restricted Site Access</h5>
-		<p>Restricted Site Access is a plug-in by Jake Goldman (C. Murray Consulting) that  allows you to restrict access to logged in users and a set of IP addresses with flexible restricted access behavior.</p>
-		
-		<h5>Restriction Options</h5>
-		<p><strong>Restrict access</strong> - you can enable and disable restriction at will without deactivating the plug-in.</p>
-		<p><strong>Handling</strong> - send the visitor the WordPress login screen, redirect the visitor (choosing this will offer some new options), or display a message indicating that the site is restricted.</p> 
-		<p><strong>Allowed IPs</strong> - enter a single IP address (such as 192.168.1.105) or an IP range using a network prefix (such as 10.0.0.1/24). In the current version, no validation is completed on these free form fields intended to hold IP addresses or IP ranges. A future version may check for valid entries. Here\'s a <a href="http://www.csgnetwork.com/ipinfocalc.html" target="_blank">handy calculator</a> to check your prefix.</p>
-		
-		<h5>Redirection Options</h5>
-		<p>This field set will only appear if you are using the "redirect visitor" handler.</p>
-		<p><strong>Redirect visitor to</strong> - the web site address of the site you want the visitor redirected to.</p>
-		<p><strong>...with same path</strong> - if you would like to redirect the visitor to the same path (URI) he or she entered this site at (the rest of the URL after the base URL), check this option. This is typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server open to the Internet but not intended for the public.</p>
-		<p><strong>Redirect type</strong> - redirect type headers can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that the page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.</p>
-			
-		<h5>Support</h5>
-		<div class="metabox-prefs">
-			<p><a href="http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/" target="_blank">Restricted Site Access support</a></p>
-			<p>This plug-in was developed by <a href="http://www.cmurrayconsulting.com" target="_blank">C. Muray Consulting</a>, Web Development &amp; Strategy Experts located in Providence, Rhode Island in the United States. We develop plug-ins because we love working with WordPress, and to generate interest in our business. If you like our plug-in, and know someone who needs web development work, be in touch!</p>
-		</div>
-	';	
+    delete_option('rsa_options'); //delete options
+    if ( get_option('blog_public') == 2 ) update_option( 'blog_public', 1 ); //restore blog public option
 }
 ?>

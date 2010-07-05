@@ -3,8 +3,8 @@ Contributors: Jacob M Goldman (C. Murray Consulting), Eric Buth
 Donate link: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
 Tags: restricted, restrict, limited, permissions, security, block
 Requires at least: 2.8
-Tested up to: 2.9.1
-Stable tag: 2.1
+Tested up to: 3.0
+Stable tag: 3.0
 
 Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. 
 Great for Intranets, dev sites.
@@ -16,20 +16,17 @@ Limit access your site to visitors who are logged in or accessing the site from 
 Send restricted visitors to the log in page, redirect them, or display a message. A great solution for 
 Extranets, publicly hosted Intranets, or parallel development sites.
 
-It includes an easy to use configuration panel inside the WordPress settings menu. From this panel you can:
+Adds a number of new configuration options to the Privacy settings panel. From this panel you can:
 
-1. Enable and disable access restriction at will.
-1. Change the restriction behavior: send to login, redirect, or display a message.
-1. Add IP addresses not subject to restriction, including ranges.
-1. Quickly add your current IP to the restriction list.
-1. Control the redirect location.
-1. Choose to redirect visitors to the same path that they entered the current site on.
-1. Choose the HTTP redirect message for SEO friendliness.
-1. Customize the blocked visitor message.
-   
-Version 2.0 is a major update. In addition to adding IP range support, there are significant UI and usability 
-improvements, and many other under the hood improvements to the code base.
-   
+1. Enable or disable site access restriction
+1. Change the restriction behavior: send to login, redirect, or display a message
+1. Add IP addresses not subject to restriction, including ranges
+1. Quickly add your current IP to the restriction list
+1. Control the redirect location
+1. Choose to redirect visitors to the same requested path
+1. Choose the HTTP redirect message for SEO friendliness
+1. Customize the blocked visitor message
+      
 Requires PHP 5.1+ to support IPv6 ranges. Download version 1.0.2 if IP ranges are not needed and the host is not
 running PHP 5.1 or newer.
 
@@ -39,7 +36,7 @@ running PHP 5.1 or newer.
 1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted
 folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Configure the plugin by going to the "Restricted Access" menu item under "Settings"
+1. Configure the plugin by going to the "Privacy" menu under "Settings"
 
 
 == Screenshots ==
@@ -48,6 +45,14 @@ folder to the `/wp-content/plugins/` directory
 
 
 == Changelog ==
+
+= 3.0 =
+* Integrates with Privacy settings page and site visibility option instead of adding a whole new page
+* Simplified options: clearer instructions, removed unnecessary hiding / showing of some options, fewer lines
+* Indicates whether the site is blocked in the admin next to the site title (WordPress 3.0+ only)
+* New action hook, `restrict_site_access_handling`, allowing developers to add their own restriction handling
+* Cleans up / removes settings when uninstalled
+* Assorted under the hood improvements for best coding practices, sanitization of options, etc
 
 = 2.1 =
 * Customize blocked visitor message
