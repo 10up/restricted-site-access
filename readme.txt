@@ -4,7 +4,7 @@ Donate link: http://www.cmurrayconsulting.com/software/wordpress-restricted-site
 Tags: restricted, restrict, limited, permissions, security, block
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 3.0.1
+Stable tag: 3.1
 
 Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. 
 Great for Intranets, dev sites.
