@@ -4,7 +4,7 @@ Donate link: http://www.cmurrayconsulting.com/software/wordpress-restricted-site
 Tags: restricted, restrict, limited, permissions, security, block
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 3.0
+Stable tag: 3.0.1
 
 Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. 
 Great for Intranets, dev sites.
@@ -26,9 +26,6 @@ Adds a number of new configuration options to the Privacy settings panel. From t
 1. Choose to redirect visitors to the same requested path
 1. Choose the HTTP redirect message for SEO friendliness
 1. Customize the blocked visitor message
-      
-Requires PHP 5.1+ to support IPv6 ranges. Download version 1.0.2 if IP ranges are not needed and the host is not
-running PHP 5.1 or newer.
 
 
 == Installation ==
@@ -45,6 +42,14 @@ folder to the `/wp-content/plugins/` directory
 
 
 == Changelog ==
+
+= 3.1 =
+* New feature: backwards compatibility with PHP < 5.1 (limited testing with earlier versions)
+* Bug fiX: disappearing blocked access message text box on configuration page
+* Bug fix: login always redirects visitor back to correct page
+* Improved: built in help on configuration page updated, clearer
+* Improved: "IP already in list" indicator
+* Improved: optimizations to code that handles restriction behavior
 
 = 3.0 =
 * Integrates with Privacy settings page and site visibility option instead of adding a whole new page
