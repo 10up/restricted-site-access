@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 3.1
+ Version: 3.1.1
  Author: Jacob M Goldman (C. Murray Consulting)
  Author URI: http://www.cmurrayconsulting.com
 
@@ -99,7 +99,7 @@ function rsa_validate($input)
 	$new_input['approach'] = intval($input['approach']);
 	if ( !in_array( $new_input['approach'], array(1,2,3) ) ) $new_input['approach'] = 1;
 	
-	$new_input['redirect_path'] = ($input['redirect_path'] == 1) ? 1 : 0;
+	$new_input['redirect_path'] = ( isset($input['redirect_path']) && $input['redirect_path'] == 1 ) ? 1 : 0;
 	$new_input['head_code'] = !in_array( $input['head_code'], array('301','302','307') ) ? $new_input['head_code'] = '302' : $input['head_code'] ;
 	$new_input['message'] = trim( $input['message'] );
 	$new_input['redirect_url'] = esc_url( $input['redirect_url'], array('http','https') );

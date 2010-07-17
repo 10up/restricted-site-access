@@ -4,7 +4,7 @@ Donate link: http://www.cmurrayconsulting.com/software/wordpress-restricted-site
 Tags: restricted, restrict, limited, permissions, security, block
 Requires at least: 2.8
 Tested up to: 3.0
-Stable tag: 3.1
+Stable tag: 3.1.1
 
 Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. 
 Great for Intranets, dev sites.
@@ -42,6 +42,9 @@ folder to the `/wp-content/plugins/` directory
 
 
 == Changelog ==
+
+= 3.1.1 =
+* Fixed PHP warning when debugging is enabled and redirect path is not checked
 
 = 3.1 =
 * New feature: backwards compatibility with PHP < 5.1 (limited testing with earlier versions)
