@@ -1,10 +1,10 @@
 === Restricted Site Access ===
-Contributors: Jacob M Goldman (C. Murray Consulting), Eric Buth
-Donate link: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
-Tags: restricted, restrict, limited, permissions, security, block
+Contributors: Jake Goldman (Oomph, Inc), Eric Buth
+Donate link: http://www.thinkoomph.com/plugins-modules/wordpress-restricted-site-access/
+Tags: privacy, restricted, restrict, limited, permissions, security, block
 Requires at least: 2.8
-Tested up to: 3.0
-Stable tag: 3.1.1
+Tested up to: 3.1
+Stable tag: 3.2
 
 Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. 
 Great for Intranets, dev sites.
@@ -43,12 +43,16 @@ folder to the `/wp-content/plugins/` directory
 
 == Changelog ==
 
+= 3.2 =
+* More meaningful page title in "Display Message" mode (previously WordPress > Error)
+* Code clean up, prevent rare warnings in debug mode
+
 = 3.1.1 =
 * Fixed PHP warning when debugging is enabled and redirect path is not checked
 
 = 3.1 =
 * New feature: backwards compatibility with PHP < 5.1 (limited testing with earlier versions)
-* Bug fiX: disappearing blocked access message text box on configuration page
+* Bug fix: disappearing blocked access message text box on configuration page
 * Bug fix: login always redirects visitor back to correct page
 * Improved: built in help on configuration page updated, clearer
 * Improved: "IP already in list" indicator
