@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 3.2
+ Version: 3.2.1
  Author: Jake Goldman (Oomph, Inc)
  Author URI: http://www.thinkoomph.com
 
@@ -56,9 +56,9 @@ endif;
  
 class restricted_site_access
 {
-	public $rsa_options;
+	var $rsa_options;
 	
-	function __construct()
+	function restricted_site_access()
 	{
 		$this->rsa_options = get_option('rsa_options');
 		
