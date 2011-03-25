@@ -1,13 +1,13 @@
 <?php
 /**
  Plugin Name: Restricted Site Access
- Plugin URI: http://www.cmurrayconsulting.com/software/wordpress-restricted-site-access/
+ Plugin URI: http://www.get10up.com/plugins/restricted-site-access-wordpress/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message. <strong>Powerful control over redirection</strong>, with option to send to same path and send <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 3.2
- Author: Jake Goldman (Oomph, Inc)
- Author URI: http://www.thinkoomph.com
+ Version: 3.2.1
+ Author: Jake Goldman (10up)
+ Author URI: http://www.get10up.com
 
-    Plugin: Copyright 2011 Oomph, Inc (email : jake@thinkoomph.com)
+    Plugin: Copyright 2011 10up (email : jake@get10up.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,9 +56,9 @@ endif;
  
 class restricted_site_access
 {
-	public $rsa_options;
+	var $rsa_options;
 	
-	function __construct()
+	function restricted_site_access()
 	{
 		$this->rsa_options = get_option('rsa_options');
 		
@@ -300,7 +300,7 @@ class restricted_site_access
 	{
 		return $text . '
 			<h5>' . __('Restricted Site Access') . '</h5>
-			<p><a href="http://www.thinkoomph.com/plugins-modules/wordpress-restricted-site-access/" target="_blank">' . __('Restricted Site Access') . '</a> ' . __('is a plug-in by') . ' <a href="http://www.jakegoldman.net" target="_blank">Jake Goldman</a> (<a href="http://www.thinkoomph.com/plugins-modules/wordpress-restricted-site-access/" target="_blank">Oomph, Inc</a>) ' . __('that  allows you to restrict access to logged in users and a set of IP addresses.') . '</p>
+			<p><a href="http://www.get10up.com/plugins/restricted-site-access-wordpress/" target="_blank">' . __('Restricted Site Access') . '</a> ' . __('is a plug-in by') . ' <a href="http://www.get10up.com" target="_blank">Jake Goldman</a> (<a href="http://www.get10up.com/plugins/restricted-site-access-wordpress/" target="_blank">10up</a>) ' . __('that  allows you to restrict access to logged in users and a set of IP addresses.') . '</p>
 			
 			<p><strong>' . __('Handling') . '</strong> - ' . __('send the visitor the WordPress login screen, redirect the visitor, or display a message indicating that the site is restricted.') . '</p> 
 			<p><strong>' . __('Allowed IPs') . '</strong> - ' . __('enter a single IP address (i.e. 192.168.1.105) or an IP range using a network prefix (i.e. 10.0.0.1/24). In the current version, validation is not performed on the IP addresses or IP ranges, so enter your addresses carefully! Here\'s a') . ' <a href="http://www.csgnetwork.com/ipinfocalc.html" target="_blank">' . __('handy calculator') . '</a> ' . __('to check your prefix.') . '</p>
@@ -311,7 +311,7 @@ class restricted_site_access
 			<p><strong>' . __('Redirect to same path') . '</strong> - ' . __('redirect the visitor to the same path (URI) entered at this site. Typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server accessible on the Internet but not intended for the public.') . '</p>
 			<p><strong>' . __('Redirection type') . '</strong> - ' . __('redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.') . '</p>
 				
-			<h5><a href="http://www.thinkoomph.com/plugins-modules/wordpress-restricted-site-access/" target="_blank">' . __('Restricted Site Access support') . '</a></h5>
+			<h5><a href="http://www.get10up.com/plugins/restricted-site-access-wordpress/" target="_blank">' . __('Restricted Site Access support') . '</a></h5>
 		';	
 	}
 	

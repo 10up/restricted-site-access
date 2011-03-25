@@ -1,10 +1,10 @@
 === Restricted Site Access ===
-Contributors: Jake Goldman (Oomph, Inc), Eric Buth
-Donate link: http://www.thinkoomph.com/plugins-modules/wordpress-restricted-site-access/
+Contributors: jakemgold, rcbth, thinkoomph
+Donate link: http://www.get10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, limited, permissions, security, block
 Requires at least: 2.8
 Tested up to: 3.1
-Stable tag: 3.2
+Stable tag: 3.2.1
 
 Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. 
 Great for Intranets, dev sites.
@@ -42,6 +42,9 @@ folder to the `/wp-content/plugins/` directory
 
 
 == Changelog ==
+
+= 3.2.1 =
+* Restored PHP4 compatibility
 
 = 3.2 =
 * More meaningful page title in "Display Message" mode (previously WordPress > Error)
