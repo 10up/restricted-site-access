@@ -1,0 +1,198 @@
+# Copyright (C) 2011 10up
+# This file is distributed under the same license as the Restricted Site Access package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Restricted Site Access\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-07-16 15:57-0500\n"
+"PO-Revision-Date: 2011-07-16 16:00-0500\n"
+"Last-Translator: Jake Goldman <jake@get10up.com>\n"
+"Language-Team: 10up <jake@get10up.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: restricted_site_access.php:102
+#: restricted_site_access.php:266
+msgid "Access to this site is restricted."
+msgstr "El acceso a este sitio está restringido."
+
+#: restricted_site_access.php:142
+#: restricted_site_access.php:316
+msgid "Handle restricted visitors"
+msgstr "Manejar visitantes restringido"
+
+#: restricted_site_access.php:143
+msgid "Restriction message"
+msgstr "Restricción mensaje"
+
+#: restricted_site_access.php:144
+#: restricted_site_access.php:321
+msgid "Redirect web address"
+msgstr "Reorientar dirección web"
+
+#: restricted_site_access.php:145
+#: restricted_site_access.php:322
+msgid "Redirect to same path"
+msgstr "Redirigir a mismo camino"
+
+#: restricted_site_access.php:146
+#: restricted_site_access.php:323
+msgid "Redirection status code"
+msgstr "Redirección código de estatus"
+
+#: restricted_site_access.php:147
+msgid "Restricted notice page"
+msgstr "Página nota restringido"
+
+#: restricted_site_access.php:148
+msgid "Unrestricted IP addresses"
+msgstr "Direcciones IP sin restricciones"
+
+#: restricted_site_access.php:155
+msgid "Public access to this site has been restricted."
+msgstr "Acceso público a este sitio ha sido restringido."
+
+#: restricted_site_access.php:162
+msgid "Restricted Site Access plug-in is blocking public access to this site."
+msgstr "Restricted Site Access plug-in está bloqueando acceso público a este sitio."
+
+#: restricted_site_access.php:173
+msgid "Click \"Save Changes\" to save this IP address."
+msgstr "Clic en \"Guardar cambios\" para guardar esta dirección IP."
+
+#: restricted_site_access.php:174
+#: restricted_site_access.php:249
+msgid "remove"
+msgstr "eliminar"
+
+#: restricted_site_access.php:175
+msgid "confirm removal"
+msgstr "confirmar eliminación"
+
+#: restricted_site_access.php:176
+msgid "cancel"
+msgstr "cancelar"
+
+#: restricted_site_access.php:186
+msgid "Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message."
+msgstr "Por favor, seleccione la página que desea mostrar a los visitantes restringido. Si no se selecciona la página, WordPress, simplemente se mostrará un mensaje de restricción general."
+
+#: restricted_site_access.php:188
+msgid "Please enter the web address you would like to redirect restriced visitors to. If no address is entered, visitors will be redirected to the login screen."
+msgstr "Por favor, introduzca la dirección Web que desee redirigir a los visitantes a restriced. Si no se introduce la dirección, los visitantes va a ser redirigido a la pantalla de inicio de sesión."
+
+#: restricted_site_access.php:198
+msgid "Restrict site access to visitors who are logged in or allowed by IP address"
+msgstr "Restringir acceso al sitio a los visitantes que están registrado o autorizados por dirección IP"
+
+#: restricted_site_access.php:224
+msgid "Send them to the WordPress login screen"
+msgstr "Enviar a la pantalla de login de WordPress"
+
+#: restricted_site_access.php:227
+msgid "Redirect them to a specified web address"
+msgstr "Redirigir a una dirección web especificada"
+
+#: restricted_site_access.php:230
+msgid "Show them a simple message"
+msgstr "Mostrarles un mensaje simple"
+
+#: restricted_site_access.php:233
+msgid "Show them a specific WordPress page I've created"
+msgstr "Muéstrales una determinada página de WordPress que he creado"
+
+#: restricted_site_access.php:253
+msgid "add"
+msgstr "añadir"
+
+#: restricted_site_access.php:254
+msgid "Enter a single IP address or a range using a subnet prefix"
+msgstr "Especificar una única dirección IP o un rango con un prefijo de subred"
+
+#: restricted_site_access.php:254
+#: restricted_site_access.php:281
+#: restricted_site_access.php:294
+msgid "help"
+msgstr "ayuda"
+
+#: restricted_site_access.php:257
+msgid "add my current IP address"
+msgstr "añadir mi dirección IP actual"
+
+#: restricted_site_access.php:260
+msgid "To manage IP addresses, you must use a JavaScript enabled browser."
+msgstr "Para administrar las direcciones IP, debe utilizar un buscador compatible con JavaScript."
+
+#: restricted_site_access.php:281
+msgid "Send restricted visitor to same path (relative URL) at the new web address"
+msgstr "Enviar visitante restringido a mismo camino (URL relativa) en la nueva dirección web"
+
+#: restricted_site_access.php:290
+msgid "301 Permanent"
+msgstr "301 Permanente"
+
+#: restricted_site_access.php:291
+msgid "302 Undefined"
+msgstr "302 Indefinido"
+
+#: restricted_site_access.php:292
+msgid "307 Temporary"
+msgstr "307 Temporario"
+
+#: restricted_site_access.php:294
+msgid "HTTP status code sent to browser"
+msgstr "Código de estado HTTP envía al navegador"
+
+#: restricted_site_access.php:314
+msgid "is a plug-in by"
+msgstr "es un plug-in de"
+
+#: restricted_site_access.php:314
+msgid "that  allows you to restrict access to logged in users and a set of IP addresses."
+msgstr "que le permite restringir el acceso a usuarios registrados y un conjunto de direcciones IP."
+
+#: restricted_site_access.php:316
+msgid "choose the method for handling visitors to your site that are restricted."
+msgstr "elegir el método para el manejo de los visitantes de su sitio web que se encuentran restringidas."
+
+#: restricted_site_access.php:317
+msgid "Allowed IP addresses"
+msgstr "Direcciones IP permitidas"
+
+#: restricted_site_access.php:317
+msgid "enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully! Here's a"
+msgstr "especificar una única dirección IP (por ejemplo, 192.168.1.105) o un rango de IP con un prefijo de red (por ejemplo, 10.0.0.1/24). Ingrese su dirección con cuidado! Aquí hay una"
+
+#: restricted_site_access.php:317
+msgid "handy calculator"
+msgstr "práctica calculadora"
+
+#: restricted_site_access.php:317
+msgid "to check your prefix."
+msgstr "para comprobar su prefijo."
+
+#: restricted_site_access.php:319
+msgid "Redirection Options"
+msgstr "Opciones de Redirección"
+
+#: restricted_site_access.php:320
+msgid "The redirection fields are only used when \"Handle restricted visitors\" is set to \"Redirect them to a specified web address\"."
+msgstr "Los campos de redirección se utiliza sólo cuando  \"Manejar visitantes restringido\" se pone en \"Redirigir a una dirección web especificada\"."
+
+#: restricted_site_access.php:321
+msgid "the web address of the site you want the visitor redirected to."
+msgstr "la dirección Web del sitio que desea que el visitante la redirección."
+
+#: restricted_site_access.php:322
+msgid "redirect the visitor to the same path (URI) entered at this site. Typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server accessible on the Internet but not intended for the public."
+msgstr "redirigir al visitante en el mismo camino (URI), entró en este sitio. Normalmente se usa cuando hay dos, los sitios muy similar en las diferentes direcciones de Internet públicas, por ejemplo, un servidor de desarrollo paralelo accesible en Internet, pero no destinados al público."
+
+#: restricted_site_access.php:323
+msgid "redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect."
+msgstr "redirigir los códigos de estado puede ofrecer a los visitantes algunos, en particular los motores de búsqueda, más información sobre la naturaleza de la redirección. Una redirección 301 le dice a los motores de búsqueda que una página se ha movido permanentemente a la nueva ubicación. 307 indica una redirección temporal. 302 es una redirección indefinido."
+
+#: restricted_site_access.php:331
+msgid "Settings"
+msgstr "Configuración"
+
