@@ -1,20 +1,20 @@
 === Restricted Site Access ===
-Contributors: jakemgold, rcbth
-Donate link: http://www.get10up.com/plugins/restricted-site-access-wordpress/
-Tags: privacy, restricted, restrict, limited, permissions, security, block
-Requires at least: 3.2
-Tested up to: 3.2.1
-Stable tag: 4.0
+Contributors: jakemgold, rcbth, 10up, thinkoomph
+Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
+Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
+Requires at least: 3.4
+Tested up to: 3.5
+Stable tag: 5.0
 
-Limit access to visitors who are logged in or at specific IP addresses. Many options for handling blocked visitors. Great for Intranets, dev sites.
+Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
 == Description ==
 
-Limit access your site to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
+Limit access your site to visitors who are logged in or accessing the site from a set of specified IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
 
-Adds a number of new configuration options to the Privacy settings panel. From this panel you can:
+Adds a number of new configuration options to the Reading (WordPress 3.5+) or Privacy (WordPress pre-3.5) settings panel. From this panel you can:
 
-1. Enable or disable site access restriction
+1. Enable or disable site restriction
 1. Change the restriction behavior: send to login, redirect, display a message, display a page
 1. Add IP addresses to an unrestricted list, including ranges
 1. Quickly add your current IP to the unrestricted list
@@ -25,13 +25,13 @@ Adds a number of new configuration options to the Privacy settings panel. From t
 
 1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Configure the plugin by going to the "Privacy" menu under "Settings"
+1. Configure the plugin by going to the "Reading" menu (WP3.5+) or "Privacy" (earlier versions) under "Settings"
 
 == Frequently Asked Questions ==
 
 = How do I unrestrict specific pages or parts of my site? =
 
-Developers can use the `restricted_site_access_is_restricted` filter to override Restricted Site Access. Note that the restriction checks runs before WordPress executes any queries, so use the global `$wp` variable to investigate what the visitor is trying to load.
+Developers can use the `restricted_site_access_is_restricted` filter to override Restricted Site Access. Note that the restriction checks happens before WordPress executes any queries, so use the global `$wp` variable to investigate what the visitor is trying to load.
 
 For instance, to unblock an RSS feed, place the following PHP code in the theme's functions.php file or in a simple plug-in:
 
@@ -48,18 +48,24 @@ function my_rsa_feed_override( $is_restricted ) {
 
 = How secure is this plug-in? =
 
-Users that are not logged in or allowed by IP address will not be able to browse your site. Restricted Site Access does not block access to your "real" files, so direct links to files in your uploads folder (for instance) are not blocked. It is also important to remember that IP addresses can be spoofed by hackers. Because Restricted Site Access runs as a plug-in, it is subject to general WordPress vulnerabilities.
+Users that are not logged in or allowed by IP address will not be able to browse your site. Restricted Site Access does not block access to your "real" files, so direct links to files in your uploads folder (for instance) are not blocked. It is also important to remember that IP addresses can be spoofed by hackers. Because Restricted Site Access runs as a plug-in, it is subject to  any WordPress vulnerabilities.
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
 == Screenshots ==
 
-1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
-1. Screenshot of settings panel with redirection method enabled, and confirming removal of an IP address from the exception list
-1. Plenty of inline help! Looks and behaves like native WordPress functionality.
-1. Restricted access mode turned off in the privacy settings panel
+1. Screenshot of settings panel (WP 3.5) with simple Restricted Site Access option (send to login page).
+1. Screenshot of settings panel (WP 3.5) with restriction message option enabled
+1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 5.0 =
+* WordPress 3.5 compatibility (3.5 eliminated the Privacy settings panel in favor of a refreshed Reading panel)
+* Real validation (on the fly and on save) for IP address entries
+* "Restriction message" now supports simple HTML and is edited using WordPress's simple HTML tag editor
+* A bunch of visual refinements that conform better with WordPress 3.4 and newer (spacing, native "shake" effect on invalid entries just like the login form, etc.)
+* A bunch of under the hood refinements (e.g. playing nicer with current screen Help API)
 
 = 4.0 =
 * New restriction option - show restricted visitor a specified page; use with custom page templates for great for website teasers!
