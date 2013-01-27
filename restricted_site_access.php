@@ -3,7 +3,7 @@
  Plugin Name: Restricted Site Access
  Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 5.0
+ Version: 5.0.1
  Author: Jake Goldman, 10up, Oomph
  Author URI: http://10up.com
  License: GPLv2 or later
@@ -86,7 +86,7 @@ class Restricted_Site_Access {
 	public function restrict_access( $wp ) {
 		remove_action( 'parse_request', array( $this, 'restrict_access' ), 1 );	// only need it the first time
 		
-		$is_restricted = ( is_admin() || is_user_logged_in() || get_option( 'blog_public' ) != 2 ) ? false : true;
+		$is_restricted = ( is_admin() || is_user_logged_in() || get_option( 'blog_public' ) != 2 || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) ) ? false : true;
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false )
 			return;
 

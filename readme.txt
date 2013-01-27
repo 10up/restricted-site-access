@@ -3,8 +3,8 @@ Contributors: jakemgold, rcbth, 10up, thinkoomph
 Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 3.4
-Tested up to: 3.5
-Stable tag: 5.0
+Tested up to: 3.5.1
+Stable tag: 5.0.1
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
@@ -59,6 +59,9 @@ Restricted Site Access is not meant to be a top secret data safe, but simply a r
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 5.0.1 =
+* Does not block user activation page in network mode
 
 = 5.0 =
 * WordPress 3.5 compatibility (3.5 eliminated the Privacy settings panel in favor of a refreshed Reading panel)
