@@ -1,81 +1,146 @@
-function add_ip( ip ) {
-	var shake_speed = 600;
-	if ( restricted_site_access_l10n.wp_version < 3.5 )
-		shake_speed = 60;
+/**
+ * 10up
+ * http://10up.com
+ *
+ * Copyright (c) 2013 10up, jakemgold
+ * Licensed under the GPLv2+ license.
+ */
+(function (window, $) {
 
-	if ( jQuery.trim(ip) == '' )
-		return false;
+	'use strict';
+	var document = window.document;
 
-	add_btn.attr('disabled', 'disabled');
+	var Cache = {
+		add_btn : '',
+		new_ip : '',
+		ip_list_wrap : '',
+		empty_ip : '',
+		restrict_radio : '',
+		table : '',
+		redirect_choice : '',
+		message_choice : '',
+		page_choice : '',
+		redirect_fields : '',
+		message_field : '',
+		page_field : ''
+	};
 
-	var ips = jQuery('#ip_list input');
-	for ( var i = 0, l = ips.length; i < ips.length; i++ ) {
-		if( ips[i].value == ip ) {
-			jQuery(ips[i]).parent().effect('shake',shake_speed);
-			add_btn.removeAttr('disabled');
-			return false;
+	function init() {
+
+		Cache.add_btn = $( document.getElementById('addip') );
+		Cache.new_ip = document.getElementById('newip');
+		Cache.ip_list_wrap = document.getElementById('ip_list');
+		Cache.empty_ip = $( document.getElementById('ip_list_empty') );
+		Cache.restrict_radio = document.getElementById('blog-restricted');
+		Cache.table = $( document.getElementById('rsa-send-to-login') ).closest('table');
+		Cache.redirect_choice = document.getElementById('rsa-redirect-visitor');
+		Cache.message_choice = document.getElementById('rsa-display-message');
+		Cache.page_choice = document.getElementById('rsa-unblocked-page');
+		Cache.redirect_fields = $( document.querySelectorAll('.rsa_redirect_field') ).closest('tr');
+		Cache.message_field = $( document.getElementById('rsa_message') ).closest('tr');
+		Cache.page_field = $( document.getElementById('rsa_page') ).closest('tr');
+
+		if ( ! document.getElementById('blog-restricted').checked ) {
+			Cache.table.hide();
 		}
+
+		if ( ! document.getElementById('rsa-redirect-visitor').checked ) {
+			Cache.redirect_fields.hide();
+		}
+
+		if ( ! document.getElementById('rsa-display-message').checked ) {
+			Cache.message_field.hide();
+		}
+
+		if ( ! document.getElementById('rsa-unblocked-page').checked ) {
+			Cache.page_field.hide();
+		}
+
+		$( document.querySelectorAll('#rsa_handle_fields input') ).on('change',function(){
+
+			if ( Cache.redirect_choice.checked ) {
+				Cache.redirect_fields.show();
+			} else {
+				Cache.redirect_fields.hide();
+			}
+
+			if ( Cache.message_choice.checked ) {
+				Cache.message_field.show();
+			} else {
+				Cache.message_field.hide();
+			}
+
+			if ( Cache.page_choice.checked ) {
+				Cache.page_field.show();
+			} else {
+				Cache.page_field.hide();
+			}
+
+		});
+
+		$( document.querySelectorAll('.option-site-visibility input') ).on('change',function(){
+			if ( Cache.restrict_radio.checked ) {
+				Cache.table.show();
+			} else {
+				Cache.table.hide();
+			}
+		});
+
+		Cache.add_btn.on('click',function(){
+			add_ip( Cache.new_ip.value );
+		});
+
+		var myip_btn = document.getElementById('rsa_myip');
+		if ( null !== myip_btn ) {
+			$(myip_btn).on('click',function(){
+				add_ip( $(this).data('myip') );
+			});
+		}
+
+		$(Cache.ip_list_wrap).on('click', '.remove_btn', function(){
+			$( this.parentNode ).slideUp( 250, function(){ $(this).remove(); } );
+		});
+
 	}
 
-	jQuery.post( ajaxurl, { action: 'rsa_ip_check', 'ip_address': ip }, function(response) {
-		if ( response ) {
-			jQuery('#newip').parent().effect('shake',shake_speed);
-			add_btn.removeAttr('disabled');
+	function add_ip( ip ) {
+		if ( $.trim( ip ) == '' ) {
 			return false;
-		} else {
-			jQuery('<div style="display: none;"><input type="text" name="rsa_options[allowed][]" value="' + ip + '" readonly="true" /> <a href="#remove" onclick="remove_ip(this);">' + restricted_site_access_l10n.Remove + '</a></div>').appendTo('#ip_list').slideDown(250);
-			if ( ip == jQuery('#newip').val() )
-				jQuery('#newip').val('');
-			jQuery('#addip').removeAttr('disabled');
-			return true;
 		}
-	} );
-}
 
-function remove_ip( btnObj ) {
-	jQuery(btnObj).parent().slideUp(250,function(){ jQuery(this).remove(); });
-}
+		var shake_speed = 600;
 
-var add_btn;
+		Cache.add_btn.attr('disabled', 'disabled');
+		var ip_list = $( document.querySelectorAll('#ip_list input') );
 
-jQuery(document).ready(function($){
-	// hide and show relevant pieces
-	add_btn = $('#addip');
-	var rsa_table = $('#rsa-send-to-login').closest('table');
-	var rsa_redirect_fields = $('.rsa_redirect_field').closest('tr');
-	var rsa_messsage_field = $('#rsa_message').closest('tr');
-	var rsa_page_field = $('#rsa_page').closest('tr');
+		for ( var i = 0, l = ip_list.length; i < ip_list.length; i++ ) {
+			if( ip_list[i].value == ip ) {
+				$( ip_list[i] ).parent().effect( 'shake', shake_speed );
+				Cache.add_btn.removeAttr('disabled');
+				return false;
+			}
+		}
 
-	if ( ! $('#blog-restricted').is(':checked') )
-		rsa_table.hide();
-	if ( ! $('#rsa-redirect-visitor').is(':checked') )
-		rsa_redirect_fields.hide();
-	if ( ! $('#rsa-display-message').is(':checked') )
-		rsa_messsage_field.hide();
-	if ( ! $('#rsa-unblocked-page').is(':checked') )
-		rsa_page_field.hide();
+		jQuery.post( ajaxurl, { action: 'rsa_ip_check', 'ip_address': ip }, function(response) {
+			if ( response ) {
+				$( Cache.new_ip.parentNode ).effect( 'shake', shake_speed );
+				Cache.add_btn.removeAttr('disabled');
+				return false;
+			} else {
+				var new_ip = Cache.empty_ip.clone().appendTo(Cache.ip_list_wrap);
+				new_ip.children('input').val(ip);
+				new_ip.removeAttr('id').slideDown(250);
 
-	$('input[name="rsa_options[approach]"]').change(function(){
-		if( $('#rsa-redirect-visitor').is(':checked') )
-			rsa_redirect_fields.show();
-		else
-			rsa_redirect_fields.hide();
+				if ( ip == Cache.new_ip.value ) {
+					$(Cache.new_ip).val('');
+				}
+				Cache.add_btn.removeAttr('disabled');
 
-		if( $('#rsa-display-message').is(':checked') )
-			rsa_messsage_field.show();
-		else
-			rsa_messsage_field.hide();
+				return true;
+			}
+		} );
+	}
 
-		if( $('#rsa-unblocked-page').is(':checked') )
-			rsa_page_field.show();
-		else
-			rsa_page_field.hide();
-	});
+	init();
 
-	$('input[name="blog_public"]').change(function(){
-		if( $('#blog-restricted').is(':checked') )
-			rsa_table.show();
-		else
-			rsa_table.hide();
-	});
-});
+})(window,jQuery);
