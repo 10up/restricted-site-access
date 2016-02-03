@@ -308,9 +308,11 @@ class Restricted_Site_Access {
 	 * Add a new choice to the privacy selector
 	 */
 	public static function blog_privacy_selector() {
+		$is_restricted = ( 2 == get_option( 'blog_public' ));
+		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted );
 	?>
 		<p>
-			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( get_option( 'blog_public' ), 2 ); ?> />
+			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
 			<label for="blog-restricted"><?php _e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
 	<?php
