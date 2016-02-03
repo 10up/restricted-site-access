@@ -118,7 +118,9 @@ class Restricted_Site_Access {
 	 * @param array $wp WordPress request
 	 */
 	public static function restrict_access( $wp ) {
-		remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
+		if ( empty( $wp->query_vars['rest_route'] ) ) {
+			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
+		}
 		
 		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != get_option( 'blog_public' ) || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
