@@ -179,7 +179,7 @@ class Restricted_Site_Access {
 				$message = __( self::$rsa_options['message'], 'restricted-site-access' );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message = apply_filters( 'restricted_site_access_message', $message, $wp );
-				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted' );
+				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted', array('response' => 403) );
 				
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
