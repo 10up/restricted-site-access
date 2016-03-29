@@ -43,7 +43,7 @@ class Restricted_Site_Access {
 	 */
 	public static function _add_actions() {
 		self::$basename = plugin_basename( __FILE__ );
-		
+
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
 		add_action( 'plugins_loaded', array( __CLASS__, 'load_textdomain' ) );
@@ -129,14 +129,14 @@ class Restricted_Site_Access {
 		if ( empty( $wp->query_vars['rest_route'] ) ) {
 			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
 		}
-		
+
 		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != get_option( 'blog_public' ) || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
 
 		self::set_option_defaults();
-		
+
 		// check for the allow list, if its empty block everything
 		if ( !empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
 			$remote_ip = $_SERVER['REMOTE_ADDR'];  //save the remote ip
@@ -144,13 +144,13 @@ class Restricted_Site_Access {
 				$remote_ip = str_replace( '::ffff:', '', $remote_ip ); //handle dual-stack addresses
 			}
 			$remote_ip = inet_pton( $remote_ip ); //parse the remote ip
-			
+
 			// iterate through the allow list
 			foreach( self::$rsa_options['allowed'] as $line ) {
 				list( $ip, $mask ) = explode( '/', $line . '/128' ); // get the ip and mask from the list
-				
+
 				$mask = str_repeat( 'f', $mask >> 2 ); //render the mask as bits, similar to info on the php.net man page discussion for inet_pton
-	
+
 				switch( $mask % 4 ) {
 					case 1:
 						$mask .= '8';
@@ -162,19 +162,19 @@ class Restricted_Site_Access {
 						$mask .= 'e';
 						break;
 				}
-				
+
 				$mask = pack( 'H*', $mask );
-	
+
 				// check if the masked versions match
 				if ( ( inet_pton( $ip ) & $mask ) == ( $remote_ip & $mask ) ) {
 					return;
 				}
 			}
 		}
-		
+
 		$rsa_restrict_approach = apply_filters( 'restricted_site_access_approach', self::$rsa_options['approach'] );
 		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling
-		
+
 		switch( $rsa_restrict_approach ) {
 			case 4:
 				if ( !empty( self::$rsa_options['page'] ) && ( $page_id = get_post_field( 'ID', self::$rsa_options['page'] ) ) ) {
@@ -182,13 +182,13 @@ class Restricted_Site_Access {
 					$wp->query_vars['page_id'] = $page_id;
 					return;
 				}
-			
+
 			case 3:
 				$message = __( self::$rsa_options['message'], 'restricted-site-access' );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message = apply_filters( 'restricted_site_access_message', $message, $wp );
 				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted', array('response' => 403) );
-				
+
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if( ! empty( self::$rsa_options['redirect_path'] ) ) {
@@ -196,7 +196,7 @@ class Restricted_Site_Access {
 					}
 					break;
 				}
-				
+
 			default:
 				self::$rsa_options['redirect_path'] = 302;
 				$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
@@ -216,20 +216,20 @@ class Restricted_Site_Access {
 		// customize privacy message
 		add_filter( 'privacy_on_link_text', array( __CLASS__, 'privacy_on_link_text' ) );
 		add_filter( 'privacy_on_link_title', array( __CLASS__, 'privacy_on_link_title' ) );
-		
+
 		// customize privacy page
 		add_action( 'load-options-' . self::$settings_page . '.php', array( __CLASS__, 'load_options_page' ) );
-		
+
 		// add new choice for blog privacy
 		add_action( 'blog_privacy_selector', array( __CLASS__, 'blog_privacy_selector' ) );
-		
+
 		// settings for restricted site access
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 		foreach ( self::$fields as $field_name => $field_data ) {
 			add_settings_field( $field_name, __( $field_data['label'], 'restricted-site-access' ), array( __CLASS__, $field_data['field'] ), self::$settings_page, 'restricted-site-access' );
 		}
-		
+
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 	}
 
@@ -281,13 +281,13 @@ class Restricted_Site_Access {
 		if ( empty( self::$rsa_options['approach'] ) ) {
 			return;
 		}
-		
+
 		if ( 4 == self::$rsa_options['approach'] && empty( self::$rsa_options['page'] ) ) {
 			$message = __( 'Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message.', 'restricted-site-access' );
 		} elseif ( 2 == self::$rsa_options['approach'] && empty( self::$rsa_options['redirect_url'] ) ) {
 			$message = __( 'Please enter the web address you would like to redirect restricted visitors to. If no address is entered, visitors will be redirected to the login screen.', 'restricted-site-access' );
 		}
-		
+
 		if ( isset( $message ) ) {
 			echo '<div class="error"><p><strong>' . $message . '</strong></p></div>';
 		}
@@ -387,7 +387,7 @@ class Restricted_Site_Access {
 				}
 			}
 		}
-		
+
 		return $new_input;
 	}
 
@@ -439,7 +439,7 @@ class Restricted_Site_Access {
 			<div>
 				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
-            </div>
+						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( $_SERVER['REMOTE_ADDR'] ); ?>" /><br /><?php } ?>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
