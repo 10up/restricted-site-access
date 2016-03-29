@@ -10,46 +10,10 @@
 */
 
 class Restricted_Site_Access {
-	
+
 	private static $rsa_options, $basename;
 	private static $settings_page = 'reading';
-	private static $fields = array(
-		'approach'		=> array(
-			'default' 	=> 1,
-			'label' 	=> 'Handle restricted visitors',
-			'field' 	=> 'settings_field_handling',
-		),
-		'message' 		=> array(
-			'default' 	=> 'Access to this site is restricted.',
-			'label' 	=> 'Restriction message',
-			'field' 	=> 'settings_field_message',
-		),
-		'redirect_url' 	=> array(
-			'default' 	=> '',
-			'label' 	=> 'Redirect web address',
-			'field' 	=> 'settings_field_redirect',
-		),
-		'redirect_path'	=> array(
-			'default' 	=> 0,
-			'label' 	=> 'Redirect to same path',
-			'field' 	=> 'settings_field_redirect_path',
-		),
-		'head_code'		=> array(
-			'default' 	=> 302,
-			'label' 	=> 'Redirection status code',
-			'field' 	=> 'settings_field_redirect_code',
-		),
-		'page' 			=> array(
-			'default' 	=> 0,
-			'label' 	=> 'Restricted notice page',
-			'field' 	=> 'settings_field_rsa_page',
-		),
-		'allowed' 		=> array(
-			'default' 	=> array(),
-			'label'		=> 'Unrestricted IP addresses',
-			'field' 	=> 'settings_field_allowed',
-		),
-	);
+	private static $fields;
 
 	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
@@ -63,6 +27,7 @@ class Restricted_Site_Access {
 		if ( null === $instance ) {
 			$instance = new self();
 			self::_add_actions();
+			self::populate_fields_array();
 		}
 
 		return $instance;
@@ -93,6 +58,49 @@ class Restricted_Site_Access {
 	 */
 	public static function load_textdomain() {
 		load_plugin_textdomain( 'restricted-site-access', false, dirname( self::$basename ) . '/localization/' );
+	}
+
+	/**
+	 * Populate Restricted_Site_Access::$fields with internationalization-ready field information.
+	 */
+	protected static function populate_fields_array() {
+		self::$fields = array(
+		'approach'      => array(
+			'default' => 1,
+			'label' 	=> __( 'Handle restricted visitors', 'restricted-site-access' ),
+			'field' 	=> 'settings_field_handling',
+		),
+		'message'       => array(
+			'default' => _x( 'Access to this site is restricted.', 'default restriction message', 'restricted-site-access' ),
+			'label' 	=> __( 'Restriction message', 'restricted-site-access' ),
+			'field' 	=> 'settings_field_message',
+		),
+		'redirect_url'  => array(
+			'default' => '',
+			'label'   => __( 'Redirect web address', 'restricted-site-access' ),
+			'field'   => 'settings_field_redirect',
+		),
+		'redirect_path'	=> array(
+			'default' => 0,
+			'label'   => 'Redirect to same path',
+			'field'   => 'settings_field_redirect_path',
+		),
+		'head_code'     => array(
+			'default' => 302,
+			'label'   => __( 'Redirection status code', 'restricted-site-access' ),
+			'field'   => 'settings_field_redirect_code',
+		),
+		'page'          => array(
+			'default' => 0,
+			'label' 	=> __( 'Restricted notice page', 'restricted-site-access' ),
+			'field'   => 'settings_field_rsa_page',
+		),
+		'allowed'       => array(
+			'default' => array(),
+			'label'   => __( 'Unrestricted IP addresses', 'restricted-site-access' ),
+			'field'   => 'settings_field_allowed',
+		),
+	);
 	}
 
 	/**
