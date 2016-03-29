@@ -524,9 +524,9 @@ class Restricted_Site_Access {
 			self::$rsa_options['page'] = 0;
 		}
 
-		wp_dropdown_pages(array( 
+		wp_dropdown_pages(array(
 			'selected'          => self::$rsa_options['page'],
-			'show_option_none'  => 'Select a page',
+			'show_option_none'  => __( 'Select a page', 'restricted-site-access' ),
 			'name'              => 'rsa_options[page]',
 			'id'                => 'rsa_page'
 		));
