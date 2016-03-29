@@ -297,18 +297,50 @@ class Restricted_Site_Access {
 	 * Add restricted access help tab to screen
 	 */
 	public static function admin_head() {
-		$screen = get_current_screen();
+		$screen  = get_current_screen();
+		$content = array();
+
+		// Populate the tab contents.
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Handle restricted visitors', 'help topic', 'restricted-site-access' ),
+			__( 'Choose the method for handling visitors to your site that are restricted.', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s %3$s</p><p>%4$s</p>',
+			_x( 'Allowed IP addresses', 'help topic', 'restricted-site-access' ),
+			__( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', 'restricted-site-access' ),
+			sprintf(
+				'<a href="http://www.csgnetwork.com/ipinfocalc.html">%s</a>',
+				/** translators: link to http://www.csgnetwork.com/ipinfocalc.html */
+				__( 'Here is a handy calculator to check your prefix.', 'restricted-site-access' )
+			),
+			__('The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Redirect web address', 'help topic', 'restricted-site-access' ),
+			__( 'The web address of the site you want the visitor redirected to.', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Redirect to the same path', 'help topic', 'restricted-site-access' ),
+			__( 'redirect the visitor to the same path (URI) entered at this site. Typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server accessible on the Internet but not intended for the public.', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Redirection status code', 'help topic', 'restricted-site-access' ),
+			__( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.', 'restricted-site-access' )
+		);
+
 		$screen->add_help_tab( array(
 			'id'      => 'restricted-site-access',
-			'title'   => __('Restricted Site Acccess'),
-			'content' => '
-				<p><strong>' . __('Handle restricted visitors','restricted-site-access') . '</strong> - ' . __('choose the method for handling visitors to your site that are restricted.','restricted-site-access') . '</p>
-				<p><strong>' . __('Allowed IP addresses','restricted-site-access') . '</strong> - ' . __('enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully! Here\'s a','restricted-site-access') . ' <a href="http://www.csgnetwork.com/ipinfocalc.html" target="_blank">' . __('handy calculator','restricted-site-access') . '</a> ' . __('to check your prefix.','restricted-site-access') . '</p>
-				<p>' . __('The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".','restricted-site-access') . '</p>
-				<p><strong>' . __('Redirect web address','restricted-site-access') . '</strong> - ' . __('the web address of the site you want the visitor redirected to.','restricted-site-access') . '</p>
-				<p><strong>' . __('Redirect to same path','restricted-site-access') . '</strong> - ' . __('redirect the visitor to the same path (URI) entered at this site. Typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server accessible on the Internet but not intended for the public.','restricted-site-access') . '</p>
-				<p><strong>' . __('Redirection status code','restricted-site-access') . '</strong> - ' . __('redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.','restricted-site-access') . '</p>
-			',
+			'title'   => _x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
+			'content' => implode( PHP_EOL, $content ),
 		) );
 	}
 
