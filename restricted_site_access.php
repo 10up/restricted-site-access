@@ -124,6 +124,18 @@ class Restricted_Site_Access {
 
 		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != get_option( 'blog_public' ) || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
+
+
+			return;
+		}
+
+		/**
+		 * Filter to allow WP REST API routes to work when access is otherwise restricted
+		 *
+		 * @param bool $allow Default is false, return a truthy value to allow access.
+		 * @param string $matched_route Matched REST Route.
+		 */
+		if( ! empty(  $wp->query_vars['rest_route'] ) && apply_filters( 'restricted_site_access_allow_rest',false, $wp->query_vars['rest_route'] )  ){
 			return;
 		}
 
