@@ -131,34 +131,11 @@ class Restricted_Site_Access {
 
 		// check for the allow list, if its empty block everything
 		if ( !empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
-			$remote_ip = $_SERVER['REMOTE_ADDR'];  //save the remote ip
-			if ( strpos( $remote_ip, '.' ) ) {
-				$remote_ip = str_replace( '::ffff:', '', $remote_ip ); //handle dual-stack addresses
-			}
-			$remote_ip = inet_pton( $remote_ip ); //parse the remote ip
+			$remote_ip = get_client_ip_address(); //save the remote ip
 
 			// iterate through the allow list
 			foreach( self::$rsa_options['allowed'] as $line ) {
-				list( $ip, $mask ) = explode( '/', $line . '/128' ); // get the ip and mask from the list
-
-				$mask = str_repeat( 'f', $mask >> 2 ); //render the mask as bits, similar to info on the php.net man page discussion for inet_pton
-
-				switch( $mask % 4 ) {
-					case 1:
-						$mask .= '8';
-						break;
-					case 2:
-						$mask .= 'c';
-						break;
-					case 3:
-						$mask .= 'e';
-						break;
-				}
-
-				$mask = pack( 'H*', $mask );
-
-				// check if the masked versions match
-				if ( ( inet_pton( $ip ) & $mask ) == ( $remote_ip & $mask ) ) {
+				if( ip_in_range( $remote_ip, $line ) ){
 					return;
 				}
 			}
@@ -595,4 +572,57 @@ function inet_pton($ip) {
 	return $ip;
 }
 
+endif;
+
+if ( ! function_exists( 'ip_in_range' ) ) :
+/**
+ * Check if a given ip is in a network.
+ * Source: https://gist.github.com/tott/7684443
+ *
+ * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
+ * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
+ * @return boolean true if the ip is in this range / false if not.
+ */
+function ip_in_range( $ip, $range ) {
+	if ( strpos( $range, '/' ) == false ) {
+		$range .= '/32';
+	}
+	// $range is in IP/CIDR format eg 127.0.0.1/24
+	list( $range, $netmask ) = explode( '/', $range, 2 );
+	$range_decimal = ip2long( $range );
+	$ip_decimal = ip2long( $ip );
+	$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+	$netmask_decimal = ~ $wildcard_decimal;
+	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+}
+
+endif;
+
+if ( ! function_exists( 'get_client_ip_address' ) ) :
+/**
+ * This function is to get the real visitor ip address even it is behind the proxy
+ * @return string
+ */
+function get_client_ip_address() {
+	$ip = '';
+	foreach ( array(
+				  'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP',
+				  'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR',
+			  ) as $key ) {
+
+		if ( ! isset( $_SERVER[ $key ] ) ) {
+			continue;
+		}
+
+		foreach ( explode( ',', $_SERVER[ $key ] ) as $ip ) {
+			$ip = trim( $ip); // just to be safe
+
+			if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
+				return $ip;
+			}
+		}
+	}
+
+	return $ip;
+}
 endif;
