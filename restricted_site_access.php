@@ -229,7 +229,8 @@ class Restricted_Site_Access {
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
-		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK ) {
+		//This is for Network Site Settings
+		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK  && is_network_admin() ) {
 			$dev = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
 			wp_enqueue_script( 'restricted-site-access', plugin_dir_url( __FILE__ ) . 'restricted-site-access' . $dev . '.js', array('jquery', 'jquery-effects-shake'), '5.1', true );
 			self::set_option_defaults();
@@ -238,6 +239,9 @@ class Restricted_Site_Access {
 		}
 	}
 
+	/**
+	 * Show RSA Settings in Network Settings
+	 */
 	public static function show_network_settings() {
 		?>
 			<h2><?php _e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
@@ -313,6 +317,9 @@ class Restricted_Site_Access {
 		<?php
 	}
 
+	/**
+	 * Handle Save Options for RSA Settings in Network Settings
+	 */
 	public static function save_network_settings() {
 		$checked_options = array( 'rsa_enabled' => 'no' );
 		foreach ( $checked_options as $option_name => $option_unchecked_value ) {
