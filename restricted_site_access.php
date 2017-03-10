@@ -104,7 +104,12 @@ class Restricted_Site_Access {
 		}
 
 		// set default options
-		self::$rsa_options = (array) get_option( 'rsa_options' );
+		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK ) {
+			self::$rsa_options = (array) get_site_option( 'rsa_options' );
+		}else{
+			self::$rsa_options = (array) get_option( 'rsa_options' );
+		}
+
 		foreach( self::$fields as $field_name => $field_details ) {
 			if ( ! isset( self::$rsa_options[ $field_name ] ) ) {
 				self::$rsa_options[ $field_name ] = $field_details[ 'default' ];
@@ -223,6 +228,113 @@ class Restricted_Site_Access {
 		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
+
+		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK ) {
+			$dev = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
+			wp_enqueue_script( 'restricted-site-access', plugin_dir_url( __FILE__ ) . 'restricted-site-access' . $dev . '.js', array('jquery', 'jquery-effects-shake'), '5.1', true );
+			self::set_option_defaults();
+			add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
+			add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
+		}
+	}
+
+	public static function show_network_settings() {
+		?>
+			<h2><?php _e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
+			<table id="restricted-site-access" class="form-table">
+				<tr>
+					<th scope="row"><?php _e( 'Enable RSA' ) ?></th>
+					<?php
+					if ( ! get_site_option( 'rsa_enabled' ) )
+						update_site_option( 'rsa_enabled', 'no' );
+					?>
+					<td>
+						<label><input name="rsa_enabled" type="checkbox" id="blog-restricted" value="yes"<?php checked( get_site_option( 'rsa_enabled' ), 'yes' ) ?> /> <?php _e( 'Check this box to restricted site access to whole sites.', 'restricted-site-access' ) ?></label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Handle restricted visitors', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+							self::settings_field_handling( [] );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Redirect web address', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+							self::settings_field_redirect( [] );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Redirect to same path', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+							self::settings_field_redirect_path( [] );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Redirection status code', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+						self::settings_field_redirect_code( [] );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Restriction message', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+						self::settings_field_message( [] );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Restricted notice page', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+						self::settings_field_rsa_page( [] );
+						?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Unrestricted IP addresses', 'restricted-site-access' ) ?></th>
+					<td>
+						<?php
+						self::settings_field_allowed( [] );
+						?>
+					</td>
+				</tr>
+			</table>
+
+		<?php
+	}
+
+	public static function save_network_settings() {
+		$checked_options = array( 'rsa_enabled' => 'no' );
+		foreach ( $checked_options as $option_name => $option_unchecked_value ) {
+			if ( ! isset( $_POST[$option_name] ) )
+				$_POST[$option_name] = $option_unchecked_value;
+		}
+
+		$options = array(
+			'rsa_enabled', 'rsa_options'
+		);
+
+		foreach ( $options as $option_name ) {
+			if ( ! isset($_POST[$option_name]) )
+				continue;
+
+			if( 'rsa_options' === $option_name ){
+				$value = self::sanitize_options( $_POST[$option_name] );
+			}else{
+				$value = wp_unslash( $_POST[$option_name] );
+			}
+			update_site_option( $option_name, $value );
+		}
 	}
 
 	/**
@@ -554,6 +666,24 @@ class Restricted_Site_Access {
 			update_option( 'blog_public', 1 );
 		}
 	}
+
+	public static function is_network( $plugin ) {
+
+		$plugins = get_site_option( 'active_sitewide_plugins');
+
+		if ( is_multisite() && isset( $plugins[ $plugin ] ) ) {
+			return true;
+		}
+
+		return false;
+
+	}
+}
+
+$network_activated = Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) );
+
+if ( $network_activated ) {
+	define( 'RSA_IS_NETWORK', true );
 }
 
 Restricted_Site_Access::get_instance();
