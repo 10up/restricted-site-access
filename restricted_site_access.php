@@ -293,7 +293,7 @@ class Restricted_Site_Access {
 	public static function page_cache_notice(){
 		//If WP_CACHE is on we show notification
 		if( true === WP_CACHE ){
-			$notif_message = sprintf( __( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached page. <a href="%s">Turn this plugin off</a>.', 'restricted-site-access' ), admin_url( 'options-reading.php' ) );
+			$notif_message = __( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached page.', 'restricted-site-access' );
 		}
 
 		if ( isset( $notif_message ) ) {
