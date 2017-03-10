@@ -39,9 +39,19 @@
 		Cache.redirect_fields = $( document.querySelectorAll('.rsa_redirect_field') ).closest('tr');
 		Cache.message_field = $( document.getElementById('rsa_message') ).closest('tr');
 		Cache.page_field = $( document.getElementById('rsa_page') ).closest('tr');
+		Cache.rsa_mode_default = document.getElementById('rsa-mode-default');
+		Cache.rsa_mode_override = document.getElementById('rsa-mode-override');
 
-		if ( ! document.getElementById('blog-restricted').checked ) {
+		if ( document.getElementById('blog-restricted') != null && ! document.getElementById('blog-restricted').checked ) {
 			Cache.table.hide();
+		}
+
+		if ( Cache.rsa_mode_default != null && Cache.rsa_mode_default.checked ) {
+			Cache.table.hide();
+		}
+
+		if ( Cache.rsa_mode_override != null && Cache.rsa_mode_override.checked ) {
+			Cache.table.show();
 		}
 
 		if ( ! document.getElementById('rsa-redirect-visitor').checked ) {
@@ -83,6 +93,16 @@
 				Cache.table.show();
 			} else {
 				Cache.table.hide();
+			}
+		});
+
+		$( document.querySelectorAll('.rsa-mode input') ).on('change',function(){
+			if ( Cache.rsa_mode_default != null && Cache.rsa_mode_default.checked ) {
+				Cache.table.hide();
+			}
+
+			if ( Cache.rsa_mode_override != null && Cache.rsa_mode_override.checked ) {
+				Cache.table.show();
 			}
 		});
 

@@ -245,17 +245,25 @@ class Restricted_Site_Access {
 	public static function show_network_settings() {
 		?>
 			<h2><?php _e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
-			<table id="restricted-site-access" class="form-table">
+			<table id="restricted-site-access-mode" class="rsa-mode form-table">
 				<tr>
-					<th scope="row"><?php _e( 'Enable RSA' ) ?></th>
+					<th scope="row"><?php _e( 'Mode', 'restricted-site-access' ) ?></th>
 					<?php
-					if ( ! get_site_option( 'rsa_enabled' ) )
-						update_site_option( 'rsa_enabled', 'no' );
+					if ( ! get_site_option( 'rsa_mode' ) ){
+						update_site_option( 'rsa_mode', 'default' );
+					}
+					$rsa_mode = get_site_option( 'rsa_mode' );
 					?>
 					<td>
-						<label><input name="rsa_enabled" type="checkbox" id="blog-restricted" value="yes"<?php checked( get_site_option( 'rsa_enabled' ), 'yes' ) ?> /> <?php _e( 'Check this box to restricted site access to whole sites.', 'restricted-site-access' ) ?></label>
+						<fieldset>
+							<legend class="screen-reader-text"><?php _e( 'Mode', 'restricted-site-access' ) ?></legend>
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $rsa_mode, 'default') ?> /> <?php _e( 'Default. Use each blog settings' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-override" value="override"<?php checked( $rsa_mode, 'override') ?> /> <?php _e( 'Override. Override all blog settings and use network settings' ); ?></label><br />
+						</fieldset>
 					</td>
 				</tr>
+			</table>
+			<table id="restricted-site-access" class="form-table">
 				<tr>
 					<th scope="row"><?php _e( 'Handle restricted visitors', 'restricted-site-access' ) ?></th>
 					<td>
@@ -321,14 +329,14 @@ class Restricted_Site_Access {
 	 * Handle Save Options for RSA Settings in Network Settings
 	 */
 	public static function save_network_settings() {
-		$checked_options = array( 'rsa_enabled' => 'no' );
+		$checked_options = array( 'rsa_mode' => 'default' );
 		foreach ( $checked_options as $option_name => $option_unchecked_value ) {
 			if ( ! isset( $_POST[$option_name] ) )
 				$_POST[$option_name] = $option_unchecked_value;
 		}
 
 		$options = array(
-			'rsa_enabled', 'rsa_options'
+			'rsa_mode', 'rsa_options'
 		);
 
 		foreach ( $options as $option_name ) {
