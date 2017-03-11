@@ -103,11 +103,17 @@ class Restricted_Site_Access {
 			return;
 		}
 
+		$rsa_network_mode = 'default';
 		// set default options
-		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK ) {
+		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK && is_network_admin() ) {
 			self::$rsa_options = (array) get_site_option( 'rsa_options' );
+			$rsa_network_mode = get_site_option( 'rsa_mode' );
 		}else{
 			self::$rsa_options = (array) get_option( 'rsa_options' );
+		}
+
+		if( 'enforce' === $rsa_network_mode && RSA_IS_NETWORK ){
+			self::$rsa_options = (array) get_site_option( 'rsa_options' );
 		}
 
 		foreach( self::$fields as $field_name => $field_details ) {
@@ -126,6 +132,8 @@ class Restricted_Site_Access {
 		if ( empty( $wp->query_vars['rest_route'] ) ) {
 			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
 		}
+
+
 
 		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != get_option( 'blog_public' ) || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
@@ -245,7 +253,7 @@ class Restricted_Site_Access {
 	public static function show_network_settings() {
 		?>
 			<h2><?php _e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
-			<table id="restricted-site-access-mode" class="rsa-mode form-table">
+			<table id="restricted-site-access-mode" class="option-site-visibility form-table">
 				<tr>
 					<th scope="row"><?php _e( 'Mode', 'restricted-site-access' ) ?></th>
 					<?php
@@ -257,8 +265,28 @@ class Restricted_Site_Access {
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php _e( 'Mode', 'restricted-site-access' ) ?></legend>
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $rsa_mode, 'default') ?> /> <?php _e( 'Default. Use each blog settings' ); ?></label><br />
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-override" value="override"<?php checked( $rsa_mode, 'override') ?> /> <?php _e( 'Override. Override all blog settings and use network settings' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $rsa_mode, 'default') ?> /> <?php _e( '<strong>Default</strong> to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-override" value="override"<?php checked( $rsa_mode, 'override') ?> /> <?php _e( '<strong>Enforce</strong> the settings below across all sites', 'restricted-site-access' ); ?></label><br />
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Site Visibility', 'restricted-site-access' ) ?></th>
+					<?php
+						$blog_public = get_site_option( 'blog_public' );
+					?>
+					<td>
+						<fieldset>
+							<legend class="screen-reader-text"><span>Site Visibility </span></legend>
+							<input id="blog-public" type="radio" name="blog_public" value="1" <?php checked( $blog_public, '1') ?>>
+							<label for="blog-public">Allow search engines to index this site</label><br>
+							<input id="blog-norobots" type="radio" name="blog_public" value="0" <?php checked( $blog_public, '0') ?>>
+							<label for="blog-norobots">Discourage search engines from indexing this site</label>
+							<p class="description">Note: Neither of these options blocks access to your site — it is up to search engines to honor your request.</p>
+							<p>
+								<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $blog_public, '2') ?>>
+								<label for="blog-restricted">Restrict site access to visitors who are logged in or allowed by IP address</label>
+							</p>
 						</fieldset>
 					</td>
 				</tr>
@@ -336,7 +364,7 @@ class Restricted_Site_Access {
 		}
 
 		$options = array(
-			'rsa_mode', 'rsa_options'
+			'rsa_mode', 'blog_public', 'rsa_options'
 		);
 
 		foreach ( $options as $option_name ) {
