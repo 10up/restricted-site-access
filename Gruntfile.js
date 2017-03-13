@@ -12,10 +12,21 @@ module.exports = function(grunt) {
 					updatePoFiles: true
 				}
 			}
-	}
+		},
+
+		uglify: {
+			js: {
+				files: {
+					'assets/js/restricted-site-access.min.js': ['assets/js/src/restricted-site-access.js'],
+				}
+			}
+		}
+
 	});
+	
+	grunt.loadNpmTasks( 'grunt-wp-i18n' );
+	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 
-	grunt.loadNpmTasks('grunt-wp-i18n');
-
-	grunt.registerTask('i18n', ['makepot']);
+	grunt.registerTask( 'i18n', ['makepot'] );
+	grunt.registerTask( 'default', ['uglify:js'] );
 };

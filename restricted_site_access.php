@@ -9,6 +9,8 @@
  * License: GPLv2 or later
  */
 
+define( 'RSA_VERSION', '5.2' );
+
 class Restricted_Site_Access {
 
 	private static $rsa_options, $basename;
@@ -266,8 +268,13 @@ class Restricted_Site_Access {
 	 * Loads needed scripts and assets on the Reading page
 	 */
 	public static function load_options_page() {
-		$dev = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
-		wp_enqueue_script( 'restricted-site-access', plugin_dir_url( __FILE__ ) . 'restricted-site-access' . $dev . '.js', array( 'jquery-effects-shake' ), '5.1', true );
+		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/restricted-site-access.min.js';
+
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/restricted-site-access.js';
+		}
+
+		wp_enqueue_script( 'restricted-site-access', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
