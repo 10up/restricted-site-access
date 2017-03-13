@@ -1,0 +1,230 @@
+# Copyright (C) 2016 Jake Goldman, 10up, Oomph
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Restricted Site Access 5.1\n"
+"Report-Msgid-Bugs-To: "
+"https://wordpress.org/support/plugin/restricted_site_access\n"
+"POT-Creation-Date: 2016-03-29 01:22:24+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: grunt-wp-i18n 0.5.4\n"
+
+#: restricted_site_access.php:70
+msgid "Handle restricted visitors"
+msgstr ""
+
+#: restricted_site_access.php:75
+msgid "Restriction message"
+msgstr ""
+
+#: restricted_site_access.php:80
+msgid "Redirect web address"
+msgstr ""
+
+#: restricted_site_access.php:90
+msgid "Redirection status code"
+msgstr ""
+
+#: restricted_site_access.php:95
+msgid "Restricted notice page"
+msgstr ""
+
+#: restricted_site_access.php:100
+msgid "Unrestricted IP addresses"
+msgstr ""
+
+#: restricted_site_access.php:245
+msgid "Public access to this site has been restricted."
+msgstr ""
+
+#: restricted_site_access.php:259
+msgid "Restricted Site Access plug-in is blocking public access to this site."
+msgstr ""
+
+#: restricted_site_access.php:286
+msgid ""
+"Please select the page you want to show restricted visitors. If no page is "
+"selected, WordPress will simply show a general restriction message."
+msgstr ""
+
+#: restricted_site_access.php:288
+msgid ""
+"Please enter the web address you would like to redirect restricted visitors "
+"to. If no address is entered, visitors will be redirected to the login "
+"screen."
+msgstr ""
+
+#: restricted_site_access.php:307
+msgid "Choose the method for handling visitors to your site that are restricted."
+msgstr ""
+
+#: restricted_site_access.php:313
+msgid ""
+"enter a single IP address (for example, 192.168.1.105) or an IP range using "
+"a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!"
+msgstr ""
+
+#: restricted_site_access.php:317
+msgid "Here is a handy calculator to check your prefix."
+msgstr ""
+
+#: restricted_site_access.php:319
+msgid ""
+"The redirection fields are only used when \"Handle restricted visitors\" is "
+"set to \"Redirect them to a specified web address\"."
+msgstr ""
+
+#: restricted_site_access.php:325
+msgid "The web address of the site you want the visitor redirected to."
+msgstr ""
+
+#: restricted_site_access.php:331
+msgid ""
+"redirect the visitor to the same path (URI) entered at this site. Typically "
+"used when there are two, very similar sites at different public web "
+"addresses; for instance, a parallel development server accessible on the "
+"Internet but not intended for the public."
+msgstr ""
+
+#: restricted_site_access.php:337
+msgid ""
+"Redirect status codes can provide certain visitors, particularly search "
+"engines, more information about the nature of the redirect. A 301 redirect "
+"tells search engines that a page has moved permanently to the new location. "
+"307 indicates a temporary redirect. 302 is an undefined redirect."
+msgstr ""
+
+#: restricted_site_access.php:356
+msgid "Restrict site access to visitors who are logged in or allowed by IP address"
+msgstr ""
+
+#: restricted_site_access.php:406
+msgid "Send them to the WordPress login screen"
+msgstr ""
+
+#: restricted_site_access.php:409
+msgid "Redirect them to a specified web address"
+msgstr ""
+
+#: restricted_site_access.php:412
+msgid "Show them a simple message"
+msgstr ""
+
+#: restricted_site_access.php:415
+msgid "Show them a specific WordPress page I've created"
+msgstr ""
+
+#: restricted_site_access.php:440
+msgid "Add"
+msgstr ""
+
+#: restricted_site_access.php:441
+msgid "Enter a single IP address or a range using a subnet prefix"
+msgstr ""
+
+#: restricted_site_access.php:443
+msgid "Add My Current IP Address"
+msgstr ""
+
+#: restricted_site_access.php:445
+msgid "To manage IP addresses, you must use a JavaScript enabled browser."
+msgstr ""
+
+#: restricted_site_access.php:456
+msgid "Access to this site is restricted."
+msgstr ""
+
+#: restricted_site_access.php:494
+msgid "Send restricted visitor to same path (relative URL) at the new web address"
+msgstr ""
+
+#: restricted_site_access.php:510
+msgid "301 Permanent"
+msgstr ""
+
+#: restricted_site_access.php:511
+msgid "302 Undefined"
+msgstr ""
+
+#: restricted_site_access.php:512
+msgid "307 Temporary"
+msgstr ""
+
+#: restricted_site_access.php:529
+msgid "Select a page"
+msgstr ""
+
+#: restricted_site_access.php:581
+msgid "Settings"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Restricted Site Access"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://10up.com/plugins/restricted-site-access-wordpress/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"<strong>Limit access your site</strong> to visitors who are logged in or "
+"accessing the site from a set of specific IP addresses. Send restricted "
+"visitors to the log in page, redirect them, or display a message or page. "
+"<strong>Powerful control over redirection</strong>, including <strong>SEO "
+"friendly redirect headers</strong>. Great solution for Extranets, publicly "
+"hosted Intranets, or parallel development sites."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Jake Goldman, 10up, Oomph"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://10up.com"
+msgstr ""
+
+#: restricted_site_access.php:74
+msgctxt "default restriction message"
+msgid "Access to this site is restricted."
+msgstr ""
+
+#: restricted_site_access.php:306
+msgctxt "help topic"
+msgid "Handle restricted visitors"
+msgstr ""
+
+#: restricted_site_access.php:312
+msgctxt "help topic"
+msgid "Allowed IP addresses"
+msgstr ""
+
+#: restricted_site_access.php:324
+msgctxt "help topic"
+msgid "Redirect web address"
+msgstr ""
+
+#: restricted_site_access.php:330
+msgctxt "help topic"
+msgid "Redirect to the same path"
+msgstr ""
+
+#: restricted_site_access.php:336
+msgctxt "help topic"
+msgid "Redirection status code"
+msgstr ""
+
+#: restricted_site_access.php:342
+msgctxt "help screen title"
+msgid "Restricted Site Acccess"
+msgstr ""
+
+#: restricted_site_access.php:429 restricted_site_access.php:434
+msgctxt "remove IP address action"
+msgid "Remove"
+msgstr ""

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+[Unreleased]
+* Combed the plugin for untranslated strings (or those missing text-domains) and generate a .pot file for easier internationalization.
+
 ## [5.1] - 2014-11-29
 * Under the hood refactoring and clean up for performance and maintainability.
 * Small visual refinements to the settings panel.
@@ -73,6 +76,7 @@ Moving forward, this project will (more strictly) adhere to [Semantic Versioning
 * Initial public release
 
 
+[Unreleased]: https://github.com/10up/restricted-site-access/compare/master...develop
 [5.1]: https://github.com/10up/restricted-site-access/compare/5.0.1...5.1
 [5.0.1]: https://github.com/10up/restricted-site-access/compare/5.0...5.0.1
 [5.0]: https://github.com/10up/restricted-site-access/compare/4.0...5.0
