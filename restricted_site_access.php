@@ -1,56 +1,23 @@
 <?php
 /**
- Plugin Name: Restricted Site Access
- Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
- Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- Version: 5.1
- Author: Jake Goldman, 10up, Oomph
- Author URI: http://10up.com
- License: GPLv2 or later
-*/
+ * Plugin Name: Restricted Site Access
+ * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
+ * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
+ * Version: 5.2
+ * Author: Jake Goldman, 10up, Oomph
+ * Author URI: http://10up.com
+ * License: GPLv2 or later
+ */
+
+define( 'RSA_VERSION', '5.2' );
 
 class Restricted_Site_Access {
 
 	private static $rsa_options, $basename;
 	private static $settings_page = 'reading';
 	private static $rsa_network_mode = 'default';
-	private static $fields = array(
-		'approach'		=> array(
-			'default' 	=> 1,
-			'label' 	=> 'Handle restricted visitors',
-			'field' 	=> 'settings_field_handling',
-		),
-		'message' 		=> array(
-			'default' 	=> 'Access to this site is restricted.',
-			'label' 	=> 'Restriction message',
-			'field' 	=> 'settings_field_message',
-		),
-		'redirect_url' 	=> array(
-			'default' 	=> '',
-			'label' 	=> 'Redirect web address',
-			'field' 	=> 'settings_field_redirect',
-		),
-		'redirect_path'	=> array(
-			'default' 	=> 0,
-			'label' 	=> 'Redirect to same path',
-			'field' 	=> 'settings_field_redirect_path',
-		),
-		'head_code'		=> array(
-			'default' 	=> 302,
-			'label' 	=> 'Redirection status code',
-			'field' 	=> 'settings_field_redirect_code',
-		),
-		'page' 			=> array(
-			'default' 	=> 0,
-			'label' 	=> 'Restricted notice page',
-			'field' 	=> 'settings_field_rsa_page',
-		),
-		'allowed' 		=> array(
-			'default' 	=> array(),
-			'label'		=> 'Unrestricted IP addresses',
-			'field' 	=> 'settings_field_allowed',
-		),
-	);
+
+	private static $fields;
 
 	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
@@ -64,6 +31,7 @@ class Restricted_Site_Access {
 		if ( null === $instance ) {
 			$instance = new self();
 			self::_add_actions();
+			self::populate_fields_array();
 		}
 
 		return $instance;
@@ -72,7 +40,8 @@ class Restricted_Site_Access {
 	/**
 	 * An empty constructor
 	 */
-	public function __construct() { /* Purposely do nothing here */ }
+	public function __construct() {
+		/* Purposely do nothing here */ }
 
 	/**
 	 * Handles registering hooks that initialize this plugin.
@@ -94,6 +63,49 @@ class Restricted_Site_Access {
 	 */
 	public static function load_textdomain() {
 		load_plugin_textdomain( 'restricted-site-access', false, dirname( self::$basename ) . '/localization/' );
+	}
+
+	/**
+	 * Populate Restricted_Site_Access::$fields with internationalization-ready field information.
+	 */
+	protected static function populate_fields_array() {
+		self::$fields = array(
+		'approach'      => array(
+			'default' => 1,
+			'label' 	=> __( 'Handle restricted visitors', 'restricted-site-access' ),
+			'field' 	=> 'settings_field_handling',
+		),
+		'message'       => array(
+			'default' => _x( 'Access to this site is restricted.', 'default restriction message', 'restricted-site-access' ),
+			'label' 	=> __( 'Restriction message', 'restricted-site-access' ),
+			'field' 	=> 'settings_field_message',
+		),
+		'redirect_url'  => array(
+			'default' => '',
+			'label'   => __( 'Redirect web address', 'restricted-site-access' ),
+			'field'   => 'settings_field_redirect',
+		),
+		'redirect_path'	=> array(
+			'default' => 0,
+			'label'   => 'Redirect to same path',
+			'field'   => 'settings_field_redirect_path',
+		),
+		'head_code'     => array(
+			'default' => 302,
+			'label'   => __( 'Redirection status code', 'restricted-site-access' ),
+			'field'   => 'settings_field_redirect_code',
+		),
+		'page'          => array(
+			'default' => 0,
+			'label' 	=> __( 'Restricted notice page', 'restricted-site-access' ),
+			'field'   => 'settings_field_rsa_page',
+		),
+		'allowed'       => array(
+			'default' => array(),
+			'label'   => __( 'Unrestricted IP addresses', 'restricted-site-access' ),
+			'field'   => 'settings_field_allowed',
+		),
+		);
 	}
 
 	/**
@@ -124,7 +136,7 @@ class Restricted_Site_Access {
 
 		foreach( self::$fields as $field_name => $field_details ) {
 			if ( ! isset( self::$rsa_options[ $field_name ] ) ) {
-				self::$rsa_options[ $field_name ] = $field_details[ 'default' ];
+				self::$rsa_options[ $field_name ] = $field_details['default'];
 			}
 		}
 	}
@@ -153,20 +165,20 @@ class Restricted_Site_Access {
 		}
 
 		// check for the allow list, if its empty block everything
-		if ( !empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
-			$remote_ip = $_SERVER['REMOTE_ADDR'];  //save the remote ip
+		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
+			$remote_ip = $_SERVER['REMOTE_ADDR'];  // save the remote ip
 			if ( strpos( $remote_ip, '.' ) ) {
-				$remote_ip = str_replace( '::ffff:', '', $remote_ip ); //handle dual-stack addresses
+				$remote_ip = str_replace( '::ffff:', '', $remote_ip ); // handle dual-stack addresses
 			}
-			$remote_ip = inet_pton( $remote_ip ); //parse the remote ip
+			$remote_ip = inet_pton( $remote_ip ); // parse the remote ip
 
 			// iterate through the allow list
-			foreach( self::$rsa_options['allowed'] as $line ) {
+			foreach ( self::$rsa_options['allowed'] as $line ) {
 				list( $ip, $mask ) = explode( '/', $line . '/128' ); // get the ip and mask from the list
 
-				$mask = str_repeat( 'f', $mask >> 2 ); //render the mask as bits, similar to info on the php.net man page discussion for inet_pton
+				$mask = str_repeat( 'f', $mask >> 2 ); // render the mask as bits, similar to info on the php.net man page discussion for inet_pton
 
-				switch( $mask % 4 ) {
+				switch ( $mask % 4 ) {
 					case 1:
 						$mask .= '8';
 						break;
@@ -190,9 +202,9 @@ class Restricted_Site_Access {
 		$rsa_restrict_approach = apply_filters( 'restricted_site_access_approach', self::$rsa_options['approach'] );
 		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling
 
-		switch( $rsa_restrict_approach ) {
+		switch ( $rsa_restrict_approach ) {
 			case 4:
-				if ( !empty( self::$rsa_options['page'] ) && ( $page_id = get_post_field( 'ID', self::$rsa_options['page'] ) ) ) {
+				if ( ! empty( self::$rsa_options['page'] ) && ( $page_id = get_post_field( 'ID', self::$rsa_options['page'] ) ) ) {
 					unset( $wp->query_vars );
 					$wp->query_vars['page_id'] = $page_id;
 					return;
@@ -202,11 +214,11 @@ class Restricted_Site_Access {
 				$message = __( self::$rsa_options['message'], 'restricted-site-access' );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message = apply_filters( 'restricted_site_access_message', $message, $wp );
-				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted', array('response' => 403) );
+				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted', array( 'response' => 403 ) );
 
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
-					if( ! empty( self::$rsa_options['redirect_path'] ) ) {
+					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
 						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . $_SERVER['REQUEST_URI'];
 					}
 					break;
@@ -421,8 +433,13 @@ class Restricted_Site_Access {
 	 * Loads needed scripts and assets on the Reading page
 	 */
 	public static function load_options_page() {
-		$dev = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
-		wp_enqueue_script( 'restricted-site-access', plugin_dir_url( __FILE__ ) . 'restricted-site-access' . $dev . '.js', array('jquery-effects-shake'), '5.1', true );
+		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/restricted-site-access.min.js';
+
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/restricted-site-access.js';
+		}
+
+		wp_enqueue_script( 'restricted-site-access', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
@@ -471,18 +488,50 @@ class Restricted_Site_Access {
 	 * Add restricted access help tab to screen
 	 */
 	public static function admin_head() {
-		$screen = get_current_screen();
+		$screen  = get_current_screen();
+		$content = array();
+
+		// Populate the tab contents.
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Handle restricted visitors', 'help topic', 'restricted-site-access' ),
+			__( 'Choose the method for handling visitors to your site that are restricted.', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s %3$s</p><p>%4$s</p>',
+			_x( 'Allowed IP addresses', 'help topic', 'restricted-site-access' ),
+			__( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', 'restricted-site-access' ),
+			sprintf(
+				'<a href="http://www.csgnetwork.com/ipinfocalc.html">%s</a>',
+				/** translators: link to http://www.csgnetwork.com/ipinfocalc.html */
+				__( 'Here is a handy calculator to check your prefix.', 'restricted-site-access' )
+			),
+			__( 'The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Redirect web address', 'help topic', 'restricted-site-access' ),
+			__( 'The web address of the site you want the visitor redirected to.', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Redirect to the same path', 'help topic', 'restricted-site-access' ),
+			__( 'redirect the visitor to the same path (URI) entered at this site. Typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server accessible on the Internet but not intended for the public.', 'restricted-site-access' )
+		);
+
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Redirection status code', 'help topic', 'restricted-site-access' ),
+			__( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.', 'restricted-site-access' )
+		);
+
 		$screen->add_help_tab( array(
 			'id'      => 'restricted-site-access',
-			'title'   => __('Restricted Site Acccess'),
-			'content' => '
-				<p><strong>' . __('Handle restricted visitors','restricted-site-access') . '</strong> - ' . __('choose the method for handling visitors to your site that are restricted.','restricted-site-access') . '</p>
-				<p><strong>' . __('Allowed IP addresses','restricted-site-access') . '</strong> - ' . __('enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully! Here\'s a','restricted-site-access') . ' <a href="http://www.csgnetwork.com/ipinfocalc.html" target="_blank">' . __('handy calculator','restricted-site-access') . '</a> ' . __('to check your prefix.','restricted-site-access') . '</p>
-				<p>' . __('The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".','restricted-site-access') . '</p>
-				<p><strong>' . __('Redirect web address','restricted-site-access') . '</strong> - ' . __('the web address of the site you want the visitor redirected to.','restricted-site-access') . '</p>
-				<p><strong>' . __('Redirect to same path','restricted-site-access') . '</strong> - ' . __('redirect the visitor to the same path (URI) entered at this site. Typically used when there are two, very similar sites at different public web addresses; for instance, a parallel development server accessible on the Internet but not intended for the public.','restricted-site-access') . '</p>
-				<p><strong>' . __('Redirection status code','restricted-site-access') . '</strong> - ' . __('redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.','restricted-site-access') . '</p>
-			',
+			'title'   => _x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
+			'content' => implode( PHP_EOL, $content ),
 		) );
 	}
 
@@ -495,7 +544,7 @@ class Restricted_Site_Access {
 	?>
 		<p>
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
-			<label for="blog-restricted"><?php _e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
+			<label for="blog-restricted"><?php esc_html_e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
 	<?php
 	}
@@ -518,12 +567,12 @@ class Restricted_Site_Access {
 
 		$new_input['redirect_path'] = empty( $input['redirect_path'] ) ? 0 : 1;
 		$new_input['head_code'] = in_array( (int) $input['head_code'], array( 301, 302, 307 ) ) ? (int) $input['head_code'] : self::$fields['head_code']['default'];
-		$new_input['redirect_url'] = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array('http','https') );
+		$new_input['redirect_url'] = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
 		$new_input['page'] = empty( $input['page'] ) ? 0 : (int) $input['page'];
 
 		$new_input['allowed'] = array();
-		if ( !empty( $input['allowed'] ) && is_array( $input['allowed'] ) ) {
-			foreach( $input['allowed'] as $ip_address ) {
+		if ( ! empty( $input['allowed'] ) && is_array( $input['allowed'] ) ) {
+			foreach ( $input['allowed'] as $ip_address ) {
 				if ( self::is_ip( $ip_address ) ) {
 					$new_input['allowed'][] = $ip_address;
 				}
@@ -545,16 +594,16 @@ class Restricted_Site_Access {
 	?>
 		<fieldset id="rsa_handle_fields">
 			<input id="rsa-send-to-login" name="rsa_options[approach]" type="radio" value="1" <?php checked( self::$rsa_options['approach'], 1 ); ?> />
-			<label for="rsa-send-to-login"><?php _e('Send them to the WordPress login screen','restricted-site-access'); ?></label>
+			<label for="rsa-send-to-login"><?php esc_html_e( 'Send them to the WordPress login screen','restricted-site-access' ); ?></label>
 			<br />
 			<input id="rsa-redirect-visitor" name="rsa_options[approach]" type="radio" value="2" <?php checked( self::$rsa_options['approach'], 2 ); ?> />
-			<label for="rsa-redirect-visitor"><?php _e('Redirect them to a specified web address','restricted-site-access'); ?></label>
+			<label for="rsa-redirect-visitor"><?php esc_html_e( 'Redirect them to a specified web address', 'restricted-site-access' ); ?></label>
 			<br />
 			<input id="rsa-display-message" name="rsa_options[approach]" type="radio" value="3" <?php checked( self::$rsa_options['approach'], 3 ); ?> />
-			<label for="rsa-display-message"><?php _e('Show them a simple message','restricted-site-access'); ?></label>
+			<label for="rsa-display-message"><?php esc_html_e( 'Show them a simple message', 'restricted-site-access' ); ?></label>
 			<br />
 			<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
-			<label for="rsa-unblocked-page"><?php _e('Show them a specific WordPress page I\'ve created','restricted-site-access'); ?></label>
+			<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a specific WordPress page I\'ve created', 'restricted-site-access' ); ?></label>
 		</fieldset>
 	<?php
 	}
@@ -568,23 +617,23 @@ class Restricted_Site_Access {
 	?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
-				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php _e( 'Remove' ); ?></a></div>
+				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
 				$ips = (array) self::$rsa_options['allowed'];
-				foreach ( $ips as $ip) {
-					if ( ! empty( $ip ) ) {
-						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . __( 'Remove' ) . '</a></div>';
-					}
+			foreach ( $ips as $ip ) {
+				if ( ! empty( $ip ) ) {
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
+			}
 			?>
 			</div>
 			<div>
 				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
-				<p class="description" style="display: inline;"><label for="newip"><?php _e('Enter a single IP address or a range using a subnet prefix','restricted-site-access'); ?></label></p>
-			</div>
-			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php _e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( $_SERVER['REMOTE_ADDR'] ); ?>" /><br /><?php } ?>
+				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
+						</div>
+			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( $_SERVER['REMOTE_ADDR'] ); ?>" /><br /><?php } ?>
 		</div>
-		<p class="hide-if-js"><strong><?php _e('To manage IP addresses, you must use a JavaScript enabled browser.','restricted-site-access'); ?></strong></p>
+		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
 	}
 
@@ -633,7 +682,7 @@ class Restricted_Site_Access {
 		<fieldset><legend class="screen-reader-text"><span><?php _e( self::$rsa_options['redirect_path']['label'], 'restricted-site-access' ); ?></span></legend>
 			<label for="redirect_path">
 				<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field" <?php checked( self::$rsa_options['redirect_path'] ); ?> />
-				<?php _e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
+				<?php esc_html_e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
 		</fieldset>
 	<?php
 	}
@@ -649,9 +698,9 @@ class Restricted_Site_Access {
 		}
 	?>
 		<select name="rsa_options[head_code]" id="redirect_code" class="rsa_redirect_field">
-			<option value="301" <?php selected( self::$rsa_options['head_code'], 301 ); ?>><?php _e( '301 Permanent', 'restricted-site-access' ); ?></option>
-			<option value="302" <?php selected( self::$rsa_options['head_code'], 302 ); ?>><?php _e( '302 Undefined', 'restricted-site-access' ); ?></option>
-			<option value="307" <?php selected( self::$rsa_options['head_code'], 307 ); ?>><?php _e( '307 Temporary', 'restricted-site-access' ); ?></option>
+			<option value="301" <?php selected( self::$rsa_options['head_code'], 301 ); ?>><?php esc_html_e( '301 Permanent', 'restricted-site-access' ); ?></option>
+			<option value="302" <?php selected( self::$rsa_options['head_code'], 302 ); ?>><?php esc_html_e( '302 Undefined', 'restricted-site-access' ); ?></option>
+			<option value="307" <?php selected( self::$rsa_options['head_code'], 307 ); ?>><?php esc_html_e( '307 Temporary', 'restricted-site-access' ); ?></option>
 		</select>
 	<?php
 	}
@@ -668,9 +717,9 @@ class Restricted_Site_Access {
 
 		wp_dropdown_pages(array(
 			'selected'          => self::$rsa_options['page'],
-			'show_option_none'  => 'Select a page',
+			'show_option_none'  => __( 'Select a page', 'restricted-site-access' ),
 			'name'              => 'rsa_options[page]',
-			'id'                => 'rsa_page'
+			'id'                => 'rsa_page',
 		));
 	}
 
@@ -678,7 +727,7 @@ class Restricted_Site_Access {
 	 * Validate IP address entry on demand (AJAX)
 	 */
 	public static function ajax_rsa_ip_check() {
-		if ( empty( $_POST['ip_address'] ) || !self::is_ip( stripslashes( $_POST['ip_address'] ) ) ) {
+		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( $_POST['ip_address'] ) ) ) {
 			die( '1' );
 		}
 		die;
@@ -695,14 +744,14 @@ class Restricted_Site_Access {
 		// very basic validation of ranges
 		if ( strpos( $ip_address, '/' ) ) {
 			$ip_parts = explode( '/', $ip_address );
-			if ( empty( $ip_parts[1] ) || !is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
+			if ( empty( $ip_parts[1] ) || ! is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
 				return false;
 			}
 			$ip_address = $ip_parts[0];
 		}
 
 		// confirm IP part is a valid IPv6 or IPv4 IP
-		if ( empty( $ip_address ) || !inet_pton( stripslashes( $ip_address ) ) ) {
+		if ( empty( $ip_address ) || ! inet_pton( stripslashes( $ip_address ) ) ) {
 			return false;
 		}
 
@@ -717,7 +766,12 @@ class Restricted_Site_Access {
 	 * @return array
 	 */
 	public static function plugin_action_links( $links ) {
-		$links[] = '<a href="options-' . self::$settings_page . '.php">' . __('Settings') . '</a>';
+		$links[] = sprintf(
+			'<a href="options-%s.php">%s</a>',
+			esc_attr( self::$settings_page ),
+			__( 'Settings', 'settings page link', 'restricted-site-access' )
+		);
+
 		return $links;
 	}
 
@@ -762,7 +816,7 @@ Restricted_Site_Access::get_instance();
  * Uninstall routine for the plugin
  */
 function restricted_site_access_uninstall() {
-	if ( 2 == get_option('blog_public') ) {
+	if ( 2 == get_option( 'blog_public' ) ) {
 		update_option( 'blog_public', 1 );
 	}
 	delete_option('rsa_options');
@@ -778,27 +832,27 @@ register_uninstall_hook( __FILE__, 'restricted_site_access_uninstall' );
 
 if ( ! function_exists( 'inet_pton' ) ) :
 
-/**
- * inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2)
- *
- * @param string $ip IP Address
- *
- * @return array|string
- */
-function inet_pton($ip) {
-	if (strpos($ip, '.') !== false) {
-		// ipv4
-		$ip = pack('N',ip2long($ip));
-	} elseif (strpos($ip, ':') !== false) {
-		// ipv6
-		$ip = explode(':', $ip);
-		$res = str_pad('', (4*(8-count($ip))), '0000', STR_PAD_LEFT);
-		foreach ($ip as $seg) {
-			$res .= str_pad($seg, 4, '0', STR_PAD_LEFT);
+	/**
+	 * inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2)
+	 *
+	 * @param string $ip IP Address
+	 *
+	 * @return array|string
+	 */
+	function inet_pton( $ip ) {
+		if ( strpos( $ip, '.' ) !== false ) {
+			// ipv4
+			$ip = pack( 'N',ip2long( $ip ) );
+		} elseif ( strpos( $ip, ':' ) !== false ) {
+			// ipv6
+			$ip = explode( ':', $ip );
+			$res = str_pad( '', (4 * (8 -count( $ip ))), '0000', STR_PAD_LEFT );
+			foreach ( $ip as $seg ) {
+				$res .= str_pad( $seg, 4, '0', STR_PAD_LEFT );
+			}
+			$ip = pack( 'H' . strlen( $res ), $res );
 		}
-		$ip = pack('H'.strlen($res), $res);
+			return $ip;
 	}
-	return $ip;
-}
 
 endif;
