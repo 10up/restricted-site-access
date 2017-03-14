@@ -429,10 +429,7 @@ class Restricted_Site_Access {
 		return $text;
 	}
 
-	/**
-	 * Loads needed scripts and assets on the Reading page
-	 */
-	public static function load_options_page() {
+	public static function enqueue_script(){
 		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/restricted-site-access.min.js';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
@@ -440,6 +437,13 @@ class Restricted_Site_Access {
 		}
 
 		wp_enqueue_script( 'restricted-site-access', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
+	}
+
+	/**
+	 * Loads needed scripts and assets on the Reading page
+	 */
+	public static function load_options_page() {
+		self::enqueue_script();
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
@@ -451,9 +455,8 @@ class Restricted_Site_Access {
 	 * Load needed scripts and assets on Network Settings page
 	 */
 	public static function load_network_settings_page(){
-		$dev = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
-		wp_enqueue_script( 'restricted-site-access', plugin_dir_url( __FILE__ ) . 'restricted-site-access' . $dev . '.js', array('jquery', 'jquery-effects-shake'), '5.1', true );
-
+		self::enqueue_script();
+		
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
 
