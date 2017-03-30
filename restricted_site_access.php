@@ -298,15 +298,15 @@ class Restricted_Site_Access {
 					?>
 					<td>
 						<fieldset>
-							<legend class="screen-reader-text"><span>Site Visibility </span></legend>
+							<legend class="screen-reader-text"><span><?php _e( 'Site Visibility', 'restricted-site-access' ) ?></span></legend>
 							<input id="blog-public" type="radio" name="blog_public" value="1" <?php checked( $blog_public, '1') ?>>
-							<label for="blog-public">Allow search engines to index this site</label><br>
+							<label for="blog-public"><?php _e( 'Allow search engines to index this site', 'restricted-site-access' ) ?></label><br>
 							<input id="blog-norobots" type="radio" name="blog_public" value="0" <?php checked( $blog_public, '0') ?>>
-							<label for="blog-norobots">Discourage search engines from indexing this site</label>
-							<p class="description">Note: Neither of these options blocks access to your site — it is up to search engines to honor your request.</p>
+							<label for="blog-norobots"><?php _e( 'Discourage search engines from indexing this site', 'restricted-site-access' ) ?></label>
+							<p class="description"><?php _e( 'Note: Neither of these options blocks access to your site — it is up to search engines to honor your request.', 'restricted-site-access' ) ?></p>
 							<p>
 								<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $blog_public, '2') ?>>
-								<label for="blog-restricted">Restrict site access to visitors who are logged in or allowed by IP address</label>
+								<label for="blog-restricted"><?php _e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ) ?></label>
 							</p>
 						</fieldset>
 					</td>
@@ -378,19 +378,14 @@ class Restricted_Site_Access {
 	 * Handle Save Options for RSA Settings in Network Settings
 	 */
 	public static function save_network_settings() {
-		$checked_options = array( 'rsa_mode' => 'default' );
-		foreach ( $checked_options as $option_name => $option_unchecked_value ) {
-			if ( ! isset( $_POST[$option_name] ) )
-				$_POST[$option_name] = $option_unchecked_value;
-		}
-
 		$options = array(
 			'rsa_mode', 'blog_public', 'rsa_options'
 		);
 
 		foreach ( $options as $option_name ) {
-			if ( ! isset($_POST[$option_name]) )
+			if ( ! isset( $_POST[ $option_name ] ) ){
 				continue;
+			}
 
 			if( 'rsa_options' === $option_name ){
 				$value = self::sanitize_options( $_POST[$option_name] );

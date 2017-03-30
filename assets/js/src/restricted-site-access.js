@@ -40,7 +40,7 @@
 		Cache.message_field = $( document.getElementById( 'rsa_message' ) ).closest( 'tr' );
 		Cache.page_field = $( document.getElementById( 'rsa_page' ) ).closest( 'tr' );
 
-		if ( document.getElementById( 'blog-restricted' ) != null && ! document.getElementById( 'blog-restricted' ).checked ) {
+		if ( null !== document.getElementById( 'blog-restricted' ) && ! document.getElementById( 'blog-restricted' ).checked ) {
 			Cache.table.hide();
 		}
 
