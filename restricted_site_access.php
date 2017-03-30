@@ -387,11 +387,18 @@ class Restricted_Site_Access {
 				continue;
 			}
 
-			if( 'rsa_options' === $option_name ){
-				$value = self::sanitize_options( $_POST[$option_name] );
-			}else{
-				$value = wp_unslash( $_POST[$option_name] );
+			switch ( $option_name ){
+				case 'rsa_options':
+					$value = self::sanitize_options( $_POST[ $option_name ] );
+					break;
+				case 'blog_public':
+					$value = absint( $_POST[ $option_name ] );
+					break;
+				default:
+					$value = sanitize_key( $_POST[ $option_name ] );
+					break;
 			}
+
 			update_site_option( $option_name, $value );
 		}
 	}
