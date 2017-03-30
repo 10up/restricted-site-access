@@ -234,6 +234,8 @@ class Restricted_Site_Access {
 		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
+
+		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );
 	}
 
 	/**
@@ -300,6 +302,20 @@ class Restricted_Site_Access {
 			echo '<div class="error"><p><strong>' . $message . '</strong></p></div>';
 		}
 	}
+
+	/**
+	 * Check if the page caching is on, and notify the admin
+	 */
+	public static function page_cache_notice(){
+		//If WP_CACHE is on we show notification
+		if( true === WP_CACHE ){
+			$notif_message = __( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached page.', 'restricted-site-access' );
+		}
+
+		if ( isset( $notif_message ) ) {
+			echo '<div class="error"><p><strong>' . $notif_message . '</strong></p></div>';
+		}
+    }
 
 	/**
 	 * Add restricted access help tab to screen
