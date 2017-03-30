@@ -41,7 +41,7 @@ Developers can use the `restricted_site_access_is_restricted` filter to override
 For instance, to unblock an RSS feed, place the following PHP code in the theme's functions.php file or in a simple plug-in:
 
 ```php
-add_filter( 'restricted_site_access_is_restricted', 'my_rsa_feed_override’, 10, 2 );
+add_filter( 'restricted_site_access_is_restricted', 'my_rsa_feed_override', 10, 2 );
 
 function my_rsa_feed_override( $is_restricted, $wp ) {
 	// check query variables to see if this is the feed
