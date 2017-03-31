@@ -291,7 +291,7 @@ class Restricted_Site_Access {
 				<tr>
 					<th scope="row"><?php _e( 'Site Visibility', 'restricted-site-access' ) ?></th>
 					<?php
-					if ( ! get_site_option( 'blog_public' ) ){
+					if ( FALSE === get_site_option( 'blog_public' ) ){
 						update_site_option( 'blog_public', 2 );
 					}
 						$blog_public = get_site_option( 'blog_public' );
@@ -317,7 +317,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Handle restricted visitors', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-							self::settings_field_handling( [] );
+							self::settings_field_handling();
 						?>
 					</td>
 				</tr>
@@ -325,7 +325,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Redirect web address', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-							self::settings_field_redirect( [] );
+							self::settings_field_redirect();
 						?>
 					</td>
 				</tr>
@@ -333,7 +333,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Redirect to same path', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-							self::settings_field_redirect_path( [] );
+							self::settings_field_redirect_path();
 						?>
 					</td>
 				</tr>
@@ -341,7 +341,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Redirection status code', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-						self::settings_field_redirect_code( [] );
+						self::settings_field_redirect_code();
 						?>
 					</td>
 				</tr>
@@ -349,7 +349,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Restriction message', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-						self::settings_field_message( [] );
+						self::settings_field_message();
 						?>
 					</td>
 				</tr>
@@ -357,7 +357,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Restricted notice page', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-						self::settings_field_rsa_page( [] );
+						self::settings_field_rsa_page();
 						?>
 					</td>
 				</tr>
@@ -365,7 +365,7 @@ class Restricted_Site_Access {
 					<th scope="row"><?php _e( 'Unrestricted IP addresses', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
-						self::settings_field_allowed( [] );
+						self::settings_field_allowed();
 						?>
 					</td>
 				</tr>
@@ -592,7 +592,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_handling( $args ) {
+	public static function settings_field_handling( $args = array() ) {
 		if ( ! isset( self::$rsa_options['approach'] ) ) {
 			self::$rsa_options['approach'] = 1;
 		}
@@ -618,7 +618,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_allowed( $args ) {
+	public static function settings_field_allowed( $args  = array() ) {
 	?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
@@ -647,7 +647,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_message( $args ) {
+	public static function settings_field_message( $args  = array() ) {
 		if ( empty( self::$rsa_options['message'] ) ) {
 			self::$rsa_options['message'] = __( 'Access to this site is restricted.', 'restricted-site-access' );
 		}
@@ -665,7 +665,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_redirect( $args ) {
+	public static function settings_field_redirect( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['redirect_url'] ) ) {
 			self::$rsa_options['redirect_url'] = '';
 		}
@@ -679,7 +679,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_redirect_path( $args ) {
+	public static function settings_field_redirect_path( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['redirect_path'] ) ) {
 			self::$rsa_options['redirect_path'] = 0;
 		}
@@ -697,7 +697,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_redirect_code( $args ) {
+	public static function settings_field_redirect_code( $args  = array() ) {
 		if ( empty( self::$rsa_options['head_code'] ) ) {
 			self::$rsa_options['head_code'] = 302;
 		}
@@ -715,7 +715,7 @@ class Restricted_Site_Access {
 	 *
 	 * @param $args
 	 */
-	public static function settings_field_rsa_page( $args ) {
+	public static function settings_field_rsa_page( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['page'] ) ) {
 			self::$rsa_options['page'] = 0;
 		}
