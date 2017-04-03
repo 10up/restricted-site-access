@@ -40,19 +40,19 @@
 		Cache.message_field = $( document.getElementById( 'rsa_message' ) ).closest( 'tr' );
 		Cache.page_field = $( document.getElementById( 'rsa_page' ) ).closest( 'tr' );
 
-		if ( null !== document.getElementById( 'blog-restricted' ) && ! document.getElementById( 'blog-restricted' ).checked ) {
+		if ( Cache.restrict_radio && ! Cache.restrict_radio.checked ) {
 			Cache.table.hide();
 		}
 
-		if ( ! document.getElementById( 'rsa-redirect-visitor' ).checked ) {
+		if ( Cache.redirect_choice && ! Cache.redirect_choice.checked ) {
 			Cache.redirect_fields.hide();
 		}
 
-		if ( ! document.getElementById( 'rsa-display-message' ).checked ) {
+		if ( Cache.message_choice && ! Cache.message_choice.checked ) {
 			Cache.message_field.hide();
 		}
 
-		if ( ! document.getElementById( 'rsa-unblocked-page' ).checked ) {
+		if ( Cache.page_choice && ! Cache.page_choice.checked ) {
 			Cache.page_field.hide();
 		}
 
