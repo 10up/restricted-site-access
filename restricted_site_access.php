@@ -112,28 +112,26 @@ class Restricted_Site_Access {
 	 * populate the option with defaults
 	 */
 	private static function set_option_defaults() {
-		if ( ! empty( self::$rsa_options ) ) {
-			return;
-		}
-
-		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK ){
+		if ( RSA_IS_NETWORK ){
 			self::$rsa_network_mode = get_site_option( 'rsa_mode' );
 		}
 
+		if ( empty( self::$rsa_network_mode ) ) {
+				self::$rsa_network_mode = 'default';
+			}
+
 		// set default options
-		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK && is_network_admin() ) {
+		if ( RSA_IS_NETWORK && ( is_network_admin() || ! is_admin() ) ) {
 			self::$rsa_options = get_site_option( 'rsa_options' );
-		}else{
+		} else {
 			self::$rsa_options = get_option( 'rsa_options' );
 		}
 
-		// If we have network activated and rsa_mode = default, and rsa_options is not exist, we set it
-		if( 'default' === self::$rsa_network_mode && defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK && empty( self::$rsa_options ) ){
-			self::$rsa_options = (array) get_site_option( 'rsa_options' );
-			update_option( 'rsa_options', self::$rsa_options );
-			update_option( 'blog_public', get_site_option( 'blog_public', 2 ) );
+		if ( empty( self::$rsa_options ) ) {
+			self::$rsa_options = array();
 		}
 
+		// Fill in defaults where values aren't set
 		foreach( self::$fields as $field_name => $field_details ) {
 			if ( ! isset( self::$rsa_options[ $field_name ] ) ) {
 				self::$rsa_options[ $field_name ] = $field_details['default'];
@@ -153,10 +151,10 @@ class Restricted_Site_Access {
 
 		self::set_option_defaults();
 		$blog_public = get_option( 'blog_public', 2 );
+
 		//If rsa_mode==enforce we override the rsa_options
-		if( 'enforce' === self::$rsa_network_mode && RSA_IS_NETWORK ){
+		if( RSA_IS_NETWORK && 'enforce' === self::$rsa_network_mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
-			self::$rsa_options = get_site_option( 'rsa_options' );
 		}
 
 		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
@@ -260,7 +258,7 @@ class Restricted_Site_Access {
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
 		//This is for Network Site Settings
-		if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK  && is_network_admin() ) {
+		if ( RSA_IS_NETWORK  && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
 		}
 	}
@@ -274,27 +272,22 @@ class Restricted_Site_Access {
 			<table id="restricted-site-access-mode" class="option-site-visibility form-table">
 				<tr>
 					<th scope="row"><?php _e( 'Mode', 'restricted-site-access' ) ?></th>
-					<?php
-					if ( ! get_site_option( 'rsa_mode' ) ){
-						update_site_option( 'rsa_mode', 'default' );
-					}
-					$rsa_mode = get_site_option( 'rsa_mode' );
-					?>
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php _e( 'Mode', 'restricted-site-access' ) ?></legend>
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $rsa_mode, 'default') ?> /> <?php _e( '<strong>Default</strong> to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-enforce" value="enforce"<?php checked( $rsa_mode, 'enforce') ?> /> <?php _e( '<strong>Enforce</strong> the settings below across all sites', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( self::$rsa_network_mode, 'default') ?> /> <?php _e( '<strong>Default</strong> to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-enforce" value="enforce"<?php checked( self::$rsa_network_mode, 'enforce') ?> /> <?php _e( '<strong>Enforce</strong> the settings below across all sites', 'restricted-site-access' ); ?></label><br />
 						</fieldset>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row"><?php _e( 'Site Visibility', 'restricted-site-access' ) ?></th>
 					<?php
-					if ( FALSE === get_site_option( 'blog_public' ) ){
-						update_site_option( 'blog_public', 2 );
+					$blog_public = get_site_option( 'blog_public' );
+
+					if ( false === $blog_public ) {
+						$blog_public = 1;
 					}
-						$blog_public = get_site_option( 'blog_public' );
 					?>
 					<td>
 						<fieldset>
@@ -458,20 +451,21 @@ class Restricted_Site_Access {
 	 */
 	public static function load_network_settings_page(){
 		self::enqueue_script();
+
+		self::set_option_defaults();
 		
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
-
-		self::set_option_defaults();
 	}
 
 	/**
 	 * Customize admin notices to ensure user completes restriction setup properly
 	 */
 	public static function admin_notice() {
-		if( 'enforce' === self::$rsa_network_mode && RSA_IS_NETWORK ){
-			$rsa_mode_message = __( 'Network settings mode is setted to "Enforce". It will override setting for Site Visibility Option.', 'restricted-site-access' );
+		if( RSA_IS_NETWORK && 'enforce' === self::$rsa_network_mode ){
+			$rsa_mode_message = __( 'Network visibility settings are currently enforced across all blogs on the network.', 'restricted-site-access' );
 			echo '<div class="notice notice-warning"><p><strong>' . $rsa_mode_message . '</strong></p></div>';
+			return;
 		}
 
 		if ( empty( self::$rsa_options['approach'] ) ) {
@@ -796,6 +790,9 @@ class Restricted_Site_Access {
 		}
 	}
 
+	/**
+	 * Determine if plugin is network activated
+	 */
 	public static function is_network( $plugin ) {
 
 		$plugins = get_site_option( 'active_sitewide_plugins');
@@ -809,11 +806,7 @@ class Restricted_Site_Access {
 	}
 }
 
-$network_activated = Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) );
-
-if ( $network_activated ) {
-	define( 'RSA_IS_NETWORK', true );
-}
+define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
 
 Restricted_Site_Access::get_instance();
 
@@ -821,15 +814,28 @@ Restricted_Site_Access::get_instance();
  * Uninstall routine for the plugin
  */
 function restricted_site_access_uninstall() {
-	if ( 2 == get_option( 'blog_public' ) ) {
-		update_option( 'blog_public', 1 );
-	}
-	delete_option('rsa_options');
-
-	if ( defined( 'RSA_IS_NETWORK' ) && RSA_IS_NETWORK ){
+	if ( RSA_IS_NETWORK ){
 		delete_site_option( 'blog_public' );
 		delete_site_option( 'rsa_options' );
 		delete_site_option( 'rsa_mode' );
+
+		$sites = get_sites();
+
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+
+			if ( 2 == get_option( 'blog_public' ) ) {
+				update_option( 'blog_public', 1 );
+			}
+			delete_option('rsa_options');
+
+			restore_current_blog();
+		}
+	} else {
+		if ( 2 == get_option( 'blog_public' ) ) {
+			update_option( 'blog_public', 1 );
+		}
+		delete_option('rsa_options');
 	}
 }
 
