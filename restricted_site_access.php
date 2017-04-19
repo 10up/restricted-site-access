@@ -13,9 +13,8 @@ define( 'RSA_VERSION', '5.2' );
 
 class Restricted_Site_Access {
 
-	private static $rsa_options, $basename;
+	private static $basename, $rsa_options;
 	private static $settings_page = 'reading';
-	private static $rsa_network_mode = 'default';
 
 	private static $fields;
 
@@ -56,6 +55,24 @@ class Restricted_Site_Access {
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ) );
 		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ) );
+		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
+	}
+
+	/**
+	 * Set RSA defaults for new site
+	 */
+	public static function set_defaults( $blog_id, $user_id, $domain, $path, $site_id, $meta ) {
+		if ( 'enforce' === self::get_network_mode() ) {
+			return;
+		}
+
+		$network_options = self::get_options( true );
+		$blog_public = get_site_option( 'blog_public', 2 );
+
+		switch_to_blog( $blog_id );
+		update_option( 'rsa_options', self::sanitize_options( $network_options ) );
+		update_option( 'blog_public', (int) $blog_public );
+		restore_current_blog();
 	}
 
 	/**
@@ -109,34 +126,36 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Get current plugin network mode
+	 */
+	private static function get_network_mode() {
+		if ( RSA_IS_NETWORK ){
+			return get_site_option( 'rsa_mode' );
+		}
+
+		return 'default';
+	}
+
+	/**
 	 * populate the option with defaults
 	 */
-	private static function set_option_defaults() {
-		if ( RSA_IS_NETWORK ){
-			self::$rsa_network_mode = get_site_option( 'rsa_mode' );
-		}
+	private static function get_options( $network = false ) {
+		$options = array();
 
-		if ( empty( self::$rsa_network_mode ) ) {
-				self::$rsa_network_mode = 'default';
-			}
-
-		// set default options
-		if ( RSA_IS_NETWORK && ( is_network_admin() || ! is_admin() ) ) {
-			self::$rsa_options = get_site_option( 'rsa_options' );
+		if ( $network ) {
+			$options = get_site_option( 'rsa_options' );
 		} else {
-			self::$rsa_options = get_option( 'rsa_options' );
-		}
-
-		if ( empty( self::$rsa_options ) ) {
-			self::$rsa_options = array();
+			$options = get_option( 'rsa_options' );
 		}
 
 		// Fill in defaults where values aren't set
 		foreach( self::$fields as $field_name => $field_details ) {
-			if ( ! isset( self::$rsa_options[ $field_name ] ) ) {
-				self::$rsa_options[ $field_name ] = $field_details['default'];
+			if ( ! isset( $options[ $field_name ] ) ) {
+				$options[ $field_name ] = $field_details['default'];
 			}
 		}
+
+		return $options;
 	}
 
 	/**
@@ -149,11 +168,19 @@ class Restricted_Site_Access {
 			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
 		}
 
-		self::set_option_defaults();
+		self::$rsa_options = self::get_options();
+		$mode = self::get_network_mode();
+
+		if ( RSA_IS_NETWORK ) {
+			if ( 'enforce' === $mode ) {
+				self::$rsa_options = self::get_options( true );
+			}
+		}
+
 		$blog_public = get_option( 'blog_public', 2 );
 
 		//If rsa_mode==enforce we override the rsa_options
-		if( RSA_IS_NETWORK && 'enforce' === self::$rsa_network_mode ) {
+		if( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
 
@@ -267,6 +294,7 @@ class Restricted_Site_Access {
 	 * Show RSA Settings in Network Settings
 	 */
 	public static function show_network_settings() {
+		$mode = self::get_network_mode();
 		?>
 			<h2><?php _e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
 			<table id="restricted-site-access-mode" class="option-site-visibility form-table">
@@ -275,8 +303,8 @@ class Restricted_Site_Access {
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php _e( 'Mode', 'restricted-site-access' ) ?></legend>
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( self::$rsa_network_mode, 'default') ?> /> <?php _e( '<strong>Default</strong> to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-enforce" value="enforce"<?php checked( self::$rsa_network_mode, 'enforce') ?> /> <?php _e( '<strong>Enforce</strong> the settings below across all sites', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $mode, 'default') ?> /> <?php _e( '<strong>Default</strong> to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-enforce" value="enforce"<?php checked( $mode, 'enforce') ?> /> <?php _e( '<strong>Enforce</strong> the settings below across all sites', 'restricted-site-access' ); ?></label><br />
 						</fieldset>
 					</td>
 				</tr>
@@ -443,7 +471,7 @@ class Restricted_Site_Access {
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
 
-		self::set_option_defaults();
+		self::$rsa_options = self::get_options();
 	}
 
 	/**
@@ -452,7 +480,7 @@ class Restricted_Site_Access {
 	public static function load_network_settings_page(){
 		self::enqueue_script();
 
-		self::set_option_defaults();
+		self::$rsa_options = self::get_options( true );
 		
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
@@ -462,7 +490,7 @@ class Restricted_Site_Access {
 	 * Customize admin notices to ensure user completes restriction setup properly
 	 */
 	public static function admin_notice() {
-		if( RSA_IS_NETWORK && 'enforce' === self::$rsa_network_mode ){
+		if( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ){
 			$rsa_mode_message = __( 'Network visibility settings are currently enforced across all blogs on the network.', 'restricted-site-access' );
 			echo '<div class="notice notice-warning"><p><strong>' . $rsa_mode_message . '</strong></p></div>';
 			return;
