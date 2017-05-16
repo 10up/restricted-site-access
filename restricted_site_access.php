@@ -250,13 +250,14 @@ class Restricted_Site_Access {
 				}
 
 			default:
-				self::$rsa_options['redirect_path'] = 302;
+				self::$rsa_options['head_code'] = 302;
 				$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
 				self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
 		}
 
 		$redirect_url = apply_filters( 'restricted_site_access_redirect_url', self::$rsa_options['redirect_url'], $wp );
-		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['redirect_path'], $wp );
+		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['head_code'], $wp );
+
 		wp_redirect( $redirect_url, $redirect_code );
 		die;
 	}
