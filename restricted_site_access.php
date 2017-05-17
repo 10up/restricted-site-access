@@ -524,7 +524,7 @@ class Restricted_Site_Access {
 		}
 
 		if ( isset( $notif_message ) ) {
-			echo '<div class="error"><p><strong>' . $notif_message . '</strong></p></div>';
+			echo '<div class="error"><p><strong>' . esc_html( $notif_message ) . '</strong></p></div>';
 		}
 	}
 
