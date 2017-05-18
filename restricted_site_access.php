@@ -289,6 +289,8 @@ class Restricted_Site_Access {
 		if ( RSA_IS_NETWORK  && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
 		}
+
+		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );
 	}
 
 	/**
@@ -509,6 +511,22 @@ class Restricted_Site_Access {
 
 		if ( isset( $message ) ) {
 			echo '<div class="error"><p><strong>' . $message . '</strong></p></div>';
+		}
+	}
+
+	/**
+	 * Check if the page caching is on, and notify the admin
+	 */
+	public static function page_cache_notice() {
+		//If WP_CACHE is on we show notification
+		if ( defined( 'WP_CACHE' ) && true === WP_CACHE ) {
+			?>
+			<div class="error">
+				<p>
+					<strong><?php esc_html_e( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached pages.', 'restricted-site-access' ); ?></strong>
+				</p>
+			</div>
+			<?php
 		}
 	}
 
