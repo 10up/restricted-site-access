@@ -519,12 +519,12 @@ class Restricted_Site_Access {
 	 */
 	public static function page_cache_notice() {
 		//If WP_CACHE is on we show notification
-		if ( true === WP_CACHE ) {
-			$notif_message = __( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached page.', 'restricted-site-access' );
+		if ( defined( WP_CACHE ) && true === WP_CACHE ) {
+			$notif_message_safe = esc_html__( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached page.', 'restricted-site-access' );
 		}
 
 		if ( isset( $notif_message ) ) {
-			echo '<div class="error"><p><strong>' . esc_html( $notif_message ) . '</strong></p></div>';
+			echo '<div class="error"><p><strong>' . $notif_message_safe . '</strong></p></div>';
 		}
 	}
 
