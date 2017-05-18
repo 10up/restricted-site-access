@@ -288,6 +288,8 @@ class Restricted_Site_Access {
 		//This is for Network Site Settings
 		if ( RSA_IS_NETWORK  && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
+			add_action( 'network_admin_notices', array( __CLASS__, 'page_cache_notice' ) );
+
 		}
 
 		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );
@@ -523,7 +525,7 @@ class Restricted_Site_Access {
 			?>
 			<div class="error">
 				<p>
-					<strong><?php esc_html_e( 'You have page caching activated. Restricted Site Access plugin may not working as expected for cached pages.', 'restricted-site-access' ); ?></strong>
+					<strong><?php esc_html_e( 'You have page caching enabled. Restricted Site Access plugin may not working as expected for cached pages.', 'restricted-site-access' ); ?></strong>
 				</p>
 			</div>
 			<?php
