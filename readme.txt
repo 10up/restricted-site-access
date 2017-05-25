@@ -74,6 +74,8 @@ Restricted Site Access is not meant to be a top secret data safe, but simply a r
 * Network settings added for management of entire network visibility settings.
 * Display warning if page caching is enabled.
 
+__Note: There is currently an edge case bug affecting IP whitelisting. This bug is on the docket to be fixed shortly.__
+
 = 5.1 =
 * Under the hood refactoring and clean up for performance and maintainability.
 * Small visual refinements to the settings panel.
