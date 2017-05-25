@@ -12,7 +12,7 @@ Limit access to visitors who are logged in or allowed by IP addresses. Includes 
 
 Limit access your site to visitors who are logged in or accessing the site from a set of specified IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
 
-Adds a number of new configuration options to the Reading settings panel. From this panel you can:
+Adds a number of new configuration options to the Reading settings panel as well as the Network Settings panel in multisite. From these panels you can:
 
 1. Enable or disable site restriction
 1. Change the restriction behavior: send to login, redirect, display a message, display a page
@@ -68,6 +68,11 @@ Restricted Site Access is not meant to be a top secret data safe, but simply a r
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 5.2 =
+* Use Grunt to manage assets.
+* Network settings added for management of entire network visibility settings.
+* Display warning if page caching is enabled.
 
 = 5.1 =
 * Under the hood refactoring and clean up for performance and maintainability.
