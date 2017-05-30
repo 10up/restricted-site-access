@@ -56,6 +56,35 @@ class Restricted_Site_Access {
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ) );
 		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ) );
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
+		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+	}
+
+	public static function ajax_notice_dismiss() {
+		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error();
+			exit;
+		}
+
+		if ( RSA_IS_NETWORK ) {
+			if ( ! is_super_admin() ) {
+				wp_send_json_error();
+				exit;
+			}
+		} else {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error();
+				exit;
+			}
+		}
+
+		if ( RSA_IS_NETWORK ) {
+			update_site_option( 'rsa_hide_page_cache_notice', true );
+		} else {
+			update_option( 'rsa_hide_page_cache_notice', true );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -457,21 +486,33 @@ class Restricted_Site_Access {
 		return $text;
 	}
 
-	public static function enqueue_script(){
-		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/restricted-site-access.min.js';
+	public static function enqueue_settings_script() {
+		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/settings.min.js';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/restricted-site-access.js';
+			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/settings.js';
 		}
 
-		wp_enqueue_script( 'restricted-site-access', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
+		wp_enqueue_script( 'rsa-settings', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
+	}
+
+	public static function enqueue_admin_script() {
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
+		} else {
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
+		}
+
+		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
+			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+		) );
 	}
 
 	/**
 	 * Loads needed scripts and assets on the Reading page
 	 */
 	public static function load_options_page() {
-		self::enqueue_script();
+		self::enqueue_settings_script();
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
@@ -483,7 +524,7 @@ class Restricted_Site_Access {
 	 * Load needed scripts and assets on Network Settings page
 	 */
 	public static function load_network_settings_page(){
-		self::enqueue_script();
+		self::enqueue_settings_script();
 
 		self::$rsa_options = self::get_options( true );
 		
@@ -512,7 +553,7 @@ class Restricted_Site_Access {
 		}
 
 		if ( isset( $message ) ) {
-			echo '<div class="error"><p><strong>' . $message . '</strong></p></div>';
+			echo '<div class="notice notice-error"><p><strong>' . $message . '</strong></p></div>';
 		}
 	}
 
@@ -522,8 +563,18 @@ class Restricted_Site_Access {
 	public static function page_cache_notice() {
 		//If WP_CACHE is on we show notification
 		if ( defined( 'WP_CACHE' ) && true === WP_CACHE ) {
+
+			if ( RSA_IS_NETWORK ) {
+				if ( get_site_option( 'rsa_hide_page_cache_notice' ) ) {
+					return;
+				}
+			} else {
+				if ( get_option( 'rsa_hide_page_cache_notice' ) ) {
+					return;
+				}
+			}
 			?>
-			<div class="error">
+			<div data-rsa-notice="page-cache" class="notice notice-error is-dismissible">
 				<p>
 					<strong><?php esc_html_e( 'You have page caching enabled. Restricted Site Access plugin may not working as expected for cached pages.', 'restricted-site-access' ); ?></strong>
 				</p>
