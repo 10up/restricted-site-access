@@ -573,10 +573,22 @@ class Restricted_Site_Access {
 					return;
 				}
 			}
+
+			$mode = self::get_network_mode();
+
+			$blog_public = get_option( 'blog_public', 2 );
+
+			if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
+				$blog_public = get_site_option( 'blog_public', 2 );
+			}
+
+			if ( 2 !== (int) $blog_public ) {
+				return;
+			}
 			?>
 			<div data-rsa-notice="page-cache" class="notice notice-error is-dismissible">
 				<p>
-					<strong><?php esc_html_e( 'You have page caching enabled. Restricted Site Access plugin may not working as expected for cached pages.', 'restricted-site-access' ); ?></strong>
+					<strong><?php _e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="https://wordpress.org/plugins/restricted-site-access/#faq">Learn more</a>.', 'restricted-site-access' ); ?></strong>
 				</p>
 			</div>
 			<?php
@@ -702,7 +714,7 @@ class Restricted_Site_Access {
 			<label for="rsa-display-message"><?php esc_html_e( 'Show them a simple message', 'restricted-site-access' ); ?></label>
 			<br />
 			<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
-			<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a specific WordPress page I\'ve created', 'restricted-site-access' ); ?></label>
+			<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a page', 'restricted-site-access' ); ?></label>
 		</fieldset>
 	<?php
 	}

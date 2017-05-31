@@ -61,6 +61,10 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
+= I received a warning about page caching. What does it mean? =
+
+Page Caching plugins are able to hook into WordPress to serve cached pages before RSA can restrict access. Not all plugins do this. However, it's safe to say if you are using page caching in conjunction with RSA, you may encounter unexpected results.
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
