@@ -159,7 +159,7 @@ class Restricted_Site_Access {
 	 */
 	private static function get_network_mode() {
 		if ( RSA_IS_NETWORK ){
-			return get_site_option( 'rsa_mode' );
+			return get_site_option( 'rsa_mode', 'default' );
 		}
 
 		return 'default';
