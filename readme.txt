@@ -63,7 +63,7 @@ Restricted Site Access is not meant to be a top secret data safe, but simply a r
 
 = I received a warning about page caching. What does it mean? =
 
-Page Caching plugins are able to hook into WordPress to serve cached pages before RSA can restrict access. Not all plugins do this. However, it's safe to say if you are using page caching in conjunction with RSA, you may encounter unexpected results.
+Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
 
 == Screenshots ==
 
