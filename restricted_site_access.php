@@ -409,14 +409,6 @@ class Restricted_Site_Access {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Restricted notice page', 'restricted-site-access' ) ?></th>
-					<td>
-						<?php
-						self::settings_field_rsa_page();
-						?>
-					</td>
-				</tr>
-				<tr>
 					<th scope="row"><?php _e( 'Unrestricted IP addresses', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
@@ -712,9 +704,12 @@ class Restricted_Site_Access {
 			<br />
 			<input id="rsa-display-message" name="rsa_options[approach]" type="radio" value="3" <?php checked( self::$rsa_options['approach'], 3 ); ?> />
 			<label for="rsa-display-message"><?php esc_html_e( 'Show them a simple message', 'restricted-site-access' ); ?></label>
-			<br />
-			<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
-			<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a page', 'restricted-site-access' ); ?></label>
+			
+			<?php if ( ! is_network_admin() ) : ?>
+				<br />
+				<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
+				<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a page', 'restricted-site-access' ); ?></label>
+			<?php endif; ?>
 		</fieldset>
 	<?php
 	}
