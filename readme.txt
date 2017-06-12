@@ -3,7 +3,7 @@ Contributors: jakemgold, rcbth, 10up, thinkoomph
 Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 3.5
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: trunk
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
@@ -73,7 +73,7 @@ Page caching plugins often hook into WordPress to quickly serve the last cached 
 
 == Changelog ==
 
-= 5.2 =
+= 6.0 =
 * Use Grunt to manage assets.
 * Network settings added for management of entire network visibility settings.
 * Display warning if page caching is enabled.
