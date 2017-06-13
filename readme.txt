@@ -73,6 +73,10 @@ Page caching plugins often hook into WordPress to quickly serve the last cached 
 
 == Changelog ==
 
+= 6.0.1 =
+* When plugin is network activated, don't touch individual blog visiblity settings.
+* When plugin is network deactivated, set all individual blogs to default visibility.
+
 = 6.0 =
 * Use Grunt to manage assets.
 * Network settings added for management of entire network visibility settings.

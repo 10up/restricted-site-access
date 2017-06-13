@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [6.0.1] - 2017-06-13
+* When plugin is network activated, don't touch individual blog visiblity settings.
+* When plugin is network deactivated, set all individual blogs to default visibility.
+
 ## [6.0] - 2017-06-12
 * Use Grunt to manage assets.
 * Network settings added for management of entire network visibility settings.
