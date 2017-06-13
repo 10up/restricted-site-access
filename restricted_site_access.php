@@ -53,8 +53,8 @@ class Restricted_Site_Access {
 		add_action( 'plugins_loaded', array( __CLASS__, 'load_textdomain' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
-		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ) );
-		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ) );
+		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
+		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ), 10, 1 );
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
@@ -884,16 +884,32 @@ class Restricted_Site_Access {
 	/**
 	 * activation of plugin: upgrades old versions, immediately sets privacy
 	 */
-	public static function activation() {
-		update_option( 'blog_public', 2 );
+	public static function activation( $network_active ) {
+		if ( ! $network_active ) {
+			update_option( 'blog_public', 2 );
+		}
 	}
 
 	/**
 	 * restore privacy option to default value upon deactivating
 	 */
-	public static function deactivation() {
-		if ( 2 == get_option( 'blog_public' ) ) {
-			update_option( 'blog_public', 1 );
+	public static function deactivation( $network_active ) {
+		if ( $network_active ) {
+			$sites = get_sites();
+
+			foreach ( $sites as $site ) {
+				switch_to_blog( $site->blog_id );
+
+				if ( 2 == get_option( 'blog_public' ) ) {
+					update_option( 'blog_public', 1 );
+				}
+
+				restore_current_blog();
+			}
+		} else {
+			if ( 2 == get_option( 'blog_public' ) ) {
+				update_option( 'blog_public', 1 );
+			}
 		}
 	}
 
@@ -921,7 +937,7 @@ Restricted_Site_Access::get_instance();
  * Uninstall routine for the plugin
  */
 function restricted_site_access_uninstall() {
-	if ( RSA_IS_NETWORK ){
+	if ( RSA_IS_NETWORK ) {
 		delete_site_option( 'blog_public' );
 		delete_site_option( 'rsa_options' );
 		delete_site_option( 'rsa_mode' );
