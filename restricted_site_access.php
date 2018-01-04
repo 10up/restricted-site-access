@@ -248,7 +248,7 @@ class Restricted_Site_Access {
 
 				// check if the masked versions match
 				if ( ( inet_pton( $ip ) & $mask ) == ( $remote_ip & $mask ) ) {
-					session_start();
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $ip, $mask ); // allow users to hook ip match
 					return;
 				}
 			}
