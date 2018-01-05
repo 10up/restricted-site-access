@@ -262,7 +262,7 @@ class Restricted_Site_Access {
 					$page = get_post( self::$rsa_options['page'] );
 
 					// Prevents infinite loops.
-					if ( $wp->query_vars['pagename'] !== $page->post_name ) {
+					if ( ! isset( $wp->query_vars['pagename'] ) || $wp->query_vars['pagename'] !== $page->post_name ) {
 						self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
 						break;
 					} else {
