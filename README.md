@@ -11,6 +11,9 @@ Adds a number of new configuration options to the Reading settings panel. From t
 * Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
 * Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
 
+<p align="center">
+<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
+</p>
 
 ## Installation
 
@@ -38,7 +41,7 @@ Developers can use the `restricted_site_access_is_restricted` filter to override
 For instance, to unblock an RSS feed, place the following PHP code in the theme's functions.php file or in a simple plug-in:
 
 ```php
-add_filter( 'restricted_site_access_is_restricted', 'my_rsa_feed_override’, 10, 2 );
+add_filter( 'restricted_site_access_is_restricted', 'my_rsa_feed_override', 10, 2 );
 
 function my_rsa_feed_override( $is_restricted, $wp ) {
 	// check query variables to see if this is the feed
@@ -54,3 +57,7 @@ function my_rsa_feed_override( $is_restricted, $wp ) {
 Visitors that are not logged in or allowed by IP address will not be able to browse your site (though be cautious of page caching plugin incompatibilities, mentioned above). Restricted Site Access does not block access to your, so direct links to files in your media and uploads folder (for instance) are not blocked. It is also important to remember that IP addresses can be spoofed. Because Restricted Site Access runs as a plug-in, it is subject to any other vulnerabilities present on your site.
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
+
+## License
+
+Restricted Site Access is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-2.0.html) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.

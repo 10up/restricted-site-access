@@ -1,10 +1,10 @@
 === Restricted Site Access ===
-Contributors: jakemgold, rcbth, 10up, thinkoomph
+Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
 Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 3.5
-Tested up to: 4.0.1
-Stable tag: 5.1
+Tested up to: 4.9
+Stable tag: trunk
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
@@ -12,7 +12,7 @@ Limit access to visitors who are logged in or allowed by IP addresses. Includes 
 
 Limit access your site to visitors who are logged in or accessing the site from a set of specified IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
 
-Adds a number of new configuration options to the Reading settings panel. From this panel you can:
+Adds a number of new configuration options to the Reading settings panel as well as the Network Settings panel in multisite. From these panels you can:
 
 1. Enable or disable site restriction
 1. Change the restriction behavior: send to login, redirect, display a message, display a page
@@ -61,6 +61,10 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
+= I received a warning about page caching. What does it mean? =
+
+Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
@@ -68,6 +72,17 @@ Restricted Site Access is not meant to be a top secret data safe, but simply a r
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 6.0.1 =
+* When plugin is network activated, don't touch individual blog visiblity settings.
+* When plugin is network deactivated, set all individual blogs to default visibility.
+
+= 6.0 =
+* Use Grunt to manage assets.
+* Network settings added for management of entire network visibility settings.
+* Display warning if page caching is enabled.
+
+__Note: There is currently an edge case bug affecting IP whitelisting. This bug is on the docket to be fixed shortly.__
 
 = 5.1 =
 * Under the hood refactoring and clean up for performance and maintainability.

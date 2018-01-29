@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [6.0.1] - 2017-06-13
+* When plugin is network activated, don't touch individual blog visiblity settings.
+* When plugin is network deactivated, set all individual blogs to default visibility.
+
+## [6.0] - 2017-06-12
+* Use Grunt to manage assets.
+* Network settings added for management of entire network visibility settings.
+* Display warning if page caching is enabled.
+
 ## [5.1] - 2014-11-29
 * Under the hood refactoring and clean up for performance and maintainability.
 * Small visual refinements to the settings panel.
@@ -73,6 +82,7 @@ Moving forward, this project will (more strictly) adhere to [Semantic Versioning
 * Initial public release
 
 
+[Unreleased]: https://github.com/10up/restricted-site-access/compare/master...develop
 [5.1]: https://github.com/10up/restricted-site-access/compare/5.0.1...5.1
 [5.0.1]: https://github.com/10up/restricted-site-access/compare/5.0...5.0.1
 [5.0]: https://github.com/10up/restricted-site-access/compare/4.0...5.0
