@@ -248,7 +248,19 @@ class Restricted_Site_Access {
 
 				// check if the masked versions match
 				if ( ( inet_pton( $ip ) & $mask ) == ( $remote_ip & $mask ) ) {
-					do_action( 'restrict_site_access_ip_match', $remote_ip, $ip, $mask ); // allow users to hook ip match
+
+					/**
+					 * Fires when an ip address match occurs.
+					 *
+					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
+					 *
+					 * @since 6.0.2
+					 *
+					 * @param string $remote_ip The remote IP address being checked.
+					 * @param string $ip        The matched IP address.
+					 * @param string $mast      The IP mask used in the match.
+					 */
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $ip, $mask );
 					return;
 				}
 			}
