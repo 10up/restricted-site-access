@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [6.0.2] - 2018-01-29
+* Add a 'restrict_site_access_ip_match' action which fires when an ip match occurs. Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
+
 ## [6.0.1] - 2017-06-13
 * When plugin is network activated, don't touch individual blog visiblity settings.
 * When plugin is network deactivated, set all individual blogs to default visibility.
