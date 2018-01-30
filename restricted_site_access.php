@@ -193,10 +193,6 @@ class Restricted_Site_Access {
 	 * @param array $wp WordPress request
 	 */
 	public static function restrict_access( $wp ) {
-		if ( empty( $wp->query_vars['rest_route'] ) ) {
-			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
-		}
-
 		self::$rsa_options = self::get_options();
 		$mode = self::get_network_mode();
 
