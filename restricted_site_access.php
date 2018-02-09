@@ -215,7 +215,7 @@ class Restricted_Site_Access {
 		}
 
 		// check for the allow list, if its empty block everything
-		if ( !empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
+		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
 			$remote_ip = get_client_ip_address(); //save the remote ip
 
 			// iterate through the allow list
@@ -1006,7 +1006,7 @@ function get_client_ip_address() {
 		}
 
 		foreach ( explode( ',', $_SERVER[ $key ] ) as $ip ) {
-			$ip = trim( $ip); // just to be safe
+			$ip = trim( $ip ); // just to be safe
 
 			if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
 				return $ip;
