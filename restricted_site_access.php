@@ -3,13 +3,13 @@
  * Plugin Name: Restricted Site Access
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 5.2
+ * Version: 6.0.1
  * Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
  */
 
-define( 'RSA_VERSION', '5.2' );
+define( 'RSA_VERSION', '6.0.1' );
 
 class Restricted_Site_Access {
 
@@ -53,9 +53,38 @@ class Restricted_Site_Access {
 		add_action( 'plugins_loaded', array( __CLASS__, 'load_textdomain' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
-		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ) );
-		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ) );
+		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
+		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ), 10, 1 );
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
+		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+	}
+
+	public static function ajax_notice_dismiss() {
+		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error();
+			exit;
+		}
+
+		if ( RSA_IS_NETWORK ) {
+			if ( ! is_super_admin() ) {
+				wp_send_json_error();
+				exit;
+			}
+		} else {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error();
+				exit;
+			}
+		}
+
+		if ( RSA_IS_NETWORK ) {
+			update_site_option( 'rsa_hide_page_cache_notice', true );
+		} else {
+			update_option( 'rsa_hide_page_cache_notice', true );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -130,7 +159,7 @@ class Restricted_Site_Access {
 	 */
 	private static function get_network_mode() {
 		if ( RSA_IS_NETWORK ){
-			return get_site_option( 'rsa_mode' );
+			return get_site_option( 'rsa_mode', 'default' );
 		}
 
 		return 'default';
@@ -164,10 +193,6 @@ class Restricted_Site_Access {
 	 * @param array $wp WordPress request
 	 */
 	public static function restrict_access( $wp ) {
-		if ( empty( $wp->query_vars['rest_route'] ) ) {
-			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
-		}
-
 		self::$rsa_options = self::get_options();
 		$mode = self::get_network_mode();
 
@@ -196,6 +221,7 @@ class Restricted_Site_Access {
 			// iterate through the allow list
 			foreach( self::$rsa_options['allowed'] as $line ) {
 				if( ip_in_range( $remote_ip, $line ) ){
+					do_action( 'restrict_site_access_ip_match', $remote_ip ); // allow users to hook ip match
 					return;
 				}
 			}
@@ -265,7 +291,11 @@ class Restricted_Site_Access {
 		//This is for Network Site Settings
 		if ( RSA_IS_NETWORK  && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
+			add_action( 'network_admin_notices', array( __CLASS__, 'page_cache_notice' ) );
+
 		}
+
+		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );
 	}
 
 	/**
@@ -353,14 +383,6 @@ class Restricted_Site_Access {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Restricted notice page', 'restricted-site-access' ) ?></th>
-					<td>
-						<?php
-						self::settings_field_rsa_page();
-						?>
-					</td>
-				</tr>
-				<tr>
 					<th scope="row"><?php _e( 'Unrestricted IP addresses', 'restricted-site-access' ) ?></th>
 					<td>
 						<?php
@@ -430,21 +452,33 @@ class Restricted_Site_Access {
 		return $text;
 	}
 
-	public static function enqueue_script(){
-		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/restricted-site-access.min.js';
+	public static function enqueue_settings_script() {
+		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/settings.min.js';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/restricted-site-access.js';
+			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/settings.js';
 		}
 
-		wp_enqueue_script( 'restricted-site-access', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
+		wp_enqueue_script( 'rsa-settings', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
+	}
+
+	public static function enqueue_admin_script() {
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
+		} else {
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
+		}
+
+		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
+			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+		) );
 	}
 
 	/**
 	 * Loads needed scripts and assets on the Reading page
 	 */
 	public static function load_options_page() {
-		self::enqueue_script();
+		self::enqueue_settings_script();
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
@@ -456,7 +490,7 @@ class Restricted_Site_Access {
 	 * Load needed scripts and assets on Network Settings page
 	 */
 	public static function load_network_settings_page(){
-		self::enqueue_script();
+		self::enqueue_settings_script();
 
 		self::$rsa_options = self::get_options( true );
 		
@@ -485,7 +519,45 @@ class Restricted_Site_Access {
 		}
 
 		if ( isset( $message ) ) {
-			echo '<div class="error"><p><strong>' . $message . '</strong></p></div>';
+			echo '<div class="notice notice-error"><p><strong>' . $message . '</strong></p></div>';
+		}
+	}
+
+	/**
+	 * Check if the page caching is on, and notify the admin
+	 */
+	public static function page_cache_notice() {
+		//If WP_CACHE is on we show notification
+		if ( defined( 'WP_CACHE' ) && true === WP_CACHE ) {
+
+			if ( RSA_IS_NETWORK ) {
+				if ( get_site_option( 'rsa_hide_page_cache_notice' ) ) {
+					return;
+				}
+			} else {
+				if ( get_option( 'rsa_hide_page_cache_notice' ) ) {
+					return;
+				}
+			}
+
+			$mode = self::get_network_mode();
+
+			$blog_public = get_option( 'blog_public', 2 );
+
+			if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
+				$blog_public = get_site_option( 'blog_public', 2 );
+			}
+
+			if ( 2 !== (int) $blog_public ) {
+				return;
+			}
+			?>
+			<div data-rsa-notice="page-cache" class="notice notice-error is-dismissible">
+				<p>
+					<strong><?php _e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="https://wordpress.org/plugins/restricted-site-access/#faq">Learn more</a>.', 'restricted-site-access' ); ?></strong>
+				</p>
+			</div>
+			<?php
 		}
 	}
 
@@ -606,9 +678,12 @@ class Restricted_Site_Access {
 			<br />
 			<input id="rsa-display-message" name="rsa_options[approach]" type="radio" value="3" <?php checked( self::$rsa_options['approach'], 3 ); ?> />
 			<label for="rsa-display-message"><?php esc_html_e( 'Show them a simple message', 'restricted-site-access' ); ?></label>
-			<br />
-			<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
-			<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a specific WordPress page I\'ve created', 'restricted-site-access' ); ?></label>
+
+			<?php if ( ! is_network_admin() ) : ?>
+				<br />
+				<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
+				<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a page', 'restricted-site-access' ); ?></label>
+			<?php endif; ?>
 		</fieldset>
 	<?php
 	}
@@ -783,16 +858,32 @@ class Restricted_Site_Access {
 	/**
 	 * activation of plugin: upgrades old versions, immediately sets privacy
 	 */
-	public static function activation() {
-		update_option( 'blog_public', 2 );
+	public static function activation( $network_active ) {
+		if ( ! $network_active ) {
+			update_option( 'blog_public', 2 );
+		}
 	}
 
 	/**
 	 * restore privacy option to default value upon deactivating
 	 */
-	public static function deactivation() {
-		if ( 2 == get_option( 'blog_public' ) ) {
-			update_option( 'blog_public', 1 );
+	public static function deactivation( $network_active ) {
+		if ( $network_active ) {
+			$sites = get_sites();
+
+			foreach ( $sites as $site ) {
+				switch_to_blog( $site->blog_id );
+
+				if ( 2 == get_option( 'blog_public' ) ) {
+					update_option( 'blog_public', 1 );
+				}
+
+				restore_current_blog();
+			}
+		} else {
+			if ( 2 == get_option( 'blog_public' ) ) {
+				update_option( 'blog_public', 1 );
+			}
 		}
 	}
 
@@ -820,7 +911,7 @@ Restricted_Site_Access::get_instance();
  * Uninstall routine for the plugin
  */
 function restricted_site_access_uninstall() {
-	if ( RSA_IS_NETWORK ){
+	if ( RSA_IS_NETWORK ) {
 		delete_site_option( 'blog_public' );
 		delete_site_option( 'rsa_options' );
 		delete_site_option( 'rsa_mode' );

@@ -17,7 +17,8 @@ module.exports = function(grunt) {
 		uglify: {
 			js: {
 				files: {
-					'assets/js/restricted-site-access.min.js': ['assets/js/src/restricted-site-access.js'],
+					'assets/js/settings.min.js': ['assets/js/src/settings.js'],
+					'assets/js/admin.min.js': ['assets/js/src/admin.js'],
 				}
 			}
 		},

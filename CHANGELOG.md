@@ -4,8 +4,14 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
-[Unreleased]
-* Combed the plugin for untranslated strings (or those missing text-domains) and generate a .pot file for easier internationalization.
+## [6.0.1] - 2017-06-13
+* When plugin is network activated, don't touch individual blog visiblity settings.
+* When plugin is network deactivated, set all individual blogs to default visibility.
+
+## [6.0] - 2017-06-12
+* Use Grunt to manage assets.
+* Network settings added for management of entire network visibility settings.
+* Display warning if page caching is enabled.
 
 ## [5.1] - 2014-11-29
 * Under the hood refactoring and clean up for performance and maintainability.
