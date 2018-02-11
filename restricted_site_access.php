@@ -221,6 +221,13 @@ class Restricted_Site_Access {
 			// iterate through the allow list
 			foreach( self::$rsa_options['allowed'] as $line ) {
 				if( ip_in_range( $remote_ip, $line ) ){
+					/**
+					 * Run when ip is in range.
+					 *
+					 * @since 6.0.1
+					 *
+					 * @param string  $remote_ip client ip address.
+					 */
 					do_action( 'restrict_site_access_ip_match', $remote_ip ); // allow users to hook ip match
 					return;
 				}
