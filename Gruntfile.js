@@ -24,10 +24,18 @@ module.exports = function(grunt) {
 		},
 
 		watch: {
-			files: [
-				'assets/js/src/*'
-			],
-			tasks: ['uglify:js']
+			default: {
+				files: [
+					'assets/js/src/*'
+				],
+				tasks: ['uglify:js']
+			},
+			test: {
+				files: [
+					'tests/php/**',
+				],
+				tasks: ['phpunit']
+			}
 		},
 
 		phpunit: {
