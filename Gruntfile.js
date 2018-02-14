@@ -35,6 +35,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks( 'grunt-wp-i18n' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
+	grunt.loadNpmTasks( 'grunt-phpunit' );
 
 	grunt.registerTask( 'i18n', ['makepot'] );
 	grunt.registerTask( 'default', ['uglify:js'] );
