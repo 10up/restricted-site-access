@@ -28,6 +28,17 @@ module.exports = function(grunt) {
 				'assets/js/src/*'
 			],
 			tasks: ['uglify:js']
+		},
+
+		phpunit: {
+			classes: {
+				dir: 'tests/php/*'
+			},
+			options: {
+				bin: 'vendor/bin/phpunit',
+				bootstrap: 'tests/phpunit-bootstrap.php',
+				colors: true
+			}
 		}
 
 	});
