@@ -1,11 +1,10 @@
 <?php
 /**
- * Bootstrap the tests.
+ * Bootstrap the tests, mocking some functions that are expected.
  */
-
-require_once 'vendor/autoload.php';
-WP_Mock::bootstrap();
-
+function _x( $a ) { return $a; }
+function __( $a ) { return $a; }
+function add_action() { return true; }
 function plugin_basename() { return true; }
 function get_site_option() { return array(); }
 function is_multisite() { return false; }
