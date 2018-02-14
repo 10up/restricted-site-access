@@ -1,0 +1,24 @@
+language: php
+
+sudo: false
+
+php:
+  - 7.2
+  - 7.0
+
+cache:
+  apt: true
+  directories:
+    - node_modules
+    - vendor
+
+install:
+  - composer install --no-interaction
+  - npm install
+
+matrix:
+  fast_finish: true
+
+
+script:
+  - grunt phpunit
