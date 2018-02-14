@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [ 6.1.0 ] - 2018-02-14
+* Correct a PHP notice when running PHP >= 7.1.
+* Refactor logic for checking ip address is in masked ip range.
+
 ## [6.0.2] - 2018-01-29
 * Add a 'restrict_site_access_ip_match' action which fires when an ip match occurs. Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
 
