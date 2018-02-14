@@ -188,6 +188,38 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Legacy function for testing.
+	 *
+	 * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
+	 * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32
+	 */
+	function old_ip_in_mask( $remote_ip, $range ) {
+		list( $ip, $mask ) = explode( '/', $range . '/128' ); // get the ip and mask from the list
+
+		$mask = str_repeat( 'f', $mask >> 2 ); // render the mask as bits, similar to info on the php.net man page discussion for inet_pton
+
+		switch ( $mask % 4 ) {
+			case 1:
+				$mask .= '8';
+				break;
+			case 2:
+				$mask .= 'c';
+				break;
+			case 3:
+				$mask .= 'e';
+				break;
+		}
+
+		$mask = pack( 'H*', $mask );
+
+		// check if the masked versions match
+		if ( ( inet_pton( $ip ) & $mask ) == ( $remote_ip & $mask ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Determine whether page should be restricted at point of request
 	 *
 	 * @param array $wp WordPress request
@@ -532,7 +564,7 @@ class Restricted_Site_Access {
 		self::enqueue_settings_script();
 
 		self::$rsa_options = self::get_options( true );
-		
+
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
 	}
@@ -717,7 +749,7 @@ class Restricted_Site_Access {
 			<br />
 			<input id="rsa-display-message" name="rsa_options[approach]" type="radio" value="3" <?php checked( self::$rsa_options['approach'], 3 ); ?> />
 			<label for="rsa-display-message"><?php esc_html_e( 'Show them a simple message', 'restricted-site-access' ); ?></label>
-			
+
 			<?php if ( ! is_network_admin() ) : ?>
 				<br />
 				<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
