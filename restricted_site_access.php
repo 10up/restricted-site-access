@@ -3,13 +3,13 @@
  * Plugin Name: Restricted Site Access
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 6.0.1
+ * Version: 6.0.2
  * Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
  */
 
-define( 'RSA_VERSION', '6.0.1' );
+define( 'RSA_VERSION', '6.0.2' );
 
 class Restricted_Site_Access {
 
@@ -222,6 +222,19 @@ class Restricted_Site_Access {
 			foreach( self::$rsa_options['allowed'] as $line ) {
 				if( ip_in_range( $remote_ip, $line ) ){
 					do_action( 'restrict_site_access_ip_match', $remote_ip ); // allow users to hook ip match
+
+					/**
+					 * Fires when an ip address match occurs.
+					 *
+					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
+					 *
+					 * @since 6.0.2
+					 *
+					 * @param string $remote_ip The remote IP address being checked.
+					 * @param string $ip        The matched IP address.
+					 * @param string $mast      The IP mask used in the match.
+					 */
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $ip, $mask );
 					return;
 				}
 			}
