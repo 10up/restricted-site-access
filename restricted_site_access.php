@@ -506,7 +506,7 @@ class Restricted_Site_Access {
 		self::enqueue_settings_script();
 
 		self::$rsa_options = self::get_options( true );
-		
+
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
 	}
