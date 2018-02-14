@@ -4,7 +4,6 @@ sudo: false
 
 php:
   - 7.2
-  - 7.0
 
 cache:
   apt: true
