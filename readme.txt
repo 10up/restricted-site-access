@@ -163,3 +163,8 @@ Drops support for versions of WordPress prior to 3.5.
 
 = 4.0 =
 This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
+
+== Upgrade Notice ==
+
+= 6.1.0 =
+* Important: version 6.1.0 refactors the the "Unrestricted IP addresses" functionality. Please test carefully after upgrading.
