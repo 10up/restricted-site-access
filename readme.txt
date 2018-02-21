@@ -167,4 +167,4 @@ This update improves performance, refines the user interface, and adds support f
 == Upgrade Notice ==
 
 = 6.1.0 =
-* Important: version 6.1.0 refactors the the "Unrestricted IP addresses" functionality. Please test carefully after upgrading.
+* Important: version 6.1 improves testing visitors for allowed IP addresses ("Unrestricted IP addresses"). We recommend testing IP based restrictions after updating.
