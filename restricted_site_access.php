@@ -225,15 +225,16 @@ class Restricted_Site_Access {
 					/**
 					 * Fires when an ip address match occurs.
 					 *
-					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
+					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will
+					 * not cache the request. Passes the matched line; previous to 6.1.0 this action passed
+					 * the line and mask.
 					 *
 					 * @since 6.0.2
 					 *
 					 * @param string $remote_ip The remote IP address being checked.
-					 * @param string $ip        The matched IP address.
-					 * @param string $mast      The IP mask used in the match.
+					 * @param string $line      The matched masked IP address.
 					 */
-					do_action( 'restrict_site_access_ip_match', $remote_ip, $ip, $mask );
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $line );
 					return;
 				}
 			}
