@@ -13,7 +13,7 @@ class IpMaskingTests extends \PHPUnit\Framework\TestCase {
 	 */
 	public function testAdd( $ip_to_test, $ip_plus_mask, $expected )
 	{
-		$this->assertEquals( $expected, ip_in_range( $ip_to_test, $ip_plus_mask ) );
+		$this->assertEquals( $expected, Restricted_Site_Access::ip_in_range( $ip_to_test, $ip_plus_mask ) );
 	}
 
 	public function ip_data_provider()
