@@ -9,7 +9,7 @@
  * License: GPLv2 or later
  */
 
-define( 'RSA_VERSION', '6.0.2' );
+define( 'RSA_VERSION', '6.1.0' );
 
 class Restricted_Site_Access {
 
