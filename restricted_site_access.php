@@ -216,7 +216,7 @@ class Restricted_Site_Access {
 
 		// check for the allow list, if its empty block everything
 		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
-			$remote_ip = get_client_ip_address(); //save the remote ip
+			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list
 			foreach( self::$rsa_options['allowed'] as $line ) {
@@ -724,7 +724,7 @@ class Restricted_Site_Access {
 				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
-			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( get_client_ip_address() ); ?>" /><br /><?php } ?>
+			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
@@ -936,6 +936,40 @@ class Restricted_Site_Access {
 		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
 	}
 
+	/**
+	 * Retrieve the visitor ip address, even it is behind a proxy.
+	 *
+	 * @return string
+	 */
+	public static function get_client_ip_address() {
+		$ip = '';
+		$headers = array(
+				'HTTP_CLIENT_IP',
+				'HTTP_X_FORWARDED_FOR',
+				'HTTP_X_FORWARDED',
+				'HTTP_X_CLUSTER_CLIENT_IP',
+				'HTTP_FORWARDED_FOR',
+				'HTTP_FORWARDED',
+				'REMOTE_ADDR',
+			);
+		foreach ( $headers as $key ) {
+
+			if ( ! isset( $_SERVER[ $key ] ) ) {
+				continue;
+			}
+
+			foreach ( explode( ',',
+				$_SERVER[ $key ] ) as $ip ) {
+				$ip = trim( $ip ); // just to be safe
+
+				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
+					return $ip;
+				}
+			}
+		}
+
+		return $ip;
+	}
 }
 
 define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
@@ -998,33 +1032,4 @@ if ( ! function_exists( 'inet_pton' ) ) :
 			return $ip;
 	}
 
-endif;
-
-if ( ! function_exists( 'get_client_ip_address' ) ) :
-/**
- * This function is to get the real visitor ip address even it is behind the proxy
- * @return string
- */
-function get_client_ip_address() {
-	$ip = '';
-	foreach ( array(
-				  'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP',
-				  'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR',
-			  ) as $key ) {
-
-		if ( ! isset( $_SERVER[ $key ] ) ) {
-			continue;
-		}
-
-		foreach ( explode( ',', $_SERVER[ $key ] ) as $ip ) {
-			$ip = trim( $ip ); // just to be safe
-
-			if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
-				return $ip;
-			}
-		}
-	}
-
-	return $ip;
-}
 endif;
