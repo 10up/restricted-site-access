@@ -227,7 +227,7 @@ class Restricted_Site_Access {
 					 *
 					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will
 					 * not cache the request. Passes the matched line; previous to 6.1.0 this action passed
-					 * the line and mask.
+					 * the matched ip and mask.
 					 *
 					 * @since 6.0.2
 					 *
