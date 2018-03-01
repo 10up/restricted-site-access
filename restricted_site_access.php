@@ -512,6 +512,11 @@ class Restricted_Site_Access {
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
 			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+			'strings' => array(
+				'warning' => esc_js( __( 'Warning', 'restricted-site-access' ) ),
+				'confirm' => esc_js( __( 'I know what I am doing', 'restricted-site-access' ) ),
+				'cancel' => esc_js( __( 'Cancel', 'restricted-site-access' ) ),
+			)
 		) );
 
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
