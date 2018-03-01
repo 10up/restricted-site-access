@@ -58,6 +58,7 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable' ) );
 
 		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
 	}
@@ -87,6 +88,35 @@ class Restricted_Site_Access {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Keeps log of network-wide RSA disable action
+	 *
+	 * @return void
+	 */
+	public static function ajax_network_disable() {
+		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error();
+			exit;
+		}
+
+		if ( ! RSA_IS_NETWORK ) {
+			wp_send_json_error();
+			exit;
+		}
+
+		$user_id = filter_input( INPUT_POST, 'user', FILTER_VALIDATE_INT );
+		$time = current_time( 'timestamp' );
+
+		$all_events = get_option( 'rsa_disable_log', array() );
+
+		$all_events[] = array(
+			'user' => $user_id,
+			'time' => $time,
+		);
+
+		update_option( 'rsa_disable_log', $all_events, false );
 	}
 
 	/**
@@ -512,6 +542,7 @@ class Restricted_Site_Access {
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
 			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+			'user' => get_current_user_id(),
 			'strings' => array(
 				'warning' => esc_js( __( 'Warning', 'restricted-site-access' ) ),
 				'confirm' => esc_js( __( 'I know what I am doing', 'restricted-site-access' ) ),
