@@ -128,20 +128,9 @@
 		bindEvents: function () {
 			$( '[data-slug="restricted-site-access"]' ).on( 'click', '.deactivate a', this.openDialog.bind( this ) );
 		},
-		isNetworkWidePluginsPage: function () {
-			if ( ! document.body.classList.contains('network-admin') || ! document.body.classList.contains( 'plugins-php' ) ) {
-				return false;
-			}
-
-			if ( ! this.els.dialog ) {
-				return false;
-			}
-
-			return true;
-		},
 
 		init: function () {
-			if ( ! this.isNetworkWidePluginsPage() ) {
+			if ( ! Boolean( rsaAdmin.isNetworkWidePluginsPage ) ) {
 				return;
 			}
 
