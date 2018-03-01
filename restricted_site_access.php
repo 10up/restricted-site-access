@@ -981,6 +981,11 @@ class Restricted_Site_Access {
 
 	}
 
+	/**
+	 * Dialog markup to warn network-wide RSA disable
+	 *
+	 * @return void
+	 */
 	public static function admin_footer() {
 		$current_screen = get_current_screen();
 
