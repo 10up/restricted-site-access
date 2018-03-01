@@ -1001,7 +1001,7 @@ class Restricted_Site_Access {
 			<p><?php esc_html_e( 'You are about to disable the Restricted Site Access plugin at the network level.', 'restricted-site-access' ); ?></p>
 			<p><strong><?php esc_html_e( 'This action will make public all private sites on this network.', 'restricted-site-access' ); ?></strong></p>
 			<p><?php esc_html_e( 'If you are sure about your action, please resolve the following problem to carry on.', 'restricted-site-access' ); ?></p>
-			<p><?php esc_html_e( 'If otherwise it was a mistake, just close the dialog.', 'restricted-site-access' ); ?></p>
+			<p><?php esc_html_e( 'If otherwise it was a mistake, click the Cancel button to close the dialog.', 'restricted-site-access' ); ?></p>
 			<p class="rsa-problem" style="text-align:center;font-size:2em">
 				<span id="rsa-operator-a">0</span>+<span id="rsa-operator-b">0</span>=<input type="number" min="0" max="20" placeholder="0" id="rsa-user-result" style="font-size:1em">
 			</p>
