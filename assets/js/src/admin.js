@@ -35,7 +35,8 @@
 		els: {
 			dialog: document.getElementById( 'rsa-disable-dialog' ),
 			placeholderA: document.getElementById( 'rsa-operator-a' ),
-			placeholderB: document.getElementById( 'rsa-operator-b' )
+			placeholderB: document.getElementById( 'rsa-operator-b' ),
+			userResult: document.getElementById( 'rsa-user-result' )
 		},
 
 		variables: {
@@ -55,7 +56,7 @@
 		},
 
 		isExpectedAnswer: function () {
-			var userResult = parseInt( document.getElementById( 'rsa-user-result' ).value, 10 );
+			var userResult = parseInt( this.els.userResult.value, 10 );
 
 			if ( userResult === this.variables.expectedAnswer ) {
 				return true;
@@ -88,8 +89,12 @@
 									},
 									url: ajaxurl
 								}).always(function() {
+									self.els.userResult.style.border = "";
 									window.location.href = self.variables.disablingURL;
 								});
+							} else {
+								self.els.userResult.style.border = "1px solid red";
+								self.els.userResult.title = rsaAdmin.strings.error.replace( '%d', self.variables.expectedAnswer );
 							}
 						}
 					},

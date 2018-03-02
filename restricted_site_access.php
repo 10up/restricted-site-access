@@ -548,6 +548,7 @@ class Restricted_Site_Access {
 				'warning' => esc_js( __( 'Warning', 'restricted-site-access' ) ),
 				'confirm' => esc_js( __( 'I know what I am doing', 'restricted-site-access' ) ),
 				'cancel'  => esc_js( __( 'Cancel', 'restricted-site-access' ) ),
+				'error'   => esc_js( __( 'It seems you need some help. Did you try %d?', 'restricted-site-access' ) ),
 			)
 		) );
 
