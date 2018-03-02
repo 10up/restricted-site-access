@@ -97,7 +97,7 @@ class Restricted_Site_Access {
 	 */
 	public static function ajax_network_disable_log() {
 		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error();
+			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
 			exit;
 		}
 
