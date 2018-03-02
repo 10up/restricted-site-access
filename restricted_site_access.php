@@ -106,13 +106,12 @@ class Restricted_Site_Access {
 			exit;
 		}
 
-		$user_id = filter_input( INPUT_POST, 'user', FILTER_VALIDATE_INT );
 		$time = current_time( 'timestamp' );
 
 		$all_events = get_option( 'rsa_disable_log', array() );
 
 		$all_events[] = array(
-			'user' => $user_id,
+			'user' => get_current_user_id(),
 			'time' => $time,
 		);
 
@@ -544,7 +543,6 @@ class Restricted_Site_Access {
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
 			'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
-			'user'                     => get_current_user_id(),
 			'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
 			'strings'                  => array(
 				'warning' => esc_js( __( 'Warning', 'restricted-site-access' ) ),
