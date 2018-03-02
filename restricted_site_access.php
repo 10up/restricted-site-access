@@ -58,7 +58,7 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
-		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable' ) );
+		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable_log' ) );
 
 		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
 	}
@@ -95,7 +95,7 @@ class Restricted_Site_Access {
 	 *
 	 * @return void
 	 */
-	public static function ajax_network_disable() {
+	public static function ajax_network_disable_log() {
 		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 			wp_send_json_error();
 			exit;

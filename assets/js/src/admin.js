@@ -86,7 +86,7 @@
 									data: {
 										nonce: rsaAdmin.nonce,
 										user: rsaAdmin.user,
-										action: 'rsa_network_disable'
+										action: 'rsa_network_disable_log'
 									},
 									url: ajaxurl
 								}).always(function() {
