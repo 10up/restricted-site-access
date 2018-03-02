@@ -78,8 +78,6 @@
 					{
 						text: rsaAdmin.strings.confirm,
 						click: function () {
-							$( this ).dialog( 'close' );
-
 							if ( self.isExpectedAnswer() ) {
 								$.ajax({
 									method: 'post',
