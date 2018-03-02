@@ -103,7 +103,7 @@
 				open: function () {
 					self.refreshValues();
 					$( '.ui-widget-overlay' ).bind( 'click', function () {
-						$(self.els.dialog).dialog( 'close' );
+						$( self.els.dialog ).dialog( 'close' );
 					});
 				},
 				create: function () {
