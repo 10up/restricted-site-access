@@ -58,6 +58,9 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable_log' ) );
+
+		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
 	}
 
 	public static function ajax_notice_dismiss() {
@@ -85,6 +88,34 @@ class Restricted_Site_Access {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Keeps log of network-wide RSA disable action
+	 *
+	 * @return void
+	 */
+	public static function ajax_network_disable_log() {
+		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
+			exit;
+		}
+
+		if ( ! RSA_IS_NETWORK ) {
+			wp_send_json_error();
+			exit;
+		}
+
+		$time = current_time( 'timestamp' );
+
+		$all_events = get_option( 'rsa_disable_log', array() );
+
+		$all_events[] = array(
+			'user' => get_current_user_id(),
+			'time' => $time,
+		);
+
+		update_option( 'rsa_disable_log', $all_events, false );
 	}
 
 	/**
@@ -476,15 +507,26 @@ class Restricted_Site_Access {
 	}
 
 	public static function enqueue_admin_script() {
+		$current_screen = get_current_screen();
+
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/src/admin.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
 		} else {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/admin.min.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
 		}
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
-			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+			'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
+			'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
+			'strings'                  => array(
+				'warning' => esc_js( __( 'Warning', 'restricted-site-access' ) ),
+				'confirm' => esc_js( __( 'I know what I am doing', 'restricted-site-access' ) ),
+				'cancel'  => esc_js( __( 'Cancel', 'restricted-site-access' ) ),
+				'error'   => esc_js( __( 'It seems you need some help. Did you try %d?', 'restricted-site-access' ) ),
+			)
 		) );
+
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 	}
 
 	/**
@@ -913,6 +955,31 @@ class Restricted_Site_Access {
 
 		return false;
 
+	}
+
+	/**
+	 * Dialog markup to warn network-wide RSA disable
+	 *
+	 * @return void
+	 */
+	public static function admin_footer() {
+		$current_screen = get_current_screen();
+
+		if ( 'plugins-network' !== $current_screen->id ) {
+			return;
+		}
+		?>
+		<div id="rsa-disable-dialog" class="hidden">
+			<h2><?php esc_html_e( 'This is a friendly warning', 'restricted-site-access' ); ?></h2>
+			<p><?php esc_html_e( 'You are about to disable the Restricted Site Access plugin at the network level.', 'restricted-site-access' ); ?></p>
+			<p><strong><?php esc_html_e( 'This action will make public all private sites on this network.', 'restricted-site-access' ); ?></strong></p>
+			<p><?php esc_html_e( 'If you are sure about your action, please resolve the following problem to carry on.', 'restricted-site-access' ); ?></p>
+			<p><?php esc_html_e( 'If otherwise it was a mistake, click the Cancel button to close the dialog.', 'restricted-site-access' ); ?></p>
+			<p class="rsa-problem" style="text-align:center;font-size:2em">
+				<span id="rsa-operator-a">0</span>+<span id="rsa-operator-b">0</span>=<input type="number" min="0" max="20" placeholder="0" id="rsa-user-result" style="font-size:1em">
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
