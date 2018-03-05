@@ -3,13 +3,13 @@
  * Plugin Name: Restricted Site Access
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 6.0.2
+ * Version: 6.1.0
  * Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
  */
 
-define( 'RSA_VERSION', '6.0.2' );
+define( 'RSA_VERSION', '6.1.0' );
 
 class Restricted_Site_Access {
 
@@ -193,10 +193,6 @@ class Restricted_Site_Access {
 	 * @param array $wp WordPress request
 	 */
 	public static function restrict_access( $wp ) {
-		if ( empty( $wp->query_vars['rest_route'] ) ) {
-			remove_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );	// only need it the first time
-		}
-
 		self::$rsa_options = self::get_options();
 		$mode = self::get_network_mode();
 
@@ -220,47 +216,25 @@ class Restricted_Site_Access {
 
 		// check for the allow list, if its empty block everything
 		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
-			$remote_ip = $_SERVER['REMOTE_ADDR'];  // save the remote ip
-			if ( strpos( $remote_ip, '.' ) ) {
-				$remote_ip = str_replace( '::ffff:', '', $remote_ip ); // handle dual-stack addresses
-			}
-			$remote_ip = inet_pton( $remote_ip ); // parse the remote ip
+			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list
-			foreach ( self::$rsa_options['allowed'] as $line ) {
-				list( $ip, $mask ) = explode( '/', $line . '/128' ); // get the ip and mask from the list
-
-				$mask = str_repeat( 'f', $mask >> 2 ); // render the mask as bits, similar to info on the php.net man page discussion for inet_pton
-
-				switch ( $mask % 4 ) {
-					case 1:
-						$mask .= '8';
-						break;
-					case 2:
-						$mask .= 'c';
-						break;
-					case 3:
-						$mask .= 'e';
-						break;
-				}
-
-				$mask = pack( 'H*', $mask );
-
-				// check if the masked versions match
-				if ( ( inet_pton( $ip ) & $mask ) == ( $remote_ip & $mask ) ) {
+			foreach( self::$rsa_options['allowed'] as $line ) {
+				if( self::ip_in_range( $remote_ip, $line ) ){
 
 					/**
 					 * Fires when an ip address match occurs.
 					 *
-					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
+					 * Enables adding session_start() to the IP check, ensuring Varnish type cache will
+					 * not cache the request. Passes the matched line; previous to 6.1.0 this action passed
+					 * the matched ip and mask.
 					 *
 					 * @since 6.0.2
 					 *
 					 * @param string $remote_ip The remote IP address being checked.
-					 * @param string $ip        The matched IP address.
-					 * @param string $mast      The IP mask used in the match.
+					 * @param string $line      The matched masked IP address.
 					 */
-					do_action( 'restrict_site_access_ip_match', $remote_ip, $ip, $mask );
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $line );
 					return;
 				}
 			}
@@ -532,7 +506,7 @@ class Restricted_Site_Access {
 		self::enqueue_settings_script();
 
 		self::$rsa_options = self::get_options( true );
-		
+
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
 	}
@@ -717,7 +691,7 @@ class Restricted_Site_Access {
 			<br />
 			<input id="rsa-display-message" name="rsa_options[approach]" type="radio" value="3" <?php checked( self::$rsa_options['approach'], 3 ); ?> />
 			<label for="rsa-display-message"><?php esc_html_e( 'Show them a simple message', 'restricted-site-access' ); ?></label>
-			
+
 			<?php if ( ! is_network_admin() ) : ?>
 				<br />
 				<input id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4" <?php checked( self::$rsa_options['approach'], 4 ); ?> />
@@ -750,7 +724,7 @@ class Restricted_Site_Access {
 				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
-			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( $_SERVER['REMOTE_ADDR'] ); ?>" /><br /><?php } ?>
+			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
@@ -939,6 +913,62 @@ class Restricted_Site_Access {
 
 		return false;
 
+	}
+
+	/**
+	 * Check if a given ip is in a network.
+	 * Source: https://gist.github.com/tott/7684443
+	 *
+	 * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
+	 * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
+	 * @return boolean true if the ip is in this range / false if not.
+	 */
+	public static function ip_in_range( $ip, $range ) {
+		if ( strpos( $range, '/' ) == false ) {
+			$range .= '/32';
+		}
+		// $range is in IP/CIDR format eg 127.0.0.1/24
+		list( $range, $netmask ) = explode( '/', $range, 2 );
+		$range_decimal = ip2long( $range );
+		$ip_decimal = ip2long( $ip );
+		$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+		$netmask_decimal = ~ $wildcard_decimal;
+		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+	}
+
+	/**
+	 * Retrieve the visitor ip address, even it is behind a proxy.
+	 *
+	 * @return string
+	 */
+	public static function get_client_ip_address() {
+		$ip = '';
+		$headers = array(
+				'HTTP_CLIENT_IP',
+				'HTTP_X_FORWARDED_FOR',
+				'HTTP_X_FORWARDED',
+				'HTTP_X_CLUSTER_CLIENT_IP',
+				'HTTP_FORWARDED_FOR',
+				'HTTP_FORWARDED',
+				'REMOTE_ADDR',
+			);
+		foreach ( $headers as $key ) {
+
+			if ( ! isset( $_SERVER[ $key ] ) ) {
+				continue;
+			}
+
+			foreach ( explode( ',',
+				$_SERVER[ $key ] ) as $ip ) {
+				$ip = trim( $ip ); // just to be safe
+
+				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
+					return $ip;
+				}
+			}
+		}
+
+		return $ip;
 	}
 }
 

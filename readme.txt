@@ -3,7 +3,7 @@ Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
 Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 3.5
-Tested up to: 4.9
+Tested up to: 4.9.4
 Stable tag: trunk
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
@@ -72,6 +72,11 @@ Page caching plugins often hook into WordPress to quickly serve the last cached 
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 6.1.0 =
+* Correct a PHP notice when running PHP >= 7.1.
+* Refactor logic for checking ip address is in masked ip range.
+* Add PHPUnit tests validating the ip_in_mask functionality.
 
 = 6.0.2 =
 * Add a 'restrict_site_access_ip_match' action which fires when an ip match occurs. Enables adding session_start() to the IP check, ensuring Varnish type cache will not cache the request.
@@ -159,3 +164,8 @@ Drops support for versions of WordPress prior to 3.5.
 
 = 4.0 =
 This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
+
+== Upgrade Notice ==
+
+= 6.1.0 =
+* Important: version 6.1 improves testing visitors for allowed IP addresses ("Unrestricted IP addresses"). We recommend testing IP based restrictions after updating.
