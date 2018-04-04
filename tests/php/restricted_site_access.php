@@ -46,12 +46,13 @@ class RestrictedSiteAccessTests extends \PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Test that the restrict_access function works as expected.
+	 * Test that the restrict_access function works as expected with
+	 * page selection - restricted_site_access_approach = 4.
 	 */
 	public function testRestrictAccess()
 	{
-		//function get_permalink( $id ) { $mock->get_permalink( $id ); }
 
+		// Mock up functions to set up test.
 		\WP_Mock::userFunction(
 			'get_option',
 			array(
@@ -62,14 +63,40 @@ class RestrictedSiteAccessTests extends \PHPUnit\Framework\TestCase {
 				'times' => 0,
 			)
 		);
+		\WP_Mock::userFunction(
+			'get_post',
+			array(
+				'times' => 1,
+				'return' => (object) array( 'ID' => 1 ),
+			)
+		);
 		\WP_Mock::onFilter( 'restricted_site_access_approach' )
 			->with( 1 )
 			->reply( 4 );
-		$this->assertEquals( false, Restricted_Site_Access::restrict_access( array() ) );
-		//
+
+		/**
+		 * The tests verify that these functions are called with the right values.
+		 */
+
 		// Expect get_permalink to be called with the value 1.
-		//
+		\WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'times' => 1,
+				'args' => array( 1 ),
+				'return' => 'https://wordpress.local',
+			)
+		);
 		// Expect wp_redirect to be called with 'https://wordpress.local/home' and status code 302.
+		\WP_Mock::userFunction(
+			'wp_redirect',
+			array(
+				'return' => 'https://wordpress.local',
+				'times' => 1,
+				'args' => array( 'https://wordpress.local', 302 ),
+			)
+		);
+		$this->assertEquals( false, Restricted_Site_Access::restrict_access( array() ) );
 	}
 
 }
