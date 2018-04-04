@@ -87,7 +87,7 @@ class RestrictedSiteAccessTests extends \PHPUnit\Framework\TestCase {
 				'return' => 'https://wordpress.local',
 			)
 		);
-		// Expect wp_redirect to be called with 'https://wordpress.local/home' and status code 302.
+		// Expect wp_redirect to be called with 'https://wordpress.local' and status code 302.
 		\WP_Mock::userFunction(
 			'wp_redirect',
 			array(
