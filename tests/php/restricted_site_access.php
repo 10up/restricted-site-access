@@ -1,6 +1,13 @@
 <?php
 
-class IpMaskingTests extends \PHPUnit\Framework\TestCase {
+class RestrictedSiteAccessTests extends \PHPUnit\Framework\TestCase {
+	public function setUp() {
+		\WP_Mock::setUp();
+	}
+
+	public function tearDown() {
+		\WP_Mock::tearDown();
+	}
 
 	/**
 	 * Test that ip addresses pass or fail as expected when compared against an ip with a mask.
@@ -11,7 +18,7 @@ class IpMaskingTests extends \PHPUnit\Framework\TestCase {
 	 * @param {string}   The ip plus mask to test against.
 	 * @param {@boolean} The expected result, success (true) or failure (false).
 	 */
-	public function testAdd( $ip_to_test, $ip_plus_mask, $expected )
+	public function testIpInRange( $ip_to_test, $ip_plus_mask, $expected )
 	{
 		$this->assertEquals( $expected, Restricted_Site_Access::ip_in_range( $ip_to_test, $ip_plus_mask ) );
 	}
@@ -37,5 +44,33 @@ class IpMaskingTests extends \PHPUnit\Framework\TestCase {
 			[ '192.168.0.1', '192.169.2.2/8',  true ]
 		];
 	}
+
+	/**
+	 * Test that the restrict_access function works as expected.
+	 */
+	public function testRestrictAccess()
+	{
+		//function get_permalink( $id ) { $mock->get_permalink( $id ); }
+
+		\WP_Mock::userFunction(
+			'get_option',
+			array(
+				'return_in_order' => array(
+					array( 'page' => 1, ),
+					2
+				),
+				'times' => 0,
+			)
+		);
+		\WP_Mock::onFilter( 'restricted_site_access_approach' )
+			->with( 1 )
+			->reply( 4 );
+		$this->assertEquals( false, Restricted_Site_Access::restrict_access( array() ) );
+		//
+		// Expect get_permalink to be called with the value 1.
+		//
+		// Expect wp_redirect to be called with 'https://wordpress.local/home' and status code 302.
+	}
+
 }
 ?>
