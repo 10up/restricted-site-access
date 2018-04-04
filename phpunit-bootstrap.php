@@ -2,45 +2,6 @@
 /**
  * Bootstrap the tests, mocking some functions that are expected.
  */
-
-/*function _x( $a ) { return $a; }
-function __( $a ) { return $a; }
-function add_action() { return true; }
-function plugin_basename() { return true; }
-function get_site_option() { return array(); }
-function is_multisite() { return false; }
-function register_uninstall_hook() { return false; }
-function get_option() {
-	return array(
-		'page' => 1,
-	);
-}
-function is_admin() { return false; }
-function is_user_logged_in() { return false; }
-function do_action() { return true; }
-function home_url() { return 'https://wordpress.local'; }
-function wp_login_url() { return 'https://wordpress.local/wp-admin/'; }
-function wp_redirect( $url, $status ) {};
-function apply_filters( $name, $value ) {
-	switch ( $name ) {
-		case 'restricted_site_access_approach':
-			return 4;
-		case 'restricted_site_access_is_restricted':
-			return true;
-		default:
-			return $value;
-	}
-}
-function wp_die() {};
-function get_bloginfo() {};
-function get_post() {};
-/*function get_permalink( $post_id ) {
-	if ( 1 === $post_id ) {
-		return 'https://wordpress.local/home';
-	}
-	return '';
-};
-*/
 require_once 'vendor/autoload.php';
 WP_Mock::setUsePatchwork( true );
 WP_Mock::bootstrap();
