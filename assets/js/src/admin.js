@@ -5,7 +5,7 @@
  * Copyright (c) 2013 10up, jakemgold
  * Licensed under the GPLv2+ license.
  */
-( function ( window, $ ) {
+( function( window, $ ) {
 
 	'use strict';
 
@@ -27,7 +27,7 @@
 	} );
 } )( window, jQuery );
 
-(function (window, $) {
+( function( window, $ ) {
 	'use strict';
 
 	var RSADisablePlugin = {
@@ -46,16 +46,16 @@
 			disablingURL: null
 		},
 
-		openDialog: function ( event ) {
+		openDialog: function( event ) {
 			event.preventDefault();
 			$( this.els.dialog ).dialog( 'open' );
 		},
 
-		getRandomNum: function () {
+		getRandomNum: function() {
 			return Math.floor( Math.random() * 10 );
 		},
 
-		isExpectedAnswer: function () {
+		isExpectedAnswer: function() {
 			var userResult = parseInt( this.els.userResult.value, 10 );
 
 			if ( userResult === this.variables.expectedAnswer ) {
@@ -64,7 +64,7 @@
 
 			return false;
 		},
-		dialogSettings: function () {
+		dialogSettings: function() {
 			var self = this;
 
 			$( this.els.dialog ).dialog({
@@ -78,7 +78,7 @@
 				buttons: [
 					{
 						text: rsaAdmin.strings.confirm,
-						click: function () {
+						click: function() {
 							if ( self.isExpectedAnswer() ) {
 								$.ajax({
 									method: 'post',
@@ -88,36 +88,36 @@
 										action: 'rsa_network_disable_log'
 									},
 									url: ajaxurl
-								}).always(function() {
-									self.els.userResult.style.border = "";
+								}).always( function() {
+									self.els.userResult.style.border = '';
 									window.location.href = self.variables.disablingURL;
 								});
 							} else {
-								self.els.userResult.style.border = "1px solid red";
+								self.els.userResult.style.border = '1px solid red';
 								self.els.userResult.title = rsaAdmin.strings.error.replace( '%d', self.variables.expectedAnswer );
 							}
 						}
 					},
 					{
 						text: rsaAdmin.strings.cancel,
-						click: function () {
+						click: function() {
 							$( this ).dialog( 'close' );
 						}
 					}
 				],
-				open: function () {
+				open: function() {
 					self.refreshValues();
-					$( '.ui-widget-overlay' ).bind( 'click', function () {
+					$( '.ui-widget-overlay' ).bind( 'click', function() {
 						$( self.els.dialog ).dialog( 'close' );
 					});
 				},
-				create: function () {
+				create: function() {
 					$( '.ui-dialog-titlebar-close' ).addClass( 'ui-button' );
 				},
 			})
 		},
 
-		refreshValues: function () {
+		refreshValues: function() {
 			var vars = this.variables;
 
 			vars.operatorA = this.getRandomNum();
@@ -145,4 +145,4 @@
 	};
 
 	RSADisablePlugin.init();
-})(window, jQuery);
+}( window, jQuery ) );
