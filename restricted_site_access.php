@@ -524,8 +524,7 @@ class Restricted_Site_Access {
 			'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
 			'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
 			'strings'                  => array(
-				'warning' => esc_js( __( 'Warning', 'restricted-site-access' ) ),
-				'confirm' => esc_js( __( 'I know what I am doing', 'restricted-site-access' ) ),
+				'confirm' => esc_js( __( 'Network Disable Plugin', 'restricted-site-access' ) ),
 				'cancel'  => esc_js( __( 'Cancel', 'restricted-site-access' ) ),
 				'error'   => esc_js( __( 'It seems you need some help. Did you try %d?', 'restricted-site-access' ) ),
 			)
@@ -975,8 +974,8 @@ class Restricted_Site_Access {
 		}
 		?>
 		<div id="rsa-disable-dialog" class="hidden">
-			<h2><?php esc_html_e( 'This is a friendly warning', 'restricted-site-access' ); ?></h2>
-			<p><?php esc_html_e( 'You are about to disable the Restricted Site Access plugin at the network level.', 'restricted-site-access' ); ?></p>
+			<h2><?php esc_html_e( 'Confirm network deactivation', 'restricted-site-access' ); ?></h2>
+			<p><?php esc_html_e( 'You are about to network disable the Restricted Site Access plugin making all sites on this network publicly available.', 'restricted-site-access' ); ?></p>
 			<p><strong><?php esc_html_e( 'This action will make public all private sites on this network.', 'restricted-site-access' ); ?></strong></p>
 			<p><?php esc_html_e( 'If you are sure about your action, please resolve the following problem to carry on.', 'restricted-site-access' ); ?></p>
 			<p><?php esc_html_e( 'If otherwise it was a mistake, click the Cancel button to close the dialog.', 'restricted-site-access' ); ?></p>
