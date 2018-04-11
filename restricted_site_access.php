@@ -101,6 +101,11 @@ class Restricted_Site_Access {
 			exit;
 		}
 
+		if ( current_user_can( 'manage_network_plugins' ) ) {
+			wp_send_json_error();
+			exit;
+		}
+
 		if ( ! RSA_IS_NETWORK ) {
 			wp_send_json_error();
 			exit;
