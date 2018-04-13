@@ -629,8 +629,9 @@ class Restricted_Site_Access {
 	 * Add a new choice to the privacy selector
 	 */
 	public static function blog_privacy_selector() {
-		$is_restricted = ( 2 == get_option( 'blog_public' ));
-		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, false );
+		global $wp;
+		$is_restricted = ( 2 == get_option( 'blog_public' ) );
+		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp );
 	?>
 		<p>
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
