@@ -209,7 +209,9 @@ class Restricted_Site_Access {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
 
-		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
+		$user = wp_get_current_user();
+
+		$is_restricted = ! ( is_admin() || ( is_user_logged_in() && RSA_IS_NETWORK && is_user_member_of_blog( $user->ID ) ) || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
