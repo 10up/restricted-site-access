@@ -211,7 +211,7 @@ class Restricted_Site_Access {
 			$blog_public = get_site_option( 'blog_public', 2 );
 
 			// Check that user is assigned to multisite's blog
-			$user_check = is_user_logged_in() && RSA_IS_NETWORK && is_user_member_of_blog( $user->ID );
+			$user_check = is_user_logged_in() && is_user_member_of_blog( $user->ID );
 		}
 
 		$is_restricted = ! ( is_admin() || $user_check || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
