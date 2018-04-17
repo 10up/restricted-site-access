@@ -203,15 +203,18 @@ class Restricted_Site_Access {
 		}
 
 		$blog_public = get_option( 'blog_public', 2 );
+		$user_check = is_user_logged_in();
+		$user = wp_get_current_user();
 
 		//If rsa_mode==enforce we override the rsa_options
 		if( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
+
+			// Check that user is assigned to multisite's blog
+			$user_check = is_user_logged_in() && RSA_IS_NETWORK && is_user_member_of_blog( $user->ID );
 		}
 
-		$user = wp_get_current_user();
-
-		$is_restricted = ! ( is_admin() || ( is_user_logged_in() && RSA_IS_NETWORK && is_user_member_of_blog( $user->ID ) ) || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
+		$is_restricted = ! ( is_admin() || $user_check || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
