@@ -187,6 +187,18 @@ class Restricted_Site_Access {
 		return $options;
 	}
 
+	protected static function is_restricted( $blog_public ) {
+		$user_check = is_user_logged_in();
+
+		if ( is_multisite() ) {
+			$user_check = is_user_logged_in() && is_user_member_of_blog( get_current_user_id() );
+		}
+
+		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) );
+
+		return ! $checks;
+	}
+
 	/**
 	 * Determine whether page should be restricted at point of request
 	 *
@@ -203,18 +215,15 @@ class Restricted_Site_Access {
 		}
 
 		$blog_public = get_option( 'blog_public', 2 );
-		$user_check = is_user_logged_in();
-		$user = wp_get_current_user();
 
 		//If rsa_mode==enforce we override the rsa_options
 		if( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
-
-			// Check that user is assigned to multisite's blog
-			$user_check = is_user_logged_in() && is_user_member_of_blog( $user->ID );
 		}
 
-		$is_restricted = ! ( is_admin() || $user_check || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
+		$is_restricted = self::is_restricted( $blog_public );
+
+		// Check to see if it's _not_ restricted
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
