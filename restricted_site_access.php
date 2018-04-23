@@ -188,12 +188,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Determine whether page should be restricted at point of request
-	 *
-	 * @param array $wp WordPress request
+	 * Determine if site should be restricted
 	 */
-	public static function restrict_access( $wp ) {
-		self::$rsa_options = self::get_options();
+	protected static function is_restricted() {
 		$mode = self::get_network_mode();
 
 		if ( RSA_IS_NETWORK ) {
@@ -205,11 +202,31 @@ class Restricted_Site_Access {
 		$blog_public = get_option( 'blog_public', 2 );
 
 		//If rsa_mode==enforce we override the rsa_options
-		if( RSA_IS_NETWORK && 'enforce' === $mode ) {
+		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
 
-		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
+		$user_check = is_user_logged_in();
+
+		if ( is_multisite() ) {
+			$user_check = is_user_logged_in() && is_user_member_of_blog( get_current_user_id() );
+		}
+
+		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) );
+
+		return ! $checks;
+	}
+
+	/**
+	 * Determine whether page should be restricted at point of request
+	 *
+	 * @param array $wp WordPress request
+	 */
+	public static function restrict_access( $wp ) {
+		self::$rsa_options = self::get_options();
+		$is_restricted     = self::is_restricted();
+
+		// Check to see if it's _not_ restricted
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
