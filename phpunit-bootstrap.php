@@ -57,7 +57,6 @@ $mocked_functions = array(
 );
 
 foreach ( $mocked_functions as $mocked_function ) {
-	//echo json_encode( $mocked_function, JSON_PRETTY_PRINT );
 	$args = isset( $mocked_function['return'] ) ?
 		array(
 			'return' => $mocked_function['return'],
