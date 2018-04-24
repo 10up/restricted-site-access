@@ -526,8 +526,8 @@ class Restricted_Site_Access {
 			'strings'                  => array(
 				'confirm' => esc_js( __( 'Network Disable Plugin', 'restricted-site-access' ) ),
 				'cancel'  => esc_js( __( 'Cancel', 'restricted-site-access' ) ),
-				'error'   => esc_js( __( 'It seems you need some help. Did you try %d?', 'restricted-site-access' ) ),
-			)
+				'message' => esc_js( __( 'I understand', 'restricted-site-access' ) ),
+			),
 		) );
 
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
@@ -976,11 +976,19 @@ class Restricted_Site_Access {
 		<div id="rsa-disable-dialog" class="hidden">
 			<h2><?php esc_html_e( 'Confirm network deactivation', 'restricted-site-access' ); ?></h2>
 			<p><?php esc_html_e( 'You are about to network disable the Restricted Site Access plugin making all sites on this network publicly available.', 'restricted-site-access' ); ?></p>
-			<p><strong><?php esc_html_e( 'This action will make public all private sites on this network.', 'restricted-site-access' ); ?></strong></p>
-			<p><?php esc_html_e( 'If you are sure about your action, please resolve the following problem to carry on.', 'restricted-site-access' ); ?></p>
-			<p><?php esc_html_e( 'If otherwise it was a mistake, click the Cancel button to close the dialog.', 'restricted-site-access' ); ?></p>
-			<p class="rsa-problem" style="text-align:center;font-size:2em">
-				<span id="rsa-operator-a">0</span>+<span id="rsa-operator-b">0</span>=<input type="number" min="0" max="20" placeholder="0" id="rsa-user-result" style="font-size:1em">
+			<p>
+				<?php
+				printf(
+					esc_html__( 'If you are sure about your action, please type %s to proceed.', 'restricted-site-access' ),
+					sprintf(
+						'<span style="font-family:monospace">%s</span>',
+						esc_html__( 'I understand', 'restricted-site-access' )
+					)
+				);
+				?>
+			</p>
+			<p style="text-align:center;font-size:2em">
+				<input type="text" id="rsa-user-message" style="font-size:1em">
 			</p>
 		</div>
 		<?php
