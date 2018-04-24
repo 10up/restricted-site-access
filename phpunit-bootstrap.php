@@ -64,7 +64,7 @@ foreach ( $mocked_functions as $mocked_function ) {
 		) :
 		array(
 			'return_arg' => 0,
-			//'times'       => isset( $mocked_function['times'] ) ? $mocked_function['times'] : 1,
+			'times'  => isset( $mocked_function['times'] ) ? $mocked_function['times'] : 0,
 		);
 
 	\WP_Mock::userFunction(
