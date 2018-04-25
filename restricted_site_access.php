@@ -209,7 +209,8 @@ class Restricted_Site_Access {
 		$user_check = is_user_logged_in();
 
 		if ( is_multisite() ) {
-			$user_check = is_user_logged_in() && is_user_member_of_blog( get_current_user_id() );
+			$user_id    = get_current_user_id();
+			$user_check = is_user_logged_in() && ( is_super_admin( $user_id ) || is_user_member_of_blog( $user_id ) );
 		}
 
 		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) );
