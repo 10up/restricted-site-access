@@ -223,9 +223,12 @@ class Restricted_Site_Access {
 	 */
 	protected static function user_can_access() {
 		/**
-		 * Filters whether the user can access before any other checks as a short-circuit.
+		 * Filters whether the user can access the site before any other checks.
 		 *
-		 * @param bool $access Whether the user can access
+		 * Returning a non-null value will short-circuit the function
+		 * and return that value instead.
+		 *
+		 * @param null|bool $access Whether the user can access the site.
 		 */
 		$access = apply_filters( 'restricted_site_access_user_can_access', null );
 
