@@ -73,6 +73,11 @@ Page caching plugins often hook into WordPress to quickly serve the last cached 
 
 == Changelog ==
 
+= 6.2.0 =
+* **Functionality change:** Check user's role on a site in multisite before granting permission.
+* Feature: Alter or restore previous user permission checking with the `restricted_site_access_user_can_access` filter.
+* Avoid a fatal due to differing parameter counts for the `restricted_site_access_is_restricted` filter.
+
 = 6.1.0 =
 * Correct a PHP notice when running PHP >= 7.1.
 * Refactor logic for checking ip address is in masked ip range.
@@ -166,6 +171,9 @@ Drops support for versions of WordPress prior to 3.5.
 This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
 
 == Upgrade Notice ==
+
+= 6.2.0 =
+IMPORTANT MULTISITE FUNCTIONALITY CHANGE: User access is now checked against their role on a given site in multisite. To restore previous behavior, use the new restricted_site_access_user_can_access filter.
 
 = 6.1.0 =
 * Important: version 6.1 improves testing visitors for allowed IP addresses ("Unrestricted IP addresses"). We recommend testing IP based restrictions after updating.
