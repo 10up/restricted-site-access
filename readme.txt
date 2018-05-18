@@ -65,6 +65,22 @@ Restricted Site Access is not meant to be a top secret data safe, but simply a r
 
 Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
 
+= Why can't logged-in users see all the sites on my multisite instance? =
+
+In 6.2.0, the behavior in a multisite install changed from allowing any logged-in user to see a site to checking their role for that specific site. This is a safer default given the varying ways multisite is used; however, if you would prefer to rely on the previous behavior rather than explicitly adding users to each site, place the following PHP code in the theme's functions.php file or in a simple plug-in:
+
+`
+add_filter( 'restricted_site_access_user_can_access', 'my_rsa_user_can_access' );
+
+function my_rsa_user_can_access( $access ) {
+	if ( is_user_logged_in() ) {
+		return true;
+	}
+
+	return $access;
+}
+`
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
