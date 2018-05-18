@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [ 6.2.0 ] - 2018-05-18
+* **Functionality change:** Check user's role on a site in multisite before granting permission.
+* Feature: Alter or restore previous user permission checking with the `restricted_site_access_user_can_access` filter.
+* Avoid a fatal due to differing parameter counts for the `restricted_site_access_is_restricted` filter.
+
 ## [ 6.1.0 ] - 2018-02-14
 * Correct a PHP notice when running PHP >= 7.1.
 * Refactor logic for checking ip address is in masked ip range.

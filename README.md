@@ -60,6 +60,22 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
+### Why can't logged-in users see all the sites on my multisite instance?
+
+In 6.2.0, the behavior in a multisite install changed from allowing any logged-in user to see a site to checking their role for that specific site. This is a safer default given the varying ways multisite is used; however, if you would prefer to rely on the previous behavior rather than explicitly adding users to each site, place the following PHP code in the theme's functions.php file or in a simple plug-in:
+
+```php
+add_filter( 'restricted_site_access_user_can_access', 'my_rsa_user_can_access' );
+
+function my_rsa_user_can_access( $access ) {
+	if ( is_user_logged_in() ) {
+		return true;
+	}
+
+	return $access;
+}
+```
+
 ## License
 
 Restricted Site Access is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-2.0.html) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
