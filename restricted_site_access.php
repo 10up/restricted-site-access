@@ -236,10 +236,6 @@ class Restricted_Site_Access {
 			return $access;
 		}
 
-		if ( ! is_user_logged_in() ) {
-			return false;
-		}
-
 		if ( is_multisite() ) {
 			$user_id = get_current_user_id();
 
@@ -250,6 +246,8 @@ class Restricted_Site_Access {
 			if ( is_user_member_of_blog( $user_id ) && current_user_can( 'read' ) ) {
 				return true;
 			}
+		} elseif ( is_user_logged_in() ) {
+			return true;
 		}
 
 		return false;
