@@ -3,13 +3,13 @@
  * Plugin Name: Restricted Site Access
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 6.1.0
+ * Version: 6.2.1
  * Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
  */
 
-define( 'RSA_VERSION', '6.1.0' );
+define( 'RSA_VERSION', '6.2.1' );
 
 class Restricted_Site_Access {
 
@@ -188,12 +188,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Determine whether page should be restricted at point of request
-	 *
-	 * @param array $wp WordPress request
+	 * Determine if site should be restricted
 	 */
-	public static function restrict_access( $wp ) {
-		self::$rsa_options = self::get_options();
+	protected static function is_restricted() {
 		$mode = self::get_network_mode();
 
 		if ( RSA_IS_NETWORK ) {
@@ -205,11 +202,67 @@ class Restricted_Site_Access {
 		$blog_public = get_option( 'blog_public', 2 );
 
 		//If rsa_mode==enforce we override the rsa_options
-		if( RSA_IS_NETWORK && 'enforce' === $mode ) {
+		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
 
-		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
+		$user_check = self::user_can_access();
+
+		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) );
+
+		return ! $checks;
+	}
+
+	/**
+	 * Check if current user has access.
+	 *
+	 * Can be short-circuited using the `restricted_site_access_user_can_access` filter
+	 * to return a value other than null (boolean recommended).
+	 *
+	 * @return bool Whether the user has access
+	 */
+	protected static function user_can_access() {
+		/**
+		 * Filters whether the user can access the site before any other checks.
+		 *
+		 * Returning a non-null value will short-circuit the function
+		 * and return that value instead.
+		 *
+		 * @param null|bool $access Whether the user can access the site.
+		 */
+		$access = apply_filters( 'restricted_site_access_user_can_access', null );
+
+		if ( null !== $access ) {
+			return $access;
+		}
+
+		if ( is_multisite() ) {
+			$user_id = get_current_user_id();
+
+			if ( is_super_admin( $user_id ) ) {
+				return true;
+			}
+
+			if ( is_user_member_of_blog( $user_id ) && current_user_can( 'read' ) ) {
+				return true;
+			}
+		} elseif ( is_user_logged_in() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine whether page should be restricted at point of request
+	 *
+	 * @param array $wp WordPress request
+	 */
+	public static function restrict_access( $wp ) {
+		self::$rsa_options = self::get_options();
+		$is_restricted     = self::is_restricted();
+
+		// Check to see if it's _not_ restricted
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
@@ -629,8 +682,9 @@ class Restricted_Site_Access {
 	 * Add a new choice to the privacy selector
 	 */
 	public static function blog_privacy_selector() {
-		$is_restricted = ( 2 == get_option( 'blog_public' ));
-		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted );
+		global $wp;
+		$is_restricted = ( 2 == get_option( 'blog_public' ) );
+		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp );
 	?>
 		<p>
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
