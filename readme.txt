@@ -89,6 +89,9 @@ function my_rsa_user_can_access( $access ) {
 
 == Changelog ==
 
+= 6.2.1 =
+* Bug fix: Don't redirect logged-in users viewing the site in a single site install.
+
 = 6.2.0 =
 * **Functionality change:** Check user's role on a site in multisite before granting permission.
 * Feature: Alter or restore previous user permission checking with the `restricted_site_access_user_can_access` filter.
@@ -187,6 +190,9 @@ Drops support for versions of WordPress prior to 3.5.
 This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
 
 == Upgrade Notice ==
+
+= 6.2.1 =
+IMPORTANT MULTISITE FUNCTIONALITY CHANGE: User access is now checked against their role on a given site in multisite. To restore previous behavior, use the new restricted_site_access_user_can_access filter.
 
 = 6.2.0 =
 IMPORTANT MULTISITE FUNCTIONALITY CHANGE: User access is now checked against their role on a given site in multisite. To restore previous behavior, use the new restricted_site_access_user_can_access filter.
