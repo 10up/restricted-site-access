@@ -1030,6 +1030,10 @@ define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( _
 
 Restricted_Site_Access::get_instance();
 
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once __DIR__ . '/wp-cli.php';
+}
+
 /**
  * Uninstall routine for the plugin
  */
