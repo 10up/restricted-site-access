@@ -267,13 +267,21 @@ class Restricted_Site_Access {
 			return;
 		}
 
+		$allowed_ips = self::get_config_ips();
+		if (
+			! empty( self::$rsa_options['allowed'] ) &&
+			is_array( self::$rsa_options['allowed'] )
+		) {
+			$allowed_ips = array_merge( $allowed_ips, self::$rsa_options['allowed'] );
+		}
+
 		// check for the allow list, if its empty block everything
-		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
+		if ( count( $allowed_ips ) > 0 ) {
 			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list
-			foreach( self::$rsa_options['allowed'] as $line ) {
-				if( self::ip_in_range( $remote_ip, $line ) ){
+			foreach( $allowed_ips as $line ) {
+				if ( self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -903,6 +911,25 @@ class Restricted_Site_Access {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets an array of valid IP addresses from constant.
+	 *
+	 * @return array
+	 */
+	public static function get_config_ips() {
+		if ( ! defined( 'RSA_IP_WHITELIST' ) || ! RSA_IP_WHITELIST ) {
+			return [];
+		}
+
+		$ips = RSA_IP_WHITELIST;
+		if ( ! is_array( $ips ) ) {
+			$ips = [ $ips ];
+		}
+
+		$valid_ips = array_filter( $ips, [ __CLASS__, 'is_ip' ] );
+		return $valid_ips;
 	}
 
 	/**
