@@ -76,6 +76,16 @@ function my_rsa_user_can_access( $access ) {
 }
 ```
 
+### How can I programatically define whitelisted IPs?
+
+In 6.2.2, the capacity to define an array of whitelisted IP addresses via constant was introduced.
+
+In your `wp-config.php` file, you can define the following:
+
+```php
+define( 'RSA_IP_WHITELIST', array( '192.0.0.1' ) );
+```
+
 ## License
 
 Restricted Site Access is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-2.0.html) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
