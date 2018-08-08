@@ -226,6 +226,55 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	}
 
 	/**
+	 * Sets the network mode.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <mode>
+	 * : Mode to set network.
+	 * ---
+	 * default: default
+	 * options:
+	 *   - default
+	 *   - enforce
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *    # Sets the multisite to enforce mode.
+	 *    $ wp rsa set-network-mode enforce
+	 *    Success: Set network mode to enforced.
+	 *
+	 * @subcommand set-network-mode
+	 *
+	 * @param array $args       Array with single value of what mode to set.
+	 * @param array $assoc_args Associative arguments. Not used.
+	 */
+	public function set_network_mode( $args, $assoc_args ) {
+		if ( ! RSA_IS_NETWORK ) {
+			WP_CLI::error( __( 'Cannot set network mode when plugin not activated on network.', 'restricted-site-access' ) );
+		}
+
+		// We don't need to validate the mode, as WP-CLI ensures that's correct.
+		$new_mode     = $args[0];
+		$current_mode = get_site_option( 'rsa_mode', 'default' );
+
+		// Sets mode and shows message.
+		if ( $new_mode === $current_mode ) {
+			WP_CLI::warning( sprintf(
+				__( 'Mode is already set to %s.', 'restricted-site-access' ),
+				$current_mode
+			) );
+		} else {
+			update_site_option( 'rsa_mode', sanitize_key( $new_mode ) );
+			WP_CLI::success( sprintf(
+				__( 'Set network mode to %s.', 'restricted-site-access' ),
+				$new_mode
+			) );
+		}
+	}
+
+	/**
 	 * Lists current IP whitelist.
 	 *
 	 * ## OPTIONS
@@ -288,7 +337,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *
 	 *    # Adds 192.0.0.1 to IP whitelist.
 	 *    $ wp rsa ip-add 192.0.0.1
-	 *    Success: Site added 192.0.0.1 to whitelist.
+	 *    Success: Added 192.0.0.1 to site whitelist.
 	 *
 	 * @subcommand ip-add
 	 *
@@ -310,19 +359,27 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$new_ips     = array_diff( $valid_ips, $current_ips );
 
 		if ( 0 === count( $new_ips ) ) {
-			WP_CLI::error( sprintf(
+			// Only show a warning as this may be an automated process.
+			WP_CLI::warning( sprintf(
 				__( 'Provided IPs are already on %s whitelist.', 'restricted-site-access' ),
 				$this->update_text( false )
 			) );
+			return;
 		}
 
-		// Updates the options.
+		// Updates the option.
 		$options['allowed'] = array_merge( $current_ips, $new_ips );
-		$this->update_options( $options );
+		$new_options = $this->update_options( $options );
 
 		WP_CLI::success( sprintf(
-			'Added IPs %1$s to %2$s whitelist.',
+			__( 'Added %1$s to %2$s whitelist.', 'restricted-site-access' ),
 			implode( ', ', $new_ips ),
+			$this->update_text( false )
+		) );
+
+		WP_CLI::debug( sprintf(
+			__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
+			implode( ', ', $new_options['allowed'] ),
 			$this->update_text( false )
 		) );
 	}
@@ -339,7 +396,10 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * : Multisite only. Sets configuration for the network as a whole.
 	 *
 	 * ## EXAMPLES
-	 *    wp rsa ip-remove 192.0.0.1
+	 *
+	 *    # Removes IP address from whitelist.
+	 *    $ wp rsa ip-remove 192.0.0.1
+	 *    Success: Removed 192.0.0.1 from whitelist.
 	 *
 	 * @subcommand ip-remove
 	 *
@@ -348,6 +408,42 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 */
 	public function ip_remove( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
+
+		// Validate the IP addresses.
+		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		if ( 0 === count( $valid_ips ) ) {
+			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
+		}
+
+		// Get the IPs to remove.
+		$options     = $this->get_options();
+		$current_ips = empty( $options['allowed'] ) ? [] : $options['allowed'];
+		$removed_ips = array_intersect( $valid_ips, $current_ips );
+
+		if ( 0 === count( $removed_ips ) ) {
+			// Only show warning as this may be an automated process.
+			WP_CLI::warning( sprintf(
+				__( 'Provided IPs are not on %s whitelist.', 'restricted-site-access' ),
+				$this->update_text( false )
+			) );
+			return;
+		}
+
+		// Updates the option.
+		$options['allowed'] = array_diff( $current_ips, $removed_ips );
+		$new_options = $this->update_options( $options );
+
+		WP_CLI::success( sprintf(
+			__( 'Removed IPs %1$s from %2$s whitelist.', 'restricted-site-access' ),
+			implode( ', ', $removed_ips ),
+			$this->update_text( false )
+		) );
+
+		WP_CLI::debug( sprintf(
+			__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
+			implode( ', ', $new_options['allowed'] ),
+			$this->update_text( false )
+		) );
 	}
 
 	/**
@@ -362,7 +458,10 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * : Multisite only. Sets configuration for the network as a whole.
 	 *
 	 * ## EXAMPLES
-	 *    wp rsa ip-set 192.0.0.1
+	 *
+	 *    # Sets IP whitelist to 192.0.0.1.
+	 *    $ wp rsa ip-set 192.0.0.1
+	 *    Success: Updated site IP whitelist to 192.0.0.1.
 	 *
 	 * @subcommand ip-set
 	 *
@@ -371,6 +470,22 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 */
 	public function ip_set( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
+
+		// Validate the IP addresses.
+		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		if ( 0 === count( $valid_ips ) ) {
+			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
+		}
+
+		// Updates the option.
+		$options['allowed'] = $valid_ips;
+		$new_options = $this->update_options( $options );
+
+		WP_CLI::success( sprintf(
+			__( 'Set %2$s IP whitelist to %1$s.', 'restricted-site-access' ),
+			implode( ', ', $new_options['allowed'] ),
+			$this->update_text( false )
+		) );
 	}
 
 	/**
