@@ -168,7 +168,7 @@ class Restricted_Site_Access {
 	/**
 	 * populate the option with defaults
 	 */
-	private static function get_options( $network = false ) {
+	public static function get_options( $network = false ) {
 		$options = array();
 
 		if ( $network ) {
