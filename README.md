@@ -76,6 +76,14 @@ function my_rsa_user_can_access( $access ) {
 }
 ```
 
+### Is there a way to configure this with [WP-CLI](https://make.wordpress.org/cli/)?
+
+As of version 6.3.0, CLI integration is added. To see the available commands, type the following in your WordPress directory:
+
+```bash
+$ wp rsa
+```
+
 ## License
 
 Restricted Site Access is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-2.0.html) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
