@@ -920,15 +920,22 @@ class Restricted_Site_Access {
 	 */
 	public static function get_config_ips() {
 		if ( ! defined( 'RSA_IP_WHITELIST' ) || ! RSA_IP_WHITELIST ) {
-			return [];
+			return array();
 		}
 
-		$ips = RSA_IP_WHITELIST;
-		if ( ! is_array( $ips ) ) {
-			$ips = [ $ips ];
+		if ( ! is_string( RSA_IP_WHITELIST ) ) {
+			return array();
 		}
 
-		$valid_ips = array_filter( $ips, [ __CLASS__, 'is_ip' ] );
+		// Filter out valid IPs from configured ones.
+		$raw_ips   = explode( '|', RSA_IP_WHITELIST );
+		$valid_ips = array();
+		foreach ( $raw_ips as $ip ) {
+			$trimmed = trim( $ip );
+			if ( self::is_ip( $trimmed ) ) {
+				$valid_ips[] = $trimmed;
+			}
+		}
 		return $valid_ips;
 	}
 
