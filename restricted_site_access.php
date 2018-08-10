@@ -787,6 +787,20 @@ class Restricted_Site_Access {
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
+			<div class="config_ips" style="margin-top: 10px;">
+				<p class="description">
+					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
+				</p>
+				<?php
+					$config_ips = self::get_config_ips();
+					foreach ( $config_ips as $ip ) {
+						printf(
+							'<div><input type="text" value="%1$s" disabled="true" /></div>',
+							esc_attr( $ip )
+						);
+					}
+				?>
+			</div>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
