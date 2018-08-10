@@ -775,15 +775,15 @@ class Restricted_Site_Access {
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
 				$ips = (array) self::$rsa_options['allowed'];
-			foreach ( $ips as $ip ) {
-				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+				foreach ( $ips as $ip ) {
+					if ( ! empty( $ip ) ) {
+						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					}
 				}
-			}
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
