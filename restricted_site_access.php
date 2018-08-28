@@ -168,7 +168,7 @@ class Restricted_Site_Access {
 	/**
 	 * populate the option with defaults
 	 */
-	private static function get_options( $network = false ) {
+	public static function get_options( $network = false ) {
 		$options = array();
 
 		if ( $network ) {
@@ -1077,6 +1077,10 @@ class Restricted_Site_Access {
 define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
 
 Restricted_Site_Access::get_instance();
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once __DIR__ . '/wp-cli.php';
+}
 
 /**
  * Uninstall routine for the plugin
