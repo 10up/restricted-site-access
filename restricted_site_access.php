@@ -534,10 +534,10 @@ class Restricted_Site_Access {
 	}
 
 	public static function enqueue_settings_script() {
-		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/settings.min.js';
+		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/settings.min.js';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/settings.js';
+			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/settings.js';
 		}
 
 		wp_enqueue_script( 'rsa-settings', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
@@ -545,9 +545,9 @@ class Restricted_Site_Access {
 
 	public static function enqueue_admin_script() {
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
 		} else {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
 		}
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
