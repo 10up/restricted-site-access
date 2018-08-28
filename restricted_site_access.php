@@ -357,7 +357,14 @@ class Restricted_Site_Access {
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 		foreach ( self::$fields as $field_name => $field_data ) {
-			add_settings_field( $field_name, __( $field_data['label'], 'restricted-site-access' ), array( __CLASS__, $field_data['field'] ), self::$settings_page, 'restricted-site-access' );
+			add_settings_field(
+				$field_name,
+				$field_data['label'],
+				array( __CLASS__, $field_data['field'] ),
+				self::$settings_page,
+				'restricted-site-access',
+				array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
+			);
 		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
@@ -556,6 +563,8 @@ class Restricted_Site_Access {
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
+
+		add_filter( 'wp_dropdown_pages', array( __CLASS__, 'filter_page_dropdown' ), 10, 2 );
 
 		self::$rsa_options = self::get_options();
 	}
@@ -890,6 +899,25 @@ class Restricted_Site_Access {
 			'name'              => 'rsa_options[page]',
 			'id'                => 'rsa_page',
 		));
+	}
+
+	/**
+	 * Filters the page dropdown to display text if no pages are found.
+	 *
+	 * @param string $html The HTML to be output by wp_dropdown_pages.
+	 * @param array  $args Array of arguments for wp_dropdown_pages.
+	 * @return string      Dropdown HTML, or text saying no pages are found.
+	 */
+	public static function filter_page_dropdown( $html, $args ) {
+		if ( '' !== $html || 'rsa_page' !== $args['id'] ) {
+			return $html;
+		}
+
+		return sprintf(
+			'<p class="description" id="%2$s">%1$s</p>',
+			esc_html__( 'No published pages found.', 'restricted-site-access' ),
+			esc_attr( $args['id'] )
+		);
 	}
 
 	/**
