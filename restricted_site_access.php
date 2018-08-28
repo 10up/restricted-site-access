@@ -267,13 +267,21 @@ class Restricted_Site_Access {
 			return;
 		}
 
+		$allowed_ips = self::get_config_ips();
+		if (
+			! empty( self::$rsa_options['allowed'] ) &&
+			is_array( self::$rsa_options['allowed'] )
+		) {
+			$allowed_ips = array_merge( $allowed_ips, self::$rsa_options['allowed'] );
+		}
+
 		// check for the allow list, if its empty block everything
-		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
+		if ( count( $allowed_ips ) > 0 ) {
 			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list
-			foreach( self::$rsa_options['allowed'] as $line ) {
-				if( self::ip_in_range( $remote_ip, $line ) ){
+			foreach( $allowed_ips as $line ) {
+				if ( self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -767,18 +775,32 @@ class Restricted_Site_Access {
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
 				$ips = (array) self::$rsa_options['allowed'];
-			foreach ( $ips as $ip ) {
-				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+				foreach ( $ips as $ip ) {
+					if ( ! empty( $ip ) ) {
+						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					}
 				}
-			}
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
+			<div class="config_ips" style="margin-top: 10px;">
+				<p class="description">
+					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
+				</p>
+				<?php
+					$config_ips = self::get_config_ips();
+					foreach ( $config_ips as $ip ) {
+						printf(
+							'<div><input type="text" value="%1$s" disabled="true" /></div>',
+							esc_attr( $ip )
+						);
+					}
+				?>
+			</div>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
@@ -903,6 +925,32 @@ class Restricted_Site_Access {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets an array of valid IP addresses from constant.
+	 *
+	 * @return array
+	 */
+	public static function get_config_ips() {
+		if ( ! defined( 'RSA_IP_WHITELIST' ) || ! RSA_IP_WHITELIST ) {
+			return array();
+		}
+
+		if ( ! is_string( RSA_IP_WHITELIST ) ) {
+			return array();
+		}
+
+		// Filter out valid IPs from configured ones.
+		$raw_ips   = explode( '|', RSA_IP_WHITELIST );
+		$valid_ips = array();
+		foreach ( $raw_ips as $ip ) {
+			$trimmed = trim( $ip );
+			if ( self::is_ip( $trimmed ) ) {
+				$valid_ips[] = $trimmed;
+			}
+		}
+		return $valid_ips;
 	}
 
 	/**
