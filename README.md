@@ -82,6 +82,14 @@ As of version 6.3.0, CLI integration is added. To see the available commands, ty
 
 ```bash
 $ wp rsa
+### How can I programatically define whitelisted IPs?
+
+In 6.2.2, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
+
+In your `wp-config.php` file, you can define the following:
+
+```php
+define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 ```
 
 ## License
