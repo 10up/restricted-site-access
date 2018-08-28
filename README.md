@@ -78,13 +78,13 @@ function my_rsa_user_can_access( $access ) {
 
 ### Is there a way to configure this with [WP-CLI](https://make.wordpress.org/cli/)?
 
-As of version 6.3.0, CLI integration is added. To see the available commands, type the following in your WordPress directory:
+As of version 7.0.0, CLI integration is added. To see the available commands, type the following in your WordPress directory:
 
 ```bash
 $ wp rsa
 ### How can I programatically define whitelisted IPs?
 
-In 6.2.2, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
+In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
 
 In your `wp-config.php` file, you can define the following:
 
