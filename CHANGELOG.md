@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [ 7.0.0 ] - 2018-08-30
+* Feature: WP-CLI support! 🎉
+* Feature: Whitelist IPs via the `RSA_IP_WHITELIST` constant.
+* Feature: Use WordPress.org-provided language packs instead of bundled translations.
+* Bug fix: Restrict "virtual pages" and allow them to be used as the unrestricted page, such as with BuddyPress.
+* Bug fix: Hide settings properly when no published pages exist.
+* Bug fix: Avoid double slashes in asset URLs that can lead to 404 errors.
+
 ## [ 6.2.1 ] - 2018-05-21
 * Bug fix: Don't redirect logged-in users viewing the site in a single site install.
 
