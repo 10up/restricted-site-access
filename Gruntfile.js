@@ -32,15 +32,15 @@ module.exports = function(grunt) {
 			},
 			test: {
 				files: [
-					'tests/php/**',
+					'tests/php/*.php',
 				],
-				tasks: ['phpunit']
+				tasks: ['phpunit'],
 			}
 		},
 
 		phpunit: {
 			classes: {
-				dir: 'tests/php/*'
+				dir: 'tests/php/*.php'
 			},
 			options: {
 				bin: 'vendor/bin/phpunit',

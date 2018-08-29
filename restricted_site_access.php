@@ -306,10 +306,23 @@ class Restricted_Site_Access {
 
 		switch ( $rsa_restrict_approach ) {
 			case 4:
-				if ( ! empty( self::$rsa_options['page'] ) && ( $page_id = get_post_field( 'ID', self::$rsa_options['page'] ) ) ) {
-					unset( $wp->query_vars );
-					$wp->query_vars['page_id'] = $page_id;
-					return;
+				if ( ! empty( self::$rsa_options['page'] ) ) {
+					$page = get_post( self::$rsa_options['page'] );
+
+					// If the selected page isn't found, fall back to default values.
+					if ( ! $page ) {
+						self::$rsa_options['head_code'] = 302;
+						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
+						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
+					}
+
+					// Prevents infinite loops.
+					if ( ! isset( $wp->query_vars['pagename'] ) || $wp->query_vars['pagename'] !== $page->post_name ) {
+						self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
+						break;
+					} else {
+						return;
+					}
 				}
 
 			case 3:
