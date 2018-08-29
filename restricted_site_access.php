@@ -7,6 +7,7 @@
  * Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
+ * Text Domain: restricted-site-access
  */
 
 define( 'RSA_VERSION', '6.2.1' );
@@ -50,7 +51,6 @@ class Restricted_Site_Access {
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
-		add_action( 'plugins_loaded', array( __CLASS__, 'load_textdomain' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
@@ -102,13 +102,6 @@ class Restricted_Site_Access {
 		update_option( 'rsa_options', self::sanitize_options( $network_options ) );
 		update_option( 'blog_public', (int) $blog_public );
 		restore_current_blog();
-	}
-
-	/**
-	 * Loads the plugin textdomain
-	 */
-	public static function load_textdomain() {
-		load_plugin_textdomain( 'restricted-site-access', false, dirname( self::$basename ) . '/localization/' );
 	}
 
 	/**
