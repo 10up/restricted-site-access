@@ -279,6 +279,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
+	 * [--exclude-config]
+	 * : Don't include IPs from the configuration file.
+	 *
 	 * [--format=<format>]
 	 * : Render output in a particular format.
 	 * ---
@@ -306,19 +309,21 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 */
 	public function ip_list( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
-		$options = $this->get_options();
 
-		if ( empty( $options['allowed'] ) ) {
+		$no_config = WP_CLI\Utils\get_flag_value( $assoc_args, 'exclude-config', false );
+		$ips       = $this->get_current_ips( ! $no_config );
+		$items     = array();
+
+		if ( 0 === count( $ips ) ) {
 			WP_CLI::line( __( 'No IP addresses configured.', 'restricted-site-access' ) );
 			return;
 		}
-		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
 
-		$items = array();
-		foreach ( $options['allowed'] as $ip ) {
+		foreach ( $ips as $ip ) {
 			$items[] = compact( 'ip' );
 		}
 
+		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
 		WP_CLI\Utils\format_items( $format, $items, array( 'ip' ) );
 	}
 
@@ -354,8 +359,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Get the new IPs.
-		$options     = $this->get_options();
-		$current_ips = empty( $options['allowed'] ) ? [] : $options['allowed'];
+		$current_ips = $this->get_current_ips();
 		$new_ips     = array_diff( $valid_ips, $current_ips );
 
 		if ( 0 === count( $new_ips ) ) {
@@ -416,8 +420,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Get the IPs to remove.
-		$options     = $this->get_options();
-		$current_ips = empty( $options['allowed'] ) ? [] : $options['allowed'];
+		$current_ips = $this->get_current_ips();
 		$removed_ips = array_intersect( $valid_ips, $current_ips );
 
 		if ( 0 === count( $removed_ips ) ) {
@@ -514,6 +517,24 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 */
 	private function get_options() {
 		return Restricted_Site_Access::get_options( $this->is_network );
+	}
+
+	/**
+	 * Gets all current IPs, optionally including config IPs.
+	 *
+	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @return array
+	 */
+	private function get_current_ips( $include_config = true ) {
+		$options     = $this->get_options();
+		$current_ips = empty( $options['allowed'] ) ? array() : $options['allowed'];
+		$config_ips  = array();
+
+		if ( $include_config ) {
+			$config_ips = Restricted_Site_Access::get_config_ips();
+		}
+
+		return array_unique( array_merge( $current_ips, $config_ips ) );
 	}
 
 	/**
