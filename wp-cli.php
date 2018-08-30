@@ -544,7 +544,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * @return array             The newly set options.
 	 */
 	private function update_options( $new_options ) {
-		$sanitized_options = Restricted_Site_Access::sanitize_options( $new_options );
+		$options = wp_parse_args( $new_options, $this->get_options() );
+		$sanitized_options = Restricted_Site_Access::sanitize_options( $options );
 		if ( $this->is_network ) {
 			update_site_option( 'rsa_options', $sanitized_options );
 		} else {
