@@ -420,7 +420,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Get the IPs to remove.
-		$current_ips = $this->get_current_ips();
+		$current_ips = $this->get_current_ips( false );
 		$removed_ips = array_intersect( $valid_ips, $current_ips );
 
 		if ( 0 === count( $removed_ips ) ) {
