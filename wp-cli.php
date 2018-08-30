@@ -372,8 +372,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Updates the option.
-		$options['allowed'] = array_merge( $current_ips, $new_ips );
-		$new_options = $this->update_options( $options );
+		$options['allowed'] = array_merge( $this->get_current_ips( false ), $new_ips );
+		$new_options        = $this->update_options( $options );
 
 		WP_CLI::success( sprintf(
 			__( 'Added %1$s to %2$s whitelist.', 'restricted-site-access' ),
