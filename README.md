@@ -36,7 +36,7 @@ Most commonly, Restricted Site Access is not compatible with some page caching s
 
 To the extent that sites blocked by this plugin should not need to concern themselves with high scale front end performance, we strongly recommend disabling any page caching solutions while restricting access to your site. Keep in mind that most page caching plugins do not cache the “logged in” experience, anyhow. Also note that the plugin *is* fully compatible with other caching layers, like the WordPress object cache.
 
-### How do I allow access to specific pages or parts of my site? =
+### How do I allow access to specific pages or parts of my site?
 
 Developers can use the `restricted_site_access_is_restricted` filter to override normal restriction behavior. Note that restriction checks happen before WordPress executes any queries; it passes the query request from the global `$wp` variable so developers can investigate what the visitor is trying to load.
 
@@ -78,10 +78,12 @@ function my_rsa_user_can_access( $access ) {
 
 ### Is there a way to configure this with [WP-CLI](https://make.wordpress.org/cli/)?
 
-As of version 7.0.0, CLI integration is added. To see the available commands, type the following in your WordPress directory:
+As of version 7.0.0, CLI integration has been added. To see the available commands, type the following in your WordPress directory:
 
 ```bash
 $ wp rsa
+```
+
 ### How can I programatically define whitelisted IPs?
 
 In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.

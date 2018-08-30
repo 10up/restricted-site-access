@@ -81,6 +81,25 @@ function my_rsa_user_can_access( $access ) {
 }
 `
 
+= Is there a way to configure this with [WP-CLI](https://make.wordpress.org/cli/)? =
+
+As of version 7.0.0, CLI integration has been added. To see the available commands, type the following in your WordPress directory:
+
+`
+$ wp rsa
+`
+
+= How can I programatically define whitelisted IPs? =
+
+In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
+
+In your `wp-config.php` file, you can define the following:
+
+`
+define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
+`
+
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
@@ -90,7 +109,7 @@ function my_rsa_user_can_access( $access ) {
 == Changelog ==
 
 = 7.0.0 =
-* Feature: WP-CLI support! 🎉
+* Feature: WP-CLI support! 🎉 Try `wp rsa` to get started.
 * Feature: Whitelist IPs via the `RSA_IP_WHITELIST` constant.
 * Feature: Use WordPress.org-provided language packs instead of bundled translations.
 * Bug fix: Restrict "virtual pages" and allow them to be used as the unrestricted page, such as with BuddyPress.
