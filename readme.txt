@@ -2,8 +2,8 @@
 Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
 Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
-Requires at least: 3.5
-Tested up to: 4.9.4
+Requires at least: 4.6
+Tested up to: 4.9.8
 Stable tag: trunk
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
@@ -81,6 +81,25 @@ function my_rsa_user_can_access( $access ) {
 }
 `
 
+= Is there a way to configure this with [WP-CLI](https://make.wordpress.org/cli/)? =
+
+As of version 7.0.0, CLI integration has been added. To see the available commands, type the following in your WordPress directory:
+
+`
+$ wp rsa
+`
+
+= How can I programatically define whitelisted IPs? =
+
+In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
+
+In your `wp-config.php` file, you can define the following:
+
+`
+define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
+`
+
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
@@ -88,6 +107,14 @@ function my_rsa_user_can_access( $access ) {
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.0.0 =
+* Feature: WP-CLI support! 🎉 Try `wp rsa` to get started.
+* Feature: Whitelist IPs via the `RSA_IP_WHITELIST` constant.
+* Feature: Use WordPress.org-provided language packs instead of bundled translations.
+* Bug fix: Restrict "virtual pages" and allow them to be used as the unrestricted page, such as with BuddyPress.
+* Bug fix: Hide settings properly when no published pages exist.
+* Bug fix: Avoid double slashes in asset URLs that can lead to 404 errors.
 
 = 6.2.1 =
 * Bug fix: Don't redirect logged-in users viewing the site in a single site install.
