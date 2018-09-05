@@ -301,6 +301,7 @@ class Restricted_Site_Access {
 			case 4:
 				if ( ! empty( self::$rsa_options['page'] ) ) {
 					$page = get_post( self::$rsa_options['page'] );
+
 					// If the selected page isn't found or isn't published, fall back to default values.
 					if ( ! $page || 'publish' !== $page->post_status ) {
 						self::$rsa_options['head_code'] = 302;
@@ -309,13 +310,15 @@ class Restricted_Site_Access {
 						break;
 					}
 
-					// Prevents infinite loops.
-					if ( ! isset( $wp->query_vars['pagename'] ) || $wp->query_vars['pagename'] !== $page->post_name ) {
-						self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
-						break;
-					} else {
+					// Are we already on the selected page?
+					if (
+						( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name )
+						) {
 						return;
 					}
+
+					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
+					break;
 				}
 
 			case 3:
