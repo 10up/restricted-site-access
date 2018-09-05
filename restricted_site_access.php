@@ -301,12 +301,12 @@ class Restricted_Site_Access {
 			case 4:
 				if ( ! empty( self::$rsa_options['page'] ) ) {
 					$page = get_post( self::$rsa_options['page'] );
-
-					// If the selected page isn't found, fall back to default values.
-					if ( ! $page ) {
+					// If the selected page isn't found or isn't published, fall back to default values.
+					if ( ! $page || 'publish' !== $page->post_status ) {
 						self::$rsa_options['head_code'] = 302;
 						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
 						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
+						break;
 					}
 
 					// Prevents infinite loops.
