@@ -67,7 +67,7 @@ class RestrictedSiteAccessTests extends \PHPUnit\Framework\TestCase {
 			'get_post',
 			array(
 				'times' => 1,
-				'return' => (object) array( 'ID' => 1 ),
+				'return' => (object) array( 'ID' => 1, 'post_status' => 'publish' ),
 			)
 		);
 		\WP_Mock::onFilter( 'restricted_site_access_approach' )

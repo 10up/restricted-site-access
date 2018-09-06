@@ -302,20 +302,26 @@ class Restricted_Site_Access {
 				if ( ! empty( self::$rsa_options['page'] ) ) {
 					$page = get_post( self::$rsa_options['page'] );
 
-					// If the selected page isn't found, fall back to default values.
-					if ( ! $page ) {
+					// If the selected page isn't found or isn't published, fall back to default values.
+					if ( ! $page || 'publish' !== $page->post_status ) {
 						self::$rsa_options['head_code'] = 302;
 						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
 						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
+						break;
 					}
 
-					// Prevents infinite loops.
-					if ( ! isset( $wp->query_vars['pagename'] ) || $wp->query_vars['pagename'] !== $page->post_name ) {
-						self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
-						break;
-					} else {
+					// Are we already on the selected page?
+					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
+					if (
+						( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name )
+						||
+						( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
+						) {
 						return;
 					}
+
+					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
+					break;
 				}
 
 			case 3:
