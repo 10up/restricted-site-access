@@ -108,6 +108,10 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 
 == Changelog ==
 
+= 7.0.1 =
+* Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.
+* Bug fix: Fall back to the login screen if the unrestricted page is no longer published.
+
 = 7.0.0 =
 * Feature: WP-CLI support! 🎉 Try `wp rsa` to get started.
 * Feature: Whitelist IPs via the `RSA_IP_WHITELIST` constant.

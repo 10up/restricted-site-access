@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [ 7.0.1 ] - 2018-09-06
+* Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.
+* Bug fix: Fall back to the login screen if the unrestricted page is no longer published.
+
 ## [ 7.0.0 ] - 2018-08-30
 * Feature: WP-CLI support! 🎉 Try `wp rsa` to get started.
 * Feature: Whitelist IPs via the `RSA_IP_WHITELIST` constant.
