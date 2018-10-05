@@ -49,7 +49,9 @@ class Restricted_Site_Access_Tests_Bootstrap {
 	 * Manually load the plugin being tested.
 	 */
 	public function manually_load_plugin() {
-		require $this->plugin_root . '/restricted_site_access.php';
+		$plugin = $this->plugin_root . '/restricted_site_access.php';
+		require $plugin;
+		define( 'RSA_TEST_PLUGIN_BASENAME', plugin_basename( $plugin ) );
 	}
 }
 
