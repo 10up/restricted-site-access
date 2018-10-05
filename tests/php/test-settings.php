@@ -4,8 +4,6 @@ class Restricted_Site_Access_Test_Settings extends WP_UnitTestCase {
 
 	public function test_activation() {
 
-		$rsa = Restricted_Site_Access::get_instance();
-
 		$blog_public = get_option( 'blog_public' );
 
 		// Public by default.
@@ -18,6 +16,22 @@ class Restricted_Site_Access_Test_Settings extends WP_UnitTestCase {
 
 		// Reset it.
 		update_option( 'blog_public', '1' );
+
+		// TODO needs to be updated to test multi-site.
+	}
+
+	public function test_deactivation() {
+
+		// Set the site to restricted
+		update_option( 'blog_public', '2' );
+
+
+		do_action( 'deactivate_' . RSA_TEST_PLUGIN_BASENAME );
+
+		// Now it should be un-restricted.
+		$this->assertSame( 1, absint( get_option( 'blog_public' ) ) );
+
+		// TODO needs to be updated to test multi-site.
 	}
 
 }
