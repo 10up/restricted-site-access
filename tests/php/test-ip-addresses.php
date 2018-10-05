@@ -46,4 +46,25 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1' ) );
 		$this->assertFalse( $rsa::ip_in_range( '192.168.1.1', '127.0.0.0/24' ) );
 	}
+
+	public function test_get_client_ip_address() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$headers = array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
+
+		foreach( $headers as $header ) {
+			$_SERVER[ $header ] = '127.0.0.1';
+			$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
+			unset( $_SERVER[ $header ] );
+		}
+	}
 }
