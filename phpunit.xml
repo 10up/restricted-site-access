@@ -9,6 +9,11 @@
 			<directory suffix=".php">tests/php</directory>
 		</testsuite>
 	</testsuites>
+	<filter>
+		<whitelist>
+			<file>restricted_site_access.php</file>
+		</whitelist>
+	</filter>
 	<php>
 		<ini name="error_reporting" value="32767" />
 		<ini name="display_errors" value="1" />

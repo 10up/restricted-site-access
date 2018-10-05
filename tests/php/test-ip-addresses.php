@@ -13,11 +13,14 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		);
 
 		$invalid_ips = array(
+			'',
 			'bad',
+			'/',
 			'0.42.42.42',
 			'999.888.777.666',
 			'198.51.100.0/24',
 			'203.0.113.0/24',
+			'203.0.113.0/ten',
 		);
 
 		foreach ( $valid_ips as $valid ) {
