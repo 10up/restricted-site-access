@@ -247,11 +247,27 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Determine whether page should be restricted at point of request
+	 * Redirects restricted requests.
 	 *
 	 * @param array $wp WordPress request
 	 */
 	public static function restrict_access( $wp ) {
+
+		$results = self::restrict_access_check( $wp );
+
+		if ( is_array( $results ) && ! empty( $results ) ) {
+			wp_redirect( $results['url'], $results['code'] );
+			die();
+		}
+	}
+
+	/**
+	 * Determine whether page should be restricted at point of request.
+	 *
+	 * @param array $wp WordPress The main WP request.
+	 * @return array              List of URL and code, otherwise empty.     
+	 */
+	public static function restrict_access_check( $wp ) {
 		self::$rsa_options = self::get_options();
 		$is_restricted     = self::is_restricted();
 
@@ -347,8 +363,10 @@ class Restricted_Site_Access {
 		$redirect_url = apply_filters( 'restricted_site_access_redirect_url', self::$rsa_options['redirect_url'], $wp );
 		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['head_code'], $wp );
 
-		wp_redirect( $redirect_url, $redirect_code );
-		die;
+		return array(
+			'url' => $redirect_url,
+			'code' => $redirect_code,
+		);
 	}
 
 	/**
