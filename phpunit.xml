@@ -1,0 +1,17 @@
+<phpunit
+	bootstrap="tests/php/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	verbose="true"
+	>
+	<testsuites>
+		<testsuite name="restricted-site-access-unit-tests">
+			<directory suffix=".php">tests/php</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<ini name="error_reporting" value="32767" />
+		<ini name="display_errors" value="1" />
+		<ini name="display_startup_errors" value="1" />
+	</php>
+</phpunit>

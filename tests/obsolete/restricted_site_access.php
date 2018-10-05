@@ -1,5 +1,7 @@
 <?php
 
+return;
+
 class RestrictedSiteAccessTests extends \PHPUnit\Framework\TestCase {
 	public function setUp() {
 		\WP_Mock::setUp();
