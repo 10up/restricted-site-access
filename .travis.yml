@@ -17,7 +17,6 @@ install:
   - composer install --no-interaction
 
 # Declare which versions of WordPress to test against.
-# Also declare whether or not to test in Multisite.
 env:
     - WP_VERSION=master
 
@@ -51,4 +50,5 @@ before_script:
 
 script:
   - phpunit --verbose
-  - phpunit --verbose -c phpunit-multisite.xml
+  - phpunit --verbose -c tests/php/multisite.xml
+  - phpunit --verbose -c tests/php/whitelisted.xml

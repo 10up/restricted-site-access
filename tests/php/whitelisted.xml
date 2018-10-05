@@ -1,22 +1,22 @@
 <phpunit
-	bootstrap="tests/php/bootstrap.php"
+	bootstrap="bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	verbose="true"
 	>
 
 	<php>
-		<const name="WP_TESTS_MULTISITE" value="1" />
+		<const name="RSA_IP_WHITELIST" value="127.0.0.1|192.168.1.51" />
 	</php>
 	
 	<testsuites>
 		<testsuite name="restricted-site-access-unit-tests">
-			<directory suffix=".php">tests/php</directory>
+			<directory suffix=".php">./</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
 		<whitelist>
-			<file>restricted_site_access.php</file>
+			<file>../../restricted_site_access.php</file>
 		</whitelist>
 	</filter>
 	<php>
