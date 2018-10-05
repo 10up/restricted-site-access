@@ -36,4 +36,14 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 			}
 		}
 	}
+
+	public function test_ip_in_range() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.0/24' ) );
+		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1/32' ) );
+		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1' ) );
+		$this->assertFalse( $rsa::ip_in_range( '192.168.1.1', '127.0.0.0/24' ) );
+	}
 }
