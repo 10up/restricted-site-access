@@ -19,24 +19,32 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 
 		remove_filter( 'restricted_site_access_is_restricted', '__return_false' );
 
+		// Now test it without the filter.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
 
-
-
-
-
-		// if ( is_multisite() ) {
-
-
-		// } else {
-
-
-
-
-
-		// }
-
-
-
+		$this->assertEmpty( $rsa::restrict_access_check( $wp ) );
 	}
 
+	public function test_restrict_access_restricted_default() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		// Set site to to restricted.
+		update_option( 'blog_public', 2 );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		// Check the default results.
+		$url = add_query_arg( 'redirect_to', rawurlencode( '/' ), home_url( 'wp-login.php' ) );
+
+		$this->assertNotEmpty( $results );
+		$this->assertSame( 302, $results['code'] );
+		$this->assertSame( $url, $results['url'] );
+
+	}
 }

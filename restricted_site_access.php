@@ -256,8 +256,12 @@ class Restricted_Site_Access {
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
-			wp_redirect( $results['url'], $results['code'] );
-			die();
+
+			// Don't redirect during unit tests.
+			if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+				wp_redirect( $results['url'], $results['code'] );
+				die();
+			}
 		}
 	}
 
