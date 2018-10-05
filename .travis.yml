@@ -12,12 +12,10 @@ matrix:
 cache:
   apt: true
   directories:
-    - node_modules
     - vendor
 
 install:
   - composer install --no-interaction
-  - npm install
 
 # Declare which versions of WordPress to test against.
 # Also declare whether or not to test in Multisite.
@@ -53,6 +51,3 @@ before_script:
     - mysql -e 'CREATE DATABASE wordpress_test;' -uroot
     # Switch back to the plugin dir
     - cd $TRAVIS_BUILD_DIR
-
-script:
-  - grunt phpunit
