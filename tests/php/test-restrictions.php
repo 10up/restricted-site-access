@@ -142,7 +142,12 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 
 		// We should be redirected to the landing page.
 		$this->assertNotEmpty( $results );
-		$this->assertEmpty( $results['die_code'] );
+
+		$this->assertArrayNotHasKey( 'die_code', $results );
+
+		$this->assertArrayHasKey( 'code', $results );
+		$this->assertArrayHasKey( 'url', $results );
+
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( get_permalink( $page_id ), $results['url'] );
 
@@ -194,7 +199,12 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		$results = $rsa::restrict_access_check( $wp );
 
 		$this->assertNotEmpty( $results );
-		$this->assertEmpty( $results['url'] );
+
+		$this->assertArrayNotHasKey( 'url', $results );
+		$this->assertArrayHasKey( 'die_code', $results );
+		$this->assertArrayHasKey( 'die_title', $results );
+		$this->assertArrayHasKey( 'die_message', $results );
+
 		$this->assertSame( 403, $results['die_code'] );
 		$this->assertSame( get_bloginfo( 'name' ) . ' - Site Access Restricted', $results['die_title'] );
 		$this->assertContains( 'You shall not pass!', $results['die_message'] );
