@@ -318,7 +318,7 @@ class Restricted_Site_Access {
 		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling
 
 		switch ( $rsa_restrict_approach ) {
-			case 4:
+			case 4: // Show them a page.
 				if ( ! empty( self::$rsa_options['page'] ) ) {
 					$page = get_post( self::$rsa_options['page'] );
 
@@ -330,15 +330,23 @@ class Restricted_Site_Access {
 						break;
 					}
 
-					// Are we already on the selected page?
-					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
-					if (
-						( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name )
-						||
-						( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
-						) {
-						return;
-					}
+				// Are we already on the selected page?
+				$on_selected_page = false;
+				if ( isset( $wp->query_vars['page_id'] ) && absint( $wp->query_vars['page_id'] ) === $page->ID ) {
+					$on_selected_page = true;
+				}
+
+				if ( ! $on_selected_page && ( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name ) ) {
+					$on_selected_page = true;
+				}
+
+				// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
+				if ( $on_selected_page
+					||
+					( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
+					) {
+					return;
+				}
 
 					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
 					break;
