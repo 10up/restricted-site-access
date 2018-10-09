@@ -172,4 +172,29 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 
 		flush_rewrite_rules();
 	}
+
+	public function test_restrict_access_show_them_a_message() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		// Set site to to restricted.
+		update_option( 'blog_public', 2 );
+
+		$options = $rsa::get_options( is_multisite() );
+		$options['approach'] = 3; // Show them a message.
+		$options['message'] = 'You shall not pass!';
+
+		rsa_tests_update_options( $options );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		$this->assertNotEmpty( $results );
+		$this->assertSame( 403, $results['die_code'] );
+		$this->assertSame( get_bloginfo( 'name' ) . ' - Site Access Restricted', $results['die_title'] );
+		$this->assertContains( 'You shall not pass!', $results['die_message'] );
+	}
 }

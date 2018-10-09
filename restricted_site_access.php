@@ -258,9 +258,14 @@ class Restricted_Site_Access {
 		if ( is_array( $results ) && ! empty( $results ) ) {
 
 			// Don't redirect during unit tests.
-			if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
 				wp_redirect( $results['url'], $results['code'] );
 				die();
+			}
+
+			// Don't die during unit tests.
+			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+				wp_die( $results['die_message'], $results['die_title'], array( 'response' => $results['die_code'] ) );
 			}
 		}
 	}
@@ -356,7 +361,12 @@ class Restricted_Site_Access {
 				$message = __( self::$rsa_options['message'], 'restricted-site-access' );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message = apply_filters( 'restricted_site_access_message', $message, $wp );
-				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted', array( 'response' => 403 ) );
+
+				return array(
+					'die_message' => $message,
+					'die_title' => get_bloginfo( 'name' ) . ' - Site Access Restricted',
+					'die_code' => 403,
+				);
 
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
