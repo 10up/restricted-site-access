@@ -121,7 +121,7 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		$this->assertSame( $url, $results['url'] );
 
 		// Now test it with a valid page.
-		$page_id = 	$post_id = self::factory()->post->create(
+		$page_id = $post_id = self::factory()->post->create(
 			[
 				'post_type' => 'page',
 				'post_title' => 'Restrcted Landing Page',
@@ -142,6 +142,7 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 
 		// We should be redirected to the landing page.
 		$this->assertNotEmpty( $results );
+		$this->assertEmpty( $results['die_code'] );
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( get_permalink( $page_id ), $results['url'] );
 
@@ -193,6 +194,7 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		$results = $rsa::restrict_access_check( $wp );
 
 		$this->assertNotEmpty( $results );
+		$this->assertEmpty( $results['url'] );
 		$this->assertSame( 403, $results['die_code'] );
 		$this->assertSame( get_bloginfo( 'name' ) . ' - Site Access Restricted', $results['die_title'] );
 		$this->assertContains( 'You shall not pass!', $results['die_message'] );
