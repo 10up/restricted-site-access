@@ -7,6 +7,7 @@
 	<testsuites>
 		<testsuite name="restricted-site-access-unit-tests">
 			<directory suffix=".php">tests/php</directory>
+			<exclude suffix=".php">tests/php/multisite</exclude>
 		</testsuite>
 	</testsuites>
 	<filter>

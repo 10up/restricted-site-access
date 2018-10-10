@@ -50,4 +50,4 @@ before_script:
 
 script:
   - phpunit --verbose
-  - phpunit --verbose -c tests/php/multisite.xml
+  - phpunit --verbose -c tests/php/multisite/multisite.xml

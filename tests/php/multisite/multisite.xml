@@ -1,5 +1,5 @@
 <phpunit
-	bootstrap="bootstrap.php"
+	bootstrap="../bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	verbose="true"
@@ -16,7 +16,7 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<file>../../restricted_site_access.php</file>
+			<file>../../../restricted_site_access.php</file>
 		</whitelist>
 	</filter>
 	<php>

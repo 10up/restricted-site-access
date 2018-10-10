@@ -67,17 +67,16 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( $url, $results['url'] );
 
-		// Add some allowed IPs.
-		$options = $rsa::get_options( is_multisite() );
+		// Add our IP to the allowed list.
+		$options = $rsa::get_options( false );
 		$options['allowed'][] = '127.0.0.1';
 
-		rsa_tests_update_options( $options );
-
-		$options = $rsa::get_options( is_multisite() );
-		$this->assertContains( '127.0.0.1', $options['allowed'] );
+		update_option( 'rsa_options', $options );
 
 		// Now set the client IP to one of the whitelisted IPs.
 		$_SERVER['HTTP_CLIENT_IP'] = '127.0.0.1';
+
+		$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
 
 		// Go to the home page.
 		$this->go_to( home_url( '/' ) );
@@ -89,9 +88,12 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 
 		unset( $_SERVER['HTTP_CLIENT_IP'] );
 
-		$options['allowed'][] = [];
+		// Reset the site's whitelist.
+		$options['allowed'] = [];
+		update_option( 'rsa_option', $options );
 
-		rsa_tests_update_options( $options );
+		// TODO we'll need some way to network activate the plugin as a separate test suite
+		// so we can test the RSA_IS_NETWORK define.
 	}
 
 	public function test_restrict_access_show_them_a_page() {
@@ -101,11 +103,11 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		// Set site to to restricted.
 		update_option( 'blog_public', 2 );
 
-		$options = $rsa::get_options( is_multisite() );
+		$options = $rsa::get_options( false );
 		$options['approach'] = 4; // Show them a page.
 		$options['page'] = 99999; // First test with an invalid page.
 
-		rsa_tests_update_options( $options );
+		update_option( 'rsa_options', $options );
 
 		// Go to the home page.
 		$this->go_to( home_url( '/' ) );
@@ -132,7 +134,8 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		$this->assertGreaterThan( 0, $page_id );
 
 		$options['page'] = $page_id;
-		rsa_tests_update_options( $options );
+
+		update_option( 'rsa_options', $options );
 
 		// Go to the home page.
 		$this->go_to( home_url( '/' ) );
@@ -186,11 +189,11 @@ class Restricted_Site_Access_Test_Restrictions extends WP_UnitTestCase {
 		// Set site to to restricted.
 		update_option( 'blog_public', 2 );
 
-		$options = $rsa::get_options( is_multisite() );
+		$options = $rsa::get_options( false );
 		$options['approach'] = 3; // Show them a message.
 		$options['message'] = 'You shall not pass!';
 
-		rsa_tests_update_options( $options );
+		update_option( 'rsa_options', $options );
 
 		// Go to the home page.
 		$this->go_to( home_url( '/' ) );
