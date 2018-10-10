@@ -128,6 +128,9 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 	public function test_singlesite_restrict_access_show_them_a_page() {
 
+		global $wp_rewrite;
+		$wp_rewrite->init();
+
 		$rsa = Restricted_Site_Access::get_instance();
 
 		// Set site to to restricted.
@@ -153,7 +156,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertSame( $url, $results['url'] );
 
 		// Now test it with a valid page.
-		$page_id = $post_id = self::factory()->post->create(
+		$page_id = self::factory()->post->create(
 			[
 				'post_type' => 'page',
 				'post_title' => 'Restrcted Landing Page',
@@ -193,9 +196,9 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		// We should not be redirected since we're already on that page.
 		$this->assertEmpty( $results );
 
+		// Now turn on nice permalinks.
 		update_option( 'permalink_structure', '/%postname%/' );
-
-		flush_rewrite_rules();
+		$wp_rewrite->init();
 
 		// Go to the landing page.
 		$this->go_to( get_permalink( $page_id ) );
@@ -208,8 +211,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		// Reset permalinks.
 		update_option( 'permalink_structure', '/%postname%/' );
-
-		flush_rewrite_rules();
+		$wp_rewrite->init();
 	}
 
 	public function test_singlesite_restrict_access_show_them_a_message() {
@@ -241,5 +243,54 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertSame( 403, $results['die_code'] );
 		$this->assertSame( get_bloginfo( 'name' ) . ' - Site Access Restricted', $results['die_title'] );
 		$this->assertContains( 'You shall not pass!', $results['die_message'] );
+	}
+
+	public function test_singlesite_restrict_access_redirect_to_url() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		// Set site to to restricted.
+		update_option( 'blog_public', 2 );
+
+		$options = $rsa::get_options( false );
+		$options['approach'] = 2; // Redirect them to a specified web address.
+		$options['redirect_url'] = 'https://10up.com';
+		$options['redirect_path'] = 0;
+		$options['head_code'] = 301;
+
+		update_option( 'rsa_options', $options );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		$this->assertNotEmpty( $results );
+		$this->assertArrayNotHasKey( 'die_code', $results );
+		$this->assertArrayHasKey( 'code', $results );
+		$this->assertArrayHasKey( 'url', $results );
+
+		$this->assertSame( 301, $results['code'] );
+		$this->assertSame( 'https://10up.com', $results['url'] );
+
+		// Update the site options.
+		$options = $rsa::get_options( false );
+		$options['redirect_url'] = 'https://10up.com';
+		$options['redirect_path'] = 1; // Send them to the same path at the new URL.
+		$options['head_code'] = 302;
+
+		update_option( 'rsa_options', $options );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/custom-page' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		$this->assertNotEmpty( $results );
+
+		$this->assertSame( 302, $results['code'] );
+		$this->assertSame( 'https://10up.com/custom-page', $results['url'] );
 	}
 }
