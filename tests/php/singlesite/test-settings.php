@@ -4,6 +4,8 @@ class Restricted_Site_Access_Test_Singlesite_Settings extends WP_UnitTestCase {
 
 	public function test_singlesite_activation_deactivation() {
 
+		$rsa = Restricted_Site_Access::get_instance();
+
 		$this->assertSame( 0, validate_plugin( RSA_TEST_PLUGIN_BASENAME ) );
 
 		// Set current site to public.
@@ -13,6 +15,8 @@ class Restricted_Site_Access_Test_Singlesite_Settings extends WP_UnitTestCase {
 		$activated = activate_plugin( RSA_TEST_PLUGIN_BASENAME, '', false );
 
 		$this->assertEmpty( $activated );
+
+		$this->assertFalse( $rsa::is_network( RSA_TEST_PLUGIN_BASENAME ) );
 
 		// Now it should be restricted.
 		$this->assertSame( 2, absint( get_option( 'blog_public' ) ) );
@@ -27,7 +31,7 @@ class Restricted_Site_Access_Test_Singlesite_Settings extends WP_UnitTestCase {
 	public function test_get_options() {
 
 		$rsa = Restricted_Site_Access::get_instance();
-		$options = $rsa::get_options( false );
+		$options = $rsa::get_options( is_multisite() );
 
 		$defaults = array(
 			'approach'      =>  1,
