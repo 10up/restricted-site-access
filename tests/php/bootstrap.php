@@ -24,7 +24,9 @@ class Restricted_Site_Access_Tests_Bootstrap {
 		}
 
 		// Load the Composer autoloader.
-		$this->plugin_root = dirname( dirname( dirname( __FILE__ ) ) );
+		define( 'WP_PLUGIN_DIR', dirname( dirname( dirname( __FILE__ ) ) ) );
+		$this->plugin_root = WP_PLUGIN_DIR;
+
 		if ( ! file_exists( $this->plugin_root . '/vendor/autoload.php' ) ) {
 			throw new Exception(
 				'ERROR' . PHP_EOL . PHP_EOL .
@@ -54,9 +56,8 @@ class Restricted_Site_Access_Tests_Bootstrap {
 	 * Manually load the plugin being tested.
 	 */
 	public function manually_load_plugin() {
-		$plugin = $this->plugin_root . '/restricted_site_access.php';
-		require $plugin;
-		define( 'RSA_TEST_PLUGIN_BASENAME', plugin_basename( $plugin ) );
+		require $this->plugin_root . '/restricted_site_access.php';
+		define( 'RSA_TEST_PLUGIN_BASENAME', plugin_basename( 'restricted_site_access.php' ) );
 	}
 }
 

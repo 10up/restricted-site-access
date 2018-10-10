@@ -4,9 +4,17 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 	public function test_restrict_access_not_restricted() {
 
+		return;
+
+		$this->assertTrue( RSA_IS_NETWORK );
+
+		// Set network to not 
+		get_site_option( 'rsa_mode', 'default' );
+
 		$rsa = Restricted_Site_Access::get_instance();
 
 		// Set site to not restricted.
+		
 		update_option( 'blog_public', 1 );
 
 		// First, test the filter.
@@ -24,7 +32,7 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 		$wp = $GLOBALS['wp'];
 
 		$this->assertEmpty( $rsa::restrict_access_check( $wp ) );
-		
+
 
 
 	}
