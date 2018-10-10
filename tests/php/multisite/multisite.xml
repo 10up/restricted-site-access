@@ -24,4 +24,7 @@
 		<ini name="display_errors" value="1" />
 		<ini name="display_startup_errors" value="1" />
 	</php>
+	<logging>
+		<log type="coverage-php" target="../../../test-coverage/multisite-coverage.serialized"/>
+	</logging>
 </phpunit>
