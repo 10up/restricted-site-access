@@ -42,4 +42,38 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 		// Site should now be public.
 		$this->assertSame( 1, absint( get_option( 'blog_public' ) ) );
 	}
+
+	public function test_multisite_uninstall() {
+
+		update_site_option( 'blog_public', 2 );
+		update_site_option( 'rsa_options', array() );
+		update_site_option( 'rsa_mode', 'enforce' );
+
+		$sites = get_sites();
+
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+
+			update_option( 'blog_public', 2 );
+			update_option( 'rsa_options', array() );
+
+			restore_current_blog();
+		}
+
+		restricted_site_access_uninstall();
+
+		$this->assertFalse( get_site_option( 'blog_mode' ) );
+		$this->assertFalse( get_site_option( 'rsa_options' ) );
+		$this->assertFalse( get_site_option( 'rsa_mode' ) );
+
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+
+			$this->assertSame( 1, absint( get_option( 'blog_public' ) ) );
+			$this->assertFalse( get_option( 'rsa_options' ) );
+
+			restore_current_blog();
+		}
+
+	}
 }

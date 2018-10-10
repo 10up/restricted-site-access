@@ -1207,6 +1207,8 @@ if ( ! function_exists( 'inet_pton' ) ) :
 	 * @param string $ip IP Address
 	 *
 	 * @return array|string
+	 *
+	 * @codeCoverageIgnore
 	 */
 	function inet_pton( $ip ) {
 		if ( strpos( $ip, '.' ) !== false ) {
