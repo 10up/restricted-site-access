@@ -46,6 +46,23 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( $url, $results['url'] );
 	
+		// Login a user and verify they can access the site.
+		wp_set_current_user( 1 );
+		$this->assertTrue( is_user_logged_in() );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		$this->assertEmpty( $results );
+
+		// Logout the user.
+		wp_destroy_current_session();
+		wp_set_current_user( 0 );
+		$this->assertFalse( is_user_logged_in() );
+
 		// Test the filter that lets us access the site.
 		add_filter( 'restricted_site_access_user_can_access', '__return_true' );
 
@@ -55,7 +72,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		$results = $rsa::restrict_access_check( $wp );
 
-		$this->assertEmpty( $results );;
+		$this->assertEmpty( $results );
 
 		remove_filter( 'restricted_site_access_user_can_access', '__return_true' );
 	}

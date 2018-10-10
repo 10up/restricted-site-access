@@ -51,6 +51,24 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( $url, $results['url'] );
 
+		// Login a user and verify they can access the site.
+		wp_set_current_user( 1 );
+		$this->assertTrue( is_user_logged_in() );
+		$this->assertTrue( is_super_admin( get_current_user_id() ) );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		$this->assertEmpty( $results );
+
+		// Logout the user.
+		wp_destroy_current_session();
+		wp_set_current_user( 0 );
+		$this->assertFalse( is_user_logged_in() );
+
 	}
 
 	public function test_multisite_restrict_access_restricted_whitelist() {
