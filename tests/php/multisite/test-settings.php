@@ -74,6 +74,50 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 
 			restore_current_blog();
 		}
+	}
+
+	public function test_multisite_save_network_settings() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		delete_site_option( 'rsa_mode' );
+		delete_site_option( 'blog_public' );
+		delete_site_option( 'rsa_options' );
+
+		$rsa::save_network_settings();
+
+		$this->assertFalse( get_site_option( 'rsa_mode' ) );
+		$this->assertFalse( get_site_option( 'blog_public' ) );
+		$this->assertFalse( get_site_option( 'rsa_options' ) );
+
+		// Setup the $_POST variable.
+		$_POST['rsa_mode'] = ' enforce';
+		$_POST['blog_public'] = 2;
+		$_POST['rsa_options'] = [
+			'approach' => 99,
+			'message' => 'Hello world<script>',
+			'head_code' => 404,
+			'redirect_url' => 'https://10up.com',
+			'allowed' => [
+				'127.0.0.1',
+			],
+		];
+
+		$rsa::save_network_settings();
+
+		$this->assertSame( 'enforce', get_site_option( 'rsa_mode' ) );
+		$this->assertSame( 2, absint( get_site_option( 'blog_public' ) ) );
+
+		$options = $rsa::get_options( true );
+
+		$this->assertNotEmpty( $options );
+		$this->assertNotEmpty( $options['allowed'] );
+		$this->assertSame( 1, $options['approach'] );
+		$this->assertSame( 'Hello world', $options['message'] );
+		$this->assertSame( 302, $options['head_code'] );
+		$this->assertSame( 'https://10up.com', $options['redirect_url'] );
+		$this->assertSame( 0, $options['page'] );
+		$this->assertContains( '127.0.0.1', $options['allowed'] );
 
 	}
 }

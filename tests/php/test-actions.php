@@ -1,70 +1,19 @@
 <?php
 
-class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
+class Restricted_Site_Access_Test_Actions extends WP_UnitTestCase {
 
-	public function test_is_ip() {
-
-		$rsa = Restricted_Site_Access::get_instance();
-
-		$valid_ips = array(
-			'127.0.0.1',
-			'192.168.0.1',
-			'192.168.5.2/16',
-		);
-
-		$invalid_ips = array(
-			'',
-			'bad',
-			'/',
-			'0.42.42.42',
-			'999.888.777.666',
-			'198.51.100.0/24',
-			'203.0.113.0/24',
-			'203.0.113.0/ten',
-		);
-
-		foreach ( $valid_ips as $valid ) {
-			$this->assertTrue( $rsa::is_ip( $valid ), $valid . ' was not valid.' );
-		}
-
-		foreach ( $invalid_ips as $invalid ) {
-
-			try {
-				$this->assertFalse( $rsa::is_ip( $invalid ), $invalid . ' was valid.' );
-			} catch ( \Exception $e ) {
-				$this->assertNotEmpty( $e );
-			}
-		}
-	}
-
-	public function test_ip_in_range() {
+	public function test_actions() {
 
 		$rsa = Restricted_Site_Access::get_instance();
+		$rsa::_add_actions();
 
-		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.0/24' ) );
-		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1/32' ) );
-		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1' ) );
-		$this->assertFalse( $rsa::ip_in_range( '192.168.1.1', '127.0.0.0/24' ) );
-	}
-
-	public function test_get_client_ip_address() {
-
-		$rsa = Restricted_Site_Access::get_instance();
-
-		$headers = array(
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
-		);
-
-		foreach( $headers as $header ) {
-			$_SERVER[ $header ] = '127.0.0.1';
-			$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
-			unset( $_SERVER[ $header ] );
-		}
+		$this->assertSame( 1, has_action( 'parse_request', [ 'Restricted_Site_Access', 'restrict_access' ] ) );
+		$this->assertSame( 1, has_action( 'admin_init', [ 'Restricted_Site_Access', 'admin_init' ] ) );
+		$this->assertSame( 10, has_action( 'wp_ajax_rsa_ip_check', [ 'Restricted_Site_Access', 'ajax_rsa_ip_check' ] ) );
+		$this->assertSame( 10, has_action( 'activate_' . RSA_TEST_PLUGIN_BASENAME, [ 'Restricted_Site_Access', 'activation' ] ) );
+		$this->assertSame( 10, has_action( 'deactivate_' . RSA_TEST_PLUGIN_BASENAME, [ 'Restricted_Site_Access', 'deactivation' ] ) );
+		$this->assertSame( 10, has_action( 'wpmu_new_blog', [ 'Restricted_Site_Access', 'set_defaults' ] ) );
+		$this->assertSame( 10, has_action( 'admin_enqueue_scripts', [ 'Restricted_Site_Access', 'enqueue_admin_script' ] ) );
+		$this->assertSame( 10, has_action( 'wp_ajax_rsa_notice_dismiss', [ 'Restricted_Site_Access', 'ajax_notice_dismiss' ] ) );
 	}
 }
