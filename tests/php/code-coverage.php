@@ -22,12 +22,11 @@ foreach ( $files as $filename ) {
 
 print "\nGenerating code coverage report in HTML format ...";
 
-$writer = new PHP_CodeCoverage_Report_HTML(
+$writer = new \SebastianBergmann\CodeCoverage\Report\Html\Facade(
 	'UTF-8',
 	false, // 'reportHighlight'
 	35, // 'reportLowUpperBound'
-	70, // 'reportHighLowerBound'
-	sprintf( ' and <a href="http://phpunit.de/">PHPUnit %s</a>', PHPUnit_Runner_Version::id() )
+	70 // 'reportHighLowerBound'
 );
 
 $writer->process( $codeCoverage, 'test-coverage' );

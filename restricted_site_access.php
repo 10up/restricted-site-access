@@ -1154,7 +1154,9 @@ class Restricted_Site_Access {
 	}
 }
 
-define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
+if ( ! defined( 'RSA_IS_NETWORK' ) ) {
+	define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
+}
 
 Restricted_Site_Access::get_instance();
 

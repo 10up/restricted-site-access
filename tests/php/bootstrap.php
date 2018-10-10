@@ -36,7 +36,10 @@ class Restricted_Site_Access_Tests_Bootstrap {
 		// Give access to tests_add_filter() function.
 		require_once $wp_develop_dir . '/tests/phpunit/includes/functions.php';
 
-		// TODO add WP_TESTS_MULTISITE check to set the plugin globally activated.
+		if ( defined( 'WP_TESTS_MULTISITE' ) ) {
+			// Tells the plugin it is network active.
+			define( 'RSA_IS_NETWORK', true );
+		}
 
 		tests_add_filter( 'muplugins_loaded', [ $this, 'manually_load_plugin' ] );
 
