@@ -2,7 +2,7 @@
 
 class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCase {
 
-	public function test_restrict_access_not_restricted() {
+	public function test_singlesite_restrict_access_not_restricted() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -26,7 +26,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertEmpty( $rsa::restrict_access_check( $wp ) );
 	}
 
-	public function test_restrict_access_restricted_default() {
+	public function test_singlesite_restrict_access_restricted_default() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -47,7 +47,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertSame( $url, $results['url'] );
 	}
 
-	public function test_restrict_access_restricted_whitelist() {
+	public function test_singlesite_restrict_access_restricted_whitelist() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -96,7 +96,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		// so we can test the RSA_IS_NETWORK define.
 	}
 
-	public function test_restrict_access_show_them_a_page() {
+	public function test_singlesite_restrict_access_show_them_a_page() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -182,7 +182,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		flush_rewrite_rules();
 	}
 
-	public function test_restrict_access_show_them_a_message() {
+	public function test_singlesite_restrict_access_show_them_a_message() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 

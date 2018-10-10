@@ -2,38 +2,24 @@
 
 class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase {
 
-	public function test_restrict_access_not_restricted() {
-
-		return;
-
-		$this->assertTrue( RSA_IS_NETWORK );
-
-		// Set network to not 
-		get_site_option( 'rsa_mode', 'default' );
+	public function test_multisite_restrict_access_not_restricted() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Set site to not restricted.
-		
-		update_option( 'blog_public', 1 );
+		$this->assertTrue( RSA_IS_NETWORK );
 
-		// First, test the filter.
-		add_filter( 'restricted_site_access_is_restricted', '__return_false' );
-	
+		// Set network to enforced, but public.
+		update_site_option( 'rsa_mode', 'enforce' );
+		update_site_option( 'blog_public', 1 );
+
+		// Set the individual site to restricted.
+		update_option( 'blog_public', 2 );
+
+		// Go to the home page.
 		$this->go_to( home_url( '/' ) );
 		$wp = $GLOBALS['wp'];
 
+		// The network public setting should allow access.
 		$this->assertEmpty( $rsa::restrict_access_check( $wp ) );
-
-		remove_filter( 'restricted_site_access_is_restricted', '__return_false' );
-
-		// Now test it without the filter.
-		$this->go_to( home_url( '/' ) );
-		$wp = $GLOBALS['wp'];
-
-		$this->assertEmpty( $rsa::restrict_access_check( $wp ) );
-
-
-
 	}
 }
