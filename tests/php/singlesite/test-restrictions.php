@@ -45,6 +45,19 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertNotEmpty( $results );
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( $url, $results['url'] );
+	
+		// Test the filter that lets us access the site.
+		add_filter( 'restricted_site_access_user_can_access', '__return_true' );
+
+		// Go to the home page.
+		$this->go_to( home_url( '/' ) );
+		$wp = $GLOBALS['wp'];
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		$this->assertEmpty( $results );;
+
+		remove_filter( 'restricted_site_access_user_can_access', '__return_true' );
 	}
 
 	public function test_singlesite_restrict_access_restricted_whitelist() {

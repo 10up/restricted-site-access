@@ -22,7 +22,8 @@ class Restricted_Site_Access {
 	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
-	 * @return null|Simple_page_Ordering
+	 * @return null|Restricted_Site_Access
+	 * @codeCoverageIgnore
 	 */
 	public static function get_instance() {
 		// Store the instance locally to avoid private static replication
@@ -39,6 +40,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * An empty constructor
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function __construct() {
 		/* Purposely do nothing here */ }
@@ -250,6 +253,7 @@ class Restricted_Site_Access {
 	 * Redirects restricted requests.
 	 *
 	 * @param array $wp WordPress request
+	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
 
