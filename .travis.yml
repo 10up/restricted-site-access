@@ -51,3 +51,4 @@ before_script:
 script:
   - phpunit --verbose
   - phpunit --verbose -c tests/php/multisite/multisite.xml
+  - phpunit --verbose -c tests/php/whitelist/whitelist.xml

@@ -6,17 +6,18 @@ require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/autoload.php';
 $files = [
 	'coverage.serialized',
 	'multisite-coverage.serialized',
+	'whitelist-coverage.serialized',
 ];
 
 foreach ( $files as $filename ) {
-	// See PHP_CodeCoverage_Report_PHP::process
-	// @var PHP_CodeCoverage
-	$cov = include 'test-coverage/' . $filename;
-	if ( isset( $codeCoverage ) ) {
-		$codeCoverage->filter()->addFilesToWhitelist( $cov->filter()->getWhitelist() );
-		$codeCoverage->merge( $cov );
-	} else {
-		$codeCoverage = $cov;
+	if ( file_exists( 'test-coverage/' . $filename ) ) {
+		$cov = include 'test-coverage/' . $filename;
+		if ( isset( $codeCoverage ) ) {
+			$codeCoverage->filter()->addFilesToWhitelist( $cov->filter()->getWhitelist() );
+			$codeCoverage->merge( $cov );
+		} else {
+			$codeCoverage = $cov;
+		}
 	}
 }
 

@@ -75,6 +75,9 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 		$rsa = Restricted_Site_Access::get_instance();
 
+		// Tests when RSA_IP_WHITELIST is not set to a string.
+		$this->assertEmpty( $rsa::get_config_ips() );
+
 		$this->assertTrue( RSA_IS_NETWORK );
 
 		// Set network to enforced and restricted.

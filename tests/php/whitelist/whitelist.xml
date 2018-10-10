@@ -1,20 +1,22 @@
 <phpunit
-	bootstrap="tests/php/bootstrap.php"
+	bootstrap="../bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	verbose="true"
 	>
+
+	<php>
+		<const name="RSA_IP_WHITELIST" value="192.168.1.50 |192.168.1.51" />
+	</php>
+	
 	<testsuites>
 		<testsuite name="restricted-site-access-unit-tests">
-			<directory suffix=".php">tests/php</directory>
-			<exclude>tests/php/code-coverage.php</exclude>
-			<exclude suffix=".php">tests/php/multisite</exclude>
-			<exclude suffix=".php">tests/php/whitelist</exclude>
+			<directory suffix=".php">./</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
 		<whitelist>
-			<file>restricted_site_access.php</file>
+			<file>../../../restricted_site_access.php</file>
 		</whitelist>
 	</filter>
 	<php>
@@ -23,6 +25,6 @@
 		<ini name="display_startup_errors" value="1" />
 	</php>
 	<logging>
-		<log type="coverage-php" target="test-coverage/coverage.serialized"/>
+		<log type="coverage-php" target="../../../test-coverage/whitelist-coverage.serialized"/>
 	</logging>
 </phpunit>
