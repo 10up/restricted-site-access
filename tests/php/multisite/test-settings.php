@@ -120,4 +120,63 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 		$this->assertContains( '127.0.0.1', $options['allowed'] );
 
 	}
+
+	public function test_set_defaults() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_site_option( 'blog_public', 2 );
+
+		update_site_option( 'blog_public', 2 );
+
+		foreach ( get_sites() as $site ) {
+
+			switch_to_blog( $site->blog_id );
+
+			delete_option( 'rsa_options' );
+			delete_option( 'blog_public' );
+
+			restore_current_blog();
+
+			$rsa::set_defaults( $site->blog_id, null, null, null, null, null );
+
+			switch_to_blog( $site->blog_id );
+
+			$this->assertSame( 2, absint( get_option( 'blog_public' ) ) );
+
+			$options = get_option( 'rsa_options' );
+			$this->assertNotEmpty( $options );
+
+			$this->assertSame( 1, $options['approach'] );
+			$this->assertSame( 'Access to this site is restricted.', $options['message'] );
+			$this->assertSame( 302, $options['head_code'] );
+			$this->assertSame( '', $options['redirect_url'] );
+			$this->assertSame( 0, $options['page'] );
+			$this->assertEmpty( $options['allowed'] );
+
+			restore_current_blog();
+		}
+
+		// No options will be set when enforce is turned on.
+		update_site_option( 'rsa_mode', 'enforce' );
+
+		foreach ( get_sites() as $site ) {
+
+			switch_to_blog( $site->blog_id );
+
+			delete_option( 'rsa_options' );
+			delete_option( 'blog_public' );
+
+			restore_current_blog();
+
+			$rsa::set_defaults( $site->blog_id, null, null, null, null, null );
+
+			switch_to_blog( $site->blog_id );
+
+			$this->assertFalse( get_option( 'blog_public' ) );
+			$this->assertFalse( get_option( 'rsa_options' ) );
+
+			restore_current_blog();
+		}
+	}
 }
