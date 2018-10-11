@@ -207,4 +207,29 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertSame( '<a href="options-reading.php">Settings</a>', $links[0] );
 	}
+
+	public function test_settings_field_rsa_page() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$page_id = self::factory()->post->create(
+			[
+				'post_type' => 'page',
+				'post_title' => 'test_settings_field_rsa_page',
+				'post_status' => 'publish',
+			]
+		);
+
+		$options = $rsa::get_options( false );
+		$options['page'] = $page_id;
+
+		update_option( 'rsa_options', $options );
+
+		$rsa::load_options_page();
+
+		ob_start();
+		$rsa::settings_field_rsa_page();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'value="' . $page_id . '" selected="selected"', $html );
+	}
 }
