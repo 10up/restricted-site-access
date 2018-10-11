@@ -47,7 +47,7 @@ before_script:
 
 script:
   - mkdir test-coverage
-  - touch test-coverage/testfile.txt
   - phpunit --verbose
   - phpunit --verbose -c tests/php/multisite/multisite.xml
   - phpunit --verbose -c tests/php/whitelist/whitelist.xml
+  # TODO combine the test coverage into one file and ship it to Code Climate or Coveralls?

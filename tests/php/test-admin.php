@@ -76,4 +76,27 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$this->assertContains( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ) . '"}', $data );
 	}
 
+	public function test_load_options_page() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$options = $rsa::get_options( false );
+		$options['approach'] = 4;
+
+		update_option( 'rsa_options', $options );
+
+		$rsa::load_options_page();
+
+		$this->assertSame( 10, has_action( 'admin_notices', [ 'Restricted_Site_Access', 'admin_notice' ] ) );
+		$this->assertSame( 10, has_action( 'admin_head', [ 'Restricted_Site_Access', 'admin_head' ] ) );
+		$this->assertSame( 10, has_filter( 'wp_dropdown_pages', [ 'Restricted_Site_Access', 'filter_page_dropdown' ] ) );
+
+		// Run tests for specific fields that aren't covered in the
+		// multisite tests.
+		ob_start();
+		$rsa::settings_field_handling();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4"  checked=\'checked\' />', $html );
+
+	}
 }

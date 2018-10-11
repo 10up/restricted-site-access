@@ -29,15 +29,15 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		update_site_option( 'blog_public', 2 );
 		update_site_option( 'rsa_mode', 'enforce' );
 
-		$options = [
-			'approach' => 2,
-			'message' => 'This site is restricted.',
-			'head_code' => 307,
-			'redirect_url' => 'https://10up.com',
-			'redirect_path' => 1,
-			'allowed' => [
-				'127.0.0.1',
-			],
+		$options = $rsa::get_options( true );
+
+		$options['approach'] = 2;
+		$options['message'] = 'This site is restricted.';
+		$options['head_code'] = 307;
+		$options['redirect_url'] = 'https://10up.com';
+		$options['redirect_path'] = 1;
+		$options['allowed'] = [
+			'127.0.0.1',
 		];
 
 		update_site_option( 'rsa_options', $options );

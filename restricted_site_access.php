@@ -806,7 +806,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_handling( $args = array() ) {
 		if ( ! isset( self::$rsa_options['approach'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['approach'] = 1;
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<fieldset id="rsa_handle_fields">
