@@ -164,4 +164,28 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertContains( 'Please enter the web address you would like to redirect restricted visitors to. If no address is entered, visitors will be redirected to the login screen.', $html );
 	}
+
+	public function test_page_cache_notice() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		add_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
+
+		update_option( 'rsa_hide_page_cache_notice', false );
+
+		ob_start();
+		$rsa::page_cache_notice();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'Page caching appears to be enabled. Restricted Site Access may not work as expected', $html );
+
+		$rsa::ajax_notice_dismiss();
+
+		ob_start();
+		$rsa::page_cache_notice();
+		$html = ob_get_clean();
+
+		$this->assertEmpty( $html );
+
+		remove_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
+	}
 }

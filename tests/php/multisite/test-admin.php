@@ -12,7 +12,7 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_admin_init() {
+	public function test_multisite_admin_init() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 		$this->run_admin_init();
@@ -21,7 +21,7 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$this->assertSame( 10, has_action( 'network_admin_notices', [ 'Restricted_Site_Access', 'page_cache_notice' ] ) );
 	}
 
-	public function test_load_network_settings_page() {
+	public function test_multisite_load_network_settings_page() {
 
 		$rsa = Restricted_Site_Access::get_instance();
 		$this->run_admin_init();
@@ -88,7 +88,7 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$this->assertContains( 'name="blog_public" value="1"  checked=\'checked\'>', $html );
 	}
 
-	public function test_admin_notice() {
+	public function test_multisite_admin_notice() {
 		$rsa = Restricted_Site_Access::get_instance();
 
 		update_site_option( 'rsa_mode', 'enforce' );
@@ -98,5 +98,29 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$html = ob_get_clean();
 
 		$this->assertContains( 'Network visibility settings are currently enforced across all blogs on the network.', $html );
+	}
+
+	public function test_multisite_page_cache_notice() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		add_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
+
+		update_site_option( 'rsa_hide_page_cache_notice', false );
+
+		ob_start();
+		$rsa::page_cache_notice();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'Page caching appears to be enabled. Restricted Site Access may not work as expected', $html );
+
+		$rsa::ajax_notice_dismiss();
+
+		ob_start();
+		$rsa::page_cache_notice();
+		$html = ob_get_clean();
+
+		$this->assertEmpty( $html );
+
+		remove_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
 	}
 }

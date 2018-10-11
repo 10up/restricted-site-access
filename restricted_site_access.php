@@ -64,22 +64,27 @@ class Restricted_Site_Access {
 	}
 
 	public static function ajax_notice_dismiss() {
-		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error();
-			exit;
-		}
 
-		if ( RSA_IS_NETWORK ) {
-			if ( ! is_super_admin() ) {
+		// @codeCoverageIgnoreStart
+		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 				wp_send_json_error();
 				exit;
 			}
-		} else {
-			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_send_json_error();
-				exit;
+
+			if ( RSA_IS_NETWORK ) {
+				if ( ! is_super_admin() ) {
+					wp_send_json_error();
+					exit;
+				}
+			} else {
+				if ( ! current_user_can( 'manage_options' ) ) {
+					wp_send_json_error();
+					exit;
+				}
 			}
 		}
+		// @codeCoverageIgnoreEnd
 
 		if ( RSA_IS_NETWORK ) {
 			update_site_option( 'rsa_hide_page_cache_notice', true );
@@ -87,7 +92,11 @@ class Restricted_Site_Access {
 			update_option( 'rsa_hide_page_cache_notice', true );
 		}
 
-		wp_send_json_success();
+		// @codeCoverageIgnoreStart
+		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			wp_send_json_success();
+		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -666,8 +675,10 @@ class Restricted_Site_Access {
 	 * Check if the page caching is on, and notify the admin
 	 */
 	public static function page_cache_notice() {
-		//If WP_CACHE is on we show notification
-		if ( defined( 'WP_CACHE' ) && true === WP_CACHE ) {
+		// If WP_CACHE is on we show notification.
+		$show_notification = apply_filters( 'restricted_site_access_show_page_cache_notice', defined( 'WP_CACHE' ) && true === WP_CACHE );
+
+		if ( $show_notification ) {
 
 			if ( RSA_IS_NETWORK ) {
 				if ( get_site_option( 'rsa_hide_page_cache_notice' ) ) {
