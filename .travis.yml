@@ -46,7 +46,8 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - touch testfile.txt
-  - phpunit --verbose
-  - phpunit --verbose -c tests/php/multisite/multisite.xml
-  - phpunit --verbose -c tests/php/whitelist/whitelist.xml
+  - mkdir test-coverage
+  - touch test-coverage/testfile.txt
+  - sudo phpunit --verbose
+  - sudo phpunit --verbose -c tests/php/multisite/multisite.xml
+  - sudo phpunit --verbose -c tests/php/whitelist/whitelist.xml

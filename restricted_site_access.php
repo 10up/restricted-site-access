@@ -427,11 +427,10 @@ class Restricted_Site_Access {
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
-		//This is for Network Site Settings
+		// This is for Network Site Settings.
 		if ( RSA_IS_NETWORK  && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
 			add_action( 'network_admin_notices', array( __CLASS__, 'page_cache_notice' ) );
-
 		}
 
 		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );

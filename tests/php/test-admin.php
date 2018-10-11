@@ -61,4 +61,5 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$this->assertSame( 'Public access to this site has been restricted.', $rsa::privacy_on_link_text( 'test-link-text' ) );
 		$this->assertSame( 'Restricted Site Access plug-in is blocking public access to this site.', $rsa::privacy_on_link_title( 'test-link-title' ) );
 	}
+
 }
