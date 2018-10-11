@@ -41,6 +41,7 @@ class Restricted_Site_Access_Tests_Bootstrap {
 		if ( defined( 'WP_TESTS_MULTISITE' ) ) {
 			// Tells the plugin it is network active.
 			define( 'RSA_IS_NETWORK', true );
+			define( 'WP_NETWORK_ADMIN', true );
 
 			if ( ! defined( 'RSA_IP_WHITELIST' ) ) {
 				define( 'RSA_IP_WHITELIST', 123 ); // For a test in the get_config_ips() function.

@@ -109,6 +109,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Populate Restricted_Site_Access::$fields with internationalization-ready field information.
+	 *
+	 * @codeCoverageIgnore
 	 */
 	protected static function populate_fields_array() {
 		self::$fields = array(

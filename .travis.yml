@@ -23,9 +23,6 @@ env:
 services:
     - mysql
 
-install:
-  - composer install
-
 # Use this to prepare your build for testing.
 # e.g. copy database configurations, environment variables, etc.
 # Failures in this section will result in build status 'errored'.
@@ -49,6 +46,7 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
+  - touch testfile.txt
   - phpunit --verbose
   - phpunit --verbose -c tests/php/multisite/multisite.xml
   - phpunit --verbose -c tests/php/whitelist/whitelist.xml
