@@ -26,10 +26,65 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$rsa = Restricted_Site_Access::get_instance();
 		$this->run_admin_init();
 
+		update_site_option( 'blog_public', 2 );
+		update_site_option( 'rsa_mode', 'enforce' );
+
+		$options = [
+			'approach' => 2,
+			'message' => 'This site is restricted.',
+			'head_code' => 307,
+			'redirect_url' => 'https://10up.com',
+			'redirect_path' => 1,
+			'allowed' => [
+				'127.0.0.1',
+			],
+		];
+
+		update_site_option( 'rsa_options', $options );
+
 		$rsa::load_network_settings_page();
 
 		$this->assertSame( 10, has_action( 'wpmu_options', [ 'Restricted_Site_Access', 'show_network_settings' ] ) );
 		$this->assertSame( 10, has_action( 'update_wpmu_options', [ 'Restricted_Site_Access', 'save_network_settings' ] ) );
-	}
 
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+		// Run the tests in show_network_settings() since the load_network_settings_page()
+		// function is needed to reload settings.
+		ob_start();
+		$rsa::show_network_settings();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'value="default" />', $html );
+		$this->assertContains( 'value="enforce" checked=\'checked\' />', $html );
+
+		$this->assertContains( 'name="blog_public" value="1" >', $html );
+		$this->assertContains( 'name="blog_public" value="2"  checked=\'checked\'>', $html );
+
+		$this->assertContains( 'id="rsa-send-to-login" name="rsa_options[approach]" type="radio" value="1"  />', $html );
+		$this->assertContains( 'id="rsa-redirect-visitor" name="rsa_options[approach]" type="radio" value="2"  checked=\'checked\' />', $html );
+		$this->assertContains( 'id="rsa-display-message" name="rsa_options[approach]" type="radio" value="3"  />', $html );
+
+		$this->assertContains( 'name="rsa_options[redirect_url]" id="redirect" class="rsa_redirect_field regular-text" value="https://10up.com" />', $html );
+
+		$this->assertContains( 'value="301" >301 Permanent', $html );
+		$this->assertContains( 'value="302" >302 Undefined', $html );
+		$this->assertContains( 'value="307"  selected=\'selected\'>307 Temporary', $html );
+
+		$this->assertContains( 'name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field"  checked=\'checked\' />', $html );
+
+		$this->assertContains( 'name="rsa_options[message]" id="rsa_message">This site is restricted.', $html );
+
+		$this->assertContains( 'type="text" name="rsa_options[allowed][]" value="127.0.0.1" readonly="true"', $html );
+		$this->assertContains( 'id="rsa_myip" value="Add My Current IP Address" style="margin-top: 5px;" data-myip="127.0.0.1" />', $html );
+
+		// Now check for an empty site option.
+		delete_site_option( 'blog_public' );
+
+		ob_start();
+		$rsa::show_network_settings();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'name="blog_public" value="1"  checked=\'checked\'>', $html );
+	}
 }

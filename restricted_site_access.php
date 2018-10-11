@@ -979,6 +979,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Validate IP address entry on demand (AJAX)
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function ajax_rsa_ip_check() {
 		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( $_POST['ip_address'] ) ) ) {
