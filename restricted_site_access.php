@@ -601,11 +601,10 @@ class Restricted_Site_Access {
 	}
 
 	public static function enqueue_admin_script() {
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
-		} else {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
-		}
+
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
+
+		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery' ), RSA_VERSION, true );
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
 			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),

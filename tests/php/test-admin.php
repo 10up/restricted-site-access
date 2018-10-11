@@ -62,4 +62,18 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$this->assertSame( 'Restricted Site Access plug-in is blocking public access to this site.', $rsa::privacy_on_link_title( 'test-link-title' ) );
 	}
 
+	public function test_enqueue_admin_script() {
+
+		global $wp_scripts;
+
+		$rsa = Restricted_Site_Access::get_instance();
+		$rsa::enqueue_admin_script();
+
+		$this->assertTrue( wp_script_is( 'rsa-admin' ) );
+
+		$data = $wp_scripts->get_data( 'rsa-admin', 'data' );
+
+		$this->assertContains( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ) . '"}', $data );
+	}
+
 }
