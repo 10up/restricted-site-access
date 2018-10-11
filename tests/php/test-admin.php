@@ -119,4 +119,49 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertSame( '<p class="description" id="rsa_page">No published pages found.</p>', $html );
 	}
+
+	public function test_admin_notice() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$options = $rsa::get_options( false );
+		$options['approach'] = 0;
+
+		update_option( 'rsa_options', $options );
+
+		$rsa::load_options_page();
+
+		ob_start();
+		$rsa::admin_notice();
+		$html = ob_get_clean();
+
+		$this->assertEmpty( $html );
+
+		$options = $rsa::get_options( false );
+		$options['approach'] = 4;
+		$options['page'] = 0;
+
+		update_option( 'rsa_options', $options );
+
+		$rsa::load_options_page();
+
+		ob_start();
+		$rsa::admin_notice();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message.', $html );
+
+		$options = $rsa::get_options( false );
+		$options['approach'] = 2;
+		$options['redirect_url'] = '';
+
+		update_option( 'rsa_options', $options );
+
+		$rsa::load_options_page();
+
+		ob_start();
+		$rsa::admin_notice();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'Please enter the web address you would like to redirect restricted visitors to. If no address is entered, visitors will be redirected to the login screen.', $html );
+	}
 }
