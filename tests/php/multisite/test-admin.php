@@ -32,8 +32,8 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$options = $rsa::get_options( true );
 
 		$options['approach'] = 2;
-		$options['message'] = 'This site is restricted.';
-		$options['head_code'] = 307;
+		$options['message'] = '';
+		$options['head_code'] = 0;
 		$options['redirect_url'] = 'https://10up.com';
 		$options['redirect_path'] = 1;
 		$options['allowed'] = [
@@ -68,12 +68,12 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$this->assertContains( 'name="rsa_options[redirect_url]" id="redirect" class="rsa_redirect_field regular-text" value="https://10up.com" />', $html );
 
 		$this->assertContains( 'value="301" >301 Permanent', $html );
-		$this->assertContains( 'value="302" >302 Undefined', $html );
-		$this->assertContains( 'value="307"  selected=\'selected\'>307 Temporary', $html );
+		$this->assertContains( 'value="302"  selected=\'selected\'>302 Undefined', $html );
+		$this->assertContains( 'value="307" >307 Temporary', $html );
 
 		$this->assertContains( 'name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field"  checked=\'checked\' />', $html );
 
-		$this->assertContains( 'name="rsa_options[message]" id="rsa_message">This site is restricted.', $html );
+		$this->assertContains( 'name="rsa_options[message]" id="rsa_message">Access to this site is restricted.', $html );
 
 		$this->assertContains( 'type="text" name="rsa_options[allowed][]" value="127.0.0.1" readonly="true"', $html );
 		$this->assertContains( 'id="rsa_myip" value="Add My Current IP Address" style="margin-top: 5px;" data-myip="127.0.0.1" />', $html );

@@ -97,6 +97,26 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$html = ob_get_clean();
 
 		$this->assertContains( 'id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4"  checked=\'checked\' />', $html );
+	}
 
+	public function test_filter_page_dropdown() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$html = $rsa::filter_page_dropdown( 'test', [] );
+
+		$this->assertSame( 'test', $html );
+
+		$html = $rsa::filter_page_dropdown( 'test', [
+			'id' => 'not-rsa',
+		] );
+
+		$this->assertSame( 'test', $html );
+
+		$html = $rsa::filter_page_dropdown( '', [
+			'id' => 'rsa_page',
+		] );
+
+		$this->assertSame( '<p class="description" id="rsa_page">No published pages found.</p>', $html );
 	}
 }

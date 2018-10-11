@@ -898,7 +898,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_redirect( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['redirect_url'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['redirect_url'] = '';
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<input type="text" name="rsa_options[redirect_url]" id="redirect" class="rsa_redirect_field regular-text" value="<?php echo esc_attr( self::$rsa_options['redirect_url'] ); ?>" />
@@ -912,7 +914,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_redirect_path( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['redirect_path'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['redirect_path'] = 0;
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<fieldset><legend class="screen-reader-text"><span><?php _e( self::$rsa_options['redirect_path']['label'], 'restricted-site-access' ); ?></span></legend>
@@ -930,7 +934,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_redirect_code( $args  = array() ) {
 		if ( empty( self::$rsa_options['head_code'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['head_code'] = 302;
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<select name="rsa_options[head_code]" id="redirect_code" class="rsa_redirect_field">
@@ -948,7 +954,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_rsa_page( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['page'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['page'] = 0;
+			// @codeCoverageIgnoreEnd
 		}
 
 		wp_dropdown_pages(array(
