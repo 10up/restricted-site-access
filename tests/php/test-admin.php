@@ -170,7 +170,16 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		add_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
 
+		update_option( 'blog_public', 1 );
+
+		ob_start();
+		$rsa::page_cache_notice();
+		$html = ob_get_clean();
+
+		$this->assertEmpty( $html );
+
 		update_option( 'rsa_hide_page_cache_notice', false );
+		update_option( 'blog_public', 2 );
 
 		ob_start();
 		$rsa::page_cache_notice();
