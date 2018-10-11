@@ -197,4 +197,14 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		remove_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
 	}
+
+	public function test_plugin_action_links() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$links = $rsa::plugin_action_links( [] );
+
+		$this->assertCount( 1, $links );
+
+		$this->assertSame( '<a href="options-reading.php">Settings</a>', $links[0] );
+	}
 }
