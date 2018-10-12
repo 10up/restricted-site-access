@@ -52,9 +52,6 @@ class Restricted_Site_Access_Tests_Bootstrap {
 
 		// Start up the WP testing environment.
 		require $wp_develop_dir . '/tests/phpunit/includes/bootstrap.php';
-
-		// Include helper functions to configure RSA.
-		require 'helpers.php';
 	}
 
 	/**
