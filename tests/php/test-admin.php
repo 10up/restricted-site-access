@@ -232,4 +232,24 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertContains( 'value="' . $page_id . '" selected="selected"', $html );
 	}
+
+	public function test_blog_privacy_selector() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 1 );
+
+		ob_start();
+		$rsa::blog_privacy_selector();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'name="blog_public" value="2"  />', $html );
+
+		update_option( 'blog_public', 2 );
+
+		ob_start();
+		$rsa::blog_privacy_selector();
+		$html = ob_get_clean();
+
+		$this->assertContains( 'name="blog_public" value="2"  checked=\'checked\' />', $html );
+	}
 }
