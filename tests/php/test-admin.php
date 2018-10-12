@@ -252,4 +252,28 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertContains( 'name="blog_public" value="2"  checked=\'checked\' />', $html );
 	}
+
+	public function test_admin_head() {
+
+		set_current_screen( 'reading' );
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$rsa::admin_head();
+
+		$screen = get_current_screen();
+		$tabs = $screen->get_help_tabs();
+
+		$this->assertArrayHasKey( 'restricted-site-access', $tabs );
+		$this->assertSame( 'Restricted Site Acccess', $tabs['restricted-site-access']['title'] );
+
+		$content = $tabs['restricted-site-access']['content'];
+
+		$this->assertContains( '<p><strong>Handle restricted visitors</strong> - Choose the method for handling visitors to your site that are restricted.</p>', $content );
+		$this->assertContains( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', $content );
+		$this->assertContains( 'The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', $content );
+		$this->assertContains( 'The web address of the site you want the visitor redirected to.', $content );
+		$this->assertContains( 'redirect the visitor to the same path (URI) entered at this site.', $content );
+		$this->assertContains( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect.', $content );
+	}
 }
