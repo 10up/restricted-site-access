@@ -22,7 +22,7 @@ class Restricted_Site_Access {
 	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
-	 * @return null|Simple_page_Ordering
+	 * @return null|Restricted Site Access
 	 */
 	public static function get_instance() {
 		// Store the instance locally to avoid private static replication
