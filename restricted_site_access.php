@@ -58,6 +58,47 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+
+		// Filter the public option before saving
+		add_filter( 'pre_update_option_blog_public', array( __CLASS__, 'filter_blog_public_option_before_save' ), 10, 2 );
+		// Filter the public_option when we retrieve it so we can use existing logic
+		add_filter( 'option_blog_public', array( __CLASS__, 'filter_blog_public_after_retrieval' ) );
+	}
+
+
+	/**
+	 * Filter the value being saved to allow us to indicate if RSA is being used.
+	 *
+	 * @param $new_value
+	 * @param $old_value
+	 *
+	 * @return mixed
+	 */
+	public static function filter_blog_public_option_before_save( $new_value, $old_value ) {
+
+		if ( 2 === absint( $new_value ) ) {
+			// Set the actual value to 0 so we don't break get_sites()
+			update_option( 'rsa_active', 1 );
+			$new_value = 0;
+		} else {
+			delete_option( 'rsa_active' );
+		}
+		return $new_value;
+	}
+
+	/**
+	 * Filter the return of the blog_public option to accout for the RSA settings.
+	 *
+	 * @param $value
+	 *
+	 * @return mixed
+	 */
+	public static function filter_blog_public_after_retrieval( $value ) {
+
+		if ( 0 === absint( $value ) && 1 === absint( get_option( 'rsa_active') ) ) {
+			$value = 2;
+		}
+		return $value;
 	}
 
 	public static function ajax_notice_dismiss() {
