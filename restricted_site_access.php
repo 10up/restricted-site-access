@@ -61,8 +61,10 @@ class Restricted_Site_Access {
 
 		// Filter the public option before saving
 		add_filter( 'pre_update_option_blog_public', array( __CLASS__, 'filter_blog_public_option_before_save' ), 10, 2 );
+		add_filter( 'pre_update_site_option_blog_public', array( __CLASS__, 'filter_blog_public_option_before_save' ), 10, 2 );
 		// Filter the public_option when we retrieve it so we can use existing logic
 		add_filter( 'option_blog_public', array( __CLASS__, 'filter_blog_public_after_retrieval' ) );
+		add_filter( 'site_option_blog_public', array( __CLASS__, 'filter_blog_public_after_retrieval' ) );
 	}
 
 
@@ -79,6 +81,7 @@ class Restricted_Site_Access {
 		if ( 2 === absint( $new_value ) ) {
 			// Set the actual value to 0 so we don't break get_sites()
 			update_option( 'rsa_active', 1 );
+			// Set the blog to not be indexed.
 			$new_value = 0;
 		} else {
 			delete_option( 'rsa_active' );
