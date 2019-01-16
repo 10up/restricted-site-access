@@ -82,7 +82,7 @@ class Restricted_Site_Access {
 			// Set the actual value to 0 so we don't break get_sites()
 			update_option( 'rsa_active', 1 );
 			// Set the blog to not be indexed.
-			$new_value = 0;
+			$new_value = 1;
 		} else {
 			delete_option( 'rsa_active' );
 		}
