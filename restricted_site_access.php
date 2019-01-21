@@ -256,7 +256,7 @@ class Restricted_Site_Access {
 		$is_restricted     = self::is_restricted();
 
 		// Check if is REST API
-		if ( strpos( $wp->request, "wp-json/") == 0 ) return;
+		if ( $wp->request && strpos( $wp->request, "wp-json/") === 0 ) return;
 
 		// Check to see if it's _not_ restricted
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
