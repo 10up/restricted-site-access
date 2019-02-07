@@ -347,7 +347,7 @@ class Restricted_Site_Access {
 		$redirect_url  = apply_filters( 'restricted_site_access_redirect_url', self::$rsa_options['redirect_url'], $wp );
 		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['head_code'], $wp );
 
-		wp_safe_redirect( $redirect_url, $redirect_code );
+		wp_redirect( $redirect_url, $redirect_code );
 		die;
 	}
 
