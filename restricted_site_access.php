@@ -347,7 +347,7 @@ class Restricted_Site_Access {
 		$redirect_url  = apply_filters( 'restricted_site_access_redirect_url', self::$rsa_options['redirect_url'], $wp );
 		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['head_code'], $wp );
 
-		self::rsa_wp_redirect( $redirect_url, $redirect_code );
+		wp_safe_redirect( $redirect_url, $redirect_code );
 		die;
 	}
 
@@ -1115,24 +1115,6 @@ class Restricted_Site_Access {
 		}
 
 		return $ip;
-	}
-
-	/**
-	 * Wrapper function for wp_safe_redirect. Calls wp_redirect if wp_safe_redirect is not defined.
-	 *
-	 * @param string $redirect_url Redirect URL.
-	 * @param int $redirect_code Status code of redirect.
-	 */
-	public static function rsa_wp_redirect( $redirect_url, $redirect_code ) {
-
-		// Safe redirect check for VIP platform.
-		if ( function_exists( 'wp_safe_redirect' ) ) {
-			wp_safe_redirect( $redirect_url, $redirect_code );
-			exit;
-		}
-
-		wp_redirect( $redirect_url, $redirect_code );
-		exit;
 	}
 }
 
