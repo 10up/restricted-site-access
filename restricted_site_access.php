@@ -126,7 +126,7 @@ class Restricted_Site_Access {
 			),
 			'redirect_path' => array(
 				'default' => 0,
-				'label'   => 'Redirect to same path',
+				'label'   => esc_html__( 'Redirect to same path', 'restricted-site-access' ),
 				'field'   => 'settings_field_redirect_path',
 			),
 			'head_code'     => array(
@@ -525,7 +525,7 @@ class Restricted_Site_Access {
 	 * @return string New text to show in widget
 	 */
 	public static function privacy_on_link_text( $text ) {
-		if ( 2 === get_option( 'blog_public' ) ) {
+		if ( 2 === (int) get_option( 'blog_public' ) ) {
 			$text = esc_html__( 'Public access to this site has been restricted.', 'restricted-site-access' );
 		}
 		return $text;
@@ -539,7 +539,7 @@ class Restricted_Site_Access {
 	 * @return string New title attribute
 	 */
 	public static function privacy_on_link_title( $text ) {
-		if ( 2 === get_option( 'blog_public' ) ) {
+		if ( 2 === (int) get_option( 'blog_public' ) ) {
 			$text = esc_html__( 'Restricted Site Access plug-in is blocking public access to this site.', 'restricted-site-access' );
 		}
 		return $text;
@@ -607,9 +607,9 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		if ( 4 === self::$rsa_options['approach'] && empty( self::$rsa_options['page'] ) ) {
+		if ( 4 === (int) self::$rsa_options['approach'] && empty( self::$rsa_options['page'] ) ) {
 			$message = esc_html__( 'Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message.', 'restricted-site-access' );
-		} elseif ( 2 === self::$rsa_options['approach'] && empty( self::$rsa_options['redirect_url'] ) ) {
+		} elseif ( 2 === (int) self::$rsa_options['approach'] && empty( self::$rsa_options['redirect_url'] ) ) {
 			$message = esc_html__( 'Please enter the web address you would like to redirect restricted visitors to. If no address is entered, visitors will be redirected to the login screen.', 'restricted-site-access' );
 		}
 
@@ -714,7 +714,7 @@ class Restricted_Site_Access {
 	 */
 	public static function blog_privacy_selector() {
 		global $wp;
-		$is_restricted = ( 2 === get_option( 'blog_public' ) );
+		$is_restricted = ( 2 === (int) get_option( 'blog_public' ) );
 		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp );
 	?>
 		<p>
@@ -1033,14 +1033,14 @@ class Restricted_Site_Access {
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 
-				if ( 2 === get_option( 'blog_public' ) ) {
+				if ( 2 === (int) get_option( 'blog_public' ) ) {
 					update_option( 'blog_public', 1 );
 				}
 
 				restore_current_blog();
 			}
 		} else {
-			if ( 2 === get_option( 'blog_public' ) ) {
+			if ( 2 === (int) get_option( 'blog_public' ) ) {
 				update_option( 'blog_public', 1 );
 			}
 		}
@@ -1140,7 +1140,7 @@ function restricted_site_access_uninstall() {
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 
-			if ( 2 === get_option( 'blog_public' ) ) {
+			if ( 2 === (int) get_option( 'blog_public' ) ) {
 				update_option( 'blog_public', 1 );
 			}
 			delete_option('rsa_options');
@@ -1148,7 +1148,7 @@ function restricted_site_access_uninstall() {
 			restore_current_blog();
 		}
 	} else {
-		if ( 2 === get_option( 'blog_public' ) ) {
+		if ( 2 === (int) get_option( 'blog_public' ) ) {
 			update_option( 'blog_public', 1 );
 		}
 		delete_option('rsa_options');
