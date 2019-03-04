@@ -65,12 +65,12 @@ class Restricted_Site_Access {
 	public static function handle_constants( $is_restricted ) {
 		// Check if constant forcing restriction is defined
 		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
-			$is_restricted = true;
+			return true;
 		}
 
 		// Check if constant disallowing restriction is defined
 		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
-			$is_restricted = false;
+			return false;
 		}
 
 		return $is_restricted;
