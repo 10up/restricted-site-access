@@ -58,6 +58,22 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+
+		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ) );
+	}
+
+	public static function handle_constants( $is_restricted ) {
+		// Check if constant forcing restriction is defined
+		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
+			$is_restricted = true;
+		}
+
+		// Check if constant disallowing restriction is defined
+		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
+			$is_restricted = false;
+		}
+
+		return $is_restricted;
 	}
 
 	public static function ajax_notice_dismiss() {
