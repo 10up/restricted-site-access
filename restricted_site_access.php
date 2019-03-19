@@ -751,6 +751,14 @@ class Restricted_Site_Access {
 				}
 			}
 		}
+		$new_input['comment'] = array();
+		if ( ! empty( $input['comment'] ) && is_array( $input['comment'] ) ) {
+			foreach ( $input['comment'] as $comment ) {
+				if ( is_scalar( $comment ) ) {
+					$new_input['comment'][] = sanitize_text_field( $comment );
+				}
+			}
+		}
 
 		return $new_input;
 	}
@@ -793,18 +801,20 @@ class Restricted_Site_Access {
 	?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
-				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
+				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip" value="" readonly="true" /> <input type="text" name="rsa_options[comment][]" value="" readonly="true" class="comment" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
-				$ips = (array) self::$rsa_options['allowed'];
-				foreach ( $ips as $ip ) {
+					$ips = (array) self::$rsa_options['allowed'];
+					$comments = (array) self::$rsa_options['comment'];
+					foreach ( $ips as $key => $ip ) {
 					if ( ! empty( $ip ) ) {
-						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" name="rsa_options[comment][]" value="' . esc_attr( $comments[ $key + 1 ] ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 					}
 				}
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" placeholder="<?php esc_attr_e( 'IP Address or Range') ?>"/>
+				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry') ?>" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
