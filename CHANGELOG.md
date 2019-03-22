@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
+## [ 7.0.1 ] - 2018-09-06
+* Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.
+* Bug fix: Fall back to the login screen if the unrestricted page is no longer published.
+
+## [ 7.0.0 ] - 2018-08-30
+* Feature: WP-CLI support! 🎉 Try `wp rsa` to get started.
+* Feature: Whitelist IPs via the `RSA_IP_WHITELIST` constant.
+* Feature: Use WordPress.org-provided language packs instead of bundled translations.
+* Bug fix: Restrict "virtual pages" and allow them to be used as the unrestricted page, such as with BuddyPress.
+* Bug fix: Hide settings properly when no published pages exist.
+* Bug fix: Avoid double slashes in asset URLs that can lead to 404 errors.
+
+## [ 6.2.1 ] - 2018-05-21
+* Bug fix: Don't redirect logged-in users viewing the site in a single site install.
+
+## [ 6.2.0 ] - 2018-05-18
+* **Functionality change:** Check user's role on a site in multisite before granting permission.
+* Feature: Alter or restore previous user permission checking with the `restricted_site_access_user_can_access` filter.
+* Avoid a fatal due to differing parameter counts for the `restricted_site_access_is_restricted` filter.
+
 ## [ 6.1.0 ] - 2018-02-14
 * Correct a PHP notice when running PHP >= 7.1.
 * Refactor logic for checking ip address is in masked ip range.

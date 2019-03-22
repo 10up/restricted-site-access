@@ -3,13 +3,14 @@
  * Plugin Name: Restricted Site Access
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 6.1.0
+ * Version: 7.0.1
  * Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
+ * Text Domain: restricted-site-access
  */
 
-define( 'RSA_VERSION', '6.1.0' );
+define( 'RSA_VERSION', '7.0.1' );
 
 class Restricted_Site_Access {
 
@@ -21,7 +22,7 @@ class Restricted_Site_Access {
 	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
-	 * @return null|Simple_page_Ordering
+	 * @return null|Restricted_Site_Access
 	 */
 	public static function get_instance() {
 		// Store the instance locally to avoid private static replication
@@ -50,7 +51,6 @@ class Restricted_Site_Access {
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
-		add_action( 'plugins_loaded', array( __CLASS__, 'load_textdomain' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
@@ -141,13 +141,6 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Loads the plugin textdomain
-	 */
-	public static function load_textdomain() {
-		load_plugin_textdomain( 'restricted-site-access', false, dirname( self::$basename ) . '/localization/' );
-	}
-
-	/**
 	 * Populate Restricted_Site_Access::$fields with internationalization-ready field information.
 	 */
 	protected static function populate_fields_array() {
@@ -204,7 +197,7 @@ class Restricted_Site_Access {
 	/**
 	 * populate the option with defaults
 	 */
-	private static function get_options( $network = false ) {
+	public static function get_options( $network = false ) {
 		$options = array();
 
 		if ( $network ) {
@@ -224,12 +217,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Determine whether page should be restricted at point of request
-	 *
-	 * @param array $wp WordPress request
+	 * Determine if site should be restricted
 	 */
-	public static function restrict_access( $wp ) {
-		self::$rsa_options = self::get_options();
+	protected static function is_restricted() {
 		$mode = self::get_network_mode();
 
 		if ( RSA_IS_NETWORK ) {
@@ -241,22 +231,86 @@ class Restricted_Site_Access {
 		$blog_public = get_option( 'blog_public', 2 );
 
 		//If rsa_mode==enforce we override the rsa_options
-		if( RSA_IS_NETWORK && 'enforce' === $mode ) {
+		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
 
-		$is_restricted = !( is_admin() || is_user_logged_in() || 2 != $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ) );
+		$user_check = self::user_can_access();
+
+		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) );
+
+		return ! $checks;
+	}
+
+	/**
+	 * Check if current user has access.
+	 *
+	 * Can be short-circuited using the `restricted_site_access_user_can_access` filter
+	 * to return a value other than null (boolean recommended).
+	 *
+	 * @return bool Whether the user has access
+	 */
+	protected static function user_can_access() {
+		/**
+		 * Filters whether the user can access the site before any other checks.
+		 *
+		 * Returning a non-null value will short-circuit the function
+		 * and return that value instead.
+		 *
+		 * @param null|bool $access Whether the user can access the site.
+		 */
+		$access = apply_filters( 'restricted_site_access_user_can_access', null );
+
+		if ( null !== $access ) {
+			return $access;
+		}
+
+		if ( is_multisite() ) {
+			$user_id = get_current_user_id();
+
+			if ( is_super_admin( $user_id ) ) {
+				return true;
+			}
+
+			if ( is_user_member_of_blog( $user_id ) && current_user_can( 'read' ) ) {
+				return true;
+			}
+		} elseif ( is_user_logged_in() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine whether page should be restricted at point of request
+	 *
+	 * @param array $wp WordPress request
+	 */
+	public static function restrict_access( $wp ) {
+		self::$rsa_options = self::get_options();
+		$is_restricted     = self::is_restricted();
+
+		// Check to see if it's _not_ restricted
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
 
+		$allowed_ips = self::get_config_ips();
+		if (
+			! empty( self::$rsa_options['allowed'] ) &&
+			is_array( self::$rsa_options['allowed'] )
+		) {
+			$allowed_ips = array_merge( $allowed_ips, self::$rsa_options['allowed'] );
+		}
+
 		// check for the allow list, if its empty block everything
-		if ( ! empty( self::$rsa_options['allowed'] ) && is_array( self::$rsa_options['allowed'] ) ) {
+		if ( count( $allowed_ips ) > 0 ) {
 			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list
-			foreach( self::$rsa_options['allowed'] as $line ) {
-				if( self::ip_in_range( $remote_ip, $line ) ){
+			foreach( $allowed_ips as $line ) {
+				if ( self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -281,10 +335,29 @@ class Restricted_Site_Access {
 
 		switch ( $rsa_restrict_approach ) {
 			case 4:
-				if ( ! empty( self::$rsa_options['page'] ) && ( $page_id = get_post_field( 'ID', self::$rsa_options['page'] ) ) ) {
-					unset( $wp->query_vars );
-					$wp->query_vars['page_id'] = $page_id;
-					return;
+				if ( ! empty( self::$rsa_options['page'] ) ) {
+					$page = get_post( self::$rsa_options['page'] );
+
+					// If the selected page isn't found or isn't published, fall back to default values.
+					if ( ! $page || 'publish' !== $page->post_status ) {
+						self::$rsa_options['head_code'] = 302;
+						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
+						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
+						break;
+					}
+
+					// Are we already on the selected page?
+					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
+					if (
+						( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name )
+						||
+						( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
+						) {
+						return;
+					}
+
+					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
+					break;
 				}
 
 			case 3:
@@ -332,7 +405,14 @@ class Restricted_Site_Access {
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 		foreach ( self::$fields as $field_name => $field_data ) {
-			add_settings_field( $field_name, __( $field_data['label'], 'restricted-site-access' ), array( __CLASS__, $field_data['field'] ), self::$settings_page, 'restricted-site-access' );
+			add_settings_field(
+				$field_name,
+				$field_data['label'],
+				array( __CLASS__, $field_data['field'] ),
+				self::$settings_page,
+				'restricted-site-access',
+				array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
+			);
 		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
@@ -502,10 +582,10 @@ class Restricted_Site_Access {
 	}
 
 	public static function enqueue_settings_script() {
-		$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/settings.min.js';
+		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/settings.min.js';
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			$js_path = plugin_dir_url( __FILE__ ) . '/assets/js/src/settings.js';
+			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/settings.js';
 		}
 
 		wp_enqueue_script( 'rsa-settings', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
@@ -515,9 +595,9 @@ class Restricted_Site_Access {
 		$current_screen = get_current_screen();
 
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/src/admin.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
 		} else {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . '/assets/js/admin.min.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
+			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
 		}
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
@@ -541,6 +621,8 @@ class Restricted_Site_Access {
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
+
+		add_filter( 'wp_dropdown_pages', array( __CLASS__, 'filter_page_dropdown' ), 10, 2 );
 
 		self::$rsa_options = self::get_options();
 	}
@@ -675,8 +757,9 @@ class Restricted_Site_Access {
 	 * Add a new choice to the privacy selector
 	 */
 	public static function blog_privacy_selector() {
-		$is_restricted = ( 2 == get_option( 'blog_public' ));
-		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted );
+		global $wp;
+		$is_restricted = ( 2 == get_option( 'blog_public' ) );
+		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp );
 	?>
 		<p>
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
@@ -759,18 +842,32 @@ class Restricted_Site_Access {
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
 				$ips = (array) self::$rsa_options['allowed'];
-			foreach ( $ips as $ip ) {
-				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+				foreach ( $ips as $ip ) {
+					if ( ! empty( $ip ) ) {
+						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					}
 				}
-			}
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php _e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
+			<div class="config_ips" style="margin-top: 10px;">
+				<p class="description">
+					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
+				</p>
+				<?php
+					$config_ips = self::get_config_ips();
+					foreach ( $config_ips as $ip ) {
+						printf(
+							'<div><input type="text" value="%1$s" disabled="true" /></div>',
+							esc_attr( $ip )
+						);
+					}
+				?>
+			</div>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
@@ -863,6 +960,25 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Filters the page dropdown to display text if no pages are found.
+	 *
+	 * @param string $html The HTML to be output by wp_dropdown_pages.
+	 * @param array  $args Array of arguments for wp_dropdown_pages.
+	 * @return string      Dropdown HTML, or text saying no pages are found.
+	 */
+	public static function filter_page_dropdown( $html, $args ) {
+		if ( '' !== $html || 'rsa_page' !== $args['id'] ) {
+			return $html;
+		}
+
+		return sprintf(
+			'<p class="description" id="%2$s">%1$s</p>',
+			esc_html__( 'No published pages found.', 'restricted-site-access' ),
+			esc_attr( $args['id'] )
+		);
+	}
+
+	/**
 	 * Validate IP address entry on demand (AJAX)
 	 */
 	public static function ajax_rsa_ip_check() {
@@ -895,6 +1011,32 @@ class Restricted_Site_Access {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets an array of valid IP addresses from constant.
+	 *
+	 * @return array
+	 */
+	public static function get_config_ips() {
+		if ( ! defined( 'RSA_IP_WHITELIST' ) || ! RSA_IP_WHITELIST ) {
+			return array();
+		}
+
+		if ( ! is_string( RSA_IP_WHITELIST ) ) {
+			return array();
+		}
+
+		// Filter out valid IPs from configured ones.
+		$raw_ips   = explode( '|', RSA_IP_WHITELIST );
+		$valid_ips = array();
+		foreach ( $raw_ips as $ip ) {
+			$trimmed = trim( $ip );
+			if ( self::is_ip( $trimmed ) ) {
+				$valid_ips[] = $trimmed;
+			}
+		}
+		return $valid_ips;
 	}
 
 	/**
@@ -1054,6 +1196,10 @@ class Restricted_Site_Access {
 define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
 
 Restricted_Site_Access::get_instance();
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once __DIR__ . '/wp-cli.php';
+}
 
 /**
  * Uninstall routine for the plugin
