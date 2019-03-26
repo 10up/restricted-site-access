@@ -59,7 +59,7 @@ class Restricted_Site_Access {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
-		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ) );
+		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ), 99 );
 	}
 
 	public static function handle_constants( $is_restricted ) {
