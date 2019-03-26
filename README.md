@@ -94,6 +94,25 @@ In your `wp-config.php` file, you can define the following:
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 ```
 
+### Is there a constant I can set to ensure my site is (or is not) restricted?
+
+As of version 7.1.0, two constants were introduced that give you the ability to specify if the site should be in restricted mode.
+
+You can force the plugin to be in restricted mode by adding the following to your `wp-config.php` file:
+
+```php
+define( 'RSA_FORCE_RESTRICTION', true );
+```
+Or to ensure your site won't be in restricted mode:
+
+```php
+define( 'RSA_FORBID_RESTRICTION', true );
+```
+
+Make sure you add it before the `/* That's all, stop editing! Happy blogging. */` line.
+
+Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+
 ## License
 
 Restricted Site Access is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-2.0.html) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
