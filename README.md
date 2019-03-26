@@ -84,7 +84,7 @@ As of version 7.0.0, CLI integration has been added. To see the available comman
 $ wp rsa
 ```
 
-### How can I programatically define whitelisted IPs?
+### How can I programmatically define whitelisted IPs?
 
 In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
 
