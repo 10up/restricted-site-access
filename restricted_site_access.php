@@ -807,7 +807,7 @@ class Restricted_Site_Access {
 					$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
 					foreach ( $ips as $key => $ip ) {
 					if ( ! empty( $ip ) ) {
-						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" size="50" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( $comments[ $key + 1 ] ) : '' ) . '" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" size="50" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 					}
 				}
 			?>
