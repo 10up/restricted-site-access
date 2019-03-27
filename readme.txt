@@ -108,6 +108,9 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 
 == Changelog ==
 
+= 7.1.0 =
+* Add unit tests accross plugin. Note that when the `WP_TESTS_DOMAIN` constant is set, plugin redirects are disabled. Only set this constant when running the tests.
+
 = 7.0.1 =
 * Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.
 * Bug fix: Fall back to the login screen if the unrestricted page is no longer published.
