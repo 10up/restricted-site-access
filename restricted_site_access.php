@@ -23,6 +23,7 @@ class Restricted_Site_Access {
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
 	 * @return null|Restricted_Site_Access
+	 * @codeCoverageIgnore
 	 */
 	public static function get_instance() {
 		// Store the instance locally to avoid private static replication
@@ -39,6 +40,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * An empty constructor
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function __construct() {
 		/* Purposely do nothing here */ }
@@ -61,22 +64,27 @@ class Restricted_Site_Access {
 	}
 
 	public static function ajax_notice_dismiss() {
-		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error();
-			exit;
-		}
 
-		if ( RSA_IS_NETWORK ) {
-			if ( ! is_super_admin() ) {
+		// @codeCoverageIgnoreStart
+		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 				wp_send_json_error();
 				exit;
 			}
-		} else {
-			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_send_json_error();
-				exit;
+
+			if ( RSA_IS_NETWORK ) {
+				if ( ! is_super_admin() ) {
+					wp_send_json_error();
+					exit;
+				}
+			} else {
+				if ( ! current_user_can( 'manage_options' ) ) {
+					wp_send_json_error();
+					exit;
+				}
 			}
 		}
+		// @codeCoverageIgnoreEnd
 
 		if ( RSA_IS_NETWORK ) {
 			update_site_option( 'rsa_hide_page_cache_notice', true );
@@ -84,7 +92,11 @@ class Restricted_Site_Access {
 			update_option( 'rsa_hide_page_cache_notice', true );
 		}
 
-		wp_send_json_success();
+		// @codeCoverageIgnoreStart
+		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			wp_send_json_success();
+		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -106,6 +118,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Populate Restricted_Site_Access::$fields with internationalization-ready field information.
+	 *
+	 * @codeCoverageIgnore
 	 */
 	protected static function populate_fields_array() {
 		self::$fields = array(
@@ -247,11 +261,37 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Determine whether page should be restricted at point of request
+	 * Redirects restricted requests.
 	 *
 	 * @param array $wp WordPress request
+	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
+
+		$results = self::restrict_access_check( $wp );
+
+		if ( is_array( $results ) && ! empty( $results ) ) {
+
+			// Don't redirect during unit tests.
+			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+				wp_redirect( $results['url'], $results['code'] );
+				die();
+			}
+
+			// Don't die during unit tests.
+			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+				wp_die( $results['die_message'], $results['die_title'], array( 'response' => $results['die_code'] ) );
+			}
+		}
+	}
+
+	/**
+	 * Determine whether page should be restricted at point of request.
+	 *
+	 * @param array $wp WordPress The main WP request.
+	 * @return array              List of URL and code, otherwise empty.     
+	 */
+	public static function restrict_access_check( $wp ) {
 		self::$rsa_options = self::get_options();
 		$is_restricted     = self::is_restricted();
 
@@ -298,7 +338,7 @@ class Restricted_Site_Access {
 		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling
 
 		switch ( $rsa_restrict_approach ) {
-			case 4:
+			case 4: // Show them a page.
 				if ( ! empty( self::$rsa_options['page'] ) ) {
 					$page = get_post( self::$rsa_options['page'] );
 
@@ -310,15 +350,23 @@ class Restricted_Site_Access {
 						break;
 					}
 
-					// Are we already on the selected page?
-					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
-					if (
-						( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name )
-						||
-						( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
-						) {
-						return;
-					}
+				// Are we already on the selected page?
+				$on_selected_page = false;
+				if ( isset( $wp->query_vars['page_id'] ) && absint( $wp->query_vars['page_id'] ) === $page->ID ) {
+					$on_selected_page = true;
+				}
+
+				if ( ! $on_selected_page && ( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name ) ) {
+					$on_selected_page = true;
+				}
+
+				// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
+				if ( $on_selected_page
+					||
+					( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
+					) {
+					return;
+				}
 
 					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
 					break;
@@ -328,7 +376,12 @@ class Restricted_Site_Access {
 				$message = __( self::$rsa_options['message'], 'restricted-site-access' );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message = apply_filters( 'restricted_site_access_message', $message, $wp );
-				wp_die( $message, get_bloginfo( 'name' ) . ' - Site Access Restricted', array( 'response' => 403 ) );
+
+				return array(
+					'die_message' => $message,
+					'die_title' => get_bloginfo( 'name' ) . ' - Site Access Restricted',
+					'die_code' => 403,
+				);
 
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
@@ -347,8 +400,10 @@ class Restricted_Site_Access {
 		$redirect_url = apply_filters( 'restricted_site_access_redirect_url', self::$rsa_options['redirect_url'], $wp );
 		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['head_code'], $wp );
 
-		wp_redirect( $redirect_url, $redirect_code );
-		die;
+		return array(
+			'url' => $redirect_url,
+			'code' => $redirect_code,
+		);
 	}
 
 	/**
@@ -381,11 +436,10 @@ class Restricted_Site_Access {
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
-		//This is for Network Site Settings
+		// This is for Network Site Settings.
 		if ( RSA_IS_NETWORK  && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
 			add_action( 'network_admin_notices', array( __CLASS__, 'page_cache_notice' ) );
-
 		}
 
 		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );
@@ -556,11 +610,10 @@ class Restricted_Site_Access {
 	}
 
 	public static function enqueue_admin_script() {
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js', array( 'jquery' ), RSA_VERSION, true );
-		} else {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js', array( 'jquery' ), RSA_VERSION, true );
-		}
+
+		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
+
+		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery' ), RSA_VERSION, true );
 
 		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
 			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
@@ -622,8 +675,10 @@ class Restricted_Site_Access {
 	 * Check if the page caching is on, and notify the admin
 	 */
 	public static function page_cache_notice() {
-		//If WP_CACHE is on we show notification
-		if ( defined( 'WP_CACHE' ) && true === WP_CACHE ) {
+		// If WP_CACHE is on we show notification.
+		$show_notification = apply_filters( 'restricted_site_access_show_page_cache_notice', defined( 'WP_CACHE' ) && true === WP_CACHE );
+
+		if ( $show_notification ) {
 
 			if ( RSA_IS_NETWORK ) {
 				if ( get_site_option( 'rsa_hide_page_cache_notice' ) ) {
@@ -762,7 +817,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_handling( $args = array() ) {
 		if ( ! isset( self::$rsa_options['approach'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['approach'] = 1;
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<fieldset id="rsa_handle_fields">
@@ -852,7 +909,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_redirect( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['redirect_url'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['redirect_url'] = '';
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<input type="text" name="rsa_options[redirect_url]" id="redirect" class="rsa_redirect_field regular-text" value="<?php echo esc_attr( self::$rsa_options['redirect_url'] ); ?>" />
@@ -866,7 +925,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_redirect_path( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['redirect_path'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['redirect_path'] = 0;
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<fieldset><legend class="screen-reader-text"><span><?php _e( self::$rsa_options['redirect_path']['label'], 'restricted-site-access' ); ?></span></legend>
@@ -884,7 +945,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_redirect_code( $args  = array() ) {
 		if ( empty( self::$rsa_options['head_code'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['head_code'] = 302;
+			// @codeCoverageIgnoreEnd
 		}
 	?>
 		<select name="rsa_options[head_code]" id="redirect_code" class="rsa_redirect_field">
@@ -902,7 +965,9 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_rsa_page( $args  = array() ) {
 		if ( ! isset( self::$rsa_options['page'] ) ) {
+			// @codeCoverageIgnoreStart
 			self::$rsa_options['page'] = 0;
+			// @codeCoverageIgnoreEnd
 		}
 
 		wp_dropdown_pages(array(
@@ -934,6 +999,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Validate IP address entry on demand (AJAX)
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function ajax_rsa_ip_check() {
 		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( $_POST['ip_address'] ) ) ) {
@@ -1114,7 +1181,9 @@ class Restricted_Site_Access {
 	}
 }
 
-define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
+if ( ! defined( 'RSA_IS_NETWORK' ) ) {
+	define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
+}
 
 Restricted_Site_Access::get_instance();
 
@@ -1161,6 +1230,8 @@ if ( ! function_exists( 'inet_pton' ) ) :
 	 * @param string $ip IP Address
 	 *
 	 * @return array|string
+	 *
+	 * @codeCoverageIgnore
 	 */
 	function inet_pton( $ip ) {
 		if ( strpos( $ip, '.' ) !== false ) {
