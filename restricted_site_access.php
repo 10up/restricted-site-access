@@ -280,7 +280,7 @@ class Restricted_Site_Access {
 
 			// Don't die during unit tests.
 			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
-				wp_die( $results['die_message'], $results['die_title'], array( 'response' => $results['die_code'] ) );
+				wp_die( esc_html( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
 	}
@@ -289,7 +289,7 @@ class Restricted_Site_Access {
 	 * Determine whether page should be restricted at point of request.
 	 *
 	 * @param array $wp WordPress The main WP request.
-	 * @return array              List of URL and code, otherwise empty.     
+	 * @return array              List of URL and code, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
 		self::$rsa_options = self::get_options();
@@ -345,7 +345,7 @@ class Restricted_Site_Access {
 					// If the selected page isn't found or isn't published, fall back to default values.
 					if ( ! $page || 'publish' !== $page->post_status ) {
 						self::$rsa_options['head_code'] = 302;
-						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
+						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( $_SERVER['REQUEST_URI'] );
 						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
 						break;
 					}
@@ -386,14 +386,14 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . $_SERVER['REQUEST_URI'];
+						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( $_SERVER['REQUEST_URI'] );
 					}
 					break;
 				}
 
 			default:
 				self::$rsa_options['head_code']    = 302;
-				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : $_SERVER['REQUEST_URI'];
+				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( $_SERVER['REQUEST_URI'] );
 				self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
 		}
 
@@ -557,7 +557,7 @@ class Restricted_Site_Access {
 
 			switch ( $option_name ) {
 				case 'rsa_options':
-					$value = self::sanitize_options( $_POST[ $option_name ] );
+					$value = self::sanitize_options( $_POST[ $option_name ] ); // @codingStandardsIgnoreLine - `sanitize_options` is a sanitizing function.
 					break;
 				case 'blog_public':
 					$value = absint( $_POST[ $option_name ] );
@@ -866,7 +866,8 @@ class Restricted_Site_Access {
 				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
-			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
+			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // @codingStandardsIgnoreLine checking for empty is ok.
+			?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
 			<div class="config_ips" style="margin-top: 10px;">
 				<p class="description">
 					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
@@ -1007,7 +1008,7 @@ class Restricted_Site_Access {
 	 * @codeCoverageIgnore
 	 */
 	public static function ajax_rsa_ip_check() {
-		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( $_POST['ip_address'] ) ) ) {
+		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( $_POST['ip_address'] ) ) ) ) {
 			die( '1' );
 		}
 		die;
@@ -1172,7 +1173,7 @@ class Restricted_Site_Access {
 			}
 
 			foreach ( explode( ',',
-				$_SERVER[ $key ] ) as $ip ) {
+				sanitize_text_field( $_SERVER[ $key ] ) ) as $ip ) {
 				$ip = trim( $ip ); // just to be safe
 
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
