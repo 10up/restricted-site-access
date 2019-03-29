@@ -1,5 +1,5 @@
 <?php
-
+// @phpcs:ignoreFile
 /**
  * Manages the Restricted Site Access plugin settings.
  *
