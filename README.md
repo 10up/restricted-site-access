@@ -84,7 +84,7 @@ As of version 7.0.0, CLI integration has been added. To see the available comman
 $ wp rsa
 ```
 
-### How can I programatically define whitelisted IPs?
+### How can I programmatically define whitelisted IPs?
 
 In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
 
@@ -93,6 +93,25 @@ In your `wp-config.php` file, you can define the following:
 ```php
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 ```
+
+### Is there a constant I can set to ensure my site is (or is not) restricted?
+
+As of version 7.1.0, two constants were introduced that give you the ability to specify if the site should be in restricted mode.
+
+You can force the plugin to be in restricted mode by adding the following to your `wp-config.php` file:
+
+```php
+define( 'RSA_FORCE_RESTRICTION', true );
+```
+Or to ensure your site won't be in restricted mode:
+
+```php
+define( 'RSA_FORBID_RESTRICTION', true );
+```
+
+Make sure you add it before the `/* That's all, stop editing! Happy blogging. */` line.
+
+Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
 ## License
 
