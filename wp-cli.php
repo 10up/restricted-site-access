@@ -1,5 +1,4 @@
-<?php
-// @phpcs:ignoreFile
+<?php // phpcs:disable WordPress.Files.FileName
 /**
  * Manages the Restricted Site Access plugin settings.
  *
@@ -121,6 +120,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			if ( 2 !== $blog_public ) {
 				WP_CLI::success(
 					sprintf(
+						/* translators: %s: What the user is updating: "Site" or "Network". */
 						__( '%s already not under restricted access.', 'restricted-site-access' ),
 						$this->update_text()
 					)
@@ -136,6 +136,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 
 			WP_CLI::success(
 				sprintf(
+					/* translators: %s: What the user is updating: "Site" or "Network". */
 					__( '%s restrictions disabled.', 'restricted-site-access' )
 				),
 				$this->update_text()
@@ -208,24 +209,29 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$success_msg = '';
 		switch ( $mode ) {
 			case 'login':
+				/* translators: %s: Context: "Site" or "Network". */
 				$success_msg = __( '%s redirecting visitors to login.', 'restricted-site-access' );
 				break;
 			case 'redirect':
 				$success_msg = sprintf(
+					/* translators: %s: Context: "Site" or "Network". %s: Redirect URL. */
 					__( '%%s redirecting visitors to "%s"', 'restricted-site-access' ),
 					$updated_options['redirect_url']
 				);
 				break;
 			case 'message':
+				/* translators: %s: Context: "Site" or "Network". */
 				$success_msg = __( '%s showing message to visitors.', 'restricted-site-access' );
 				break;
 			case 'page':
 				$success_msg = sprintf(
+					/* translators: %s: "Site" or "Network". %s: Page title. */
 					__( '%%s showing visitors page "%s"', 'restricted-site-access' ),
 					get_the_title( $page )
 				);
 				break;
 			default:
+				/* translators: %s: What the user is updating: "Site" or "Network". */
 				$success_msg = __( '%s settings updated.', 'restricted-site-access' );
 		}
 
@@ -275,6 +281,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		if ( $new_mode === $current_mode ) {
 			WP_CLI::warning(
 				sprintf(
+					/* translators: %s: Network mode. */
 					__( 'Mode is already set to %s.', 'restricted-site-access' ),
 					$current_mode
 				)
@@ -283,6 +290,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			update_site_option( 'rsa_mode', sanitize_key( $new_mode ) );
 			WP_CLI::success(
 				sprintf(
+					/* translators: %s: Network mode. */
 					__( 'Set network mode to %s.', 'restricted-site-access' ),
 					$new_mode
 				)
@@ -382,6 +390,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			// Only show a warning as this may be an automated process.
 			WP_CLI::warning(
 				sprintf(
+					/* translators: %s: Context: "Site" or "Network". */
 					__( 'Provided IPs are already on %s whitelist.', 'restricted-site-access' ),
 					$this->update_text( false )
 				)
@@ -395,6 +404,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 
 		WP_CLI::success(
 			sprintf(
+				/* translators: %1$s: IP addresses. %2$s: Context: "Site" or "Network". */
 				__( 'Added %1$s to %2$s whitelist.', 'restricted-site-access' ),
 				implode( ', ', $new_ips ),
 				$this->update_text( false )
@@ -403,6 +413,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 
 		WP_CLI::debug(
 			sprintf(
+				/* translators: %2$s: IP addresses. %1$s: Context: "Site" or "Network". */
 				__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
 				implode( ', ', $new_options['allowed'] ),
 				$this->update_text( false )
@@ -449,6 +460,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			// Only show warning as this may be an automated process.
 			WP_CLI::warning(
 				sprintf(
+					/* translators: %s: Context: "Site" or "Network". */
 					__( 'Provided IPs are not on %s whitelist.', 'restricted-site-access' ),
 					$this->update_text( false )
 				)
@@ -462,6 +474,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 
 		WP_CLI::success(
 			sprintf(
+				/* translators: %1$s: IP addresses. %2$s: Context: "Site" or "Network". */
 				__( 'Removed IPs %1$s from %2$s whitelist.', 'restricted-site-access' ),
 				implode( ', ', $removed_ips ),
 				$this->update_text( false )
@@ -470,6 +483,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 
 		WP_CLI::debug(
 			sprintf(
+				/* translators: %2$s: IP addresses. %1$s: Context: "Site" or "Network". */
 				__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
 				implode( ', ', $new_options['allowed'] ),
 				$this->update_text( false )
@@ -514,6 +528,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 
 		WP_CLI::success(
 			sprintf(
+				/* translators: %2$s: IPs to whitelist, %1$s: Context: "Site" or "Network". */
 				__( 'Set %2$s IP whitelist to %1$s.', 'restricted-site-access' ),
 				implode( ', ', $new_options['allowed'] ),
 				$this->update_text( false )
