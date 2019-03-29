@@ -344,7 +344,7 @@ class Restricted_Site_Access {
 					// If the selected page isn't found or isn't published, fall back to default values.
 					if ( ! $page || 'publish' !== $page->post_status ) {
 						self::$rsa_options['head_code']    = 302;
-						$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( $_SERVER['REQUEST_URI'] );
+						$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
 						break;
 					}
@@ -385,14 +385,14 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( $_SERVER['REQUEST_URI'] );
+						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 					}
 					break;
 				}
 
 			default:
 				self::$rsa_options['head_code']    = 302;
-				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( $_SERVER['REQUEST_URI'] );
+				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 				self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
 		}
 
@@ -558,7 +558,7 @@ class Restricted_Site_Access {
 
 			switch ( $option_name ) {
 				case 'rsa_options':
-					$value = self::sanitize_options( $_POST[ $option_name ] ); // @codingStandardsIgnoreLine - `sanitize_options` is a sanitizing function.
+					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) ); // @codingStandardsIgnoreLine - `sanitize_options` is a sanitizing function.
 					break;
 				case 'blog_public':
 					$value = absint( $_POST[ $option_name ] );
@@ -1018,7 +1018,7 @@ class Restricted_Site_Access {
 	 * @codeCoverageIgnore
 	 */
 	public static function ajax_rsa_ip_check() {
-		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( $_POST['ip_address'] ) ) ) ) {
+		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) ) ) ) {
 			die( '1' );
 		}
 		die;
@@ -1148,7 +1148,7 @@ class Restricted_Site_Access {
 	 * @return boolean true if the ip is in this range / false if not.
 	 */
 	public static function ip_in_range( $ip, $range ) {
-		if ( strpos( $range, '/' ) == false ) {
+		if ( strpos( $range, '/' ) === false ) {
 			$range .= '/32';
 		}
 		// $range is in IP/CIDR format eg 127.0.0.1/24
@@ -1157,7 +1157,7 @@ class Restricted_Site_Access {
 		$ip_decimal              = ip2long( $ip );
 		$wildcard_decimal        = pow( 2, ( 32 - $netmask ) ) - 1;
 		$netmask_decimal         = ~ $wildcard_decimal;
-		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+		return ( ( $ip_decimal & $netmask_decimal ) === ( $range_decimal & $netmask_decimal ) );
 	}
 
 	/**
@@ -1184,7 +1184,7 @@ class Restricted_Site_Access {
 
 			foreach ( explode(
 				',',
-				sanitize_text_field( $_SERVER[ $key ] )
+				sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) )
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
 
