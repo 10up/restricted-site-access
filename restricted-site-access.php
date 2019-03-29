@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName
 /**
  * Plugin Name: Restricted Site Access
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
