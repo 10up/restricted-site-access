@@ -317,7 +317,7 @@ class Restricted_Site_Access {
 
 			// Don't die during unit tests.
 			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
-				wp_die( esc_html( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
+				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
 	}
