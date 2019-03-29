@@ -12,11 +12,37 @@
 
 define( 'RSA_VERSION', '7.0.1' );
 
+/**
+ * Class responsible for all plugin funcitonality.
+ */
 class Restricted_Site_Access {
 
-	private static $basename, $rsa_options;
+	/**
+	 * Plugin basename.
+	 *
+	 * @var array $basename The plugin base name.
+	 */
+	private static $basename;
+
+	/**
+	 * Plugin options.
+	 *
+	 * @var array $rsa_options The plugin options.
+	 */
+	private static $rsa_options;
+
+	/**
+	 * Settings page slug.
+	 *
+	 * @var array $settings_page The settings page slug.
+	 */
 	private static $settings_page = 'reading';
 
+	/**
+	 * Settings fields.
+	 *
+	 * @var array $fields The plugin settings fields.
+	 */
 	private static $fields;
 
 	/**
@@ -31,7 +57,7 @@ class Restricted_Site_Access {
 
 		if ( null === $instance ) {
 			$instance = new self();
-			self::_add_actions();
+			self::add_actions();
 			self::populate_fields_array();
 		}
 
@@ -49,7 +75,7 @@ class Restricted_Site_Access {
 	/**
 	 * Handles registering hooks that initialize this plugin.
 	 */
-	public static function _add_actions() {
+	public static function add_actions() {
 		self::$basename = plugin_basename( __FILE__ );
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
@@ -63,6 +89,9 @@ class Restricted_Site_Access {
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 	}
 
+	/**
+	 * Ajax handler for dismissing the network controlled settings notice.
+	 */
 	public static function ajax_notice_dismiss() {
 
 		// @codeCoverageIgnoreStart
@@ -99,7 +128,14 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Set RSA defaults for new site
+	 * Set RSA defaults for new site.
+	 *
+	 * @param int    $blog_id Blog ID.
+	 * @param int    $user_id User ID.
+	 * @param string $domain  Site domain.
+	 * @param string $path    Site path.
+	 * @param int    $site_id Site ID. Only relevant on multi-network installs.
+	 * @param array  $meta    Meta data. Used to set initial site options.
 	 */
 	public static function set_defaults( $blog_id, $user_id, $domain, $path, $site_id, $meta ) {
 		if ( 'enforce' === self::get_network_mode() ) {
@@ -173,6 +209,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Populate the option with defaults.
+	 *
+	 * @param boolean $network Whther this is a network install. Default false.
 	 */
 	public static function get_options( $network = false ) {
 		$options = array();
@@ -214,7 +252,7 @@ class Restricted_Site_Access {
 
 		$user_check = self::user_can_access();
 
-		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) );
+		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		return ! $checks;
 	}
@@ -273,7 +311,7 @@ class Restricted_Site_Access {
 
 			// Don't redirect during unit tests.
 			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
-				wp_redirect( $results['url'], $results['code'] );
+				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 				die();
 			}
 
@@ -362,7 +400,11 @@ class Restricted_Site_Access {
 					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point.
 					if ( $on_selected_page
 					||
-					( empty( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
+						(
+							empty( $wp->query_vars ) &&
+							'page' === get_option( 'show_on_front' ) &&
+							(int) get_option( 'page_on_front' ) === (int) self::$rsa_options['page']
+						)
 					) {
 						return;
 					}
@@ -370,7 +412,7 @@ class Restricted_Site_Access {
 					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
 					break;
 				}
-
+				// Fall thru to case 3 if case 2 not handled.
 			case 3:
 				$message  = esc_html( self::$rsa_options['message'] );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
