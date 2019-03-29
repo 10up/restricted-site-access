@@ -26,7 +26,7 @@ class Restricted_Site_Access {
 	 * @codeCoverageIgnore
 	 */
 	public static function get_instance() {
-		// Store the instance locally to avoid private static replication
+		// Store the instance locally to avoid private static replication.
 		static $instance = null;
 
 		if ( null === $instance ) {
@@ -172,7 +172,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * populate the option with defaults
+	 * populate the option with defaults.
 	 */
 	public static function get_options( $network = false ) {
 		$options = array();
@@ -183,7 +183,7 @@ class Restricted_Site_Access {
 			$options = get_option( 'rsa_options' );
 		}
 
-		// Fill in defaults where values aren't set
+		// Fill in defaults where values aren't set.
 		foreach ( self::$fields as $field_name => $field_details ) {
 			if ( ! isset( $options[ $field_name ] ) ) {
 				$options[ $field_name ] = $field_details['default'];
@@ -207,7 +207,7 @@ class Restricted_Site_Access {
 
 		$blog_public = get_option( 'blog_public', 2 );
 
-		// If rsa_mode==enforce we override the rsa_options
+		// If rsa_mode==enforce we override the rsa_options.
 		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
@@ -294,7 +294,7 @@ class Restricted_Site_Access {
 		self::$rsa_options = self::get_options();
 		$is_restricted     = self::is_restricted();
 
-		// Check to see if it's _not_ restricted
+		// Check to see if it's _not_ restricted.
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
 			return;
 		}
@@ -307,11 +307,11 @@ class Restricted_Site_Access {
 			$allowed_ips = array_merge( $allowed_ips, self::$rsa_options['allowed'] );
 		}
 
-		// check for the allow list, if its empty block everything
+		// check for the allow list, if its empty block everything.
 		if ( count( $allowed_ips ) > 0 ) {
 			$remote_ip = self::get_client_ip_address();
 
-			// iterate through the allow list
+			// iterate through the allow list.
 			foreach ( $allowed_ips as $line ) {
 				if ( self::ip_in_range( $remote_ip, $line ) ) {
 
@@ -334,7 +334,7 @@ class Restricted_Site_Access {
 		}
 
 		$rsa_restrict_approach = apply_filters( 'restricted_site_access_approach', self::$rsa_options['approach'] );
-		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling
+		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling.
 
 		switch ( $rsa_restrict_approach ) {
 			case 4: // Show them a page.
@@ -359,7 +359,7 @@ class Restricted_Site_Access {
 						$on_selected_page = true;
 					}
 
-					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
+					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point.
 					if ( $on_selected_page
 					||
 					( empty( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
@@ -409,18 +409,18 @@ class Restricted_Site_Access {
 	 * Admin only hooks
 	 */
 	public static function admin_init() {
-		// customize privacy message
+		// customize privacy message.
 		add_filter( 'privacy_on_link_text', array( __CLASS__, 'privacy_on_link_text' ) );
 		add_filter( 'privacy_on_link_title', array( __CLASS__, 'privacy_on_link_title' ) );
 
-		// customize privacy page
+		// customize privacy page.
 		add_action( 'load-options-' . self::$settings_page . '.php', array( __CLASS__, 'load_options_page' ) );
 
-		// add new choice for blog privacy
+		// add new choice for blog privacy.
 		add_action( 'blog_privacy_selector', array( __CLASS__, 'blog_privacy_selector' ) );
 
-		// settings for restricted site access
-		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info
+		// settings for restricted site access.
+		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 		foreach ( self::$fields as $field_name => $field_data ) {
 			add_settings_field(
@@ -717,7 +717,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add restricted access help tab to screen
+	 * Add restricted access help tab to screen.
 	 */
 	public static function admin_head() {
 		$screen  = get_current_screen();
@@ -770,7 +770,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add a new choice to the privacy selector
+	 * Add a new choice to the privacy selector.
 	 */
 	public static function blog_privacy_selector() {
 		global $wp;
@@ -785,7 +785,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Sanitize RSA options
+	 * Sanitize RSA options.
 	 *
 	 * @param array $input
 	 *
@@ -818,7 +818,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Fieldset for choosing restriction handling
+	 * Fieldset for choosing restriction handling.
 	 *
 	 * @param $args
 	 */
@@ -849,7 +849,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Fieldset for managing allowed IP addresses
+	 * Fieldset for managing allowed IP addresses.
 	 *
 	 * @param $args
 	 */
@@ -894,7 +894,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Field for custom message
+	 * Field for custom message.
 	 *
 	 * @param $args
 	 */
@@ -916,7 +916,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Field for redirection
+	 * Field for redirection.
 	 *
 	 * @param $args
 	 */
@@ -932,7 +932,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Field for redirect path option
+	 * Field for redirect path option.
 	 *
 	 * @param $args
 	 */
@@ -952,7 +952,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Field for specifying redirect code
+	 * Field for specifying redirect code.
 	 *
 	 * @param $args
 	 */
@@ -972,7 +972,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Field for choosing a page to redirect to
+	 * Field for choosing a page to redirect to.
 	 *
 	 * @param $args
 	 */
@@ -1013,7 +1013,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Validate IP address entry on demand (AJAX)
+	 * Validate IP address entry on demand (AJAX).
 	 *
 	 * @codeCoverageIgnore
 	 */
@@ -1025,14 +1025,14 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * is it a valid IP address? v4/v6 with subnet range
+	 * is it a valid IP address? v4/v6 with subnet range.
 	 *
 	 * @param string $ip_address IP Address to check
 	 *
 	 * @return bool True if its a valid IP address.
 	 */
 	public static function is_ip( $ip_address ) {
-		// very basic validation of ranges
+		// very basic validation of ranges.
 		if ( strpos( $ip_address, '/' ) ) {
 			$ip_parts = explode( '/', $ip_address );
 			if ( empty( $ip_parts[1] ) || ! is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
@@ -1041,7 +1041,7 @@ class Restricted_Site_Access {
 			$ip_address = $ip_parts[0];
 		}
 
-		// confirm IP part is a valid IPv6 or IPv4 IP
+		// confirm IP part is a valid IPv6 or IPv4 IP.
 		if ( empty( $ip_address ) || ! inet_pton( stripslashes( $ip_address ) ) ) {
 			return false;
 		}
@@ -1186,7 +1186,7 @@ class Restricted_Site_Access {
 				',',
 				sanitize_text_field( $_SERVER[ $key ] )
 			) as $ip ) {
-				$ip = trim( $ip ); // just to be safe
+				$ip = trim( $ip ); // just to be safe.
 
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
 					return $ip;
@@ -1242,7 +1242,7 @@ register_uninstall_hook( __FILE__, 'restricted_site_access_uninstall' );
 if ( ! function_exists( 'inet_pton' ) ) :
 
 	/**
-	 * inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2)
+	 * inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2).
 	 *
 	 * @param string $ip IP Address
 	 *
@@ -1252,10 +1252,10 @@ if ( ! function_exists( 'inet_pton' ) ) :
 	 */
 	function inet_pton( $ip ) {
 		if ( strpos( $ip, '.' ) !== false ) {
-			// ipv4
+			// ipv4.
 			$ip = pack( 'N', ip2long( $ip ) );
 		} elseif ( strpos( $ip, ':' ) !== false ) {
-			// ipv6
+			// ipv6.
 			$ip  = explode( ':', $ip );
 			$res = str_pad( '', ( 4 * ( 8 - count( $ip ) ) ), '0000', STR_PAD_LEFT );
 			foreach ( $ip as $seg ) {
