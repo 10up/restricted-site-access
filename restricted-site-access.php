@@ -871,7 +871,8 @@ class Restricted_Site_Access {
 				<input type="text" name="newip" id="newip" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
-			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // @codingStandardsIgnoreLine checking for empty is ok.
+			<?php
+			if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // @codingStandardsIgnoreLine checking for empty is ok.
 				?>
 			<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
 			<div class="config_ips" style="margin-top: 10px;">
@@ -1099,7 +1100,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Activation of plugin: upgrades old versions, immediately sets privacy
+	 * Activation of plugin: upgrades old versions, immediately sets privacy.
+	 *
+	 * @param boolean $network_active Whether the plugin network active.
 	 */
 	public static function activation( $network_active ) {
 		if ( ! $network_active ) {
@@ -1108,7 +1111,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Restore privacy option to default value upon deactivating
+	 * Restore privacy option to default value upon deactivating.
+	 *
+	 * @param boolean $network_active Whether the plugin network active.
 	 */
 	public static function deactivation( $network_active ) {
 		if ( $network_active ) {
@@ -1131,7 +1136,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Determine if plugin is network activated
+	 * Determine if plugin is network activated.
+	 *
+	 * @param string $plugin The plugin slug to check.
 	 */
 	public static function is_network( $plugin ) {
 
