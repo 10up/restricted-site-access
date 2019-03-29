@@ -262,7 +262,7 @@ class Restricted_Site_Access {
 	/**
 	 * Redirects restricted requests.
 	 *
-	 * @param array $wp WordPress request
+	 * @param array $wp WordPress request.
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
@@ -1027,7 +1027,7 @@ class Restricted_Site_Access {
 	/**
 	 * is it a valid IP address? v4/v6 with subnet range.
 	 *
-	 * @param string $ip_address IP Address to check
+	 * @param string $ip_address IP Address to check.
 	 *
 	 * @return bool True if its a valid IP address.
 	 */
@@ -1076,9 +1076,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add settings link directing user to privacy page on plug-in page
+	 * Add settings link directing user to privacy page on plug-in page.
 	 *
-	 * @param array $links Array of links for plugin actions
+	 * @param array $links Array of links for plugin actions.
 	 *
 	 * @return array
 	 */
@@ -1143,8 +1143,8 @@ class Restricted_Site_Access {
 	 * Check if a given ip is in a network.
 	 * Source: https://gist.github.com/tott/7684443
 	 *
-	 * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1
-	 * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
+	 * @param  string $ip    IP to check in IPV4 format eg. 127.0.0.1.
+	 * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed.
 	 * @return boolean true if the ip is in this range / false if not.
 	 */
 	public static function ip_in_range( $ip, $range ) {
@@ -1244,7 +1244,7 @@ if ( ! function_exists( 'inet_pton' ) ) :
 	/**
 	 * inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2).
 	 *
-	 * @param string $ip IP Address
+	 * @param string $ip IP Address.
 	 *
 	 * @return array|string
 	 *
