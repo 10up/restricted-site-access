@@ -85,7 +85,6 @@ class Restricted_Site_Access {
 			}
 		}
 		// @codeCoverageIgnoreEnd
-
 		if ( RSA_IS_NETWORK ) {
 			update_site_option( 'rsa_hide_page_cache_notice', true );
 		} else {
@@ -123,41 +122,41 @@ class Restricted_Site_Access {
 	 */
 	protected static function populate_fields_array() {
 		self::$fields = array(
-		'approach'      => array(
-			'default' => 1,
+			'approach'      => array(
+				'default' => 1,
 				'label'   => esc_html__( 'Handle restricted visitors', 'restricted-site-access' ),
 				'field'   => 'settings_field_handling',
-		),
-		'message'       => array(
+			),
+			'message'       => array(
 				'default' => esc_html_x( 'Access to this site is restricted.', 'default restriction message', 'restricted-site-access' ),
 				'label'   => esc_html__( 'Restriction message', 'restricted-site-access' ),
 				'field'   => 'settings_field_message',
-		),
-		'redirect_url'  => array(
-			'default' => '',
+			),
+			'redirect_url'  => array(
+				'default' => '',
 				'label'   => esc_html__( 'Redirect web address', 'restricted-site-access' ),
-			'field'   => 'settings_field_redirect',
-		),
+				'field'   => 'settings_field_redirect',
+			),
 			'redirect_path' => array(
-			'default' => 0,
+				'default' => 0,
 				'label'   => esc_html__( 'Redirect to same path', 'restricted-site-access' ),
-			'field'   => 'settings_field_redirect_path',
-		),
-		'head_code'     => array(
-			'default' => 302,
+				'field'   => 'settings_field_redirect_path',
+			),
+			'head_code'     => array(
+				'default' => 302,
 				'label'   => esc_html__( 'Redirection status code', 'restricted-site-access' ),
-			'field'   => 'settings_field_redirect_code',
-		),
-		'page'          => array(
-			'default' => 0,
+				'field'   => 'settings_field_redirect_code',
+			),
+			'page'          => array(
+				'default' => 0,
 				'label'   => esc_html__( 'Restricted notice page', 'restricted-site-access' ),
-			'field'   => 'settings_field_rsa_page',
-		),
-		'allowed'       => array(
-			'default' => array(),
+				'field'   => 'settings_field_rsa_page',
+			),
+			'allowed'       => array(
+				'default' => array(),
 				'label'   => esc_html__( 'Unrestricted IP addresses', 'restricted-site-access' ),
-			'field'   => 'settings_field_allowed',
-		),
+				'field'   => 'settings_field_allowed',
+			),
 		);
 	}
 
@@ -208,7 +207,7 @@ class Restricted_Site_Access {
 
 		$blog_public = get_option( 'blog_public', 2 );
 
-		//If rsa_mode==enforce we override the rsa_options
+		// If rsa_mode==enforce we override the rsa_options
 		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
 			$blog_public = get_site_option( 'blog_public', 2 );
 		}
@@ -313,7 +312,7 @@ class Restricted_Site_Access {
 			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list
-			foreach( $allowed_ips as $line ) {
+			foreach ( $allowed_ips as $line ) {
 				if ( self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
@@ -344,29 +343,29 @@ class Restricted_Site_Access {
 
 					// If the selected page isn't found or isn't published, fall back to default values.
 					if ( ! $page || 'publish' !== $page->post_status ) {
-						self::$rsa_options['head_code'] = 302;
-						$current_path = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( $_SERVER['REQUEST_URI'] );
+						self::$rsa_options['head_code']    = 302;
+						$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( $_SERVER['REQUEST_URI'] );
 						self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
 						break;
 					}
 
-				// Are we already on the selected page?
-				$on_selected_page = false;
-				if ( isset( $wp->query_vars['page_id'] ) && absint( $wp->query_vars['page_id'] ) === $page->ID ) {
-					$on_selected_page = true;
-				}
+					// Are we already on the selected page?
+					$on_selected_page = false;
+					if ( isset( $wp->query_vars['page_id'] ) && absint( $wp->query_vars['page_id'] ) === $page->ID ) {
+						$on_selected_page = true;
+					}
 
-				if ( ! $on_selected_page && ( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name ) ) {
-					$on_selected_page = true;
-				}
+					if ( ! $on_selected_page && ( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name ) ) {
+						$on_selected_page = true;
+					}
 
-				// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
-				if ( $on_selected_page
+					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point
+					if ( $on_selected_page
 					||
-					( empty ( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
+					( empty( $wp->query_vars ) && 'page' === get_option( 'show_on_front' ) && (int) self::$rsa_options['page'] === (int) get_option( 'page_on_front' ) )
 					) {
-					return;
-				}
+						return;
+					}
 
 					self::$rsa_options['redirect_url'] = get_permalink( $page->ID );
 					break;
@@ -379,8 +378,8 @@ class Restricted_Site_Access {
 
 				return array(
 					'die_message' => $message,
-					'die_title' => esc_html( get_bloginfo( 'name' ) ) . ' - Site Access Restricted',
-					'die_code' => 403,
+					'die_title'   => esc_html( get_bloginfo( 'name' ) ) . ' - Site Access Restricted',
+					'die_code'    => 403,
 				);
 
 			case 2:
@@ -401,7 +400,7 @@ class Restricted_Site_Access {
 		$redirect_code = apply_filters( 'restricted_site_access_head', self::$rsa_options['head_code'], $wp );
 
 		return array(
-			'url' => $redirect_url,
+			'url'  => $redirect_url,
 			'code' => $redirect_code,
 		);
 	}
@@ -437,7 +436,7 @@ class Restricted_Site_Access {
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
 		// This is for Network Site Settings.
-		if ( RSA_IS_NETWORK  && is_network_admin() ) {
+		if ( RSA_IS_NETWORK && is_network_admin() ) {
 			add_action( 'load-settings.php', array( __CLASS__, 'load_network_settings_page' ) );
 			add_action( 'network_admin_notices', array( __CLASS__, 'page_cache_notice' ) );
 		}
@@ -547,7 +546,9 @@ class Restricted_Site_Access {
 	 */
 	public static function save_network_settings() {
 		$options = array(
-			'rsa_mode', 'blog_public', 'rsa_options'
+			'rsa_mode',
+			'blog_public',
+			'rsa_options',
 		);
 
 		foreach ( $options as $option_name ) {
@@ -615,9 +616,13 @@ class Restricted_Site_Access {
 
 		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery' ), RSA_VERSION, true );
 
-		wp_localize_script( 'rsa-admin', 'rsaAdmin', array(
-			'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
-		) );
+		wp_localize_script(
+			'rsa-admin',
+			'rsaAdmin',
+			array(
+				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+			)
+		);
 	}
 
 	/**
@@ -757,9 +762,9 @@ class Restricted_Site_Access {
 
 		$screen->add_help_tab(
 			array(
-			'id'      => 'restricted-site-access',
+				'id'      => 'restricted-site-access',
 				'title'   => esc_html_x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
-			'content' => implode( PHP_EOL, $content ),
+				'content' => implode( PHP_EOL, $content ),
 			)
 		);
 	}
@@ -771,12 +776,12 @@ class Restricted_Site_Access {
 		global $wp;
 		$is_restricted = ( 2 === (int) get_option( 'blog_public' ) );
 		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp );
-	?>
+		?>
 		<p>
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
 			<label for="blog-restricted"><?php esc_html_e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
-	<?php
+		<?php
 	}
 
 	/**
@@ -823,7 +828,7 @@ class Restricted_Site_Access {
 			self::$rsa_options['approach'] = 1;
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<fieldset id="rsa_handle_fields">
 			<input id="rsa-send-to-login" name="rsa_options[approach]" type="radio" value="1" <?php checked( self::$rsa_options['approach'], 1 ); ?> />
 			<label for="rsa-send-to-login"><?php esc_html_e( 'Send them to the WordPress login screen', 'restricted-site-access' ); ?></label>
@@ -840,7 +845,7 @@ class Restricted_Site_Access {
 				<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a page', 'restricted-site-access' ); ?></label>
 			<?php endif; ?>
 		</fieldset>
-	<?php
+		<?php
 	}
 
 	/**
@@ -849,17 +854,17 @@ class Restricted_Site_Access {
 	 * @param $args
 	 */
 	public static function settings_field_allowed( $args = array() ) {
-	?>
+		?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" value="" readonly="true" /> <a href="#remove" class="remove_btn"><?php echo esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ); ?></a></div>
 			<?php
 				$ips = (array) self::$rsa_options['allowed'];
-				foreach ( $ips as $ip ) {
-					if ( ! empty( $ip ) ) {
-						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
-					}
+			foreach ( $ips as $ip ) {
+				if ( ! empty( $ip ) ) {
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
+			}
 			?>
 			</div>
 			<div>
@@ -867,24 +872,25 @@ class Restricted_Site_Access {
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // @codingStandardsIgnoreLine checking for empty is ok.
-			?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
+				?>
+			<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
 			<div class="config_ips" style="margin-top: 10px;">
 				<p class="description">
 					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
 				</p>
 				<?php
 					$config_ips = self::get_config_ips();
-					foreach ( $config_ips as $ip ) {
-						printf(
-							'<div><input type="text" value="%1$s" disabled="true" /></div>',
-							esc_attr( $ip )
-						);
-					}
+				foreach ( $config_ips as $ip ) {
+					printf(
+						'<div><input type="text" value="%1$s" disabled="true" /></div>',
+						esc_attr( $ip )
+					);
+				}
 				?>
 			</div>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
-	<?php
+		<?php
 	}
 
 	/**
@@ -897,12 +903,16 @@ class Restricted_Site_Access {
 			self::$rsa_options['message'] = esc_html__( 'Access to this site is restricted.', 'restricted-site-access' );
 		}
 
-		wp_editor( self::$rsa_options['message'], 'rsa_message', array(
-			'media_buttons' => false,
-			'textarea_name' => 'rsa_options[message]',
-			'textarea_rows' => 4,
-			'tinymce'		=> false,
-		) );
+		wp_editor(
+			self::$rsa_options['message'],
+			'rsa_message',
+			array(
+				'media_buttons' => false,
+				'textarea_name' => 'rsa_options[message]',
+				'textarea_rows' => 4,
+				'tinymce'       => false,
+			)
+		);
 	}
 
 	/**
@@ -916,9 +926,9 @@ class Restricted_Site_Access {
 			self::$rsa_options['redirect_url'] = '';
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<input type="text" name="rsa_options[redirect_url]" id="redirect" class="rsa_redirect_field regular-text" value="<?php echo esc_attr( self::$rsa_options['redirect_url'] ); ?>" />
-	<?php
+		<?php
 	}
 
 	/**
@@ -932,13 +942,13 @@ class Restricted_Site_Access {
 			self::$rsa_options['redirect_path'] = 0;
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<fieldset><legend class="screen-reader-text"><span><?php esc_html_e( self::$rsa_options['redirect_path']['label'], 'restricted-site-access' ); ?></span></legend>
 			<label for="redirect_path">
 				<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field" <?php checked( self::$rsa_options['redirect_path'] ); ?> />
 				<?php esc_html_e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
 		</fieldset>
-	<?php
+		<?php
 	}
 
 	/**
@@ -952,13 +962,13 @@ class Restricted_Site_Access {
 			self::$rsa_options['head_code'] = 302;
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<select name="rsa_options[head_code]" id="redirect_code" class="rsa_redirect_field">
 			<option value="301" <?php selected( self::$rsa_options['head_code'], 301 ); ?>><?php esc_html_e( '301 Permanent', 'restricted-site-access' ); ?></option>
 			<option value="302" <?php selected( self::$rsa_options['head_code'], 302 ); ?>><?php esc_html_e( '302 Undefined', 'restricted-site-access' ); ?></option>
 			<option value="307" <?php selected( self::$rsa_options['head_code'], 307 ); ?>><?php esc_html_e( '307 Temporary', 'restricted-site-access' ); ?></option>
 		</select>
-	<?php
+		<?php
 	}
 
 	/**
@@ -1076,7 +1086,7 @@ class Restricted_Site_Access {
 		$links[] = sprintf(
 			'<a href="options-%s.php">%s</a>',
 			esc_attr( self::$settings_page ),
-			esc_html__( 'Settings' , 'restricted-site-access' )
+			esc_html__( 'Settings', 'restricted-site-access' )
 		);
 
 		return $links;
@@ -1143,10 +1153,10 @@ class Restricted_Site_Access {
 		}
 		// $range is in IP/CIDR format eg 127.0.0.1/24
 		list( $range, $netmask ) = explode( '/', $range, 2 );
-		$range_decimal = ip2long( $range );
-		$ip_decimal = ip2long( $ip );
-		$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
-		$netmask_decimal = ~ $wildcard_decimal;
+		$range_decimal           = ip2long( $range );
+		$ip_decimal              = ip2long( $ip );
+		$wildcard_decimal        = pow( 2, ( 32 - $netmask ) ) - 1;
+		$netmask_decimal         = ~ $wildcard_decimal;
 		return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
 	}
 
@@ -1156,27 +1166,29 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		$ip = '';
+		$ip      = '';
 		$headers = array(
-				'HTTP_CLIENT_IP',
-				'HTTP_X_FORWARDED_FOR',
-				'HTTP_X_FORWARDED',
-				'HTTP_X_CLUSTER_CLIENT_IP',
-				'HTTP_FORWARDED_FOR',
-				'HTTP_FORWARDED',
-				'REMOTE_ADDR',
-			);
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
 		foreach ( $headers as $key ) {
 
 			if ( ! isset( $_SERVER[ $key ] ) ) {
 				continue;
 			}
 
-			foreach ( explode( ',',
-				sanitize_text_field( $_SERVER[ $key ] ) ) as $ip ) {
+			foreach ( explode(
+				',',
+				sanitize_text_field( $_SERVER[ $key ] )
+			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe
 
-				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false ) {
+				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
 					return $ip;
 				}
 			}
@@ -1213,7 +1225,7 @@ function restricted_site_access_uninstall() {
 			if ( 2 === (int) get_option( 'blog_public' ) ) {
 				update_option( 'blog_public', 1 );
 			}
-			delete_option('rsa_options');
+			delete_option( 'rsa_options' );
 
 			restore_current_blog();
 		}
@@ -1221,7 +1233,7 @@ function restricted_site_access_uninstall() {
 		if ( 2 === (int) get_option( 'blog_public' ) ) {
 			update_option( 'blog_public', 1 );
 		}
-		delete_option('rsa_options');
+		delete_option( 'rsa_options' );
 	}
 }
 
@@ -1241,11 +1253,11 @@ if ( ! function_exists( 'inet_pton' ) ) :
 	function inet_pton( $ip ) {
 		if ( strpos( $ip, '.' ) !== false ) {
 			// ipv4
-			$ip = pack( 'N',ip2long( $ip ) );
+			$ip = pack( 'N', ip2long( $ip ) );
 		} elseif ( strpos( $ip, ':' ) !== false ) {
 			// ipv6
-			$ip = explode( ':', $ip );
-			$res = str_pad( '', (4 * (8 -count( $ip ))), '0000', STR_PAD_LEFT );
+			$ip  = explode( ':', $ip );
+			$res = str_pad( '', ( 4 * ( 8 - count( $ip ) ) ), '0000', STR_PAD_LEFT );
 			foreach ( $ip as $seg ) {
 				$res .= str_pad( $seg, 4, '0', STR_PAD_LEFT );
 			}
