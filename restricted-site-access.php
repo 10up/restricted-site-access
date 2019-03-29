@@ -1018,6 +1018,12 @@ class Restricted_Site_Access {
 	 * @codeCoverageIgnore
 	 */
 	public static function ajax_rsa_ip_check() {
+
+		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error();
+			exit;
+		}
+
 		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) ) ) ) {
 			die( '1' );
 		}
