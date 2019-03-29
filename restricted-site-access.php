@@ -172,7 +172,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * populate the option with defaults.
+	 * Populate the option with defaults.
 	 */
 	public static function get_options( $network = false ) {
 		$options = array();
@@ -735,8 +735,8 @@ class Restricted_Site_Access {
 			_x( 'Allowed IP addresses', 'help topic', 'restricted-site-access' ),
 			__( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', 'restricted-site-access' ),
 			sprintf(
+				/* translators: %s: link to http://www.csgnetwork.com/ipinfocalc.html */
 				'<a href="http://www.csgnetwork.com/ipinfocalc.html">%s</a>',
-				/** translators: link to http://www.csgnetwork.com/ipinfocalc.html */
 				__( 'Here is a handy calculator to check your prefix.', 'restricted-site-access' )
 			),
 			__( 'The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', 'restricted-site-access' )
@@ -1025,7 +1025,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * is it a valid IP address? v4/v6 with subnet range.
+	 * Is it a valid IP address? v4/v6 with subnet range.
 	 *
 	 * @param string $ip_address IP Address to check.
 	 *
@@ -1093,7 +1093,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * activation of plugin: upgrades old versions, immediately sets privacy
+	 * Activation of plugin: upgrades old versions, immediately sets privacy
 	 */
 	public static function activation( $network_active ) {
 		if ( ! $network_active ) {
@@ -1102,7 +1102,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * restore privacy option to default value upon deactivating
+	 * Restore privacy option to default value upon deactivating
 	 */
 	public static function deactivation( $network_active ) {
 		if ( $network_active ) {
@@ -1242,7 +1242,7 @@ register_uninstall_hook( __FILE__, 'restricted_site_access_uninstall' );
 if ( ! function_exists( 'inet_pton' ) ) :
 
 	/**
-	 * inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2).
+	 * Inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2).
 	 *
 	 * @param string $ip IP Address.
 	 *
