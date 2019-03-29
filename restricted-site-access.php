@@ -819,10 +819,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Fieldset for choosing restriction handling.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_handling( $args = array() ) {
+	public static function settings_field_handling() {
 		if ( ! isset( self::$rsa_options['approach'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['approach'] = 1;
@@ -850,10 +848,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Fieldset for managing allowed IP addresses.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_allowed( $args = array() ) {
+	public static function settings_field_allowed() {
 		?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
@@ -896,10 +892,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Field for custom message.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_message( $args = array() ) {
+	public static function settings_field_message() {
 		if ( empty( self::$rsa_options['message'] ) ) {
 			self::$rsa_options['message'] = esc_html__( 'Access to this site is restricted.', 'restricted-site-access' );
 		}
@@ -918,10 +912,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Field for redirection.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_redirect( $args = array() ) {
+	public static function settings_field_redirect() {
 		if ( ! isset( self::$rsa_options['redirect_url'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['redirect_url'] = '';
@@ -934,10 +926,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Field for redirect path option.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_redirect_path( $args = array() ) {
+	public static function settings_field_redirect_path() {
 		if ( ! isset( self::$rsa_options['redirect_path'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['redirect_path'] = 0;
@@ -954,10 +944,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Field for specifying redirect code.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_redirect_code( $args = array() ) {
+	public static function settings_field_redirect_code() {
 		if ( empty( self::$rsa_options['head_code'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['head_code'] = 302;
@@ -974,10 +962,8 @@ class Restricted_Site_Access {
 
 	/**
 	 * Field for choosing a page to redirect to.
-	 *
-	 * @param $args
 	 */
-	public static function settings_field_rsa_page( $args = array() ) {
+	public static function settings_field_rsa_page() {
 		if ( ! isset( self::$rsa_options['page'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['page'] = 0;
