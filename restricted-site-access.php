@@ -616,7 +616,7 @@ class Restricted_Site_Access {
 
 			switch ( $option_name ) {
 				case 'rsa_options':
-					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) );  // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
 					break;
 				case 'blog_public':
 					$value = absint( $_POST[ $option_name ] );
@@ -927,9 +927,9 @@ class Restricted_Site_Access {
 			<div id="ip_list">
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip" value="" readonly="true" /> <input type="text" name="rsa_options[comment][]" value="" size="50" class="comment" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
-				$ips = (array) self::$rsa_options['allowed'];
+				$ips          = (array) self::$rsa_options['allowed'];
 					$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
-					foreach ( $ips as $key => $ip ) {
+			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
 						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" size="50" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
@@ -937,12 +937,12 @@ class Restricted_Site_Access {
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" placeholder="<?php esc_attr_e( 'IP Address or Range') ?>"/>
-				<input type="text" name="newipcomment" id="newipcomment" size="50"  placeholder="<?php esc_attr_e( 'Identify this entry') ?>" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>"/>
+				<input type="text" name="newipcomment" id="newipcomment" size="50"  placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 						</div>
 			<?php
-			if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // @codingStandardsIgnoreLine checking for empty is ok.
+			if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
 				?>
 			<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
 			<div class="config_ips" style="margin-top: 10px;">
