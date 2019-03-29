@@ -372,7 +372,7 @@ class Restricted_Site_Access {
 				}
 
 			case 3:
-				$message  = esc_html__( self::$rsa_options['message'], 'restricted-site-access' );
+				$message  = esc_html( self::$rsa_options['message'] );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message  = apply_filters( 'restricted_site_access_message', $message, $wp );
 
@@ -389,7 +389,7 @@ class Restricted_Site_Access {
 					}
 					break;
 				}
-
+				// No break, fall thru to default.
 			default:
 				self::$rsa_options['head_code']    = 302;
 				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
@@ -542,7 +542,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Handle Save Options for RSA Settings in Network Settings
+	 * Handle Save Options for RSA Settings in Network Settings.
 	 */
 	public static function save_network_settings() {
 		$options = array(
@@ -552,13 +552,13 @@ class Restricted_Site_Access {
 		);
 
 		foreach ( $options as $option_name ) {
-			if ( ! isset( $_POST[ $option_name ] ) ) {
+			if ( ! isset( $_POST[ $option_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				continue;
 			}
 
 			switch ( $option_name ) {
 				case 'rsa_options':
-					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) ); // @codingStandardsIgnoreLine - `sanitize_options` is a sanitizing function.
+					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					break;
 				case 'blog_public':
 					$value = absint( $_POST[ $option_name ] );
@@ -573,9 +573,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Overrides text in the dashboard Right Now widget
+	 * Overrides text in the dashboard Right Now widget.
 	 *
-	 * @param string $text
+	 * @param string $text The text for the dashboard 'rigth now' widget.
 	 *
 	 * @return string New text to show in widget
 	 */
@@ -587,9 +587,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Title attribute for link about site status on Right Now widget
+	 * Title attribute for link about site status on Right Now widget.
 	 *
-	 * @param string $text
+	 * @param string $text The title attribute.
 	 *
 	 * @return string New title attribute
 	 */
@@ -600,6 +600,9 @@ class Restricted_Site_Access {
 		return $text;
 	}
 
+	/**
+	 * Enqueue Settings page scripts.
+	 */
 	public static function enqueue_settings_script() {
 		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/settings.min.js';
 
@@ -610,6 +613,9 @@ class Restricted_Site_Access {
 		wp_enqueue_script( 'rsa-settings', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
 	}
 
+	/**
+	 * Enqueue wp-admin scripts.
+	 */
 	public static function enqueue_admin_script() {
 
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
@@ -787,7 +793,7 @@ class Restricted_Site_Access {
 	/**
 	 * Sanitize RSA options.
 	 *
-	 * @param array $input
+	 * @param array $input The options to sanitize.
 	 *
 	 * @return array Sanitized input
 	 */
