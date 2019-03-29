@@ -91,6 +91,15 @@ class Restricted_Site_Access {
 		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ), 99 );
 	}
 
+	/**
+	 * Handle RSA constants used to enforce or disallow restriction.
+	 *
+	 * Runs late on the `restricted_site_access_is_restricted` hook.
+	 *
+	 * @param boolean $is_restricted Whether the request is considered restricted.
+	 *
+	 * @return boolean The filtered $is_restricted value.
+	 */
 	public static function handle_constants( $is_restricted ) {
 		// Check if constant forcing restriction is defined.
 		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
@@ -610,13 +619,13 @@ class Restricted_Site_Access {
 		);
 
 		foreach ( $options as $option_name ) {
-			if ( ! isset( $_POST[ $option_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( ! isset( $_POST[ $option_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 				continue;
 			}
 
 			switch ( $option_name ) {
 				case 'rsa_options':
-					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) );  // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
+					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) );  // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
 					break;
 				case 'blog_public':
 					$value = absint( $_POST[ $option_name ] );
