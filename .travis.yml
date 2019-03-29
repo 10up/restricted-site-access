@@ -50,4 +50,4 @@ script:
   - phpunit --verbose
   - phpunit --verbose -c tests/php/multisite/multisite.xml
   # Run phpcs
-  - ./vendor/bin/phpcs *.php
+  - ./vendor/bin/phpcs *.php --standard=WordPress
