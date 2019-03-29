@@ -5,7 +5,7 @@ class Restricted_Site_Access_Test_Actions extends WP_UnitTestCase {
 	public function test_actions() {
 
 		$rsa = Restricted_Site_Access::get_instance();
-		$rsa::_add_actions();
+		$rsa::add_actions();
 
 		$this->assertSame( 1, has_action( 'parse_request', [ 'Restricted_Site_Access', 'restrict_access' ] ) );
 		$this->assertSame( 1, has_action( 'admin_init', [ 'Restricted_Site_Access', 'admin_init' ] ) );
