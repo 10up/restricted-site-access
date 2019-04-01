@@ -642,7 +642,7 @@ class Restricted_Site_Access {
 	/**
 	 * Overrides text in the dashboard Right Now widget.
 	 *
-	 * @param string $text The text for the dashboard 'rigth now' widget.
+	 * @param string $text The text for the dashboard 'right now' widget.
 	 *
 	 * @return string New text to show in widget
 	 */
