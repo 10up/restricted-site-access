@@ -1,6 +1,9 @@
+# Restricted Site Access
+> Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
+
 [![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access)
 
-# Restricted Site Access
+## Features
 
 Limit access your site to visitors who are logged in or accessing the site from a set of specified IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
 
@@ -12,10 +15,6 @@ Adds a number of new configuration options to the Reading settings panel. From t
 * Quickly add your current IP to the unrestricted list
 * Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
 * Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
-
-<p align="center">
-<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
-</p>
 
 ## Installation
 
@@ -120,3 +119,9 @@ Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/
 ## License
 
 Restricted Site Access utilizes the [GNU General Public License v2.0 (or later)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md).
+
+## Like what you see?
+
+<p align="center">
+<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
+</p>
