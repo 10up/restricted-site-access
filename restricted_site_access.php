@@ -889,22 +889,31 @@ class Restricted_Site_Access {
 				<input type="text" name="newip" id="newip" placeholder="<?php esc_attr_e( 'IP Address or Range') ?>" size="20" />
 				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry') ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
-						</div>
-			<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { ?><input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
+				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
+					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
+				<?php endif; ?>
+			</div>
+
+		<?php
+			$config_ips = self::get_config_ips();
+			if ( ! empty( $config_ips ) ) :
+		?>
 			<div class="config_ips" style="margin-top: 10px;">
-				<p class="description">
-					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
-				</p>
+				<h4>
+					<?php esc_html_e( 'Unrestricted IP addresses set by code configuration', 'restricted-site-access' ); ?>
+				</h4>
+				<ul class="ul-disc">
 				<?php
-					$config_ips = self::get_config_ips();
 					foreach ( $config_ips as $ip ) {
 						printf(
-							'<div><input type="text" value="%1$s" disabled="true" /></div>',
+							'<li><code>%1$s</code></li>',
 							esc_attr( $ip )
 						);
 					}
 				?>
+				</ul>
 			</div>
+		<?php endif; ?>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 	<?php
