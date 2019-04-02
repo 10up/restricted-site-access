@@ -905,10 +905,7 @@ class Restricted_Site_Access {
 				<ul class="ul-disc">
 				<?php
 					foreach ( $config_ips as $ip ) {
-						printf(
-							'<li><code>%1$s</code></li>',
-							esc_attr( $ip )
-						);
+						echo '<li><code>' . esc_attr( $ip ) . '</code></li>';
 					}
 				?>
 				</ul>
