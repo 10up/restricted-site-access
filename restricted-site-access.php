@@ -140,19 +140,19 @@ class Restricted_Site_Access {
 					exit;
 				}
 			}
-			// @codeCoverageIgnoreEnd
-			if ( RSA_IS_NETWORK ) {
-				update_site_option( 'rsa_hide_page_cache_notice', true );
-			} else {
-				update_option( 'rsa_hide_page_cache_notice', true );
-			}
-
-			// @codeCoverageIgnoreStart
-			if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
-				wp_send_json_success();
-			}
-			// @codeCoverageIgnoreEnd
 		}
+		// @codeCoverageIgnoreEnd
+		if ( RSA_IS_NETWORK ) {
+			update_site_option( 'rsa_hide_page_cache_notice', true );
+		} else {
+			update_option( 'rsa_hide_page_cache_notice', true );
+		}
+
+		// @codeCoverageIgnoreStart
+		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			wp_send_json_success();
+		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
