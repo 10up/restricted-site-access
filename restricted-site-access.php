@@ -87,6 +87,7 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+
 		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ), 99 );
 
 		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable_log' ) );
