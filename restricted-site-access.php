@@ -731,9 +731,9 @@ class Restricted_Site_Access {
 			'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
 			'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
 			'strings'                  => array(
-				'confirm' => esc_js( __( 'Network Disable Plugin', 'restricted-site-access' ) ),
-				'cancel'  => esc_js( __( 'Cancel', 'restricted-site-access' ) ),
-				'message' => esc_js( __( 'I understand', 'restricted-site-access' ) ),
+				'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
+				'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
+				'message' => esc_html__( 'I understand', 'restricted-site-access' ),
 			),
 		) );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
