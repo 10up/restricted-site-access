@@ -671,7 +671,7 @@ class Restricted_Site_Access {
 	 * Enqueue Settings page scripts.
 	 */
 	public static function enqueue_settings_script() {
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
 		wp_enqueue_script(
@@ -688,15 +688,15 @@ class Restricted_Site_Access {
 	 */
 	public static function enqueue_admin_script() {
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
 		wp_enqueue_script(
 			'rsa-admin',
-			 plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
-			 array( 'jquery' ),
-			 RSA_VERSION,
-			 true
+			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
+			array( 'jquery' ),
+			RSA_VERSION,
+			true
 		);
 
 		wp_localize_script(
