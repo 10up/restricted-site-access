@@ -722,7 +722,7 @@ class Restricted_Site_Access {
 		$current_screen = get_current_screen();
 
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
-		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery' ), RSA_VERSION, true );
+		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
 
 		wp_localize_script(
 			'rsa-admin',
