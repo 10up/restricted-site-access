@@ -462,13 +462,13 @@ class Restricted_Site_Access {
 
 					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point.
 					if ( $on_selected_page
-						||
+					||
 						(
 							empty( $wp->query_vars ) &&
 							'page' === get_option( 'show_on_front' ) &&
 							(int) get_option( 'page_on_front' ) === (int) self::$rsa_options['page']
 						)
-						) {
+					) {
 						return;
 					}
 
