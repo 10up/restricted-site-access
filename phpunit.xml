@@ -14,7 +14,7 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<file>restricted_site_access.php</file>
+			<file>restricted-site-access.php</file>
 		</whitelist>
 	</filter>
 	<php>
