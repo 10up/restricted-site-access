@@ -739,6 +739,10 @@ class Restricted_Site_Access {
 			)
 		);
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
+		wp_enqueue_style(
+			'rsa-admin',
+			plugin_dir_url( __FILE__ ) . 'assets/css/admin.css'
+		);
 	}
 
 	/**
@@ -1292,8 +1296,8 @@ class Restricted_Site_Access {
 				);
 				?>
 			</p>
-			<p style="text-align:center;font-size:2em">
-				<input type="text" id="rsa-user-message" style="font-size:1em">
+			<p class="rsa-user-message">
+				<input type="text" id="rsa-user-message">
 			</p>
 		</div>
 		<?php

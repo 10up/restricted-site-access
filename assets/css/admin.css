@@ -1,0 +1,8 @@
+input#rsa-user-message {
+	font-size: 2em;
+	min-width: 250px;
+}
+
+.rsa-user-message {
+	text-align: center
+}
