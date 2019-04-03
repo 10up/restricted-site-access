@@ -59,7 +59,13 @@
 		dialogSettings: function() {
 			var self = this;
 
-			$( this.els.dialog ).dialog({
+			self.close = function() {
+				$( self.els.dialog ).dialog( 'close' );
+				self.els.userMessage.style.border = '1px solid #ddd';
+				self.els.userMessage.value = '';
+			}
+
+			$( this.els.dialog ).dialog( {
 				dialogClass: 'wp-dialog',
 				autoOpen: false,
 				draggable: false,
@@ -91,20 +97,20 @@
 					{
 						text: rsaAdmin.strings.cancel,
 						click: function() {
-							$( this ).dialog( 'close' );
+							self.close();
 						}
 					}
 				],
 				open: function() {
 					$( '.ui-widget-overlay' ).bind( 'click', function() {
-						$( self.els.dialog ).dialog( 'close' );
+						self.close();
 					});
 				},
 				create: function() {
 					$( '.ui-dialog-titlebar-close' ).addClass( 'ui-button' );
 					$( this ).siblings( '.ui-dialog-titlebar' ).hide();
 				}
-			});
+			} );
 
 			this.els.buttons = $( this.els.dialog ).dialog( 'option', 'buttons' );
 		},
