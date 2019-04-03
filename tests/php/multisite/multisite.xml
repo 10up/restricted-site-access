@@ -1,0 +1,30 @@
+<phpunit
+	bootstrap="../bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	verbose="true"
+	>
+
+	<php>
+		<const name="WP_TESTS_MULTISITE" value="1" />
+	</php>
+
+	<testsuites>
+		<testsuite name="restricted-site-access-unit-tests">
+			<directory suffix=".php">./</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist>
+			<file>../../../restricted-site-access.php</file>
+		</whitelist>
+	</filter>
+	<php>
+		<ini name="error_reporting" value="32767" />
+		<ini name="display_errors" value="1" />
+		<ini name="display_startup_errors" value="1" />
+	</php>
+	<logging>
+		<log type="coverage-php" target="../../../test-coverage/multisite-coverage.serialized"/>
+	</logging>
+</phpunit>
