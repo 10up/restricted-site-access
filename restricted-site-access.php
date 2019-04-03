@@ -123,36 +123,36 @@ class Restricted_Site_Access {
 
 		// @codeCoverageIgnoreStart
 		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
-		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error();
-			exit;
-		}
-
-		if ( RSA_IS_NETWORK ) {
-			if ( ! is_super_admin() ) {
+			if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 				wp_send_json_error();
 				exit;
 			}
-		} else {
-			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_send_json_error();
-				exit;
-			}
-		}
-		// @codeCoverageIgnoreEnd
-		if ( RSA_IS_NETWORK ) {
-			update_site_option( 'rsa_hide_page_cache_notice', true );
-		} else {
-			update_option( 'rsa_hide_page_cache_notice', true );
-		}
 
-		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
-		wp_send_json_success();
+			if ( RSA_IS_NETWORK ) {
+				if ( ! is_super_admin() ) {
+					wp_send_json_error();
+					exit;
+				}
+			} else {
+				if ( ! current_user_can( 'manage_options' ) ) {
+					wp_send_json_error();
+					exit;
+				}
+			}
+			// @codeCoverageIgnoreEnd
+			if ( RSA_IS_NETWORK ) {
+				update_site_option( 'rsa_hide_page_cache_notice', true );
+			} else {
+				update_option( 'rsa_hide_page_cache_notice', true );
+			}
+
+			// @codeCoverageIgnoreStart
+			if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+				wp_send_json_success();
+			}
+			// @codeCoverageIgnoreEnd
 		}
-		// @codeCoverageIgnoreEnd
 	}
-
 
 	/**
 	 * Keeps log of network-wide RSA disable action
@@ -722,11 +722,6 @@ class Restricted_Site_Access {
 		$current_screen = get_current_screen();
 
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
-		} else {
-			wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
-		}
-
 		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery' ), RSA_VERSION, true );
 
 		wp_localize_script(
@@ -742,8 +737,6 @@ class Restricted_Site_Access {
 			),
 		) );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
-			)
-		);
 	}
 
 	/**
