@@ -75,7 +75,7 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 
 		$this->assertContains( 'name="rsa_options[message]" id="rsa_message">Access to this site is restricted.', $html );
 
-		$this->assertContains( 'type="text" name="rsa_options[allowed][]" value="127.0.0.1" readonly="true"', $html );
+		$this->assertContains( 'type="text" name="rsa_options[allowed][]" value="127.0.0.1" class="ip code" readonly="true"', $html );
 		$this->assertContains( 'id="rsa_myip" value="Add My Current IP Address" style="margin-top: 5px;" data-myip="127.0.0.1" />', $html );
 
 		// Now check for an empty site option.
