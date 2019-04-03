@@ -5,7 +5,7 @@
  * Copyright (c) 2013 10up, jakemgold
  * Licensed under the GPLv2+ license.
  */
-( function ( window, $ ) {
+( function( window, $ ) {
 
 	'use strict';
 
@@ -27,48 +27,39 @@
 	} );
 } )( window, jQuery );
 
-(function (window, $) {
+( function( window, $ ) {
 	'use strict';
 
 	var RSADisablePlugin = {
 
 		els: {
 			dialog: document.getElementById( 'rsa-disable-dialog' ),
-			placeholderA: document.getElementById( 'rsa-operator-a' ),
-			placeholderB: document.getElementById( 'rsa-operator-b' ),
-			userResult: document.getElementById( 'rsa-user-result' )
+			userMessage: document.getElementById( 'rsa-user-message' )
 		},
 
 		variables: {
-			operatorA: 0,
-			operatorB: 0,
-			expectedAnswer: 0,
+			expectedAnswer: rsaAdmin.strings.message.toLowerCase(),
 			disablingURL: null
 		},
 
-		openDialog: function ( event ) {
+		openDialog: function( event ) {
 			event.preventDefault();
 			$( this.els.dialog ).dialog( 'open' );
 		},
 
-		getRandomNum: function () {
-			return Math.floor( Math.random() * 10 );
-		},
+		isExpectedAnswer: function() {
+			var userMessage = this.els.userMessage.value.toLowerCase();
 
-		isExpectedAnswer: function () {
-			var userResult = parseInt( this.els.userResult.value, 10 );
-
-			if ( userResult === this.variables.expectedAnswer ) {
+			if ( userMessage === this.variables.expectedAnswer ) {
 				return true;
 			}
 
 			return false;
 		},
-		dialogSettings: function () {
+		dialogSettings: function() {
 			var self = this;
 
 			$( this.els.dialog ).dialog({
-				title: '⚠️ ' + rsaAdmin.strings.warning,
 				dialogClass: 'wp-dialog',
 				autoOpen: false,
 				draggable: false,
@@ -78,7 +69,7 @@
 				buttons: [
 					{
 						text: rsaAdmin.strings.confirm,
-						click: function () {
+						click: function() {
 							if ( self.isExpectedAnswer() ) {
 								$.ajax({
 									method: 'post',
@@ -88,61 +79,59 @@
 										action: 'rsa_network_disable_log'
 									},
 									url: ajaxurl
-								}).always(function() {
-									self.els.userResult.style.border = "";
+								}).always( function() {
+									self.els.userMessage.style.border = '';
 									window.location.href = self.variables.disablingURL;
 								});
 							} else {
-								self.els.userResult.style.border = "1px solid red";
-								self.els.userResult.title = rsaAdmin.strings.error.replace( '%d', self.variables.expectedAnswer );
+								self.els.userMessage.style.border = '1px solid red';
 							}
 						}
 					},
 					{
 						text: rsaAdmin.strings.cancel,
-						click: function () {
+						click: function() {
 							$( this ).dialog( 'close' );
 						}
 					}
 				],
-				open: function () {
-					self.refreshValues();
-					$( '.ui-widget-overlay' ).bind( 'click', function () {
+				open: function() {
+					$( '.ui-widget-overlay' ).bind( 'click', function() {
 						$( self.els.dialog ).dialog( 'close' );
 					});
 				},
-				create: function () {
+				create: function() {
 					$( '.ui-dialog-titlebar-close' ).addClass( 'ui-button' );
-				},
-			})
+					$( this ).siblings( '.ui-dialog-titlebar' ).hide();
+				}
+			});
+
+			this.els.buttons = $( this.els.dialog ).dialog( 'option', 'buttons' );
 		},
 
-		refreshValues: function () {
-			var vars = this.variables;
-
-			vars.operatorA = this.getRandomNum();
-			vars.operatorB = this.getRandomNum();
-			vars.expectedAnswer = vars.operatorA + vars.operatorB;
-
-			this.els.placeholderA.innerText = vars.operatorA;
-			this.els.placeholderB.innerText = vars.operatorB;
+		maybeSubmit: function( event ) {
+			switch ( event.key ) {
+				case 'Enter':
+					this.els.buttons[0].click();
+					break;
+			}
 		},
 
-		bindEvents: function () {
+		bindEvents: function() {
 			$( '[data-slug="restricted-site-access"]' ).on( 'click', '.deactivate a', this.openDialog.bind( this ) );
+			this.els.userMessage.addEventListener( 'keyup', this.maybeSubmit.bind( this ) );
 		},
 
-		init: function () {
-			if ( ! Boolean( rsaAdmin.isNetworkWidePluginsPage ) ) {
+		init: function() {
+			if ( ! rsaAdmin.isNetworkWidePluginsPage ) {
 				return;
 			}
 
 			this.variables.disablingURL = document.getElementById( 'the-list' ).querySelector( '[data-slug="restricted-site-access"] .deactivate a' ).href;
 			this.bindEvents();
-			this.refreshValues();
 			this.dialogSettings();
 		}
 	};
 
 	RSADisablePlugin.init();
-})(window, jQuery);
+}( window, jQuery ) );

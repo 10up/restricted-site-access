@@ -1,19 +1,6 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
-
-		makepot: {
-			target: {
-				options: {
-					domainPath: 'localization/',
-					mainFile: 'restricted_site_access.php',
-					type: 'wp-plugin',
-					updateTimestamp: false,
-					updatePoFiles: true
-				}
-			}
-		},
-
 		uglify: {
 			js: {
 				files: {
@@ -32,15 +19,15 @@ module.exports = function(grunt) {
 			},
 			test: {
 				files: [
-					'tests/php/**',
+					'tests/php/*.php',
 				],
-				tasks: ['phpunit']
+				tasks: ['phpunit'],
 			}
 		},
 
 		phpunit: {
 			classes: {
-				dir: 'tests/php/*'
+				dir: 'tests/php/*.php'
 			},
 			options: {
 				bin: 'vendor/bin/phpunit',
@@ -51,11 +38,9 @@ module.exports = function(grunt) {
 
 	});
 
-	grunt.loadNpmTasks( 'grunt-wp-i18n' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
 	grunt.loadNpmTasks( 'grunt-phpunit' );
 
-	grunt.registerTask( 'i18n', ['makepot'] );
 	grunt.registerTask( 'default', ['uglify:js'] );
 };
