@@ -8,7 +8,7 @@
 	<php>
 		<const name="RSA_IP_WHITELIST" value="192.168.1.50 |192.168.1.51" />
 	</php>
-	
+
 	<testsuites>
 		<testsuite name="restricted-site-access-unit-tests">
 			<directory suffix=".php">./</directory>
@@ -16,7 +16,7 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<file>../../../restricted_site_access.php</file>
+			<file>../../../restricted-site-access.php</file>
 		</whitelist>
 	</filter>
 	<php>
