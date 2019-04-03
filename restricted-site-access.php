@@ -1282,7 +1282,7 @@ class Restricted_Site_Access {
 				printf(
 					esc_html__( 'If you are sure about your action, please type %s to proceed.', 'restricted-site-access' ),
 					sprintf(
-						'<span style="font-family:monospace">%s</span>',
+						'<code>%s</code>',
 						esc_html__( 'I understand', 'restricted-site-access' )
 					)
 				);
