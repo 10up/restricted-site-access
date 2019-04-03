@@ -728,14 +728,15 @@ class Restricted_Site_Access {
 			'rsa-admin',
 			'rsaAdmin',
 			array(
-			'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
-			'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
-			'strings'                  => array(
-				'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
-				'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
-				'message' => esc_html__( 'I understand', 'restricted-site-access' ),
-			),
-		) );
+				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
+				'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
+				'strings'                  => array(
+					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
+					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
+					'message' => esc_html__( 'I understand', 'restricted-site-access' ),
+				),
+			)
+		);
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 	}
 
@@ -1280,8 +1281,10 @@ class Restricted_Site_Access {
 			<p>
 				<?php
 				printf(
+					/* translators: %s: The words 'I understand'. */
 					esc_html__( 'If you are sure about your action, please type %s to proceed.', 'restricted-site-access' ),
 					sprintf(
+						/* translators: %s: The words 'I understand'. */
 						'<code>%s</code>',
 						esc_html__( 'I understand', 'restricted-site-access' )
 					)
