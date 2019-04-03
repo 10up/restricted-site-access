@@ -218,41 +218,41 @@ class Restricted_Site_Access {
 	 */
 	protected static function populate_fields_array() {
 		self::$fields = array(
-		'approach'      => array(
-			'default' => 1,
+			'approach'      => array(
+				'default' => 1,
 				'label'   => esc_html__( 'Handle restricted visitors', 'restricted-site-access' ),
 				'field'   => 'settings_field_handling',
-		),
-		'message'       => array(
+			),
+			'message'       => array(
 				'default' => esc_html_x( 'Access to this site is restricted.', 'default restriction message', 'restricted-site-access' ),
 				'label'   => esc_html__( 'Restriction message', 'restricted-site-access' ),
 				'field'   => 'settings_field_message',
-		),
-		'redirect_url'  => array(
-			'default' => '',
+			),
+			'redirect_url'  => array(
+				'default' => '',
 				'label'   => esc_html__( 'Redirect web address', 'restricted-site-access' ),
-			'field'   => 'settings_field_redirect',
-		),
+				'field'   => 'settings_field_redirect',
+			),
 			'redirect_path' => array(
-			'default' => 0,
+				'default' => 0,
 				'label'   => esc_html__( 'Redirect to same path', 'restricted-site-access' ),
-			'field'   => 'settings_field_redirect_path',
-		),
-		'head_code'     => array(
-			'default' => 302,
+				'field'   => 'settings_field_redirect_path',
+			),
+			'head_code'     => array(
+				'default' => 302,
 				'label'   => esc_html__( 'Redirection status code', 'restricted-site-access' ),
-			'field'   => 'settings_field_redirect_code',
-		),
-		'page'          => array(
-			'default' => 0,
+				'field'   => 'settings_field_redirect_code',
+			),
+			'page'          => array(
+				'default' => 0,
 				'label'   => esc_html__( 'Restricted notice page', 'restricted-site-access' ),
-			'field'   => 'settings_field_rsa_page',
-		),
-		'allowed'       => array(
-			'default' => array(),
+				'field'   => 'settings_field_rsa_page',
+			),
+			'allowed'       => array(
+				'default' => array(),
 				'label'   => esc_html__( 'Unrestricted IP addresses', 'restricted-site-access' ),
-			'field'   => 'settings_field_allowed',
-		),
+				'field'   => 'settings_field_allowed',
+			),
 		);
 	}
 
@@ -877,9 +877,9 @@ class Restricted_Site_Access {
 
 		$screen->add_help_tab(
 			array(
-			'id'      => 'restricted-site-access',
+				'id'      => 'restricted-site-access',
 				'title'   => esc_html_x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
-			'content' => implode( PHP_EOL, $content ),
+				'content' => implode( PHP_EOL, $content ),
 			)
 		);
 	}
@@ -891,12 +891,12 @@ class Restricted_Site_Access {
 		global $wp;
 		$is_restricted = ( 2 === (int) get_option( 'blog_public' ) );
 		$is_restricted = apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp );
-	?>
+		?>
 		<p>
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
 			<label for="blog-restricted"><?php esc_html_e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
-	<?php
+		<?php
 	}
 
 	/**
@@ -949,7 +949,7 @@ class Restricted_Site_Access {
 			self::$rsa_options['approach'] = 1;
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<fieldset id="rsa_handle_fields">
 			<input id="rsa-send-to-login" name="rsa_options[approach]" type="radio" value="1" <?php checked( self::$rsa_options['approach'], 1 ); ?> />
 			<label for="rsa-send-to-login"><?php esc_html_e( 'Send them to the WordPress login screen', 'restricted-site-access' ); ?></label>
@@ -966,14 +966,14 @@ class Restricted_Site_Access {
 				<label for="rsa-unblocked-page"><?php esc_html_e( 'Show them a page', 'restricted-site-access' ); ?></label>
 			<?php endif; ?>
 		</fieldset>
-	<?php
+		<?php
 	}
 
 	/**
 	 * Fieldset for managing allowed IP addresses.
 	 */
 	public static function settings_field_allowed() {
-	?>
+		?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip" value="" readonly="true" /> <input type="text" name="rsa_options[comment][]" value="" size="50" class="comment" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
@@ -981,10 +981,10 @@ class Restricted_Site_Access {
 				$ips          = (array) self::$rsa_options['allowed'];
 					$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
 			foreach ( $ips as $key => $ip ) {
-					if ( ! empty( $ip ) ) {
-						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" size="50" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
-					}
+				if ( ! empty( $ip ) ) {
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" size="50" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
+			}
 			?>
 			</div>
 			<div>
@@ -1002,17 +1002,17 @@ class Restricted_Site_Access {
 				</p>
 				<?php
 					$config_ips = self::get_config_ips();
-					foreach ( $config_ips as $ip ) {
-						printf(
-							'<div><input type="text" value="%1$s" disabled="true" /></div>',
-							esc_attr( $ip )
-						);
-					}
+				foreach ( $config_ips as $ip ) {
+					printf(
+						'<div><input type="text" value="%1$s" disabled="true" /></div>',
+						esc_attr( $ip )
+					);
+				}
 				?>
 			</div>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
-	<?php
+		<?php
 	}
 
 	/**
@@ -1027,9 +1027,9 @@ class Restricted_Site_Access {
 			self::$rsa_options['message'],
 			'rsa_message',
 			array(
-			'media_buttons' => false,
-			'textarea_name' => 'rsa_options[message]',
-			'textarea_rows' => 4,
+				'media_buttons' => false,
+				'textarea_name' => 'rsa_options[message]',
+				'textarea_rows' => 4,
 				'tinymce'       => false,
 			)
 		);
@@ -1044,9 +1044,9 @@ class Restricted_Site_Access {
 			self::$rsa_options['redirect_url'] = '';
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<input type="text" name="rsa_options[redirect_url]" id="redirect" class="rsa_redirect_field regular-text" value="<?php echo esc_attr( self::$rsa_options['redirect_url'] ); ?>" />
-	<?php
+		<?php
 	}
 
 	/**
@@ -1058,13 +1058,13 @@ class Restricted_Site_Access {
 			self::$rsa_options['redirect_path'] = 0;
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<fieldset><legend class="screen-reader-text"><span><?php esc_html( self::$rsa_options['redirect_path']['label'] ); ?></span></legend>
 			<label for="redirect_path">
 				<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field" <?php checked( self::$rsa_options['redirect_path'] ); ?> />
 				<?php esc_html_e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
 		</fieldset>
-	<?php
+		<?php
 	}
 
 	/**
@@ -1076,13 +1076,13 @@ class Restricted_Site_Access {
 			self::$rsa_options['head_code'] = 302;
 			// @codeCoverageIgnoreEnd
 		}
-	?>
+		?>
 		<select name="rsa_options[head_code]" id="redirect_code" class="rsa_redirect_field">
 			<option value="301" <?php selected( self::$rsa_options['head_code'], 301 ); ?>><?php esc_html_e( '301 Permanent', 'restricted-site-access' ); ?></option>
 			<option value="302" <?php selected( self::$rsa_options['head_code'], 302 ); ?>><?php esc_html_e( '302 Undefined', 'restricted-site-access' ); ?></option>
 			<option value="307" <?php selected( self::$rsa_options['head_code'], 307 ); ?>><?php esc_html_e( '307 Temporary', 'restricted-site-access' ); ?></option>
 		</select>
-	<?php
+		<?php
 	}
 
 	/**
@@ -1327,14 +1327,14 @@ class Restricted_Site_Access {
 	public static function get_client_ip_address() {
 		$ip      = '';
 		$headers = array(
-				'HTTP_CLIENT_IP',
-				'HTTP_X_FORWARDED_FOR',
-				'HTTP_X_FORWARDED',
-				'HTTP_X_CLUSTER_CLIENT_IP',
-				'HTTP_FORWARDED_FOR',
-				'HTTP_FORWARDED',
-				'REMOTE_ADDR',
-			);
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR',
+		);
 		foreach ( $headers as $key ) {
 
 			if ( ! isset( $_SERVER[ $key ] ) ) {
@@ -1358,7 +1358,7 @@ class Restricted_Site_Access {
 }
 
 if ( ! defined( 'RSA_IS_NETWORK' ) ) {
-define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
+	define( 'RSA_IS_NETWORK', Restricted_Site_Access::is_network( plugin_basename( __FILE__ ) ) );
 }
 
 Restricted_Site_Access::get_instance();
