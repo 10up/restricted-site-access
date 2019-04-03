@@ -156,7 +156,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Keeps log of network-wide RSA disable action
+	 * Ajax handler to log network deactivation events.
 	 *
 	 * @return void
 	 */
@@ -178,7 +178,9 @@ class Restricted_Site_Access {
 
 		$time = current_time( 'timestamp' );
 
-		$all_events = get_option( 'rsa_disable_log', array() );
+		$all_events_option = get_option( 'rsa_disable_log', array() );
+
+		$all_events = $all_events_option ? $all_events_option : array();
 
 		$all_events[] = array(
 			'user' => get_current_user_id(),
