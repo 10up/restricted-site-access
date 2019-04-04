@@ -122,7 +122,11 @@
 			}
 		}
 
-		jQuery.post( ajaxurl, { action: 'rsa_ip_check', 'ip_address': ip, 'ip_address_comment': comment }, function(response) {
+		jQuery.post( ajaxurl, {
+			action: 'rsa_ip_check',
+			'ip_address': ip,
+			nonce: rsaAdmin.nonce
+		}, function(response) {
 			if ( response ) {
 				$( Cache.new_ip.parentNode ).effect( 'shake', shake_speed );
 				Cache.add_btn.removeAttr( 'disabled' );

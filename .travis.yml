@@ -3,7 +3,7 @@ language: php
 sudo: false
 
 php:
-  - 7.0
+  - 7.1
 
 matrix:
   fast_finish: true
@@ -49,5 +49,5 @@ script:
   - mkdir test-coverage
   - phpunit --verbose
   - phpunit --verbose -c tests/php/multisite/multisite.xml
-  - phpunit --verbose -c tests/php/whitelist/whitelist.xml
-  # TODO combine the test coverage into one file and ship it to Code Climate or Coveralls?
+  # Run phpcs
+  - ./vendor/bin/phpcs *.php --standard=WordPress
