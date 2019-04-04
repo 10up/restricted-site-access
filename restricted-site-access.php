@@ -490,8 +490,8 @@ class Restricted_Site_Access {
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 
-		// If options are network enforced, show the value of the network setting
-		// Otherwise show further options
+		// If options are network enforced, show the value of the network setting.
+		// Otherwise show further options.
 		if ( ! is_network_admin() && RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
 			add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		} else {
@@ -845,14 +845,14 @@ class Restricted_Site_Access {
 				'content' => implode( PHP_EOL, $content ),
 			)
 		);
-?>
+		?>
 <style>
 .rsa-network-enforced .option-site-visibility {
 	opacity: 0.5;
 	pointer-events: none;
 }
 </style>
-<?php
+		<?php
 	}
 
 	/**
@@ -883,10 +883,10 @@ class Restricted_Site_Access {
 			<input id="blog-restricted" type="radio" name="blog_public" value="2" <?php checked( $is_restricted ); ?> />
 			<label for="blog-restricted"><?php esc_html_e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
-	<?php
-		if( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
-			// Important note: the weird HTML structure below has to match where `blog_privacy_selector` is fired
-		?>
+		<?php
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			// Important note: the weird HTML structure below has to match where `blog_privacy_selector` is fired.
+			?>
 			</fieldset>
 		</td>
 	</tr>
@@ -896,7 +896,7 @@ class Restricted_Site_Access {
 				<div class="notice notice-warning inline">
 					<p><strong><?php esc_html_e( 'Site visibility settings are currently enforced across all blogs on the network.', 'restricted-site-access' ); ?></strong></p>
 				</div>
-		<?php
+			<?php
 		}
 	}
 
@@ -979,9 +979,9 @@ class Restricted_Site_Access {
 			<div id="ip_list">
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip code" value="" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
-				$ips      = (array) self::$rsa_options['allowed'];
-				$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
-				foreach ( $ips as $key => $ip ) {
+			$ips      = (array) self::$rsa_options['allowed'];
+			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
 					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
@@ -989,28 +989,28 @@ class Restricted_Site_Access {
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range') ?>" size="20" />
-				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry') ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
+				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
 			</div>
 
-		<?php
+			<?php
 			$config_ips = self::get_config_ips();
 			if ( ! empty( $config_ips ) ) :
-		?>
+				?>
 			<div class="config_ips" style="margin-top: 10px;">
 				<h4>
 					<?php esc_html_e( 'Unrestricted IP addresses set by code configuration', 'restricted-site-access' ); ?>
 				</h4>
 				<ul class="ul-disc">
-				<?php
+					<?php
 					foreach ( $config_ips as $ip ) {
 						echo '<li><code>' . esc_attr( $ip ) . '</code></li>';
 					}
-				?>
+					?>
 				</ul>
 			</div>
 		<?php endif; ?>
