@@ -16,7 +16,7 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<file>../../../restricted-site-access.php</file>
+			<file>../../../restricted_site_access.php</file>
 		</whitelist>
 	</filter>
 	<php>
