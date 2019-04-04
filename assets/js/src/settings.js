@@ -125,6 +125,7 @@
 		jQuery.post( ajaxurl, {
 			action: 'rsa_ip_check',
 			'ip_address': ip,
+			'ip_address_comment': comment,
 			nonce: rsaAdmin.nonce
 		}, function(response) {
 			if ( response ) {
