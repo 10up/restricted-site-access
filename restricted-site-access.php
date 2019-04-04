@@ -678,13 +678,16 @@ class Restricted_Site_Access {
 	 * Enqueue Settings page scripts.
 	 */
 	public static function enqueue_settings_script() {
-		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/settings.min.js';
+		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/settings.js';
-		}
-
-		wp_enqueue_script( 'rsa-settings', $js_path, array( 'jquery-effects-shake' ), RSA_VERSION, true );
+		wp_enqueue_script(
+			'rsa-settings',
+			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'settings' . $min . '.js',
+			array( 'jquery-effects-shake' ),
+			RSA_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -693,11 +696,16 @@ class Restricted_Site_Access {
 	public static function enqueue_admin_script() {
 		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js';
 
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js';
-		}
+		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
-		wp_enqueue_script( 'rsa-admin', $js_path, array( 'jquery' ), RSA_VERSION, true );
+		wp_enqueue_script(
+			'rsa-admin',
+			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
+			array( 'jquery' ),
+			RSA_VERSION,
+			true
+		);
 
 		wp_localize_script(
 			'rsa-admin',
