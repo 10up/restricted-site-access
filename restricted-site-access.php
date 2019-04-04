@@ -691,10 +691,13 @@ class Restricted_Site_Access {
 	 * Enqueue wp-admin scripts.
 	 */
 	public static function enqueue_admin_script() {
+		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js';
 
-		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.min' : '';
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/admin.js';
+		}
 
-		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery' ), RSA_VERSION, true );
+		wp_enqueue_script( 'rsa-admin', $js_path, array( 'jquery' ), RSA_VERSION, true );
 
 		wp_localize_script(
 			'rsa-admin',
