@@ -88,18 +88,6 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 		$this->assertContains( 'name="blog_public" value="1"  checked=\'checked\'>', $html );
 	}
 
-	public function test_multisite_admin_notice() {
-		$rsa = Restricted_Site_Access::get_instance();
-
-		update_site_option( 'rsa_mode', 'enforce' );
-
-		ob_start();
-		$rsa::admin_notice();
-		$html = ob_get_clean();
-
-		$this->assertContains( 'Network visibility settings are currently enforced across all blogs on the network.', $html );
-	}
-
 	public function test_multisite_page_cache_notice() {
 		$rsa = Restricted_Site_Access::get_instance();
 
