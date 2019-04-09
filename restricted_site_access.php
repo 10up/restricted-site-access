@@ -489,15 +489,22 @@ class Restricted_Site_Access {
 		// settings for restricted site access.
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
-		foreach ( self::$fields as $field_name => $field_data ) {
-			add_settings_field(
-				$field_name,
-				$field_data['label'],
-				array( __CLASS__, $field_data['field'] ),
-				self::$settings_page,
-				'restricted-site-access',
-				array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
-			);
+
+		// If options are network enforced, show the value of the network setting.
+		// Otherwise show further options.
+		if ( ! is_network_admin() && RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
+		} else {
+			foreach ( self::$fields as $field_name => $field_data ) {
+				add_settings_field(
+					$field_name,
+					$field_data['label'],
+					array( __CLASS__, $field_data['field'] ),
+					self::$settings_page,
+					'restricted-site-access',
+					array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
+				);
+			}
 		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
@@ -524,8 +531,8 @@ class Restricted_Site_Access {
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php esc_html_e( 'Mode', 'restricted-site-access' ); ?></legend>
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $mode, 'default' ); ?> /> <?php esc_html_e( '<strong>Default</strong> to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
-							<label><input name="rsa_mode" type="radio" id="rsa-mode-enforce" value="enforce"<?php checked( $mode, 'enforce' ); ?> /> <?php esc_html_e( '<strong>Enforce</strong> the settings below across all sites', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-default" value="default"<?php checked( $mode, 'default' ); ?> /> <?php esc_html_e( 'Default to the settings below when creating a new site', 'restricted-site-access' ); ?></label><br />
+							<label><input name="rsa_mode" type="radio" id="rsa-mode-enforce" value="enforce"<?php checked( $mode, 'enforce' ); ?> /> <?php esc_html_e( 'Enforce the settings below across all sites', 'restricted-site-access' ); ?></label><br />
 						</fieldset>
 					</td>
 				</tr>
@@ -687,6 +694,7 @@ class Restricted_Site_Access {
 	 * Enqueue wp-admin scripts.
 	 */
 	public static function enqueue_admin_script() {
+		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js';
 
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
@@ -716,6 +724,7 @@ class Restricted_Site_Access {
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notice' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
+		add_action( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
 
 		add_filter( 'wp_dropdown_pages', array( __CLASS__, 'filter_page_dropdown' ), 10, 2 );
 
@@ -738,12 +747,6 @@ class Restricted_Site_Access {
 	 * Customize admin notices to ensure user completes restriction setup properly
 	 */
 	public static function admin_notice() {
-		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
-			$rsa_mode_message = esc_html__( 'Network visibility settings are currently enforced across all blogs on the network.', 'restricted-site-access' );
-			echo '<div class="notice notice-warning"><p><strong>' . esc_html( $rsa_mode_message ) . '</strong></p></div>';
-			return;
-		}
-
 		if ( empty( self::$rsa_options['approach'] ) ) {
 			return;
 		}
@@ -800,7 +803,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add restricted access help tab to screen.
+	 * Add RSA help tab and a tiny amount of CSS to Reading options.
 	 */
 	public static function admin_head() {
 		$screen  = get_current_screen();
@@ -850,6 +853,30 @@ class Restricted_Site_Access {
 				'content' => implode( PHP_EOL, $content ),
 			)
 		);
+		?>
+<style>
+.rsa-network-enforced .option-site-visibility {
+	opacity: 0.5;
+	pointer-events: none;
+}
+</style>
+		<?php
+	}
+
+	/**
+	 * Adds admin body classes to the Reading options screen.
+	 *
+	 * Adds `.rsa-network-enforced` if settings are network enforced.
+	 *
+	 * @param  string $classes Space-separated list of classes to apply to the body element.
+	 * @return string
+	 */
+	public static function admin_body_class( $classes ) {
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$classes .= ' rsa-network-enforced';
+		}
+
+		return $classes;
 	}
 
 	/**
@@ -865,6 +892,20 @@ class Restricted_Site_Access {
 			<label for="blog-restricted"><?php esc_html_e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
 		<?php
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			// Important note: the weird HTML structure below has to match where `blog_privacy_selector` is fired.
+			?>
+			</fieldset>
+		</td>
+	</tr>
+	<tr class="rsa-network-enforced-warning">
+		<td colspan="2">
+			<fieldset>
+				<div class="notice notice-warning inline">
+					<p><strong><?php esc_html_e( 'Site visibility settings are currently enforced across all blogs on the network.', 'restricted-site-access' ); ?></strong></p>
+				</div>
+			<?php
+		}
 	}
 
 	/**
@@ -944,40 +985,43 @@ class Restricted_Site_Access {
 		?>
 		<div class="hide-if-no-js">
 			<div id="ip_list">
-				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip" value="" readonly="true" /> <input type="text" name="rsa_options[comment][]" value="" size="50" class="comment" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
+				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip code" value="" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
-				$ips          = (array) self::$rsa_options['allowed'];
-					$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+			$ips      = (array) self::$rsa_options['allowed'];
+			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
-						echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" readonly="true" /> <input type="text" size="50" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
 			}
 			?>
 			</div>
 			<div>
-				<input type="text" name="newip" id="newip" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>"/>
-				<input type="text" name="newipcomment" id="newipcomment" size="50"  placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
-				<p class="description" style="display: inline;"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
-						</div>
-			<?php
-			if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) { // phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
-				?>
-			<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br /><?php } ?>
-			<div class="config_ips" style="margin-top: 10px;">
-				<p class="description">
-					<?php esc_html_e( 'IP addresses set by configuration', 'restricted-site-access' ); ?>
-				</p>
-				<?php
-					$config_ips = self::get_config_ips();
-				foreach ( $config_ips as $ip ) {
-					printf(
-						'<div><input type="text" value="%1$s" disabled="true" /></div>',
-						esc_attr( $ip )
-					);
-				}
-				?>
+				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
+				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
+				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
+				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
+					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
+				<?php endif; ?>
 			</div>
+
+			<?php
+			$config_ips = self::get_config_ips();
+			if ( ! empty( $config_ips ) ) :
+				?>
+			<div class="config_ips" style="margin-top: 10px;">
+				<h4>
+					<?php esc_html_e( 'Unrestricted IP addresses set by code configuration', 'restricted-site-access' ); ?>
+				</h4>
+				<ul class="ul-disc">
+					<?php
+					foreach ( $config_ips as $ip ) {
+						echo '<li><code>' . esc_attr( $ip ) . '</code></li>';
+					}
+					?>
+				</ul>
+			</div>
+		<?php endif; ?>
 		</div>
 		<p class="hide-if-js"><strong><?php esc_html_e( 'To manage IP addresses, you must use a JavaScript enabled browser.', 'restricted-site-access' ); ?></strong></p>
 		<?php
@@ -1159,6 +1203,25 @@ class Restricted_Site_Access {
 			}
 		}
 		return $valid_ips;
+	}
+
+	/**
+	 * Short-circuit filter the `blog_public` option to match network if necessary.
+	 *
+	 * Currently only fires in the admin context - note that it is possible
+	 * that it is still being filtered too broadly.
+	 *
+	 * @todo Possibly should be doing this for the option even more broadly.
+	 *
+	 * @param  bool $value Value of `blog_public` option, typically false.
+	 * @return int
+	 */
+	public static function pre_option_blog_public( $value ) {
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$value = get_site_option( 'blog_public', 2 );
+		}
+
+		return $value;
 	}
 
 	/**

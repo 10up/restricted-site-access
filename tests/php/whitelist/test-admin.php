@@ -22,7 +22,7 @@ class Restricted_Site_Access_Test_Whitelist_Admin extends WP_UnitTestCase {
 		$rsa::settings_field_allowed();
 		$html = ob_get_clean();
 
-		$this->assertContains( '<input type="text" value="192.168.1.50" disabled="true" />', $html );
+		$this->assertContains( '<li><code>192.168.1.50</code></li>', $html );
 
 	}
 }
