@@ -89,7 +89,7 @@ class Restricted_Site_Access {
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
-		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_site_option_blog_public' ), 10, 1 );
+		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 	}
 
 	/**
@@ -1214,42 +1214,25 @@ class Restricted_Site_Access {
 	/**
 	 * Short-circuit filter the `blog_public` option to match network if necessary.
 	 *
-	 * @param  bool $value Value of `blog_public` option, typically false.
-	 * @return int
-	 */
-	public static function pre_option_blog_public( $value ) {
-		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
-			$value = get_site_option( 'blog_public', 2 );
-		}
-
-		// Check if constant forcing restriction is defined.
-		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
-			$value = 2;
-		}
-
-		// Check if constant disallowing restriction is defined.
-		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
-			$value = 1;
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Short-circuit filter the `blog_public` network option to handle constants.
+	 * This runs for both `get_option()` and `get_site_option()`,
+	 * hence the `doing_filter()` check.
 	 *
 	 * @param  bool $value Value of `blog_public` option, typically false.
 	 * @return int
 	 */
-	public static function pre_site_option_blog_public( $value ) {
-		// Check if constant forcing restriction is defined.
-		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
-			$value = 2;
+	public static function pre_option_blog_public( $value ) {
+		if ( 'pre_option_blog_public' === current_filter() && RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$value = get_site_option( 'blog_public', 2 );
 		}
 
 		// Check if constant disallowing restriction is defined.
 		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
 			$value = 1;
+		}
+		
+		// Check if constant forcing restriction is defined.
+		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
+			$value = 2;
 		}
 
 		return $value;
