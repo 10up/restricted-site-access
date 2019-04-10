@@ -28,14 +28,11 @@ The `develop` branch is the development branch which means it contains the next 
 
 ## Release instructions
 
-1. Starting from `develop` cut a release branches for your changes.
-2. Version bump: Bump the version number in `restricted_site_access.php` if it does not already reflect the version being released.  Update both the plugin "Version:" property and the plugin `DT_VERSION` constant, ensuring that it is suffixed with `-dev`.
-3. Changelog: Add/update the changelog in `CHANGELOG.md`
-4. Update the `.pot` file by running `npm run makepot`.
-5. Merge: Make a non-fast-forward merge from your release branch to `master`. `master` contains the stable development version.
-6. Build: In the `master` branch, run `npm install && npm run release`. This will create a subfolder called `release` with the `stable` branch cloned into it as a worktree and latest changes copied over. Ensure that any new files are in the `release` folder; if not, you may need to add them to `gulp-tasks/copy.js`.
-7. Check: Are there any modified files, such as `restricted_site_access.pot`? If so, head back to `develop`, run all necessary tasks and commit those changes before heading back to step 3.
-8. Test: Switch to running Restricted Site Access from the version in the `release` subfolder and run through a few common tasks in the UI to ensure functionality.
-9. Push: First master: `git push`, then from within the `release` directory, add all files and push them to `origin stable`: `git push origin stable`.
-10. Git tag: Create the release as `X.Y.Z` on the `stable` branch in GitHub. It should now appear under [releases](https://github.com/10up/restricted-site-access/releases) as well.
-11. Version bump (again): In the `develop` branch (`cd ../ && git checkout develop`) bump the version number in `restricted_site_access.php` to `X.Y.(Z+1)-dev`. It's okay if the next release might be a different version number; that change can be handled right before release in the first step, as might also be the case with `@since` annotations.
+1. Version bump: Bump the version number in `restricted_site_access.php`.
+2. Changelog: Add/update the changelog in both `readme.txt` and `CHANGELOG.md`
+3. Readme updates: Make any other readme changes as necessary. `CHANGELOG.md` is geared toward GitHub and `readme.txt` contains WordPress.org-specific content. The two are slightly different.
+4. Merge: Make a non-fast-forward merge from `develop` to `master`.
+5. SVN update: Copy files over to the `trunk` folder of an SVN checkout of the plugin. If the plugin banner, icon, or screenshots have changed, copy those to the top-level `assets` folder. Commit those changes.
+6. SVN tag: Make a folder inside `tags` with the current version number, copy the contents of `trunk` into it, and commit with the message `Tagging X.Y.Z`. There is also an SVN command for tagging; however, note that it runs on the remote and requires care because the entire WordPress.org plugins repo is actually single SVN repo.
+7. Check WordPress.org: Ensure that the changes are live on https://wordpress.org/plugins/restricted-site-access/. This may take a few minutes.
+8. Git tag: Tag the release in Git and push the tag to GitHub. It should now appear under [releases](https://github.com/10up/restricted-site-access/releases) there as well.
