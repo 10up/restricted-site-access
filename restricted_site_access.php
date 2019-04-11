@@ -463,8 +463,12 @@ class Restricted_Site_Access {
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 
-		// Only show further options on a single site if it's not enforced on the network level.
-		if ( is_network_admin() || ( RSA_IS_NETWORK && 'enforce' !== self::get_network_mode() ) ) {
+		// Limit when additional settings fields show up.
+		if (
+			is_network_admin() || // Show on the network admin.
+			( RSA_IS_NETWORK && 'enforce' !== self::get_network_mode() ) || // Show on single (network) site when not enforced at the network level.
+			! RSA_IS_NETWORK // Show on single non-network sites.
+		) {
 			foreach ( self::$fields as $field_name => $field_data ) {
 				add_settings_field(
 					$field_name,
