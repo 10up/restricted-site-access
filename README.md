@@ -1,6 +1,9 @@
+# Restricted Site Access
+> Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
+
 [![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access)
 
-# Restricted Site Access
+## Features
 
 Limit access your site to visitors who are logged in or accessing the site from a set of specified IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
 
@@ -12,10 +15,6 @@ Adds a number of new configuration options to the Reading settings panel. From t
 * Quickly add your current IP to the unrestricted list
 * Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
 * Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
-
-<p align="center">
-<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
-</p>
 
 ## Installation
 
@@ -84,7 +83,7 @@ As of version 7.0.0, CLI integration has been added. To see the available comman
 $ wp rsa
 ```
 
-### How can I programatically define whitelisted IPs?
+### How can I programmatically define whitelisted IPs?
 
 In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
 
@@ -94,6 +93,35 @@ In your `wp-config.php` file, you can define the following:
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 ```
 
+### Is there a constant I can set to ensure my site is (or is not) restricted?
+
+As of version 7.1.0, two constants were introduced that give you the ability to specify if the site should be in restricted mode.
+
+You can force the plugin to be in restricted mode by adding the following to your `wp-config.php` file:
+
+```php
+define( 'RSA_FORCE_RESTRICTION', true );
+```
+Or to ensure your site won't be in restricted mode:
+
+```php
+define( 'RSA_FORBID_RESTRICTION', true );
+```
+
+Make sure you add it before the `/* That's all, stop editing! Happy blogging. */` line.
+
+Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+
+## Contributing
+
+Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/blob/develop/CODE_OF_CONDUCT.md) for details on our code of conduct and [CONTRIBUTING.md](https://github.com/10up/restricted-site-access/blob/develop/CONTRIBUTING.md) for details on the process for submitting pull requests to us.
+
 ## License
 
-Restricted Site Access is free software; you can redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl-2.0.html) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Restricted Site Access utilizes the [GNU General Public License v2.0 (or later)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md).
+
+## Like what you see?
+
+<p align="center">
+<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
+</p>

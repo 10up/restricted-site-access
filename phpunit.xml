@@ -1,0 +1,28 @@
+<phpunit
+	bootstrap="tests/php/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	verbose="true"
+	>
+	<testsuites>
+		<testsuite name="restricted-site-access-unit-tests">
+			<directory suffix=".php">tests/php</directory>
+			<exclude>tests/php/code-coverage.php</exclude>
+			<exclude suffix=".php">tests/php/multisite</exclude>
+			<exclude suffix=".php">tests/php/whitelist</exclude>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist>
+			<file>restricted_site_access.php</file>
+		</whitelist>
+	</filter>
+	<php>
+		<ini name="error_reporting" value="32767" />
+		<ini name="display_errors" value="1" />
+		<ini name="display_startup_errors" value="1" />
+	</php>
+	<logging>
+		<log type="coverage-php" target="test-coverage/coverage.serialized"/>
+	</logging>
+</phpunit>
