@@ -1233,7 +1233,7 @@ class Restricted_Site_Access {
 		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
 			$value = 1;
 		}
-		
+
 		// Check if constant forcing restriction is defined.
 		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
 			$value = 2;
