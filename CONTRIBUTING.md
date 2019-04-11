@@ -28,11 +28,10 @@ The `develop` branch is the development branch which means it contains the next 
 
 ## Release instructions
 
-1. Version bump: Bump the version number in `restricted_site_access.php`.
+1. Version bump: Bump the version number in `restricted_site_access.php` and `readme.txt`.
 2. Changelog: Add/update the changelog in both `readme.txt` and `CHANGELOG.md`
-3. Readme updates: Make any other readme changes as necessary. `CHANGELOG.md` is geared toward GitHub and `readme.txt` contains WordPress.org-specific content. The two are slightly different.
-4. Merge: Make a non-fast-forward merge from `develop` to `master`.
-5. SVN update: Copy files over to the `trunk` folder of an SVN checkout of the plugin. If the plugin banner, icon, or screenshots have changed, copy those to the top-level `assets` folder. Commit those changes.
-6. SVN tag: Make a folder inside `tags` with the current version number, copy the contents of `trunk` into it, and commit with the message `Tagging X.Y.Z`. There is also an SVN command for tagging; however, note that it runs on the remote and requires care because the entire WordPress.org plugins repo is actually single SVN repo.
+3. Readme updates: Make any other readme changes as necessary. `CHANGELOG.md` and `README.md` are geared toward GitHub and `readme.txt` contains WordPress.org-specific content. The two are slightly different.
+4. Merge: Make a non-fast-forward merge from `develop` to `master` (`git checkout master && git merge --no-ff develop`).
+5. Release: Create a [new release](https://github.com/10up/restricted-site-access/releases/new), naming the tag and the release with the new version number. Paste the changelog from `CHANGELOG.md` into the body of the release and include a link to the closed issues on the milestone (e.g. `https://github.com/10up/restricted-site-access/milestone/2?closed=1`). Close the milestone.
+6. SVN: Wait for the [GitHub Action](https://github.com/10up/restricted-site-access/actions) to finish deploying to the WordPress.org repository. If all goes well, users with SVN commit access for that plugin will receive an emailed diff of changes.
 7. Check WordPress.org: Ensure that the changes are live on https://wordpress.org/plugins/restricted-site-access/. This may take a few minutes.
-8. Git tag: Tag the release in Git and push the tag to GitHub. It should now appear under [releases](https://github.com/10up/restricted-site-access/releases) there as well.
