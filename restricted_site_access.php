@@ -893,11 +893,11 @@ class Restricted_Site_Access {
 		</p>
 		<?php
 		if ( self::is_enforced() ) {
-			if ( ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true )
-				|| ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) ) {
-				$message = __( 'Site visibility settings are currently enforced by code configuration.', 'restricted-site-access' );
-			} else {
+			// The network enforcement message takes precedence because it's more restrictive and technically still correct with the constants.
+			if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
 				$message = __( 'Site visibility settings are currently enforced across all sites on the network.', 'restricted-site-access' );
+			} else {
+				$message = __( 'Site visibility settings are currently enforced by code configuration.', 'restricted-site-access' );
 			}
 			// Important note: the weird HTML structure below has to match where `blog_privacy_selector` is fired.
 			?>
