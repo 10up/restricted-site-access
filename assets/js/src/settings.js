@@ -29,6 +29,7 @@
 
 		Cache.add_btn = $( document.getElementById( 'addip' ) );
 		Cache.new_ip = document.getElementById( 'newip' );
+		Cache.new_ip_comment = document.getElementById( 'newipcomment' );
 		Cache.ip_list_wrap = document.getElementById( 'ip_list' );
 		Cache.empty_ip = $( document.getElementById( 'ip_list_empty' ) );
 		Cache.restrict_radio = document.getElementById( 'blog-restricted' );
@@ -87,13 +88,13 @@
 		});
 
 		Cache.add_btn.on('click',function(){
-			add_ip( Cache.new_ip.value );
+			add_ip( Cache.new_ip.value, Cache.new_ip_comment.value );
 		});
 
 		var myip_btn = document.getElementById( 'rsa_myip' );
 		if ( null !== myip_btn ) {
 			$( myip_btn ).on('click',function(){
-				add_ip( $( this ).data( 'myip' ) );
+				$( Cache.new_ip ).val( $( this ).data( 'myip' ) );
 			});
 		}
 
@@ -103,7 +104,7 @@
 
 	}
 
-	function add_ip( ip ) {
+	function add_ip( ip, comment ) {
 		if ( $.trim( ip ) == '' ) {
 			return false;
 		}
@@ -121,18 +122,25 @@
 			}
 		}
 
-		jQuery.post( ajaxurl, { action: 'rsa_ip_check', 'ip_address': ip }, function(response) {
+		jQuery.post( ajaxurl, {
+			action: 'rsa_ip_check',
+			'ip_address': ip,
+			'ip_address_comment': comment,
+			nonce: rsaAdmin.nonce
+		}, function(response) {
 			if ( response ) {
 				$( Cache.new_ip.parentNode ).effect( 'shake', shake_speed );
 				Cache.add_btn.removeAttr( 'disabled' );
 				return false;
 			} else {
 				var new_ip = Cache.empty_ip.clone().appendTo( Cache.ip_list_wrap );
-				new_ip.children( 'input' ).val( ip );
+				new_ip.children( 'input.ip' ).val( ip );
+				new_ip.children( 'input.comment' ).val( comment );
 				new_ip.removeAttr( 'id' ).slideDown( 250 );
 
 				if ( ip == Cache.new_ip.value ) {
 					$( Cache.new_ip ).val( '' );
+					$( Cache.new_ip_comment ).val( '' );
 				}
 				Cache.add_btn.removeAttr( 'disabled' );
 
