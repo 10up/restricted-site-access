@@ -88,30 +88,8 @@ class Restricted_Site_Access {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
-		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ), 99 );
-	}
-
-	/**
-	 * Handle RSA constants used to enforce or disallow restriction.
-	 *
-	 * Runs late on the `restricted_site_access_is_restricted` hook.
-	 *
-	 * @param boolean $is_restricted Whether the request is considered restricted.
-	 *
-	 * @return boolean The filtered $is_restricted value.
-	 */
-	public static function handle_constants( $is_restricted ) {
-		// Check if constant forcing restriction is defined.
-		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
-			return true;
-		}
-
-		// Check if constant disallowing restriction is defined.
-		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
-			return false;
-		}
-
-		return $is_restricted;
+		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
+		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 	}
 
 	/**
@@ -269,11 +247,6 @@ class Restricted_Site_Access {
 		}
 
 		$blog_public = get_option( 'blog_public', 2 );
-
-		// If rsa_mode==enforce we override the rsa_options.
-		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
-			$blog_public = get_site_option( 'blog_public', 2 );
-		}
 
 		$user_check = self::user_can_access();
 
@@ -490,11 +463,12 @@ class Restricted_Site_Access {
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
 		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
 
-		// If options are network enforced, show the value of the network setting.
-		// Otherwise show further options.
-		if ( ! is_network_admin() && RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
-			add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
-		} else {
+		// Limit when additional settings fields show up.
+		if (
+			is_network_admin() || // Show on the network admin.
+			( RSA_IS_NETWORK && 'enforce' !== self::get_network_mode() ) || // Show on single (network) site when not enforced at the network level.
+			! RSA_IS_NETWORK // Show on single non-network sites.
+		) {
 			foreach ( self::$fields as $field_name => $field_data ) {
 				add_settings_field(
 					$field_name,
@@ -525,7 +499,7 @@ class Restricted_Site_Access {
 		$mode = self::get_network_mode();
 		?>
 			<h2><?php esc_html_e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
-			<table id="restricted-site-access-mode" class="option-site-visibility form-table">
+			<table id="restricted-site-access-mode" class="form-table">
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Mode', 'restricted-site-access' ); ?></th>
 					<td>
@@ -536,7 +510,7 @@ class Restricted_Site_Access {
 						</fieldset>
 					</td>
 				</tr>
-				<tr>
+				<tr class="option-site-visibility">
 					<th scope="row"><?php esc_html_e( 'Site Visibility', 'restricted-site-access' ); ?></th>
 					<?php
 					$blog_public = get_site_option( 'blog_public' );
@@ -561,6 +535,15 @@ class Restricted_Site_Access {
 					</td>
 				</tr>
 			</table>
+		<?php
+		if ( ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true )
+			|| ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) ) {
+			$message = __( 'Site visibility settings are currently enforced by code configuration.', 'restricted-site-access' );
+			?>
+			<div class="notice notice-warning inline">
+				<p><strong><?php echo esc_html( $message ); ?></strong></p>
+			</div>
+		<?php } ?>
 			<table id="restricted-site-access" class="form-table">
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Handle restricted visitors', 'restricted-site-access' ); ?></th>
@@ -739,6 +722,8 @@ class Restricted_Site_Access {
 
 		self::$rsa_options = self::get_options( true );
 
+		add_action( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
+		add_action( 'admin_head', array( __CLASS__, 'admin_head' ) );
 		add_action( 'wpmu_options', array( __CLASS__, 'show_network_settings' ) );
 		add_action( 'update_wpmu_options', array( __CLASS__, 'save_network_settings' ) );
 	}
@@ -855,7 +840,7 @@ class Restricted_Site_Access {
 		);
 		?>
 <style>
-.rsa-network-enforced .option-site-visibility {
+.rsa-enforced .option-site-visibility {
 	opacity: 0.5;
 	pointer-events: none;
 }
@@ -872,11 +857,30 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function admin_body_class( $classes ) {
-		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
-			$classes .= ' rsa-network-enforced';
+		if ( self::is_enforced() ) {
+			$classes .= ' rsa-enforced';
 		}
 
 		return $classes;
+	}
+
+	/**
+	 * Determines if site restriction is enforced either on a code or network level.
+	 *
+	 * Important: this is only meant for admin UI purposes.
+	 *
+	 * @return boolean
+	 */
+	public static function is_enforced() {
+		if (
+			( ! is_network_admin() && ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) ) ||
+			( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) ||
+			( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true )
+		) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -892,7 +896,13 @@ class Restricted_Site_Access {
 			<label for="blog-restricted"><?php esc_html_e( 'Restrict site access to visitors who are logged in or allowed by IP address', 'restricted-site-access' ); ?></label>
 		</p>
 		<?php
-		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+		if ( self::is_enforced() ) {
+			// The network enforcement message takes precedence because it's more restrictive and technically still correct with the constants.
+			if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+				$message = __( 'Site visibility settings are currently enforced across all sites on the network.', 'restricted-site-access' );
+			} else {
+				$message = __( 'Site visibility settings are currently enforced by code configuration.', 'restricted-site-access' );
+			}
 			// Important note: the weird HTML structure below has to match where `blog_privacy_selector` is fired.
 			?>
 			</fieldset>
@@ -902,7 +912,7 @@ class Restricted_Site_Access {
 		<td colspan="2">
 			<fieldset>
 				<div class="notice notice-warning inline">
-					<p><strong><?php esc_html_e( 'Site visibility settings are currently enforced across all blogs on the network.', 'restricted-site-access' ); ?></strong></p>
+					<p><strong><?php echo esc_html( $message ); ?></strong></p>
 				</div>
 			<?php
 		}
@@ -1208,17 +1218,25 @@ class Restricted_Site_Access {
 	/**
 	 * Short-circuit filter the `blog_public` option to match network if necessary.
 	 *
-	 * Currently only fires in the admin context - note that it is possible
-	 * that it is still being filtered too broadly.
-	 *
-	 * @todo Possibly should be doing this for the option even more broadly.
+	 * This runs for both `get_option()` and `get_site_option()`,
+	 * hence the `doing_filter()` check.
 	 *
 	 * @param  bool $value Value of `blog_public` option, typically false.
 	 * @return int
 	 */
 	public static function pre_option_blog_public( $value ) {
-		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+		if ( 'pre_option_blog_public' === current_filter() && RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
 			$value = get_site_option( 'blog_public', 2 );
+		}
+
+		// Check if constant disallowing restriction is defined.
+		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
+			$value = 1;
+		}
+
+		// Check if constant forcing restriction is defined.
+		if ( defined( 'RSA_FORCE_RESTRICTION' ) && RSA_FORCE_RESTRICTION === true ) {
+			$value = 2;
 		}
 
 		return $value;

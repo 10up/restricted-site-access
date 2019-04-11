@@ -173,7 +173,7 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 
 			switch_to_blog( $site->blog_id );
 
-			$this->assertFalse( get_option( 'blog_public' ) );
+			$this->assertSame( 2, get_option( 'blog_public' ) );
 			$this->assertFalse( get_option( 'rsa_options' ) );
 
 			restore_current_blog();
