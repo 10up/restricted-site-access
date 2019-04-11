@@ -108,6 +108,21 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 
 == Changelog ==
 
+= 7.1.0 =
+=== Added ===
+* IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.
+* Add constants to force enable/disable restrictions. Set `RSA_FORCE_RESTRICTION` to `true` to force restriction or `RSA_FORBID_RESTRICTION` to disable restriction. `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+
+=== Fixed ===
+* Disable individual site settings when network enforced mode is on to avoid confusion about why your settings are not being respected.
+* Correctly load admin JS.
+* Improve coding standards across plugin and introduce continuous integration linting against the WordPress coding standards. Update code to VIP Go coding standards.
+
+=== Developers ===
+* Add unit tests accross plugin. Note that when the `WP_TESTS_DOMAIN` constant is set, plugin redirects are disabled. Only set this constant when running the tests.
+* Deploy plugin from GitHub to WordPress.org using GitHub Actions.
+* Add various GitHub community files.
+
 = 7.0.1 =
 * Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.
 * Bug fix: Fall back to the login screen if the unrestricted page is no longer published.
