@@ -88,21 +88,9 @@ class Restricted_Site_Access {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
-		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ), 99 );
-
 		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable_log' ) );
 		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
-	}
 
-	/**
-	 * Handle RSA constants used to enforce or disallow restriction.
-	 *
-	 * Runs late on the `restricted_site_access_is_restricted` hook.
-	 *
-	 * @param boolean $is_restricted Whether the request is considered restricted.
-	 */
-	public static function handle_constants( $is_restricted ) {
-		// Check if constant forcing restriction is defined.
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 	}
@@ -750,7 +738,7 @@ class Restricted_Site_Access {
 			'rsaAdmin',
 			array(
 				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
-				'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
+				'isNetworkWidePluginsPage' => $current_screen && 'plugins-network' === $current_screen->id,
 				'strings'                  => array(
 					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
 					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
