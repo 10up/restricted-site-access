@@ -88,6 +88,23 @@ class Restricted_Site_Access {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
+		add_filter( 'restricted_site_access_is_restricted', array( __CLASS__, 'handle_constants' ), 99 );
+
+		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable_log' ) );
+		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
+	}
+
+	/**
+	 * Handle RSA constants used to enforce or disallow restriction.
+	 *
+	 * Runs late on the `restricted_site_access_is_restricted` hook.
+	 *
+	 * @param boolean $is_restricted Whether the request is considered restricted.
+	 *
+	 * @return boolean The filtered $is_restricted value.
+	 */
+	public static function handle_constants( $is_restricted ) {
+		// Check if constant forcing restriction is defined.
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 	}
@@ -128,6 +145,41 @@ class Restricted_Site_Access {
 			wp_send_json_success();
 		}
 		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Ajax handler to log network deactivation events.
+	 *
+	 * @return void
+	 */
+	public static function ajax_network_disable_log() {
+		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
+			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
+			exit;
+		}
+
+		if ( current_user_can( 'manage_network_plugins' ) ) {
+			wp_send_json_error();
+			exit;
+		}
+
+		if ( ! RSA_IS_NETWORK ) {
+			wp_send_json_error();
+			exit;
+	}
+
+		$time = current_time( 'timestamp' );
+
+		$all_events_option = get_option( 'rsa_disable_log', array() );
+
+		$all_events = $all_events_option ? $all_events_option : array();
+
+		$all_events[] = array(
+			'user' => get_current_user_id(),
+			'time' => $time,
+		);
+
+		update_option( 'rsa_disable_log', $all_events, false );
 	}
 
 	/**
@@ -247,6 +299,11 @@ class Restricted_Site_Access {
 		}
 
 		$blog_public = get_option( 'blog_public', 2 );
+
+		// If rsa_mode==enforce we override the rsa_options.
+		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
+			$blog_public = get_site_option( 'blog_public', 2 );
+		}
 
 		$user_check = self::user_can_access();
 
@@ -479,7 +536,6 @@ class Restricted_Site_Access {
 					array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
 				);
 			}
-		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
@@ -662,7 +718,10 @@ class Restricted_Site_Access {
 	 */
 	public static function enqueue_settings_script() {
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
+			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/settings.js';
+		}
 
 		wp_enqueue_script(
 			'rsa-settings',
@@ -677,14 +736,14 @@ class Restricted_Site_Access {
 	 * Enqueue wp-admin scripts.
 	 */
 	public static function enqueue_admin_script() {
-		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js';
+		$current_screen = get_current_screen();
 
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
 		wp_enqueue_script(
 			'rsa-admin',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
+		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
 			array( 'jquery' ),
 			RSA_VERSION,
 			true
@@ -694,8 +753,19 @@ class Restricted_Site_Access {
 			'rsa-admin',
 			'rsaAdmin',
 			array(
-				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
+				'isNetworkWidePluginsPage' => 'plugins-network' === $current_screen->id,
+				'strings'                  => array(
+					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
+					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
+					'message' => esc_html__( 'I understand', 'restricted-site-access' ),
+				),
 			)
+		);
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
+		wp_enqueue_style(
+			'rsa-admin',
+			plugin_dir_url( __FILE__ ) . 'assets/css/admin.css'
 		);
 	}
 
@@ -916,7 +986,6 @@ class Restricted_Site_Access {
 				</div>
 			<?php
 		}
-	}
 
 	/**
 	 * Sanitize RSA options.
@@ -1310,6 +1379,41 @@ class Restricted_Site_Access {
 
 		return false;
 
+	}
+
+	/**
+	 * Dialog markup to warn network-wide RSA disable
+	 *
+	 * @return void
+	 */
+	public static function admin_footer() {
+		$current_screen = get_current_screen();
+
+		if ( 'plugins-network' !== $current_screen->id ) {
+			return;
+		}
+		?>
+		<div id="rsa-disable-dialog" class="hidden">
+			<h2><?php esc_html_e( 'Confirm network deactivation', 'restricted-site-access' ); ?></h2>
+			<p><?php esc_html_e( 'You are about to network disable the Restricted Site Access plugin making all sites on this network publicly available.', 'restricted-site-access' ); ?></p>
+			<p>
+				<?php
+				printf(
+					/* translators: %s: The words 'I understand'. */
+					esc_html__( 'If you are sure about your action, please type %s to proceed.', 'restricted-site-access' ),
+					sprintf(
+						/* translators: %s: The words 'I understand'. */
+						'<code>%s</code>',
+						esc_html__( 'I understand', 'restricted-site-access' )
+					)
+				);
+				?>
+			</p>
+			<p class="rsa-user-message">
+				<input type="text" id="rsa-user-message">
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
