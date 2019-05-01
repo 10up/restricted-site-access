@@ -100,8 +100,6 @@ class Restricted_Site_Access {
 	 * Runs late on the `restricted_site_access_is_restricted` hook.
 	 *
 	 * @param boolean $is_restricted Whether the request is considered restricted.
-	 *
-	 * @return boolean The filtered $is_restricted value.
 	 */
 	public static function handle_constants( $is_restricted ) {
 		// Check if constant forcing restriction is defined.
@@ -166,7 +164,7 @@ class Restricted_Site_Access {
 		if ( ! RSA_IS_NETWORK ) {
 			wp_send_json_error();
 			exit;
-	}
+		}
 
 		$time = current_time( 'timestamp' );
 
@@ -740,7 +738,8 @@ class Restricted_Site_Access {
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
 		wp_enqueue_script(
-			'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
+			'rsa-admin',
+			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
 			array( 'jquery', 'jquery-ui-dialog' ),
 			RSA_VERSION,
 			true
@@ -762,7 +761,9 @@ class Restricted_Site_Access {
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		wp_enqueue_style(
 			'rsa-admin',
-			plugin_dir_url( __FILE__ ) . 'assets/css/admin.css'
+			plugin_dir_url( __FILE__ ) . 'assets/css/admin.css',
+			array(),
+			RSA_VERSION
 		);
 	}
 
