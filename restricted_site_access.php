@@ -145,12 +145,12 @@ class Restricted_Site_Access {
 		}
 
 		if ( current_user_can( 'manage_network_plugins' ) ) {
-			wp_send_json_error();
+			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
 			exit;
 		}
 
 		if ( ! RSA_IS_NETWORK ) {
-			wp_send_json_error();
+			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
 			exit;
 		}
 
