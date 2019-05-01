@@ -98,7 +98,8 @@
 						text: rsaAdmin.strings.cancel,
 						click: function() {
 							self.close();
-						}
+						},
+						'class': 'button-primary'
 					}
 				],
 				open: function() {

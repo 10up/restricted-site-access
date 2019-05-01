@@ -536,6 +536,7 @@ class Restricted_Site_Access {
 					array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
 				);
 			}
+		}
 
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
@@ -718,10 +719,7 @@ class Restricted_Site_Access {
 	 */
 	public static function enqueue_settings_script() {
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
-			$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/src/settings.js';
-		}
 
 		wp_enqueue_script(
 			'rsa-settings',
@@ -742,9 +740,8 @@ class Restricted_Site_Access {
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
 		wp_enqueue_script(
-			'rsa-admin',
-		wp_enqueue_script( 'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/admin' . $min . '.js', array( 'jquery', 'jquery-ui-dialog' ), RSA_VERSION, true );
-			array( 'jquery' ),
+			'rsa-admin', plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
+			array( 'jquery', 'jquery-ui-dialog' ),
 			RSA_VERSION,
 			true
 		);
@@ -986,6 +983,7 @@ class Restricted_Site_Access {
 				</div>
 			<?php
 		}
+	}
 
 	/**
 	 * Sanitize RSA options.
