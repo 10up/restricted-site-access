@@ -1,7 +1,7 @@
 # Restricted Site Access
 > Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
-[![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access)
+[![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access) ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v5.2%20tested-success.svg)
 
 ## Features
 
