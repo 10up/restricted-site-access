@@ -1,0 +1,12 @@
+{
+    "name": "restricted-site-access",
+    "exclude": [
+        ".\/node_modules"
+    ],
+    "tests": [
+        "./tests/wpacceptance/*Test.php"
+    ],
+    "enforce_clean_db": true,
+    "bootstrap": "tests/wpacceptance/bootstrap.php",
+    "snapshot_id": false
+}
