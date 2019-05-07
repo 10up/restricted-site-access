@@ -1,6 +1,6 @@
 <?php
 /**
- * Single site test class
+ * Multisite test class
  *
  * @package restricted-site-access
  */
@@ -8,7 +8,30 @@
 /**
  * PHPUnit test class
  */
-class SingleSiteTest extends \TestCase {
+class MultiSiteTest extends \TestCase {
+
+	/**
+	 * Test a single site inherits multisite settings.
+	 */
+	public function testSingleSiteEnforced() {
+		$I = $this->openBrowserPage();
+
+		$I->loginAs( 'admin', 'password' );
+
+		$this->networkActivate( $I );
+
+		$this->setMultiSiteVisibilitySettings( $I,
+			[
+				'mode'       => 'rsa-mode-enforce',
+				'visibility' => 'blog-restricted',
+				'restricted' => 'rsa-send-to-login',
+			]
+		);
+
+		$I->moveTo( '/wp-admin/options-reading.php' );
+
+		$I->seeElement( '.rsa-network-enforced-warning' );
+	}
 
 	/**
 	 * Test restricted access, send to the login screen option
@@ -18,8 +41,11 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->networkActivate( $I );
+
+		$this->setMultiSiteVisibilitySettings( $I,
 			[
+				'mode'       => 'rsa-mode-enforce',
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-send-to-login',
 			]
@@ -48,8 +74,11 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->networkActivate( $I );
+
+		$this->setMultiSiteVisibilitySettings( $I,
 			[
+				'mode'       => 'rsa-mode-enforce',
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-redirect-visitor',
 			],
@@ -79,7 +108,9 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->networkActivate( $I );
+
+		$this->setMultiSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-display-message',
@@ -96,43 +127,6 @@ class SingleSiteTest extends \TestCase {
 	}
 
 	/**
-	 * Test restricted access, show a page option
-	 */
-	public function testRestrictPage() {
-		$I = $this->openBrowserPage();
-
-		$I->loginAs( 'admin', 'password' );
-
-		$this->setSiteVisibiltySettings( $I,
-			[
-				'visibility' => 'blog-restricted',
-				'restricted' => 'rsa-unblocked-page',
-			],
-			[
-				[
-					'field' => 'rsa_page',
-					'value' => '2',
-					'type'  => 'select',
-				],
-			]
-		);
-
-		$this->logOut( $I );
-
-		$I->moveTo( '/' );
-
-		usleep( 500 );
-
-		$contains = false;
-
-		if ( false !== strpos( $I->getCurrentUrl(), 'sample-page' ) ) {
-			$contains = true;
-		}
-
-		$this->assertTrue( $contains );
-	}
-
-	/**
 	 * Test restricted access with an unrestricted IP address
 	 */
 	public function testRestrictIpAddress() {
@@ -140,7 +134,9 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->networkActivate( $I );
+
+		$this->setMultiSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-send-to-login',
