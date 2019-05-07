@@ -35,9 +35,14 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 
 		$I->waitUntilElementVisible( '#the-list' );
 
-		$I->click( '[data-slug="restricted-site-access"] a' );
+		$link = $I->getElement( '[data-slug="restricted-site-access"] a' );
+		$text = $I->getElementInnerText( $link );
 
-		$I->waitUntilElementVisible( '#the-list' );
+		if ( 'Network Activate' === $text ) {
+			$I->click( '[data-slug="restricted-site-access"] a' );
+
+			$I->waitUntilElementVisible( '#the-list' );
+		}
 	}
 
 	/**
@@ -47,7 +52,7 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 	 * @param array $settings Main settings.
 	 * @param array $additional_settings Optional. Additional settings to set.
 	 */
-	protected function setSiteVisibiltySettings( WPAcceptance\PHPUnit\Actor $I, $settings = [], $additional_settings = [] ) {
+	protected function setSiteVisibilitySettings( WPAcceptance\PHPUnit\Actor $I, $settings = [], $additional_settings = [] ) {
 		$settings = array_merge( [
 			'visibility' => 'blog-public',
 			'restricted' => '',
@@ -71,6 +76,9 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 				$I->seeElement( "#{$additional_setting['field']}" );
 
 				switch( $additional_setting['type'] ) {
+					case 'checkbox':
+						$I->checkOptions( [ "#{$additional_setting['field']}" ] );
+						break;
 					case 'input':
 						$I->fillField( "#{$additional_setting['field']}", $additional_setting['value'] );
 						break;
@@ -118,6 +126,9 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 				$I->seeElement( "#{$additional_setting['field']}" );
 
 				switch( $additional_setting['type'] ) {
+					case 'checkbox':
+						$I->checkOptions( [ "#{$additional_setting['field']}" ] );
+						break;
 					case 'input':
 						$I->fillField( "#{$additional_setting['field']}", $additional_setting['value'] );
 						break;

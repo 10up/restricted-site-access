@@ -18,7 +18,7 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->setSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-send-to-login',
@@ -48,7 +48,7 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->setSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-redirect-visitor',
@@ -69,6 +69,35 @@ class SingleSiteTest extends \TestCase {
 		usleep( 500 );
 
 		$this->assertTrue( 'https://www.google.com/' === $I->getCurrentUrl() );
+
+		$I->loginAs( 'admin', 'password' );
+
+		$this->setSiteVisibilitySettings( $I,
+			[
+				'visibility' => 'blog-restricted',
+				'restricted' => 'rsa-redirect-visitor',
+			],
+			[
+				[
+					'field' => 'redirect',
+					'value' => 'https://www.google.com/',
+					'type'  => 'input',
+				],
+				[
+					'field' => 'redirect_path',
+					'value' => true,
+					'type'  => 'checkbox',
+				],
+			]
+		);
+
+		$this->logOut( $I );
+
+		$I->moveTo( '/some-post/' );
+
+		usleep( 500 );
+
+		$this->assertTrue( 'https://www.google.com/some-post/' === $I->getCurrentUrl() );
 	}
 
 	/**
@@ -79,7 +108,7 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->setSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-display-message',
@@ -103,7 +132,7 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->setSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-unblocked-page',
@@ -140,7 +169,7 @@ class SingleSiteTest extends \TestCase {
 
 		$I->loginAs( 'admin', 'password' );
 
-		$this->setSiteVisibiltySettings( $I,
+		$this->setSiteVisibilitySettings( $I,
 			[
 				'visibility' => 'blog-restricted',
 				'restricted' => 'rsa-send-to-login',
