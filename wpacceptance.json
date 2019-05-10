@@ -1,12 +1,13 @@
 {
     "name": "restricted-site-access",
     "exclude": [
-        ".\/node_modules"
+        "node_modules",
+        "vendor"
     ],
     "tests": [
         "./tests/wpacceptance/*Test.php"
     ],
     "enforce_clean_db": true,
     "bootstrap": "tests/wpacceptance/bootstrap.php",
-    "snapshot_id": false
+    "snapshot_id": "17f3e2f92d733956f46f6a3cd8214fc6"
 }

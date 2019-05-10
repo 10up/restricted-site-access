@@ -16,7 +16,7 @@ class MultiSiteSingleSiteTest extends \TestCase {
 	public function testRestrictLoginScreen() {
 		$I = $this->openBrowserPage();
 
-		$I->loginAs( 'admin', 'password' );
+		$I->loginAs( 'wpsnapshots' );
 
 		$this->networkActivate( $I );
 
@@ -56,7 +56,7 @@ class MultiSiteSingleSiteTest extends \TestCase {
 	public function testRestrictWebAddress() {
 		$I = $this->openBrowserPage();
 
-		$I->loginAs( 'admin', 'password' );
+		$I->loginAs( 'wpsnapshots' );
 
 		$this->networkActivate( $I );
 
@@ -90,7 +90,7 @@ class MultiSiteSingleSiteTest extends \TestCase {
 
 		$this->assertTrue( 'https://www.google.com/' === $I->getCurrentUrl() );
 
-		$I->loginAs( 'admin', 'password' );
+		$I->loginAs( 'wpsnapshots' );
 
 		$this->setSiteVisibilitySettings( $I,
 			[
@@ -126,7 +126,7 @@ class MultiSiteSingleSiteTest extends \TestCase {
 	public function testRestrictMessage() {
 		$I = $this->openBrowserPage();
 
-		$I->loginAs( 'admin', 'password' );
+		$I->loginAs( 'wpsnapshots' );
 
 		$this->networkActivate( $I );
 
@@ -160,7 +160,7 @@ class MultiSiteSingleSiteTest extends \TestCase {
 	public function testRestrictPage() {
 		$I = $this->openBrowserPage();
 
-		$I->loginAs( 'admin', 'password' );
+		$I->loginAs( 'wpsnapshots' );
 
 		$this->networkActivate( $I );
 
@@ -207,7 +207,7 @@ class MultiSiteSingleSiteTest extends \TestCase {
 	public function testRestrictIpAddress() {
 		$I = $this->openBrowserPage();
 
-		$I->loginAs( 'admin', 'password' );
+		$I->loginAs( 'wpsnapshots' );
 
 		$this->networkActivate( $I );
 
