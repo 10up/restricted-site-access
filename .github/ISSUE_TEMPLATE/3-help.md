@@ -1,5 +1,5 @@
 ---
-name: "⁉️ Need help with Restricted Site Access?"
+name: "❓Need help with Restricted Site Access?"
 about: Ask us a question, we're here to help!
 title: ''
 labels: question
