@@ -121,10 +121,6 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/blob/develop/CODE_OF_CONDUCT.md) for details on our code of conduct and [CONTRIBUTING.md](https://github.com/10up/restricted-site-access/blob/develop/CONTRIBUTING.md) for details on the process for submitting pull requests to us.
 
-## License
-
-Restricted Site Access utilizes the [GNU General Public License v2.0 (or later)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md).
-
 ## Like what you see?
 
 <p align="center">
