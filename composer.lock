@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wpacceptance.git",
-                "reference": "95800c217dd08e14ea819967d26338988da7b264"
+                "reference": "11ac7fda7f4f8d23642485da616dbd33894029a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/10up/wpacceptance/zipball/95800c217dd08e14ea819967d26338988da7b264",
-                "reference": "95800c217dd08e14ea819967d26338988da7b264",
+                "url": "https://api.github.com/repos/10up/wpacceptance/zipball/11ac7fda7f4f8d23642485da616dbd33894029a4",
+                "reference": "11ac7fda7f4f8d23642485da616dbd33894029a4",
                 "shasum": ""
             },
             "require": {
@@ -62,7 +62,7 @@
                 "testing",
                 "wordpress"
             ],
-            "time": "2019-04-25T14:12:48+00:00"
+            "time": "2019-06-18T04:44:14+00:00"
         },
         {
             "name": "10up/wpinstructions",

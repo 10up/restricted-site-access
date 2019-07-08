@@ -1,6 +1,6 @@
 <?php
 /**
- * Multisite test class
+ * Multisite constant test class
  *
  * @package restricted-site-access
  */
@@ -8,12 +8,34 @@
 /**
  * PHPUnit test class
  */
-class MultiSiteTest extends \TestCase {
+class MultiSiteConstantTest extends \TestCase {
 
 	/**
-	 * Test a single site inherits multisite settings.
+	 * Test the Forbid Restriction constant
 	 */
-	public function testSingleSiteEnforced() {
+	public function testForbidRestriction() {
+		$this->setConstant( 'RSA_FORBID_RESTRICTION', 'true' );
+
+		$I = $this->openBrowserPage();
+
+		$I->loginAs( 'wpsnapshots' );
+
+		$this->networkActivate( $I );
+
+		$I->moveTo( 'wp-admin/network/settings.php' );
+		$I->waitUntilElementVisible( '.notice-warning' );
+
+		$I->seeText( 'Site visibility settings are currently enforced by code configuration', '.notice-warning' );
+
+		$I->cannotInteractWithField( '#blog-restricted' );
+	}
+
+	/**
+	 * Test the Forbid Restriction constant, enforced across the network
+	 */
+	public function testForbidRestrictionEnforced() {
+		$this->setConstant( 'RSA_FORBID_RESTRICTION', 'true' );
+
 		$I = $this->openBrowserPage();
 
 		$I->loginAs( 'wpsnapshots' );
@@ -23,20 +45,70 @@ class MultiSiteTest extends \TestCase {
 		$this->setMultiSiteVisibilitySettings( $I,
 			[
 				'mode'       => 'rsa-mode-enforce',
-				'visibility' => 'blog-restricted',
+				'visibility' => 'leave-alone',
+			]
+		);
+
+		$I->moveTo( '/wp-admin/options-reading.php' );
+
+		$I->seeText( 'Site visibility settings are currently enforced across all sites on the network', '.notice-warning' );
+		$I->cannotInteractWithField( '#blog-restricted' );
+	}
+
+	/**
+	 * Test the Force Restriction constant
+	 */
+	public function testForceRestriction() {
+		$this->setConstant( 'RSA_FORCE_RESTRICTION', 'true' );
+
+		$I = $this->openBrowserPage();
+
+		$I->loginAs( 'wpsnapshots' );
+
+		$this->networkActivate( $I );
+
+		$I->moveTo( 'wp-admin/network/settings.php' );
+		$I->waitUntilElementVisible( '.notice-warning' );
+
+		$I->seeText( 'Site visibility settings are currently enforced by code configuration', '.notice-warning' );
+
+		$I->seeCheckboxIsChecked( '#blog-restricted' );
+		$I->cannotInteractWithField( '#blog-restricted' );
+	}
+
+	/**
+	 * Test a single site inherits multisite settings.
+	 */
+	public function testSingleSiteEnforced() {
+		$this->setConstant( 'RSA_FORCE_RESTRICTION', 'true' );
+
+		$I = $this->openBrowserPage();
+
+		$I->loginAs( 'wpsnapshots' );
+
+		$this->networkActivate( $I );
+
+		$this->setMultiSiteVisibilitySettings( $I,
+			[
+				'mode'       => 'rsa-mode-enforce',
+				'visibility' => 'leave-alone',
 				'restricted' => 'rsa-send-to-login',
 			]
 		);
 
 		$I->moveTo( '/wp-admin/options-reading.php' );
 
-		$I->seeElement( '.rsa-network-enforced-warning' );
+		$I->seeText( 'Site visibility settings are currently enforced across all sites on the network', '.rsa-network-enforced-warning .notice-warning' );
+		$I->seeCheckboxIsChecked( '#blog-restricted' );
+		$I->cannotInteractWithField( '#blog-restricted' );
 	}
 
 	/**
 	 * Test restricted access, send to the login screen option
 	 */
 	public function testRestrictLoginScreen() {
+		$this->setConstant( 'RSA_FORCE_RESTRICTION', 'true' );
+
 		$I = $this->openBrowserPage();
 
 		$I->loginAs( 'wpsnapshots' );
@@ -46,7 +118,7 @@ class MultiSiteTest extends \TestCase {
 		$this->setMultiSiteVisibilitySettings( $I,
 			[
 				'mode'       => 'rsa-mode-enforce',
-				'visibility' => 'blog-restricted',
+				'visibility' => 'leave-alone',
 				'restricted' => 'rsa-send-to-login',
 			]
 		);
@@ -70,6 +142,8 @@ class MultiSiteTest extends \TestCase {
 	 * Test restricted access, send to a specified web address option
 	 */
 	public function testRestrictWebAddress() {
+		$this->setConstant( 'RSA_FORCE_RESTRICTION', 'true' );
+
 		$I = $this->openBrowserPage();
 
 		$I->loginAs( 'wpsnapshots' );
@@ -79,7 +153,7 @@ class MultiSiteTest extends \TestCase {
 		$this->setMultiSiteVisibilitySettings( $I,
 			[
 				'mode'       => 'rsa-mode-enforce',
-				'visibility' => 'blog-restricted',
+				'visibility' => 'leave-alone',
 				'restricted' => 'rsa-redirect-visitor',
 			],
 			[
@@ -134,6 +208,8 @@ class MultiSiteTest extends \TestCase {
 	 * Test restricted access, show a message option
 	 */
 	public function testRestrictMessage() {
+		$this->setConstant( 'RSA_FORCE_RESTRICTION', 'true' );
+
 		$I = $this->openBrowserPage();
 
 		$I->loginAs( 'wpsnapshots' );
@@ -142,7 +218,7 @@ class MultiSiteTest extends \TestCase {
 
 		$this->setMultiSiteVisibilitySettings( $I,
 			[
-				'visibility' => 'blog-restricted',
+				'visibility' => 'leave-alone',
 				'restricted' => 'rsa-display-message',
 			]
 		);
@@ -160,6 +236,8 @@ class MultiSiteTest extends \TestCase {
 	 * Test restricted access with an unrestricted IP address
 	 */
 	public function testRestrictIpAddress() {
+		$this->setConstant( 'RSA_FORCE_RESTRICTION', 'true' );
+
 		$I = $this->openBrowserPage();
 
 		$I->loginAs( 'wpsnapshots' );
@@ -168,7 +246,7 @@ class MultiSiteTest extends \TestCase {
 
 		$this->setMultiSiteVisibilitySettings( $I,
 			[
-				'visibility' => 'blog-restricted',
+				'visibility' => 'leave-alone',
 				'restricted' => 'rsa-send-to-login',
 			]
 		);

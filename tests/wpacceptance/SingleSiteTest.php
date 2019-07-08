@@ -25,7 +25,7 @@ class SingleSiteTest extends \TestCase {
 			]
 		);
 
-		$this->logOut( $I );
+		$I->logout();
 
 		$I->moveTo( '/' );
 
@@ -62,7 +62,7 @@ class SingleSiteTest extends \TestCase {
 			]
 		);
 
-		$this->logOut( $I );
+		$I->logout();
 
 		$I->moveTo( '/' );
 
@@ -91,7 +91,7 @@ class SingleSiteTest extends \TestCase {
 			]
 		);
 
-		$this->logOut( $I );
+		$I->logout();
 
 		$I->moveTo( '/some-post/' );
 
@@ -115,7 +115,7 @@ class SingleSiteTest extends \TestCase {
 			]
 		);
 
-		$this->logOut( $I );
+		$I->logout();
 
 		$I->moveTo( '/' );
 
@@ -146,7 +146,7 @@ class SingleSiteTest extends \TestCase {
 			]
 		);
 
-		$this->logOut( $I );
+		$I->logout();
 
 		$I->moveTo( '/' );
 
@@ -187,7 +187,7 @@ class SingleSiteTest extends \TestCase {
 		$I->click( '#submit' );
 		$I->waitUntilElementVisible( '#wpadminbar' );
 
-		$this->logOut( $I );
+		$I->logout();
 
 		$I->moveTo( '/sample-page/' );
 

@@ -5,25 +5,12 @@
  * @package restricted-site-access
  */
 
+use WPAcceptance\Log;
+
 /**
  * Class extends \WPAcceptance\PHPUnit\TestCase
  */
 class TestCase extends \WPAcceptance\PHPUnit\TestCase {
-
-	/**
-	 * Log the current user out.
-	 *
-	 * @param WPAcceptance\PHPUnit\Actor $I WP Acceptance actor
-	 */
-	protected function logOut( WPAcceptance\PHPUnit\Actor $I ) {
-		$I->moveTo( 'wp-login.php?action=logout' );
-
-		$I->waitUntilElementVisible( '#error-page' );
-
-		$I->click( '#error-page a' );
-
-		$I->waitUntilElementVisible( '#loginform' );
-	}
 
 	/**
 	 * Network activate the plugin.
@@ -61,7 +48,9 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 		$I->moveTo( '/wp-admin/options-reading.php' );
 		$I->waitUntilElementVisible( '.option-site-visibility' );
 
-		$I->checkOptions( [ "#{$settings['visibility']}" ] );
+		if ( 'leave-alone' !== $settings['visibility'] ) {
+			$I->checkOptions( [ "#{$settings['visibility']}" ] );
+		}
 
 		if ( 'blog-public' !== $settings['visibility'] ) {
 			$I->seeElement( '.rsa-setting_settings_field_handling' );
@@ -111,9 +100,12 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 		$I->waitUntilElementVisible( '#restricted-site-access-mode' );
 
 		$I->checkOptions( [ "#{$settings['mode']}" ] );
-		$I->checkOptions( [ "#{$settings['visibility']}" ] );
 
-		if ( 'blog-public' !== $settings['visibility'] ) {
+		if ( 'leave-alone' !== $settings['visibility'] ) {
+			$I->checkOptions( [ "#{$settings['visibility']}" ] );
+		}
+
+		if ( 'blog-public' !== $settings['visibility'] && 'leave-alone' !== $settings['visibility'] ) {
 			$I->seeElement( '#restricted-site-access' );
 		}
 
@@ -141,6 +133,26 @@ class TestCase extends \WPAcceptance\PHPUnit\TestCase {
 
 		$I->click( '#submit' );
 		$I->waitUntilElementVisible( '#wpadminbar' );
+	}
+
+	/**
+	 * Set a constant in the config file.
+	 *
+	 * @param string $name Constant name.
+	 * @param string $value Constant value.
+	 * @return void
+	 */
+	protected function setConstant( $name = '', $value = '' ) {
+		if ( ! $name || ! $value ) {
+			Log::instance()->write( 'Command not run. Make sure a constant name and value is passed in.' );
+			return;
+		}
+
+		$command = sprintf( 'config set %s %s --raw', $name, $value );
+		$output  = $this->runCommand( $command );
+
+		$this->assertIsArray( $output );
+		$this->assertContains( 'Success', $output['stdout'] );
 	}
 
 }
