@@ -618,10 +618,10 @@ class Restricted_Site_Access {
 					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) );  // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
 					break;
 				case 'blog_public':
-					$value = absint( $_POST[ $option_name ] );
+					$value = absint( $_POST[ $option_name ] ); // phpcs:ignore WordPress.Security.NonceVerification
 					break;
 				default:
-					$value = sanitize_key( $_POST[ $option_name ] );
+					$value = sanitize_key( $_POST[ $option_name ] ); // phpcs:ignore WordPress.Security.NonceVerification
 					break;
 			}
 
