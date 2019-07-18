@@ -1,6 +1,6 @@
 {
     "require-dev": {
-        "phpunit/phpunit": "~7.5",
+        "phpunit/phpunit": "^7.5",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "phpcompatibility/php-compatibility": "*",
         "wp-coding-standards/wpcs": "*",
