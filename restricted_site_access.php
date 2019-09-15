@@ -491,7 +491,7 @@ class Restricted_Site_Access {
 
 		$output .= '</table>';
 
-		wp_die( $output, 403 ); // @codingStandardsIgnoreLine All content already escaped.
+		wp_die( wp_kses_post( $output ), 403 ); // @codingStandardsIgnoreLine All content already escaped.
 	}
 
 	/**
