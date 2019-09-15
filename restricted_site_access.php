@@ -471,11 +471,11 @@ class Restricted_Site_Access {
 
 		if ( empty( $blogs ) ) {
 			// Translators: %1$s: The site name.
-			wp_die( sprintf( esc_html__( 'You attempted to access the "%1$s" site, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), $blog_name ), 403 );
+			wp_die( sprintf( esc_html__( 'You attempted to access the "%1$s" site, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), esc_html( $blog_name ) ), 403 );
 		}
 
 		// Translators: %1$s: The site name.
-		$output  = '<p>' . sprintf( esc_html__( 'You attempted to access the "%1$s", but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), $blog_name ) . '</p>';
+		$output  = '<p>' . sprintf( esc_html__( 'You attempted to access the "%1$s", but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), esc_html( $blog_name ) ) . '</p>';
 		$output .= '<p>' . esc_html__( 'If you reached this screen by accident and meant to visit one of your own sites, here are some shortcuts to help you find your way.', 'restricted-site-access' ) . '</p>';
 
 		$output .= '<h3>' . esc_html__( 'Your Sites', 'restricted-site-access' ) . '</h3>';
