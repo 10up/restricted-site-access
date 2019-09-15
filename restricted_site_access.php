@@ -452,11 +452,11 @@ class Restricted_Site_Access {
 	 * This method borrows from core's _access_denied_splash() for multi-site installs.
 	 */
 	public static function validate_blog_access() {
-	    if ( ! is_multisite() || ! is_user_logged_in() ) {
-	    	return;
-	    }
+		if ( ! is_multisite() || ! is_user_logged_in() ) {
+			return;
+		}
 
-	    if ( is_user_member_of_blog() || is_network_admin() ) {
+		if ( is_user_member_of_blog() || is_network_admin() ) {
 			return;
 		}
 
@@ -471,27 +471,27 @@ class Restricted_Site_Access {
 
 		if ( empty( $blogs ) ) {
 			// Translators: %1$s: The site name.
-			wp_die( sprintf( __( 'You attempted to access the "%1$s" site, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), $blog_name ), 403 );
+			wp_die( sprintf( esc_html__( 'You attempted to access the "%1$s" site, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), $blog_name ), 403 );
 		}
 
 		// Translators: %1$s: The site name.
-		$output  = '<p>' . sprintf( __( 'You attempted to access the "%1$s", but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), $blog_name ) . '</p>';
-		$output .= '<p>' . __( 'If you reached this screen by accident and meant to visit one of your own sites, here are some shortcuts to help you find your way.', 'restricted-site-access' ) . '</p>';
+		$output  = '<p>' . sprintf( esc_html__( 'You attempted to access the "%1$s", but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), $blog_name ) . '</p>';
+		$output .= '<p>' . esc_html__( 'If you reached this screen by accident and meant to visit one of your own sites, here are some shortcuts to help you find your way.', 'restricted-site-access' ) . '</p>';
 
-		$output .= '<h3>' . __( 'Your Sites', 'restricted-site-access' ) . '</h3>';
+		$output .= '<h3>' . esc_html__( 'Your Sites', 'restricted-site-access' ) . '</h3>';
 		$output .= '<table>';
 
 		foreach ( $blogs as $blog ) {
 			$output .= '<tr>';
-			$output .= "<td>{$blog->blogname}</td>";
-			$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . __( 'Visit Dashboard', 'restricted-site-access' ) . '</a> | ' .
-					   '<a href="' . esc_url( get_home_url( $blog->userblog_id ) ) . '">' . __( 'View Site', 'restricted-site-access' ) . '</a></td>';
+			$output .= '<td>' . esc_html( $blog_name ) . '</td>';
+			$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . esc_html__( 'Visit Dashboard', 'restricted-site-access' ) . '</a> | ' .
+					'<a href="' . esc_url( get_home_url( $blog->userblog_id ) ) . '">' . esc_html__( 'View Site', 'restricted-site-access' ) . '</a></td>';
 			$output .= '</tr>';
 		}
 
 		$output .= '</table>';
 
-		wp_die( $output, 403 );
+		wp_die( $output, 403 ); // @codingStandardsIgnoreLine All content already escaped.
 	}
 
 	/**
