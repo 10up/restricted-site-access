@@ -431,6 +431,7 @@ class Restricted_Site_Access {
 				}
 				// No break, fall thru to default.
 			default:
+				self::validate_blog_access();
 				self::$rsa_options['head_code']    = 302;
 				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 				self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
@@ -443,6 +444,54 @@ class Restricted_Site_Access {
 			'url'  => $redirect_url,
 			'code' => $redirect_code,
 		);
+	}
+
+	/**
+	 * Ensure the user has access to the blog attempting to be accessed.
+	 *
+	 * This method borrows from core's _access_denied_splash() for multi-site installs.
+	 */
+	public static function validate_blog_access() {
+		if ( ! is_multisite() || ! is_user_logged_in() ) {
+			return;
+		}
+
+		if ( is_user_member_of_blog() || is_network_admin() ) {
+			return;
+		}
+
+		// We're logged in but not a member of this blog, let the user know.
+		$blogs = get_blogs_of_user( get_current_user_id() );
+
+		if ( wp_list_filter( $blogs, array( 'userblog_id' => get_current_blog_id() ) ) ) {
+			return;
+		}
+
+		$blog_name = get_bloginfo( 'name' );
+
+		if ( empty( $blogs ) ) {
+			// Translators: %1$s: The site name.
+			wp_die( sprintf( esc_html__( 'You attempted to access the "%1$s" site, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), esc_html( $blog_name ) ), 403 );
+		}
+
+		// Translators: %1$s: The site name.
+		$output  = '<p>' . sprintf( esc_html__( 'You attempted to access the "%1$s", but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), esc_html( $blog_name ) ) . '</p>';
+		$output .= '<p>' . esc_html__( 'If you reached this screen by accident and meant to visit one of your own sites, here are some shortcuts to help you find your way.', 'restricted-site-access' ) . '</p>';
+
+		$output .= '<h3>' . esc_html__( 'Your Sites', 'restricted-site-access' ) . '</h3>';
+		$output .= '<table>';
+
+		foreach ( $blogs as $blog ) {
+			$output .= '<tr>';
+			$output .= '<td>' . esc_html( $blog->blogname ) . '</td>';
+			$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . esc_html__( 'Visit Dashboard', 'restricted-site-access' ) . '</a> | ' .
+					'<a href="' . esc_url( $blog->siteurl ) . '">' . esc_html__( 'View Site', 'restricted-site-access' ) . '</a></td>';
+			$output .= '</tr>';
+		}
+
+		$output .= '</table>';
+
+		wp_die( wp_kses_post( $output ), 403 );
 	}
 
 	/**
