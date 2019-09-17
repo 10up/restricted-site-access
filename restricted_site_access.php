@@ -780,7 +780,14 @@ class Restricted_Site_Access {
 			?>
 			<div data-rsa-notice="page-cache" class="notice notice-error is-dismissible">
 				<p>
-					<strong><?php esc_html_e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="https://wordpress.org/plugins/restricted-site-access/#faq">Learn more</a>.', 'restricted-site-access' ); ?></strong>
+					<strong><?php
+						echo wp_kses_post(
+							sprintf( '%s <a href="https://wordpress.org/plugins/restricted-site-access/#faq">%s</a>.',
+								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected.', 'restricted-site-access' ),
+								__( 'Learn more', 'restricted-site-access' )
+							)
+						); ?>
+					</strong>
 				</p>
 			</div>
 			<?php
