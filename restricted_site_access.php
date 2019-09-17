@@ -786,7 +786,7 @@ class Restricted_Site_Access {
 							sprintf(
 								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#faq */
 								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.' ),
-								'https://wordpress.org/plugins/restricted-site-access/#faq'
+								__( 'https://wordpress.org/plugins/restricted-site-access/#faq', 'restricted-site-access' )
 							)
 						);
 					?>
