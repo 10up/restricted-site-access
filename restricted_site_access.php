@@ -785,7 +785,7 @@ class Restricted_Site_Access {
 						echo wp_kses_post(
 							sprintf(
 								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#faq */
-								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.' ),
+								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
 								__( 'https://wordpress.org/plugins/restricted-site-access/#faq', 'restricted-site-access' )
 							)
 						);
