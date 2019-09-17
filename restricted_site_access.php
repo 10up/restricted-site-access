@@ -483,7 +483,7 @@ class Restricted_Site_Access {
 
 		foreach ( $blogs as $blog ) {
 			$output .= '<tr>';
-			$output .= '<td>' . esc_html( $blog_name ) . '</td>';
+			$output .= '<td>' . esc_html( $blog->blogname ) . '</td>';
 			$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . esc_html__( 'Visit Dashboard', 'restricted-site-access' ) . '</a> | ' .
 					'<a href="' . esc_url( get_home_url( $blog->userblog_id ) ) . '">' . esc_html__( 'View Site', 'restricted-site-access' ) . '</a></td>';
 			$output .= '</tr>';
