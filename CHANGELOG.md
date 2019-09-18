@@ -125,18 +125,18 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [1.0] - 2009-08-17
 - Initial public release
 
-[Unreleased]: https://github.com/10up/restricted-site-access/compare/master...develop
-[7.2.0]: 
-[7.1.0]: 
-[7.0.1]: 
-[7.0.0]: 
-[6.2.1]: 
-[6.2.0]:
-[6.1.0]: 
-[6.0.2]: 
-[6.0.1]: 
-[6.0]: 
-[5.1]: https://github.com/10up/restricted-site-access/compare/5.0.1...5.1
+[Unreleased]: https://github.com/10up/restricted-site-access/compare/7.2.0...HEAD
+[7.2.0]: https://github.com/10up/restricted-site-access/compare/7.1.0...7.2.0
+[7.1.0]: https://github.com/10up/restricted-site-access/compare/7.0.1...7.1.0
+[7.0.1]: https://github.com/10up/restricted-site-access/compare/7.0.0...7.0.1
+[7.0.0]: https://github.com/10up/restricted-site-access/compare/6.2.1...7.0.0
+[6.2.1]: https://github.com/10up/restricted-site-access/compare/6.2.0...6.2.1
+[6.2.0]: https://github.com/10up/restricted-site-access/compare/6.1.0...6.2.0
+[6.1.0]: https://github.com/10up/restricted-site-access/compare/6.0.2...6.1.0
+[6.0.2]: https://github.com/10up/restricted-site-access/compare/6.0.1...6.0.2
+[6.0.1]: https://github.com/10up/restricted-site-access/compare/6.0...6.0.1
+[6.0]: https://github.com/10up/restricted-site-access/compare/5.1..6.0
+[5.1]: https://github.com/10up/restricted-site-access/compare/5.0.1..5.1
 [5.0.1]: https://github.com/10up/restricted-site-access/compare/5.0...5.0.1
 [5.0]: https://github.com/10up/restricted-site-access/compare/4.0...5.0
 [4.0]: https://github.com/10up/restricted-site-access/compare/3.2.1...4.0
@@ -144,9 +144,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 [3.2]: https://github.com/10up/restricted-site-access/compare/3.1.1...3.2
 [3.1.1]: https://github.com/10up/restricted-site-access/compare/3.1...3.1.1
 [3.1]: https://github.com/10up/restricted-site-access/compare/3.0...3.1
-[3.0]: https://github.com/10up/restricted-site-access/compare/2.1...3.0
-[2.1]: https://github.com/10up/restricted-site-access/compare/2.0...2.1
-[2.0]: https://github.com/10up/restricted-site-access/compare/1.0.2...2.0
-[1.0.2]: https://github.com/10up/restricted-site-access/compare/1.0.1...1.0.2
-[1.0.1]: https://github.com/10up/restricted-site-access/compare/1.0...1.0.1
+[3.0]: https://github.com/10up/restricted-site-access/compare/2.1..3.0
+[2.1]: https://github.com/10up/restricted-site-access/compare/2.0..2.1
+[2.0]: https://github.com/10up/restricted-site-access/compare/1.0.2..2.0
+[1.0.2]: https://github.com/10up/restricted-site-access/compare/1.0.1..1.0.2
+[1.0.1]: https://github.com/10up/restricted-site-access/compare/1.0..1.0.1
 [1.0]: https://github.com/10up/restricted-site-access/releases/tag/1.0
