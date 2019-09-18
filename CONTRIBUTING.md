@@ -28,10 +28,14 @@ The `develop` branch is the development branch which means it contains the next 
 
 ## Release instructions
 
-1. Version bump: Bump the version number in `restricted_site_access.php` and `readme.txt`.
-2. Changelog: Add/update the changelog in both `readme.txt` and `CHANGELOG.md`
-3. Readme updates: Make any other readme changes as necessary. `CHANGELOG.md` and `README.md` are geared toward GitHub and `readme.txt` contains WordPress.org-specific content. The two are slightly different.
-4. Merge: Make a non-fast-forward merge from `develop` to `master` (`git checkout master && git merge --no-ff develop`).
-5. Release: Create a [new release](https://github.com/10up/restricted-site-access/releases/new), naming the tag and the release with the new version number. Paste the changelog from `CHANGELOG.md` into the body of the release and include a link to the closed issues on the milestone (e.g. `https://github.com/10up/restricted-site-access/milestone/2?closed=1`). Close the milestone.
-6. SVN: Wait for the [GitHub Action](https://github.com/10up/restricted-site-access/actions) to finish deploying to the WordPress.org repository. If all goes well, users with SVN commit access for that plugin will receive an emailed diff of changes.
+1. Starting from `develop`, cut a release branch named `release/7.2.0` for your changes.
+2. Version bump: Bump the version number in `restricted_site_access.php` and `readme.txt` if it does not already reflect the version being released.
+3. Changelog: Add/update the changelog in both `readme.txt` and `CHANGELOG.md`
+4. Check to be sure any new files/paths that are unnecessary in the production version are included in `.gitattributes`.
+5. Readme updates: Make any other readme changes as necessary. `CHANGELOG.md` and `README.md` are geared toward GitHub and `readme.txt` contains WordPress.org-specific content. The two are slightly different.
+6. Merge: Make a non-fast-forward merge from `develop` to `master` (`git checkout master && git merge --no-ff develop`).
+7. Release: Create a [new release](https://github.com/10up/restricted-site-access/releases/new), naming the tag and the release with the new version number. Paste the changelog from `CHANGELOG.md` into the body of the release and include a link to the closed issues on the milestone (e.g. `https://github.com/10up/restricted-site-access/milestone/2?closed=1`). Close the milestone.
+8. SVN: Wait for the [GitHub Action](https://github.com/10up/restricted-site-access/actions) to finish deploying to the WordPress.org repository. If all goes well, users with SVN commit access for that plugin will receive an emailed diff of changes.
+9. Edit the [7.2.0 milestone](https://github.com/10up/restricted-site-access/milestone/4) with release date (in the `Due date (optional)` field) and link to GitHub release (in the `Description` field), then close `7.2.0` milestone.
+10. If any open issues or PRs which were milestoned for `7.2.0` do not make it into the release, update their milestone to `7.3.0` or `Future Release`.
 7. Check WordPress.org: Ensure that the changes are live on https://wordpress.org/plugins/restricted-site-access/. This may take a few minutes.
