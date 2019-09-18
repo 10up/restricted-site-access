@@ -108,6 +108,20 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 
 == Changelog ==
 
+= 7.2.0 =
+**Added**
+* Confirmation of network-wide plugin disabling (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+* WP Acceptance tests (props [@dkotter](https://profiles.wordpress.org/dkotter/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+
+**Changed**
+* GitHub Actions workflow files to YAML format (props [@helen](https://profiles.wordpress.org/helen/))
+* Header and icon images (props [@jenniferbourn](https://profiles.wordpress.org/jenniferbourn/))
+* WordPress "tested up to" version to 5.2 (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+
+**Fixed**
+* Escaped HTML in page caching notice (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@aaemnnosttv](https://profiles.wordpress.org/aaemnnosttv/))
+* Multisite - Redirect loop when logging in as user with no role (props [@phyrax](https://profiles.wordpress.org/phyrax/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@roytanck](https://profiles.wordpress.org/roytanck/), [@helen](https://profiles.wordpress.org/helen/), [@rmccue](https://profiles.wordpress.org/rmccue/))
+
 = 7.1.0 =
 **Added**
 * IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.
