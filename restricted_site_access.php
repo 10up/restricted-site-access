@@ -250,11 +250,6 @@ class Restricted_Site_Access {
 
 		$blog_public = get_option( 'blog_public', 2 );
 
-		// If rsa_mode==enforce we override the rsa_options.
-		if ( RSA_IS_NETWORK && 'enforce' === $mode ) {
-			$blog_public = get_site_option( 'blog_public', 2 );
-		}
-
 		$user_check = self::user_can_access();
 
 		$checks = is_admin() || $user_check || 2 !== (int) $blog_public || ( defined( 'WP_INSTALLING' ) && isset( $_GET['key'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
