@@ -1387,7 +1387,7 @@ class Restricted_Site_Access {
 				<?php
 				printf(
 					/* translators: %s: The words 'I understand'. */
-					esc_html__( 'If you are sure about your action, please type %s to proceed.', 'restricted-site-access' ),
+					esc_html__( 'If you are absolutely sure you want to network deactivate Restricted Site Access, please type %s to proceed.', 'restricted-site-access' ),
 					sprintf(
 						/* translators: %s: The words 'I understand'. */
 						'<code>%s</code>',
