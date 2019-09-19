@@ -1381,13 +1381,13 @@ class Restricted_Site_Access {
 		}
 		?>
 		<div id="rsa-disable-dialog" class="hidden">
-			<h2><?php esc_html_e( 'Confirm network deactivation', 'restricted-site-access' ); ?></h2>
-			<p><?php esc_html_e( 'You are about to network disable the Restricted Site Access plugin making all sites on this network publicly available.', 'restricted-site-access' ); ?></p>
+			<h2><?php esc_html_e( 'Confirm Network Deactivation', 'restricted-site-access' ); ?></h2>
+			<p><?php esc_html_e( 'You are about to disable Restricted Site Access across your entire network. This may unintentionally make other sites on the network public.', 'restricted-site-access' ); ?></p>
 			<p>
 				<?php
 				printf(
 					/* translators: %s: The words 'I understand'. */
-					esc_html__( 'If you are sure about your action, please type %s to proceed.', 'restricted-site-access' ),
+					esc_html__( 'If you are absolutely sure you want to network deactivate Restricted Site Access, please type %s to proceed.', 'restricted-site-access' ),
 					sprintf(
 						/* translators: %s: The words 'I understand'. */
 						'<code>%s</code>',
