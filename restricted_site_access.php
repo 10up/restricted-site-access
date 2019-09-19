@@ -1382,7 +1382,7 @@ class Restricted_Site_Access {
 		?>
 		<div id="rsa-disable-dialog" class="hidden">
 			<h2><?php esc_html_e( 'Confirm Network Deactivation', 'restricted-site-access' ); ?></h2>
-			<p><?php esc_html_e( 'You are about to network disable the Restricted Site Access plugin making all sites on this network publicly available.', 'restricted-site-access' ); ?></p>
+			<p><?php esc_html_e( 'You are about to disable Restricted Site Access across your entire network. This may unintentionally make other sites on the network public.', 'restricted-site-access' ); ?></p>
 			<p>
 				<?php
 				printf(
