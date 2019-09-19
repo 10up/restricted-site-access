@@ -77,18 +77,7 @@
 						text: rsaAdmin.strings.confirm,
 						click: function() {
 							if ( self.isExpectedAnswer() ) {
-								$.ajax({
-									method: 'post',
-									data: {
-										nonce: rsaAdmin.nonce,
-										user: rsaAdmin.user,
-										action: 'rsa_network_disable_log'
-									},
-									url: ajaxurl
-								}).always( function() {
-									self.els.userMessage.style.border = '';
-									window.location.href = self.variables.disablingURL;
-								});
+								window.location.href = self.variables.disablingURL;
 							} else {
 								self.els.userMessage.style.border = '1px solid red';
 							}

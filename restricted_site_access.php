@@ -88,7 +88,6 @@ class Restricted_Site_Access {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
-		add_action( 'wp_ajax_rsa_network_disable', array( __CLASS__, 'ajax_network_disable_log' ) );
 		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
@@ -131,41 +130,6 @@ class Restricted_Site_Access {
 			wp_send_json_success();
 		}
 		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Ajax handler to log network deactivation events.
-	 *
-	 * @return void
-	 */
-	public static function ajax_network_disable_log() {
-		if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
-			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
-			exit;
-		}
-
-		if ( current_user_can( 'manage_network_plugins' ) ) {
-			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
-			exit;
-		}
-
-		if ( ! RSA_IS_NETWORK ) {
-			wp_send_json_error( __( 'Error: action not allowed', 'restricted-site-access' ) );
-			exit;
-		}
-
-		$time = current_time( 'timestamp' );
-
-		$all_events_option = get_option( 'rsa_disable_log', array() );
-
-		$all_events = $all_events_option ? $all_events_option : array();
-
-		$all_events[] = array(
-			'user' => get_current_user_id(),
-			'time' => $time,
-		);
-
-		update_option( 'rsa_disable_log', $all_events, false );
 	}
 
 	/**
