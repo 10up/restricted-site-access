@@ -1344,13 +1344,15 @@ class Restricted_Site_Access {
 			<p><?php esc_html_e( 'You are about to disable Restricted Site Access across your entire network. This may unintentionally make other sites on the network public.', 'restricted-site-access' ); ?></p>
 			<p>
 				<?php
-				printf(
-					/* translators: %s: The words 'I understand'. */
-					esc_html__( 'If you are absolutely sure you want to network deactivate Restricted Site Access, please type %s to proceed.', 'restricted-site-access' ),
+				echo wp_kses_post(
 					sprintf(
 						/* translators: %s: The words 'I understand'. */
-						'<code>%s</code>',
-						esc_html__( 'I understand', 'restricted-site-access' )
+						__( 'If you are absolutely sure you want to network deactivate Restricted Site Access, please type %s to proceed.', 'restricted-site-access' ),
+						sprintf(
+							/* translators: %s: The words 'I understand'. */
+							'<code>%s</code>',
+							esc_html__( 'I understand', 'restricted-site-access' )
+						)
 					)
 				);
 				?>
