@@ -412,7 +412,7 @@ class Restricted_Site_Access {
 				}
 				// Fall thru to case 3 if case 2 not handled.
 			case 3:
-				$message  = esc_html( self::$rsa_options['message'] );
+				$message  = wp_kses( self::$rsa_options['message'], self::get_allowed_message_tags() );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message  = apply_filters( 'restricted_site_access_message', $message, $wp );
 
@@ -991,8 +991,10 @@ class Restricted_Site_Access {
 		}
 
 		global $allowedtags;
-		$new_input['message'] = wp_kses( $input['message'], $allowedtags );
-
+		$new_input['message']       = wp_kses(
+			$input['message'],
+			self::get_allowed_message_tags()
+		);
 		$new_input['redirect_path'] = empty( $input['redirect_path'] ) ? 0 : 1;
 		$new_input['head_code']     = in_array( (int) $input['head_code'], array( 301, 302, 307 ), true ) ? (int) $input['head_code'] : self::$fields['head_code']['default'];
 		$new_input['redirect_url']  = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
@@ -1441,7 +1443,9 @@ class Restricted_Site_Access {
 
 	/**
 	 * Returns a list of tags allowed to be used as part of the message passed
-	 * in approach 3.
+	 * to wp_die() when approach 3 is used. The list is formed from the global
+	 * $allowedtags plus the missing items from quicktags list and a few other
+	 * general tags.
 	 *
 	 * The array is passed through a filter at return:
 	 *     'restricted_site_access_allowed_message_tags'
@@ -1452,7 +1456,7 @@ class Restricted_Site_Access {
 	 */
 	public static function get_allowed_message_tags() {
 		global $allowedtags;
-		return apply_filiters(
+		return apply_filters(
 			'restricted_site_access_allowed_message_tags',
 			array_merge_recursive(
 				$allowedtags,
