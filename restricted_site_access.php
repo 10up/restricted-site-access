@@ -1436,49 +1436,6 @@ class Restricted_Site_Access {
 
 		return $ip;
 	}
-
-	/**
-	 * Returns a list of tags allowed to be used as part of the message passed
-	 * to wp_die() when approach 3 is used. The list is formed from the global
-	 * $allowedtags plus the missing items from quicktags list and a few other
-	 * general tags.
-	 *
-	 * The array is passed through a filter at return:
-	 *     'restricted_site_access_allowed_message_tags'
-	 *
-	 * @method get_allowed_message_tags
-	 * @since  7.2.0
-	 * @return array
-	 */
-	public static function get_allowed_message_tags() {
-		global $allowedtags;
-		return apply_filters(
-			'restricted_site_access_allowed_message_tags',
-			array_merge_recursive(
-				$allowedtags,
-				array(
-					'div'  => array(
-						'class' => true,
-					),
-					'span' => array(
-						'class' => true,
-					),
-					'ins'  => array(
-						'datetime' => true,
-					),
-					'ul'   => array(
-						'class' => true,
-					),
-					'ol'   => array(
-						'class' => true,
-					),
-					'li'   => array(
-						'class' => true,
-					),
-				)
-			)
-		);
-	}
 }
 
 if ( ! defined( 'RSA_IS_NETWORK' ) ) {
