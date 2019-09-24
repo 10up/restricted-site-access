@@ -412,7 +412,7 @@ class Restricted_Site_Access {
 				}
 				// Fall thru to case 3 if case 2 not handled.
 			case 3:
-				$message  = wp_kses( self::$rsa_options['message'], self::get_allowed_message_tags() );
+				$message  = wp_kses_post( self::$rsa_options['message'] );
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message  = apply_filters( 'restricted_site_access_message', $message, $wp );
 
@@ -991,10 +991,7 @@ class Restricted_Site_Access {
 		}
 
 		global $allowedtags;
-		$new_input['message']       = wp_kses(
-			$input['message'],
-			self::get_allowed_message_tags()
-		);
+		$new_input['message']       = wp_kses( $input['message'] );
 		$new_input['redirect_path'] = empty( $input['redirect_path'] ) ? 0 : 1;
 		$new_input['head_code']     = in_array( (int) $input['head_code'], array( 301, 302, 307 ), true ) ? (int) $input['head_code'] : self::$fields['head_code']['default'];
 		$new_input['redirect_url']  = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
