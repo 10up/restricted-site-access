@@ -990,7 +990,6 @@ class Restricted_Site_Access {
 			$new_input['approach'] = self::$fields['approach']['default'];
 		}
 
-		global $allowedtags;
 		$new_input['message']       = wp_kses( $input['message'] );
 		$new_input['redirect_path'] = empty( $input['redirect_path'] ) ? 0 : 1;
 		$new_input['head_code']     = in_array( (int) $input['head_code'], array( 301, 302, 307 ), true ) ? (int) $input['head_code'] : self::$fields['head_code']['default'];
