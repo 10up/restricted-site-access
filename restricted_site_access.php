@@ -4,7 +4,7 @@
  * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
  * Version: 7.1.0
- * Author: Jake Goldman, 10up, Oomph
+l* Author: Jake Goldman, 10up, Oomph
  * Author URI: http://10up.com
  * License: GPLv2 or later
  * Text Domain: restricted-site-access
@@ -213,7 +213,7 @@ class Restricted_Site_Access {
 	/**
 	 * Populate the option with defaults.
 	 *
-	 * @param boolean $network Whther this is a network install. Default false.
+	 * @param boolean $network Whether this is a network install. Default false.
 	 */
 	public static function get_options( $network = false ) {
 		$options = array();
@@ -327,7 +327,9 @@ class Restricted_Site_Access {
 	 * @return array              List of URL and code, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
-		self::$rsa_options = self::get_options();
+		if ( is_null( self::$rsa_options ) ) {
+			self::$rsa_options = self::get_options();
+		}
 		$is_restricted     = self::is_restricted();
 
 		// Check to see if it's _not_ restricted.
@@ -1427,6 +1429,83 @@ class Restricted_Site_Access {
 		}
 
 		return $ip;
+	}
+
+	/**
+	 * Add ips programmatically
+	 *
+	 * @param  array $ip_list
+	 */
+	public static function add_ips( $ips ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+		$ips = (array) $ips;
+		$allowed_ips = (array) self::$rsa_options['allowed'];
+		foreach( $ips as $ip ) {
+			if ( ! in_array( $ip, $allowed_ips ) && self::is_ip( $ip ) ) {
+				$allowed_ips[] = $ip;
+			}
+		}
+
+
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
+			self::$rsa_options['allowed'] = $allowed_ips;
+			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+		}
+	}
+
+	/**
+	 * Remove ips programmatically
+	 *
+	 * @param  array $ip_list
+	 */
+	public static function remove_ips( $ips ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+		$ips = (array) $ips;
+		$allowed_ips = (array) self::$rsa_options['allowed'];
+		$allowed_ips = array_diff( $allowed_ips, $ips );
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
+			self::$rsa_options['allowed'] = $allowed_ips;
+			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+		}
+	}
+
+	/**
+	 * Set ips programmatically
+	 *
+	 * @param  array $ip_list
+	 */
+	public static function set_ips( $ips ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+		$ips = (array) $ips;
+		$allowed_ips = array();
+		foreach( $ips as $ip ) {
+			if ( ! in_array( $ip, $allowed_ips ) && self::is_ip( $ip ) ) {
+				$allowed_ips[] = $ip;
+			}
+		}
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
+			self::$rsa_options['allowed'] = $allowed_ips;
+			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+		}
+
 	}
 }
 
