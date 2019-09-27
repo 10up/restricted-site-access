@@ -412,7 +412,7 @@ class Restricted_Site_Access {
 				}
 				// Fall thru to case 3 if case 2 not handled.
 			case 3:
-				$message  = wp_kses_post( self::$rsa_options['message'] );
+				$message  = self::$rsa_options['message'];
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message  = apply_filters( 'restricted_site_access_message', $message, $wp );
 
