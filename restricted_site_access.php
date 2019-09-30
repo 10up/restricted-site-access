@@ -1433,8 +1433,14 @@ class Restricted_Site_Access {
 
 	/**
 	 * Add ips programmatically
+     *
+     * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
+     * '192.168.0.1'
+     * array( '192.168.0.1', '192.168.0.2' )
+     * or labels can be used as array indices
+     * array( 'labelone' => '192.168.0.1', 'labeltwo' => '192.168.0.2' )
 	 *
-	 * @param  array $ip_list
+	 * @param  string|array $ip_list
 	 */
 	public static function add_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
@@ -1466,8 +1472,12 @@ class Restricted_Site_Access {
 
 	/**
 	 * Remove ips programmatically
+     *
+     * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
+     * '192.168.0.1'
+     * array( '192.168.0.1', '192.168.0.2' )
 	 *
-	 * @param  array $ip_list
+	 * @param  string|array $ip_list
 	 */
 	public static function remove_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
@@ -1498,8 +1508,9 @@ class Restricted_Site_Access {
 
 	/**
 	 * Set ips programmatically
+     * Same syntax as add_ips(), but this replaces existing IPs and comments.
 	 *
-	 * @param  array $ip_list
+	 * @param  string|array $ip_list
 	 */
 	public static function set_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
