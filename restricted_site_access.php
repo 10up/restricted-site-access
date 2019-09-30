@@ -1445,16 +1445,21 @@ class Restricted_Site_Access {
 		}
 		$ips = (array) $ips;
 		$allowed_ips = (array) self::$rsa_options['allowed'];
-		foreach( $ips as $ip ) {
+		$comments = (array) self::$rsa_options['comment'];
+		$i = 0;
+		foreach( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
+				$comments[] = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
+			$i++;
 		}
 
 
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
 			self::$rsa_options['allowed'] = $allowed_ips;
+			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
 	}
@@ -1471,12 +1476,22 @@ class Restricted_Site_Access {
 			}
 			self::$rsa_options = self::get_options();
 		}
+
 		$ips = (array) $ips;
 		$allowed_ips = (array) self::$rsa_options['allowed'];
-		$allowed_ips = array_diff( $allowed_ips, $ips );
+		$comments = (array) self::$rsa_options['comment'];
+		$found_ips = array_intersect( $allowed_ips, $ips );
+		foreach( array_keys( $found_ips ) as $found_ip_key ) {
+			unset( $comments[ $found_ip_key + 1 ] ); // Workaround for #103 off by one on comments
+			unset( $allowed_ips[ $found_ip_key ] );
+		}
+		$comments = array_values( $comments );
+		$allowed_ips = array_values( $allowed_ips );
 
-		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips || self::$rsa_options['comment'] !== $comments ) {
 			self::$rsa_options['allowed'] = $allowed_ips;
+			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
 	}
@@ -1495,14 +1510,19 @@ class Restricted_Site_Access {
 		}
 		$ips = (array) $ips;
 		$allowed_ips = array();
-		foreach( $ips as $ip ) {
+		$comments = array( '' ); // Workaround for https://github.com/10up/restricted-site-access/issues/103
+		$i = 0;
+		foreach( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
+				$comments[] = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
+			$i++;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
 			self::$rsa_options['allowed'] = $allowed_ips;
+			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
 
