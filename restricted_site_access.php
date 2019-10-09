@@ -412,7 +412,7 @@ class Restricted_Site_Access {
 				}
 				// Fall thru to case 3 if case 2 not handled.
 			case 3:
-				$message  = esc_html( self::$rsa_options['message'] );
+				$message  = self::$rsa_options['message'];
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message  = apply_filters( 'restricted_site_access_message', $message, $wp );
 
@@ -990,9 +990,7 @@ class Restricted_Site_Access {
 			$new_input['approach'] = self::$fields['approach']['default'];
 		}
 
-		global $allowedtags;
-		$new_input['message'] = wp_kses( $input['message'], $allowedtags );
-
+		$new_input['message']       = wp_kses_post( $input['message'] );
 		$new_input['redirect_path'] = empty( $input['redirect_path'] ) ? 0 : 1;
 		$new_input['head_code']     = in_array( (int) $input['head_code'], array( 301, 302, 307 ), true ) ? (int) $input['head_code'] : self::$fields['head_code']['default'];
 		$new_input['redirect_url']  = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
@@ -1104,6 +1102,10 @@ class Restricted_Site_Access {
 			self::$rsa_options['message'] = esc_html__( 'Access to this site is restricted.', 'restricted-site-access' );
 		}
 
+		/*
+		 * Removed the 'more' button from quicktags in 7.2.0 and added a filter:
+		 *     'restricted_site_access_message_editor_quicktags'
+		 */
 		wp_editor(
 			self::$rsa_options['message'],
 			'rsa_message',
@@ -1112,6 +1114,12 @@ class Restricted_Site_Access {
 				'textarea_name' => 'rsa_options[message]',
 				'textarea_rows' => 4,
 				'tinymce'       => false,
+				'quicktags'     => apply_filters(
+					'restricted_site_access_message_editor_quicktags',
+					array(
+						'buttons' => 'strong,em,link,block,del,ins,img,ol,ul,li,code,close', // this is default list minus the 'more' tag button.
+					)
+				),
 			)
 		);
 	}
