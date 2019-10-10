@@ -327,9 +327,7 @@ class Restricted_Site_Access {
 	 * @return array              List of URL and code, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
-		if ( is_null( self::$rsa_options ) ) {
-			self::$rsa_options = self::get_options();
-		}
+		self::$rsa_options = self::get_options();
 		$is_restricted     = self::is_restricted();
 
 		// Check to see if it's _not_ restricted.
