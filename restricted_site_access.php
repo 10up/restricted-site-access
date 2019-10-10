@@ -1438,7 +1438,7 @@ class Restricted_Site_Access {
 	 * or labels can be used as array indices
 	 * array( 'labelone' => '192.168.0.1', 'labeltwo' => '192.168.0.2' )
 	 *
-	 * @param  string|array $ip_list
+	 * @param  string|array $ips list of IPs to add.
 	 */
 	public static function add_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
@@ -1447,19 +1447,17 @@ class Restricted_Site_Access {
 			}
 			self::$rsa_options = self::get_options();
 		}
-		$ips = (array) $ips;
+		$ips         = (array) $ips;
 		$allowed_ips = isset( $rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
-		$comments = isset( $rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
-		$i = 0;
-		foreach( $ips as $label => $ip ) {
-			if ( ! in_array( $ip, $allowed_ips ) && self::is_ip( $ip ) ) {
+		$comments    = isset( $rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+		$i           = 0;
+		foreach ( $ips as $label => $ip ) {
+			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
-				$comments[] = $i !== $label ? sanitize_text_field( $label ) : '';
+				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
 			$i++;
 		}
-
-
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
 			self::$rsa_options['allowed'] = $allowed_ips;
@@ -1475,7 +1473,7 @@ class Restricted_Site_Access {
 	 * '192.168.0.1'
 	 * array( '192.168.0.1', '192.168.0.2' )
 	 *
-	 * @param  string|array $ip_list
+	 * @param  string|array $ips list of IPs to remove.
 	 */
 	public static function remove_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
@@ -1485,17 +1483,16 @@ class Restricted_Site_Access {
 		}
 		self::$rsa_options = self::get_options();
 
-		$ips = (array) $ips;
+		$ips         = (array) $ips;
 		$allowed_ips = (array) self::$rsa_options['allowed'];
-		$comments = (array) self::$rsa_options['comment'];
-		$found_ips = array_intersect( $allowed_ips, $ips );
-		foreach( array_keys( $found_ips ) as $found_ip_key ) {
-			unset( $comments[ $found_ip_key + 1 ] ); // Workaround for #103 off by one on comments
+		$comments    = (array) self::$rsa_options['comment'];
+		$found_ips   = array_intersect( $allowed_ips, $ips );
+		foreach ( array_keys( $found_ips ) as $found_ip_key ) {
+			unset( $comments[ $found_ip_key + 1 ] ); // Workaround for #103 off by one on comments.
 			unset( $allowed_ips[ $found_ip_key ] );
 		}
-		$comments = array_values( $comments );
+		$comments    = array_values( $comments );
 		$allowed_ips = array_values( $allowed_ips );
-
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips || self::$rsa_options['comment'] !== $comments ) {
 			self::$rsa_options['allowed'] = $allowed_ips;
@@ -1508,7 +1505,7 @@ class Restricted_Site_Access {
 	 * Set ips programmatically
 	 * Same syntax as add_ips(), but this replaces existing IPs and comments.
 	 *
-	 * @param  string|array $ip_list
+	 * @param  string|array $ips list of IPs to set as default IPs.
 	 */
 	public static function set_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
@@ -1517,14 +1514,14 @@ class Restricted_Site_Access {
 			}
 			self::$rsa_options = self::get_options();
 		}
-		$ips = (array) $ips;
+		$ips         = (array) $ips;
 		$allowed_ips = array();
-		$comments = array( '' ); // Workaround for https://github.com/10up/restricted-site-access/issues/103
-		$i = 0;
-		foreach( $ips as $label => $ip ) {
-			if ( ! in_array( $ip, $allowed_ips ) && self::is_ip( $ip ) ) {
+		$comments    = array( '' ); // Workaround for https://github.com/10up/restricted-site-access/issues/103.
+		$i           = 0;
+		foreach ( $ips as $label => $ip ) {
+			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
-				$comments[] = $i !== $label ? sanitize_text_field( $label ) : '';
+				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
 			$i++;
 		}
