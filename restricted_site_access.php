@@ -1061,9 +1061,17 @@ class Restricted_Site_Access {
 			<?php
 			$ips      = (array) self::$rsa_options['allowed'];
 			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+
+			// Prior to version 7.2.0, the data stored for comments included an extra blank entry, so the comments array
+			// always contained one extra (empty) entry. This was fixed and the following code handles loading data from
+			// previous versions - if the ip and comment counts don't match, we remove the first comment.
+			if ( ( 1 + count( $ips ) ) === ( count( $comments ) ) ) {
+				array_shift( $comments );
+			}
+
 			foreach ( $ips as $key => $ip ) {
-				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+			if ( ! empty( $ip ) ) {
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
 			}
 			?>
