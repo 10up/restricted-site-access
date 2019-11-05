@@ -1006,6 +1006,11 @@ class Restricted_Site_Access {
 		}
 		$new_input['comment'] = array();
 		if ( ! empty( $input['comment'] ) && is_array( $input['comment'] ) ) {
+
+			// The $input['comment'] array always contains an extra element due to the hidden template used to add
+			// new entries which contains a comment dom element.
+			array_shift( $input['comment'] );
+
 			foreach ( $input['comment'] as $comment ) {
 				if ( is_scalar( $comment ) ) {
 					$new_input['comment'][] = sanitize_text_field( $comment );
