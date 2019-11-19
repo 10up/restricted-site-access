@@ -1070,7 +1070,7 @@ class Restricted_Site_Access {
 			}
 
 			foreach ( $ips as $key => $ip ) {
-			if ( ! empty( $ip ) ) {
+				if ( ! empty( $ip ) ) {
 					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
 			}
