@@ -1000,7 +1000,7 @@ class Restricted_Site_Access {
 		if ( ! empty( $input['allowed'] ) && is_array( $input['allowed'] ) ) {
 			foreach ( $input['allowed'] as $count => $ip_address ) {
 				if ( self::is_ip( $ip_address ) ) {
-					// Ensure comments are properly matched up to their IPs
+					// Ensure comments are properly matched up to their IPs.
 					$ips_comments[ $ip_address ] = isset( $input['comment'][ $count ] ) ? sanitize_text_field( $input['comment'][ $count ] ) : '';
 				}
 			}
