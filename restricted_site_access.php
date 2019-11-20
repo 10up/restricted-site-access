@@ -996,27 +996,18 @@ class Restricted_Site_Access {
 		$new_input['redirect_url']  = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
 		$new_input['page']          = empty( $input['page'] ) ? 0 : (int) $input['page'];
 
-		$new_input['allowed'] = array();
+		$ips_comments = array();
 		if ( ! empty( $input['allowed'] ) && is_array( $input['allowed'] ) ) {
-			foreach ( $input['allowed'] as $ip_address ) {
+			foreach ( $input['allowed'] as $count => $ip_address ) {
 				if ( self::is_ip( $ip_address ) ) {
-					$new_input['allowed'][] = $ip_address;
+					// Ensure comments are properly matched up to their IPs
+					$ips_comments[ $ip_address ] = isset( $input['comment'][ $count ] ) ? sanitize_text_field( $input['comment'][ $count ] ) : '';
 				}
 			}
 		}
-		$new_input['comment'] = array();
-		if ( ! empty( $input['comment'] ) && is_array( $input['comment'] ) ) {
 
-			// The $input['comment'] array always contains an extra element due to the hidden template used to add
-			// new entries which contains a comment dom element.
-			array_shift( $input['comment'] );
-
-			foreach ( $input['comment'] as $comment ) {
-				if ( is_scalar( $comment ) ) {
-					$new_input['comment'][] = sanitize_text_field( $comment );
-				}
-			}
-		}
+		$new_input['allowed'] = array_keys( $ips_comments );
+		$new_input['comment'] = array_values( $ips_comments );
 
 		return $new_input;
 	}
