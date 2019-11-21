@@ -996,22 +996,18 @@ class Restricted_Site_Access {
 		$new_input['redirect_url']  = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
 		$new_input['page']          = empty( $input['page'] ) ? 0 : (int) $input['page'];
 
-		$new_input['allowed'] = array();
+		$ips_comments = array();
 		if ( ! empty( $input['allowed'] ) && is_array( $input['allowed'] ) ) {
-			foreach ( $input['allowed'] as $ip_address ) {
+			foreach ( $input['allowed'] as $count => $ip_address ) {
 				if ( self::is_ip( $ip_address ) ) {
-					$new_input['allowed'][] = $ip_address;
+					// Ensure comments are properly matched up to their IPs.
+					$ips_comments[ $ip_address ] = isset( $input['comment'][ $count ] ) ? sanitize_text_field( $input['comment'][ $count ] ) : '';
 				}
 			}
 		}
-		$new_input['comment'] = array();
-		if ( ! empty( $input['comment'] ) && is_array( $input['comment'] ) ) {
-			foreach ( $input['comment'] as $comment ) {
-				if ( is_scalar( $comment ) ) {
-					$new_input['comment'][] = sanitize_text_field( $comment );
-				}
-			}
-		}
+
+		$new_input['allowed'] = array_keys( $ips_comments );
+		$new_input['comment'] = array_values( $ips_comments );
 
 		return $new_input;
 	}
@@ -1056,9 +1052,17 @@ class Restricted_Site_Access {
 			<?php
 			$ips      = (array) self::$rsa_options['allowed'];
 			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+
+			// Prior to version 7.2.0, the data stored for comments included an extra blank entry, so the comments array
+			// always contained one extra (empty) entry. This was fixed and the following code handles loading data from
+			// previous versions - if the ip and comment counts don't match, we remove the first comment.
+			if ( ( 1 + count( $ips ) ) === ( count( $comments ) ) ) {
+				array_shift( $comments );
+			}
+
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
 			}
 			?>
