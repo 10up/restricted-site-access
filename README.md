@@ -1,7 +1,8 @@
 # Restricted Site Access
+
 > Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
-[![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access)
+[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest)  ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v5.2%20tested-success.svg) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
 
 ## Features
 
@@ -112,13 +113,13 @@ Make sure you add it before the `/* That's all, stop editing! Happy blogging. */
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
+## Support Level
+
+**Active:** 10up is actively working on this, and we expect to continue work for the foreseeable future including keeping tested up to the most recent version of WordPress.  Bug reports, feature requests, questions, and pull requests are welcome.
+
 ## Contributing
 
 Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/blob/develop/CODE_OF_CONDUCT.md) for details on our code of conduct and [CONTRIBUTING.md](https://github.com/10up/restricted-site-access/blob/develop/CONTRIBUTING.md) for details on the process for submitting pull requests to us.
-
-## License
-
-Restricted Site Access utilizes the [GNU General Public License v2.0 (or later)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md).
 
 ## Like what you see?
 
