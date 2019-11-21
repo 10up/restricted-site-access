@@ -73,7 +73,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$data = $wp_scripts->get_data( 'rsa-admin', 'data' );
 
-		$this->assertContains( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ) . '"}', $data );
+		$this->assertContains( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ), $data );
 	}
 
 	public function test_load_options_page() {

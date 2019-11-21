@@ -88,6 +88,8 @@ class Restricted_Site_Access {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
+		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
+
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 	}
@@ -726,7 +728,7 @@ class Restricted_Site_Access {
 	 * Enqueue wp-admin scripts.
 	 */
 	public static function enqueue_admin_script() {
-		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js';
+		$current_screen = get_current_screen();
 
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
@@ -734,7 +736,7 @@ class Restricted_Site_Access {
 		wp_enqueue_script(
 			'rsa-admin',
 			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
-			array( 'jquery' ),
+			array( 'jquery', 'jquery-ui-dialog' ),
 			RSA_VERSION,
 			true
 		);
@@ -743,8 +745,21 @@ class Restricted_Site_Access {
 			'rsa-admin',
 			'rsaAdmin',
 			array(
-				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
+				'isNetworkWidePluginsPage' => $current_screen && 'plugins-network' === $current_screen->id,
+				'strings'                  => array(
+					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
+					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
+					'message' => esc_html__( 'I understand', 'restricted-site-access' ),
+				),
 			)
+		);
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
+		wp_enqueue_style(
+			'rsa-admin',
+			plugin_dir_url( __FILE__ ) . 'assets/css/admin.css',
+			array(),
+			RSA_VERSION
 		);
 	}
 
@@ -1381,6 +1396,43 @@ class Restricted_Site_Access {
 
 		return false;
 
+	}
+
+	/**
+	 * Dialog markup to warn network-wide RSA disable
+	 *
+	 * @return void
+	 */
+	public static function admin_footer() {
+		$current_screen = get_current_screen();
+
+		if ( 'plugins-network' !== $current_screen->id ) {
+			return;
+		}
+		?>
+		<div id="rsa-disable-dialog" class="hidden">
+			<h2><?php esc_html_e( 'Confirm Network Deactivation', 'restricted-site-access' ); ?></h2>
+			<p><?php esc_html_e( 'You are about to disable Restricted Site Access across your entire network. This may unintentionally make other sites on the network public.', 'restricted-site-access' ); ?></p>
+			<p>
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						/* translators: %s: The words 'I understand'. */
+						__( 'If you are absolutely sure you want to network deactivate Restricted Site Access, please type %s to proceed.', 'restricted-site-access' ),
+						sprintf(
+							/* translators: %s: The words 'I understand'. */
+							'<code>%s</code>',
+							esc_html__( 'I understand', 'restricted-site-access' )
+						)
+					)
+				);
+				?>
+			</p>
+			<p class="rsa-user-message">
+				<input type="text" id="rsa-user-message">
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
