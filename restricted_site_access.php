@@ -1488,7 +1488,7 @@ class Restricted_Site_Access {
 		$comments    = (array) self::$rsa_options['comment'];
 		$found_ips   = array_intersect( $allowed_ips, $ips );
 		foreach ( array_keys( $found_ips ) as $found_ip_key ) {
-			unset( $comments[ $found_ip_key + 1 ] ); // Workaround for #103 off by one on comments.
+			unset( $comments[ $found_ip_key ] );
 			unset( $allowed_ips[ $found_ip_key ] );
 		}
 		$comments    = array_values( $comments );
@@ -1516,7 +1516,7 @@ class Restricted_Site_Access {
 		}
 		$ips         = (array) $ips;
 		$allowed_ips = array();
-		$comments    = array( '' ); // Workaround for https://github.com/10up/restricted-site-access/issues/103.
+		$comments    = array();
 		$i           = 0;
 		foreach ( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
