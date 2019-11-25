@@ -1,10 +1,10 @@
 === Restricted Site Access ===
 Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
-Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
+Donate link: httsp://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 4.6
 Tested up to: 5.2
-Stable tag: 7.1.0
+Stable tag: 7.2.0
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
