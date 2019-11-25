@@ -109,33 +109,23 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 == Changelog ==
 
 = 7.2.0 =
-**Added**
-* Confirmation of network-wide plugin disabling (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
-* WP Acceptance tests (props [@dkotter](https://profiles.wordpress.org/dkotter/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
-
-**Changed**
-* GitHub Actions workflow files to YAML format (props [@helen](https://profiles.wordpress.org/helen/))
-* Header and icon images (props [@jenniferbourn](https://profiles.wordpress.org/jenniferbourn/))
-* WordPress "tested up to" version to 5.2 (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
-
-**Fixed**
-* Escaped HTML in page caching notice (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@aaemnnosttv](https://profiles.wordpress.org/aaemnnosttv/))
-* Multisite - Redirect loop when logging in as user with no role (props [@phyrax](https://profiles.wordpress.org/phyrax/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@roytanck](https://profiles.wordpress.org/roytanck/), [@helen](https://profiles.wordpress.org/helen/), [@rmccue](https://profiles.wordpress.org/rmccue/))
+* Added: Confirmation of network-wide plugin disabling (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+* Added: WP Acceptance tests (props [@dkotter](https://profiles.wordpress.org/dkotter/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+* Changed: GitHub Actions workflow files to YAML format (props [@helen](https://profiles.wordpress.org/helen/))
+* Changed: Header and icon images (props [@jenniferbourn](https://profiles.wordpress.org/jenniferbourn/))
+* Changed: WordPress "tested up to" version to 5.2 (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+* Fixed: Escaped HTML in page caching notice (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@aaemnnosttv](https://profiles.wordpress.org/aaemnnosttv/))
+* Fixed: Multisite - Redirect loop when logging in as user with no role (props [@phyrax](https://profiles.wordpress.org/phyrax/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@roytanck](https://profiles.wordpress.org/roytanck/), [@helen](https://profiles.wordpress.org/helen/), [@rmccue](https://profiles.wordpress.org/rmccue/))
 
 = 7.1.0 =
-**Added**
-* IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.
-* Add constants to force enable/disable restrictions. Set `RSA_FORCE_RESTRICTION` to `true` to force restriction or `RSA_FORBID_RESTRICTION` to disable restriction. `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
-
-**Fixed**
-* Disable individual site settings when network enforced mode is on to avoid confusion about why your settings are not being respected.
-* Correctly load admin JS.
-* Improve coding standards across plugin and introduce continuous integration linting against the WordPress coding standards. Update code to VIP Go coding standards.
-
-**Developers**
-* Add unit tests accross plugin. Note that when the `WP_TESTS_DOMAIN` constant is set, plugin redirects are disabled. Only set this constant when running the tests.
-* Deploy plugin from GitHub to WordPress.org using GitHub Actions.
-* Add various GitHub community files.
+* Added: IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.
+* Added: Add constants to force enable/disable restrictions. Set `RSA_FORCE_RESTRICTION` to `true` to force restriction or `RSA_FORBID_RESTRICTION` to disable restriction. `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+* Fixed: Disable individual site settings when network enforced mode is on to avoid confusion about why your settings are not being respected.
+* Fixed: Correctly load admin JS.
+* Fixed: Improve coding standards across plugin and introduce continuous integration linting against the WordPress coding standards. Update code to VIP Go coding standards.
+* Developers: Add unit tests accross plugin. Note that when the `WP_TESTS_DOMAIN` constant is set, plugin redirects are disabled. Only set this constant when running the tests.
+* Developers: Deploy plugin from GitHub to WordPress.org using GitHub Actions.
+* Developers: Add various GitHub community files.
 
 = 7.0.1 =
 * Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.
