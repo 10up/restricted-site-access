@@ -3,7 +3,7 @@ Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
 Donate link: https://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 4.6
-Tested up to: 5.2
+Tested up to: 5.3
 Stable tag: 7.2.0
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
@@ -109,13 +109,10 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 == Changelog ==
 
 = 7.2.0 =
-* Added: Confirmation of network-wide plugin disabling (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
-* Added: WP Acceptance tests (props [@dkotter](https://profiles.wordpress.org/dkotter/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
-* Changed: GitHub Actions workflow files to YAML format (props [@helen](https://profiles.wordpress.org/helen/))
-* Changed: Header and icon images (props [@jenniferbourn](https://profiles.wordpress.org/jenniferbourn/))
-* Changed: WordPress "tested up to" version to 5.2 (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
-* Fixed: Escaped HTML in page caching notice (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@aaemnnosttv](https://profiles.wordpress.org/aaemnnosttv/))
-* Fixed: Multisite - Redirect loop when logging in as user with no role (props [@phyrax](https://profiles.wordpress.org/phyrax/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@roytanck](https://profiles.wordpress.org/roytanck/), [@helen](https://profiles.wordpress.org/helen/), [@rmccue](https://profiles.wordpress.org/rmccue/))
+* **Added:** Warn and confirm before network disabling the plugin (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+* **Fixed:** Ensure comments associated with IPs stay associated correctly (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@ivankk](https://profiles.wordpress.org/ivankk/), [@helen](https://profiles.wordpress.org/helen/))
+* **Fixed:** Don't show escaped HTML in page caching notice (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@aaemnnosttv](https://profiles.wordpress.org/aaemnnosttv/))
+* **Fixed:** Multisite: Avoid a redirect loop when logging in as user with no role (props [@phyrax](https://profiles.wordpress.org/phyrax/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@roytanck](https://profiles.wordpress.org/roytanck/), [@helen](https://profiles.wordpress.org/helen/), [@rmccue](https://profiles.wordpress.org/rmccue/))
 
 = 7.1.0 =
 * Added: IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.

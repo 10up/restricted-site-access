@@ -4,19 +4,20 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased]
 
-## [7.2.0] - TBD
+## [7.2.0] - 2019-11-27
 ### Added
-- Confirmation of network-wide plugin disabling (props [@pereirinha](https://github.com/pereirinha), [@adamsilverstein](https://github.com/adamsilverstein) via [#29](https://github.com/10up/restricted-site-access/pull/29))
-- WP Acceptance tests (props [@dkotter](https://github.com/dkotter), [@adamsilverstein](https://github.com/adamsilverstein) via [#86](https://github.com/10up/restricted-site-access/pull/86))
+- Warn and confirm before network disabling the plugin (props [@pereirinha](https://github.com/pereirinha), [@adamsilverstein](https://github.com/adamsilverstein) via [#29](https://github.com/10up/restricted-site-access/pull/29))
+- WP Acceptance integration tests (props [@dkotter](https://github.com/dkotter), [@adamsilverstein](https://github.com/adamsilverstein) via [#86](https://github.com/10up/restricted-site-access/pull/86))
+
+### Fixed
+- Ensure comments associated with IPs stay associated correctly (props [@adamsilverstein](https://github.com/adamsilverstein), [@ivankruchkoff](https://github.com/ivankruchkoff), [@helen](https://github.com/helen) via [#106](https://github.com/10up/restricted-site-access/pull/106))
+- Don't show escaped HTML in page caching notice (props [@adamsilverstein](https://github.com/adamsilverstein), [@aaemnnosttv](https://github.com/aaemnnosttv) via [#99](https://github.com/10up/restricted-site-access/pull/99))
+- Multisite: Avoid a redirect loop when logging in as user with no role (props [@JayWood](https://github.com/JayWood), [@adamsilverstein](https://github.com/adamsilverstein), [@roytanck](https://github.com/roytanck), [@helen](https://github.com/helen), [@rmccue](https://github.com/rmccue) via [#98](https://github.com/10up/restricted-site-access/pull/98))
 
 ### Changed
 - GitHub Actions workflow files to YAML format (props [@helen](https://github.com/helen) via [#100](https://github.com/10up/restricted-site-access/pull/100))
 - Header and icon images (props [@jenniferbourn](https://profiles.wordpress.org/jenniferbourn/) via [#91](https://github.com/10up/restricted-site-access/pull/91))
-- WordPress "tested up to" version to 5.2 (props [@adamsilverstein](https://github.com/adamsilverstein) via [#84](https://github.com/10up/restricted-site-access/pull/84))
-
-### Fixed
-- Escaped HTML in page caching notice (props [@adamsilverstein](https://github.com/adamsilverstein), [@aaemnnosttv](https://github.com/aaemnnosttv) via [#99](https://github.com/10up/restricted-site-access/pull/99))
-- Multisite - Redirect loop when logging in as user with no role (props [@JayWood](https://github.com/JayWood), [@adamsilverstein](https://github.com/adamsilverstein), [@roytanck](https://github.com/roytanck), [@helen](https://github.com/helen), [@rmccue](https://github.com/rmccue) via [#98](https://github.com/10up/restricted-site-access/pull/98))
+- Bump WordPress "tested up to" version (props [@adamsilverstein](https://github.com/adamsilverstein) via [#84](https://github.com/10up/restricted-site-access/pull/84))
 
 ## [7.1.0] - 2019-04-11
 ### Added
