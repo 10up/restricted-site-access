@@ -1,10 +1,10 @@
 === Restricted Site Access ===
 Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
-Donate link: http://10up.com/plugins/restricted-site-access-wordpress/
+Donate link: https://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 4.6
-Tested up to: 5.2
-Stable tag: 7.1.0
+Tested up to: 5.3
+Stable tag: 7.2.0
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
@@ -108,20 +108,21 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 
 == Changelog ==
 
+= 7.2.0 =
+* **Added:** Warn and confirm before network disabling the plugin (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
+* **Fixed:** Ensure comments associated with IPs stay associated correctly (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@ivankk](https://profiles.wordpress.org/ivankk/), [@helen](https://profiles.wordpress.org/helen/))
+* **Fixed:** Don't show escaped HTML in page caching notice (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@aaemnnosttv](https://profiles.wordpress.org/aaemnnosttv/))
+* **Fixed:** Multisite: Avoid a redirect loop when logging in as user with no role (props [@phyrax](https://profiles.wordpress.org/phyrax/), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@roytanck](https://profiles.wordpress.org/roytanck/), [@helen](https://profiles.wordpress.org/helen/), [@rmccue](https://profiles.wordpress.org/rmccue/))
+
 = 7.1.0 =
-**Added**
-* IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.
-* Add constants to force enable/disable restrictions. Set `RSA_FORCE_RESTRICTION` to `true` to force restriction or `RSA_FORBID_RESTRICTION` to disable restriction. `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
-
-**Fixed**
-* Disable individual site settings when network enforced mode is on to avoid confusion about why your settings are not being respected.
-* Correctly load admin JS.
-* Improve coding standards across plugin and introduce continuous integration linting against the WordPress coding standards. Update code to VIP Go coding standards.
-
-**Developers**
-* Add unit tests accross plugin. Note that when the `WP_TESTS_DOMAIN` constant is set, plugin redirects are disabled. Only set this constant when running the tests.
-* Deploy plugin from GitHub to WordPress.org using GitHub Actions.
-* Add various GitHub community files.
+* Added: IP whitelist: Add a Comment field next to each IP address to help identify IP addresses added to the whitelist.
+* Added: Add constants to force enable/disable restrictions. Set `RSA_FORCE_RESTRICTION` to `true` to force restriction or `RSA_FORBID_RESTRICTION` to disable restriction. `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+* Fixed: Disable individual site settings when network enforced mode is on to avoid confusion about why your settings are not being respected.
+* Fixed: Correctly load admin JS.
+* Fixed: Improve coding standards across plugin and introduce continuous integration linting against the WordPress coding standards. Update code to VIP Go coding standards.
+* Developers: Add unit tests accross plugin. Note that when the `WP_TESTS_DOMAIN` constant is set, plugin redirects are disabled. Only set this constant when running the tests.
+* Developers: Deploy plugin from GitHub to WordPress.org using GitHub Actions.
+* Developers: Add various GitHub community files.
 
 = 7.0.1 =
 * Bug fix: Avoid redirect loop when the unrestricted page is set to be the static front page.

@@ -11,9 +11,12 @@
 /composer.json export-ignore
 /composer.lock export-ignore
 /CONTRIBUTING.md export-ignore
+/CREDITS.md export-ignore
 /Gruntfile.js export-ignore
 /LICENSE.md export-ignore
 /package.json export-ignore
 /package-lock.json export-ignore
 /phpunit.xml export-ignore
 /README.md export-ignore
+/run-wpacceptance.sh export-ignore
+/wpacceptance.json export-ignore
