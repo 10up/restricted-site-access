@@ -1,16 +1,16 @@
 <?php // phpcs:disable WordPress.Files.FileName
 /**
  * Plugin Name: Restricted Site Access
- * Plugin URI: http://10up.com/plugins/restricted-site-access-wordpress/
+ * Plugin URI: https://10up.com/plugins/restricted-site-access-wordpress/
  * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 7.1.0
+ * Version: 7.2.0
  * Author: Jake Goldman, 10up, Oomph
- * Author URI: http://10up.com
+ * Author URI: https://10up.com
  * License: GPLv2 or later
  * Text Domain: restricted-site-access
  */
 
-define( 'RSA_VERSION', '7.1.0' );
+define( 'RSA_VERSION', '7.2.0' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -87,6 +87,8 @@ class Restricted_Site_Access {
 		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
+
+		add_action( 'admin_footer', array( __CLASS__, 'admin_footer' ) );
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
@@ -412,7 +414,7 @@ class Restricted_Site_Access {
 				}
 				// Fall thru to case 3 if case 2 not handled.
 			case 3:
-				$message  = esc_html( self::$rsa_options['message'] );
+				$message  = self::$rsa_options['message'];
 				$message .= "\n<!-- protected by Restricted Site Access http://10up.com/plugins/restricted-site-access-wordpress/ -->";
 				$message  = apply_filters( 'restricted_site_access_message', $message, $wp );
 
@@ -431,6 +433,7 @@ class Restricted_Site_Access {
 				}
 				// No break, fall thru to default.
 			default:
+				self::validate_blog_access();
 				self::$rsa_options['head_code']    = 302;
 				$current_path                      = empty( $_SERVER['REQUEST_URI'] ) ? home_url() : sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 				self::$rsa_options['redirect_url'] = wp_login_url( $current_path );
@@ -443,6 +446,54 @@ class Restricted_Site_Access {
 			'url'  => $redirect_url,
 			'code' => $redirect_code,
 		);
+	}
+
+	/**
+	 * Ensure the user has access to the blog attempting to be accessed.
+	 *
+	 * This method borrows from core's _access_denied_splash() for multi-site installs.
+	 */
+	public static function validate_blog_access() {
+		if ( ! is_multisite() || ! is_user_logged_in() ) {
+			return;
+		}
+
+		if ( is_user_member_of_blog() || is_network_admin() ) {
+			return;
+		}
+
+		// We're logged in but not a member of this blog, let the user know.
+		$blogs = get_blogs_of_user( get_current_user_id() );
+
+		if ( wp_list_filter( $blogs, array( 'userblog_id' => get_current_blog_id() ) ) ) {
+			return;
+		}
+
+		$blog_name = get_bloginfo( 'name' );
+
+		if ( empty( $blogs ) ) {
+			// Translators: %1$s: The site name.
+			wp_die( sprintf( esc_html__( 'You attempted to access the "%1$s" site, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), esc_html( $blog_name ) ), 403 );
+		}
+
+		// Translators: %1$s: The site name.
+		$output  = '<p>' . sprintf( esc_html__( 'You attempted to access the "%1$s", but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.', 'restricted-site-access' ), esc_html( $blog_name ) ) . '</p>';
+		$output .= '<p>' . esc_html__( 'If you reached this screen by accident and meant to visit one of your own sites, here are some shortcuts to help you find your way.', 'restricted-site-access' ) . '</p>';
+
+		$output .= '<h3>' . esc_html__( 'Your Sites', 'restricted-site-access' ) . '</h3>';
+		$output .= '<table>';
+
+		foreach ( $blogs as $blog ) {
+			$output .= '<tr>';
+			$output .= '<td>' . esc_html( $blog->blogname ) . '</td>';
+			$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . esc_html__( 'Visit Dashboard', 'restricted-site-access' ) . '</a> | ' .
+					'<a href="' . esc_url( $blog->siteurl ) . '">' . esc_html__( 'View Site', 'restricted-site-access' ) . '</a></td>';
+			$output .= '</tr>';
+		}
+
+		$output .= '</table>';
+
+		wp_die( wp_kses_post( $output ), 403 );
 	}
 
 	/**
@@ -618,10 +669,10 @@ class Restricted_Site_Access {
 					$value = self::sanitize_options( wp_unslash( $_POST[ $option_name ] ) );  // phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.VIP.ValidatedSanitizedInput.InputNotSanitized
 					break;
 				case 'blog_public':
-					$value = absint( $_POST[ $option_name ] );
+					$value = absint( $_POST[ $option_name ] ); // phpcs:ignore WordPress.Security.NonceVerification
 					break;
 				default:
-					$value = sanitize_key( $_POST[ $option_name ] );
+					$value = sanitize_key( $_POST[ $option_name ] ); // phpcs:ignore WordPress.Security.NonceVerification
 					break;
 			}
 
@@ -677,7 +728,7 @@ class Restricted_Site_Access {
 	 * Enqueue wp-admin scripts.
 	 */
 	public static function enqueue_admin_script() {
-		$js_path = plugin_dir_url( __FILE__ ) . 'assets/js/admin.min.js';
+		$current_screen = get_current_screen();
 
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
@@ -685,7 +736,7 @@ class Restricted_Site_Access {
 		wp_enqueue_script(
 			'rsa-admin',
 			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
-			array( 'jquery' ),
+			array( 'jquery', 'jquery-ui-dialog' ),
 			RSA_VERSION,
 			true
 		);
@@ -694,8 +745,21 @@ class Restricted_Site_Access {
 			'rsa-admin',
 			'rsaAdmin',
 			array(
-				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
+				'isNetworkWidePluginsPage' => $current_screen && 'plugins-network' === $current_screen->id,
+				'strings'                  => array(
+					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
+					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
+					'message' => esc_html__( 'I understand', 'restricted-site-access' ),
+				),
 			)
+		);
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
+		wp_enqueue_style(
+			'rsa-admin',
+			plugin_dir_url( __FILE__ ) . 'assets/css/admin.css',
+			array(),
+			RSA_VERSION
 		);
 	}
 
@@ -780,7 +844,17 @@ class Restricted_Site_Access {
 			?>
 			<div data-rsa-notice="page-cache" class="notice notice-error is-dismissible">
 				<p>
-					<strong><?php esc_html_e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="https://wordpress.org/plugins/restricted-site-access/#faq">Learn more</a>.', 'restricted-site-access' ); ?></strong>
+					<strong>
+					<?php
+						echo wp_kses_post(
+							sprintf(
+								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#faq */
+								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
+								__( 'https://wordpress.org/plugins/restricted-site-access/#faq', 'restricted-site-access' )
+							)
+						);
+					?>
+					</strong>
 				</p>
 			</div>
 			<?php
@@ -931,30 +1005,24 @@ class Restricted_Site_Access {
 			$new_input['approach'] = self::$fields['approach']['default'];
 		}
 
-		global $allowedtags;
-		$new_input['message'] = wp_kses( $input['message'], $allowedtags );
-
+		$new_input['message']       = wp_kses_post( $input['message'] );
 		$new_input['redirect_path'] = empty( $input['redirect_path'] ) ? 0 : 1;
 		$new_input['head_code']     = in_array( (int) $input['head_code'], array( 301, 302, 307 ), true ) ? (int) $input['head_code'] : self::$fields['head_code']['default'];
 		$new_input['redirect_url']  = empty( $input['redirect_url'] ) ? '' : esc_url_raw( $input['redirect_url'], array( 'http', 'https' ) );
 		$new_input['page']          = empty( $input['page'] ) ? 0 : (int) $input['page'];
 
-		$new_input['allowed'] = array();
+		$ips_comments = array();
 		if ( ! empty( $input['allowed'] ) && is_array( $input['allowed'] ) ) {
-			foreach ( $input['allowed'] as $ip_address ) {
+			foreach ( $input['allowed'] as $count => $ip_address ) {
 				if ( self::is_ip( $ip_address ) ) {
-					$new_input['allowed'][] = $ip_address;
+					// Ensure comments are properly matched up to their IPs.
+					$ips_comments[ $ip_address ] = isset( $input['comment'][ $count ] ) ? sanitize_text_field( $input['comment'][ $count ] ) : '';
 				}
 			}
 		}
-		$new_input['comment'] = array();
-		if ( ! empty( $input['comment'] ) && is_array( $input['comment'] ) ) {
-			foreach ( $input['comment'] as $comment ) {
-				if ( is_scalar( $comment ) ) {
-					$new_input['comment'][] = sanitize_text_field( $comment );
-				}
-			}
-		}
+
+		$new_input['allowed'] = array_keys( $ips_comments );
+		$new_input['comment'] = array_values( $ips_comments );
 
 		return $new_input;
 	}
@@ -999,9 +1067,17 @@ class Restricted_Site_Access {
 			<?php
 			$ips      = (array) self::$rsa_options['allowed'];
 			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+
+			// Prior to version 7.2.0, the data stored for comments included an extra blank entry, so the comments array
+			// always contained one extra (empty) entry. This was fixed and the following code handles loading data from
+			// previous versions - if the ip and comment counts don't match, we remove the first comment.
+			if ( ( 1 + count( $ips ) ) === ( count( $comments ) ) ) {
+				array_shift( $comments );
+			}
+
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key + 1 ] ) ? esc_attr( wp_unslash( $comments[ $key + 1 ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
 			}
 			?>
@@ -1045,6 +1121,10 @@ class Restricted_Site_Access {
 			self::$rsa_options['message'] = esc_html__( 'Access to this site is restricted.', 'restricted-site-access' );
 		}
 
+		/*
+		 * Removed the 'more' button from quicktags in 7.2.0 and added a filter:
+		 *     'restricted_site_access_message_editor_quicktags'
+		 */
 		wp_editor(
 			self::$rsa_options['message'],
 			'rsa_message',
@@ -1053,6 +1133,12 @@ class Restricted_Site_Access {
 				'textarea_name' => 'rsa_options[message]',
 				'textarea_rows' => 4,
 				'tinymce'       => false,
+				'quicktags'     => apply_filters(
+					'restricted_site_access_message_editor_quicktags',
+					array(
+						'buttons' => 'strong,em,link,block,del,ins,img,ol,ul,li,code,close', // this is default list minus the 'more' tag button.
+					)
+				),
 			)
 		);
 	}
@@ -1310,6 +1396,43 @@ class Restricted_Site_Access {
 
 		return false;
 
+	}
+
+	/**
+	 * Dialog markup to warn network-wide RSA disable
+	 *
+	 * @return void
+	 */
+	public static function admin_footer() {
+		$current_screen = get_current_screen();
+
+		if ( 'plugins-network' !== $current_screen->id ) {
+			return;
+		}
+		?>
+		<div id="rsa-disable-dialog" class="hidden">
+			<h2><?php esc_html_e( 'Confirm Network Deactivation', 'restricted-site-access' ); ?></h2>
+			<p><?php esc_html_e( 'You are about to disable Restricted Site Access across your entire network. This may unintentionally make other sites on the network public.', 'restricted-site-access' ); ?></p>
+			<p>
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						/* translators: %s: The words 'I understand'. */
+						__( 'If you are absolutely sure you want to network deactivate Restricted Site Access, please type %s to proceed.', 'restricted-site-access' ),
+						sprintf(
+							/* translators: %s: The words 'I understand'. */
+							'<code>%s</code>',
+							esc_html__( 'I understand', 'restricted-site-access' )
+						)
+					)
+				);
+				?>
+			</p>
+			<p class="rsa-user-message">
+				<input type="text" id="rsa-user-message">
+			</p>
+		</div>
+		<?php
 	}
 
 	/**

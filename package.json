@@ -2,9 +2,9 @@
   "name": "restricted-site-access",
   "description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-uglify": "^2.2.0",
-    "grunt-contrib-watch": "^1.0.0",
+    "grunt": "^1.0.4",
+    "grunt-contrib-uglify": "^4.0.1",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
     "grunt-phpunit": "^0.3.6"
   },
