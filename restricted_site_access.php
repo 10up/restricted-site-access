@@ -1484,7 +1484,7 @@ class Restricted_Site_Access {
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
 
-				$filter_flags = FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ;
+				$filter_flags = FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
 				if ( defined( 'RSA_ACCEPT_PRIVATE_IPS' ) && RSA_ACCEPT_PRIVATE_IPS === true ) {
 					$filter_flags = 0;
 				}
