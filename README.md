@@ -110,6 +110,26 @@ In your `wp-config.php` file, you can define the following:
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 ```
 
+In 7.1.1, the capacity to programmatically add / remove / set access IPs programmatically was introduced.
+
+The following are valid statements:
+
+Set IPs, ignoring all stored values (but not the constant defined values), if you're going to use the approach with array indices rather than mixing the two.
+```php
+Restricted_Site_Access::set_ips( array( '192.168.0.1', '192.168.0.2', '192.168.0.3' ) );
+Restricted_Site_Access::set_ips( array( 'labelfoo' => '192.168.0.1', 'labelbar' => 192.168.0.2', 'labelbaz' => 192.168.0.3' ) );
+```
+
+Add IPs, if they're not already added.
+```php
+Restricted_Site_Access::add_ips( array( 'five' => '192.168.1.5', 'six' => '192.168.1.6') );
+```
+
+Remove IPs, if they are in the list.
+```php
+Restricted_Site_Access::remove_ips( array( '192.168.1.2','192.168.1.5','192.168.1.6', ) );
+```
+
 ### Is there a constant I can set to ensure my site is (or is not) restricted?
 
 As of version 7.1.0, two constants were introduced that give you the ability to specify if the site should be in restricted mode.

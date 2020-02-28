@@ -214,6 +214,28 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$wp_rewrite->init();
 	}
 
+	public function test_add_remove_set_ips() {
+		$rsa = Restricted_Site_Access::get_instance();
+		$my_ip = '127.0.0.1';
+		$not_my_ip = '10.9.8.7';
+
+		$options = $rsa::get_options();
+		$rsa::set_ips(array()); // Remove all IPs
+		$this->assertEmpty( $options['allowed'] );
+
+		$rsa::add_ips(array( $my_ip, $not_my_ip )); // Add two IPs
+		$options = $rsa::get_options();
+		$this->assertContains( $my_ip, $options['allowed'] );
+
+		$rsa::remove_ips(array( $my_ip )); // Remove one IP
+		$options = $rsa::get_options();
+		$this->assertNotContains( $my_ip, $options['allowed'] );
+
+		$rsa::set_ips(array()); // Remove all IPs
+		$options = $rsa::get_options();
+		$this->assertEmpty( $options['allowed'] );
+	}
+
 	public function test_singlesite_restrict_access_show_them_a_message() {
 
 		$rsa = Restricted_Site_Access::get_instance();

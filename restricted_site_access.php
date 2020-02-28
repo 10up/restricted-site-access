@@ -215,7 +215,7 @@ class Restricted_Site_Access {
 	/**
 	 * Populate the option with defaults.
 	 *
-	 * @param boolean $network Whther this is a network install. Default false.
+	 * @param boolean $network Whether this is a network install. Default false.
 	 */
 	public static function get_options( $network = false ) {
 		$options = array();
@@ -1492,6 +1492,111 @@ class Restricted_Site_Access {
 		}
 
 		return $ip;
+	}
+
+	/**
+	 * Add ips programmatically
+	 *
+	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
+	 * '192.168.0.1'
+	 * array( '192.168.0.1', '192.168.0.2' )
+	 * or labels can be used as array indices
+	 * array( 'labelone' => '192.168.0.1', 'labeltwo' => '192.168.0.2' )
+	 *
+	 * @param  string|array $ips list of IPs to add.
+	 */
+	public static function add_ips( $ips ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+		$ips         = (array) $ips;
+		$allowed_ips = isset( $rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
+		$comments    = isset( $rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+		$i           = 0;
+		foreach ( $ips as $label => $ip ) {
+			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
+				$allowed_ips[] = $ip;
+				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
+			}
+			$i++;
+		}
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
+			self::$rsa_options['allowed'] = $allowed_ips;
+			self::$rsa_options['comment'] = $comments;
+			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+		}
+	}
+
+	/**
+	 * Remove ips programmatically
+	 *
+	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
+	 * '192.168.0.1'
+	 * array( '192.168.0.1', '192.168.0.2' )
+	 *
+	 * @param  string|array $ips list of IPs to remove.
+	 */
+	public static function remove_ips( $ips ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+		}
+		self::$rsa_options = self::get_options();
+
+		$ips         = (array) $ips;
+		$allowed_ips = (array) self::$rsa_options['allowed'];
+		$comments    = (array) self::$rsa_options['comment'];
+		$found_ips   = array_intersect( $allowed_ips, $ips );
+		foreach ( array_keys( $found_ips ) as $found_ip_key ) {
+			unset( $comments[ $found_ip_key ] );
+			unset( $allowed_ips[ $found_ip_key ] );
+		}
+		$comments    = array_values( $comments );
+		$allowed_ips = array_values( $allowed_ips );
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips || self::$rsa_options['comment'] !== $comments ) {
+			self::$rsa_options['allowed'] = $allowed_ips;
+			self::$rsa_options['comment'] = $comments;
+			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+		}
+	}
+
+	/**
+	 * Set ips programmatically
+	 * Same syntax as add_ips(), but this replaces existing IPs and comments.
+	 *
+	 * @param  string|array $ips list of IPs to set as default IPs.
+	 */
+	public static function set_ips( $ips ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+		$ips         = (array) $ips;
+		$allowed_ips = array();
+		$comments    = array();
+		$i           = 0;
+		foreach ( $ips as $label => $ip ) {
+			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
+				$allowed_ips[] = $ip;
+				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
+			}
+			$i++;
+		}
+
+		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
+			self::$rsa_options['allowed'] = $allowed_ips;
+			self::$rsa_options['comment'] = $comments;
+			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+		}
+
 	}
 }
 
