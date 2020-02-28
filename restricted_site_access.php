@@ -1464,6 +1464,7 @@ class Restricted_Site_Access {
 	public static function get_client_ip_address() {
 		$ip      = '';
 		$headers = array(
+			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
 			'HTTP_X_FORWARDED',
