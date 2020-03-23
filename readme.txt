@@ -99,7 +99,6 @@ In your `wp-config.php` file, you can define the following:
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 `
 
-
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
@@ -107,6 +106,12 @@ define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.3.0 =
+* **Added:** Ability to add, remove, and set IPs programatically (props [@ivankk](https://profiles.wordpress.org/ivankk/), [@helen](https://profiles.wordpress.org/helen/), [@paulschreiber](https://profiles.wordpress.org/paulschreiber/))
+* **Added:** Cloudflare IP detection compatibility (props [@eightam](https://github.com/eightam), [@dinhtungdu](https://profiles.wordpress.org/dinhtungdu/))
+* **Fixed:** 
+    Issue with allowed IPs and associated comments being offset (props [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/), [@helen](https://profiles.wordpress.org/helen/), [@ivankk](https://profiles.wordpress.org/ivankk/))
 
 = 7.2.0 =
 * **Added:** Warn and confirm before network disabling the plugin (props [@pereirinha](profiles.wordpress.org/pereirinha), [@adamsilverstein](https://profiles.wordpress.org/adamsilverstein/))
