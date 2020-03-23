@@ -8,6 +8,6 @@
     "grunt-phpcs": "^0.4.0",
     "grunt-phpunit": "^0.3.6"
   },
-  "author": "10up <sales@10up.com>",
+  "author": "10up <opensource@10up.com>",
   "license": "GPLv2 (or later)"
 }

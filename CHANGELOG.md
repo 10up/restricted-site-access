@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased]
 
+## [7.3.0] - TBD
+### Added
+- Ability to add, remove, and set IPs programatically (props [@ivankruchkoff](https://github.com/ivankruchkoff), [@helen](https://github.com/helen), [@paulschreiber](https://github.com/paulschreiber) via [#104](https://github.com/10up/restricted-site-access/pull/104))
+- Cloudflare IP detection compatibility (props [@eightam](https://github.com/eightam), [@dinhtungdu](https://github.com/dinhtungdu) via [#110](https://github.com/10up/restricted-site-access/pull/110))
+
+### Fixed
+- Issue with allowed IPs and associated comments being offset (props [@adamsilverstein](https://github.com/adamsilverstein), [@helen](https://github.com/helen), [@ivankruchkoff](https://github.com/ivankruchkoff) via [#106](https://github.com/10up/restricted-site-access/pull/106))
+
 ## [7.2.0] - 2019-11-27
 ### Added
 - Warn and confirm before network disabling the plugin (props [@pereirinha](https://github.com/pereirinha), [@adamsilverstein](https://github.com/adamsilverstein) via [#29](https://github.com/10up/restricted-site-access/pull/29))
@@ -178,7 +186,8 @@ All notable changes to this project will be documented in this file, per [the Ke
 ### Added
 - Initial public release
 
-[Unreleased]: https://github.com/10up/restricted-site-access/compare/7.2.0...HEAD
+[Unreleased]: https://github.com/10up/restricted-site-access/compare/master...develop
+[7.3.0]: https://github.com/10up/restricted-site-access/compare/7.2.0...7.3.0
 [7.2.0]: https://github.com/10up/restricted-site-access/compare/7.1.0...7.2.0
 [7.1.0]: https://github.com/10up/restricted-site-access/compare/7.0.1...7.1.0
 [7.0.1]: https://github.com/10up/restricted-site-access/compare/7.0.0...7.0.1
