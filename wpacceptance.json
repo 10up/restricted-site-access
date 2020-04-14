@@ -9,5 +9,5 @@
     ],
     "enforce_clean_db": true,
     "bootstrap": "tests/wpacceptance/bootstrap.php",
-    "snapshot_id": "b2f52fc10fa0170e61a4f6cd5a9ffac6"
+    "snapshot_id": "8d6893068de87cf6785fa802b6b3e239"
 }
