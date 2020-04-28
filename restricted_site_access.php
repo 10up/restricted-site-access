@@ -730,6 +730,10 @@ class Restricted_Site_Access {
 	public static function enqueue_admin_script() {
 		$current_screen = get_current_screen();
 
+		if ( ! empty( $current_screen ) && 'plugins-network' !== $current_screen->id ) {
+			return;
+		}
+
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
@@ -746,7 +750,6 @@ class Restricted_Site_Access {
 			'rsaAdmin',
 			array(
 				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
-				'isNetworkWidePluginsPage' => $current_screen && 'plugins-network' === $current_screen->id,
 				'strings'                  => array(
 					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
 					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
