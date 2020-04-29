@@ -749,8 +749,8 @@ class Restricted_Site_Access {
 			'rsa-admin',
 			'rsaAdmin',
 			array(
-				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
-				'strings'                  => array(
+				'nonce'   => wp_create_nonce( 'rsa_admin_nonce' ),
+				'strings' => array(
 					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
 					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
 					'message' => esc_html__( 'I understand', 'restricted-site-access' ),
