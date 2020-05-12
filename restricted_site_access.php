@@ -1167,7 +1167,7 @@ class Restricted_Site_Access {
 			// @codeCoverageIgnoreEnd
 		}
 		?>
-		<fieldset><legend class="screen-reader-text"><span><?php esc_html( self::$rsa_options['redirect_path']['label'] ); ?></span></legend>
+		<fieldset><legend class="screen-reader-text"><span><?php esc_html( self::$fields['redirect_path']['label'] ); ?></span></legend>
 			<label for="redirect_path">
 				<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field" <?php checked( self::$rsa_options['redirect_path'] ); ?> />
 				<?php esc_html_e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
