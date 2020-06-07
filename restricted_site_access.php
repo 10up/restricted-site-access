@@ -1498,7 +1498,25 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add ips programmatically
+	 * Get IPs programmatically
+	 *
+	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @return array
+	 */
+	public static function get_ips( $include_config = true ) {
+		self::$rsa_options = self::get_options();
+		$current_ips = (array) self::$rsa_options['allowed'];
+		$config_ips  = [];
+
+		if ( $include_config ) {
+			$config_ips = Restricted_Site_Access::get_config_ips();
+		}
+
+		return array_unique( array_merge( $current_ips, $config_ips ) );
+	}
+
+	/**
+	 * Add IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
