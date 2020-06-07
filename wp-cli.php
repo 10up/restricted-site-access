@@ -399,8 +399,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Updates the option.
-		$options['allowed'] = array_merge( $this->get_current_ips( false ), $new_ips );
-		$new_options        = $this->update_options( $options );
+		Restricted_Site_Access::add_ips( $new_ips );
 
 		WP_CLI::success(
 			sprintf(
@@ -469,8 +468,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Updates the option.
-		$options['allowed'] = array_diff( $current_ips, $removed_ips );
-		$new_options        = $this->update_options( $options );
+		Restricted_Site_Access::remove_ips( $removed_ips );
 
 		WP_CLI::success(
 			sprintf(
@@ -523,8 +521,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Updates the option.
-		$options['allowed'] = $valid_ips;
-		$new_options        = $this->update_options( $options );
+		Restricted_Site_Access::set_ips( $valid_ips );
 
 		WP_CLI::success(
 			sprintf(
