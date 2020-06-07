@@ -1535,7 +1535,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Remove ips programmatically
+	 * Remove IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1570,7 +1570,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Set ips programmatically
+	 * Set IPs programmatically
 	 * Same syntax as add_ips(), but this replaces existing IPs and comments.
 	 *
 	 * @param  string|array $ips list of IPs to set as default IPs.
