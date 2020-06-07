@@ -568,15 +568,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * @return array
 	 */
 	private function get_current_ips( $include_config = true ) {
-		$options     = $this->get_options();
-		$current_ips = empty( $options['allowed'] ) ? array() : $options['allowed'];
-		$config_ips  = array();
-
-		if ( $include_config ) {
-			$config_ips = Restricted_Site_Access::get_config_ips();
-		}
-
-		return array_unique( array_merge( $current_ips, $config_ips ) );
+		return Restricted_Site_Access::get_ips( $include_config );
 	}
 
 	/**
