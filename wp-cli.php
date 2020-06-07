@@ -414,7 +414,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			sprintf(
 				/* translators: %2$s: IP addresses. %1$s: Context: "Site" or "Network". */
 				__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
-				implode( ', ', $new_options['allowed'] ),
+				implode( ', ', Restricted_Site_Access::get_ips() ),
 				$this->update_text( false )
 			)
 		);
@@ -483,7 +483,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			sprintf(
 				/* translators: %2$s: IP addresses. %1$s: Context: "Site" or "Network". */
 				__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
-				implode( ', ', $new_options['allowed'] ),
+				implode( ', ', Restricted_Site_Access::get_ips() ),
 				$this->update_text( false )
 			)
 		);
@@ -527,7 +527,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			sprintf(
 				/* translators: %2$s: IPs to whitelist, %1$s: Context: "Site" or "Network". */
 				__( 'Set %2$s IP whitelist to %1$s.', 'restricted-site-access' ),
-				implode( ', ', $new_options['allowed'] ),
+				implode( ', ', Restricted_Site_Access::get_ips() ),
 				$this->update_text( false )
 			)
 		);
