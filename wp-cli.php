@@ -306,6 +306,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * [--exclude-config]
 	 * : Don't include IPs from the configuration file.
 	 *
+	 * [--include-labels]
+	 * : Include labels.
+	 *
 	 * [--format=<format>]
 	 * : Render output in a particular format.
 	 * ---
@@ -334,21 +337,29 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	public function ip_list( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
 
-		$no_config = WP_CLI\Utils\get_flag_value( $assoc_args, 'exclude-config', false );
-		$ips       = $this->get_current_ips( ! $no_config );
-		$items     = array();
+		$show_labels = WP_CLI\Utils\get_flag_value( $assoc_args, 'include-labels', false );
+		$no_config   = WP_CLI\Utils\get_flag_value( $assoc_args, 'exclude-config', false );
+		$ips         = $this->get_current_ips( ! $no_config, $show_labels );
+		$items       = array();
+		$fields      = $show_labels ? array( 'ip', 'label' ) : array( 'ip' );
 
 		if ( 0 === count( $ips ) ) {
 			WP_CLI::line( __( 'No IP addresses configured.', 'restricted-site-access' ) );
 			return;
 		}
 
-		foreach ( $ips as $ip ) {
-			$items[] = compact( 'ip' );
+		if ( $show_labels ) {
+			foreach ( $ips as $label => $ip ) {
+				$items[] = compact( 'ip', 'label' );
+			}
+		} else {
+			foreach ( $ips as $ip ) {
+				$items[] = compact( 'ip' );
+			}
 		}
 
 		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
-		WP_CLI\Utils\format_items( $format, $items, array( 'ip' ) );
+		WP_CLI\Utils\format_items( $format, $items, $fields );
 	}
 
 	/**
@@ -565,10 +576,11 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * Gets all current IPs, optionally including config IPs.
 	 *
 	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @param bool $include_labels Whether to include the comments. Default false.
 	 * @return array
 	 */
-	private function get_current_ips( $include_config = true ) {
-		return Restricted_Site_Access::get_ips( $include_config );
+	private function get_current_ips( $include_config = true, $include_labels = false ) {
+		return Restricted_Site_Access::get_ips( $include_config, $include_labels );
 	}
 
 	/**

@@ -1501,18 +1501,26 @@ class Restricted_Site_Access {
 	 * Get IPs programmatically
 	 *
 	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @param bool $$include_labels Whether to include the comments. Default false.
 	 * @return array
 	 */
-	public static function get_ips( $include_config = true ) {
+	public static function get_ips( $include_config = true, $include_labels = false ) {
 		self::$rsa_options = self::get_options();
 		$current_ips = (array) self::$rsa_options['allowed'];
 		$config_ips  = [];
+
+		if ( $include_labels ) {
+			$labels      = (array) self::$rsa_options['comment'];
+			$current_ips = array_combine( $labels, $current_ips );
+		}
 
 		if ( $include_config ) {
 			$config_ips = Restricted_Site_Access::get_config_ips();
 		}
 
-		return array_unique( array_merge( $current_ips, $config_ips ) );
+		$result = array_unique( array_merge( $current_ips, $config_ips ) );
+
+		return $result;
 	}
 
 	/**
