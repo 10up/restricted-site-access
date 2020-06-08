@@ -1501,7 +1501,7 @@ class Restricted_Site_Access {
 	 * Get IPs programmatically
 	 *
 	 * @param bool $include_config Whether to include the config file IPs. Default true.
-	 * @param bool $$include_labels Whether to include the comments. Default false.
+	 * @param bool $include_labels Whether to include the comments. Default false.
 	 * @return array
 	 */
 	public static function get_ips( $include_config = true, $include_labels = false ) {
