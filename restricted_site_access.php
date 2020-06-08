@@ -730,7 +730,7 @@ class Restricted_Site_Access {
 	public static function enqueue_admin_script() {
 		$current_screen = get_current_screen();
 
-		if ( ! empty( $current_screen ) && 'plugins-network' !== $current_screen->id ) {
+		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, [ 'plugins-network', 'options-reading'], true ) ) {
 			return;
 		}
 
