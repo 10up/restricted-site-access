@@ -1515,7 +1515,7 @@ class Restricted_Site_Access {
 		}
 
 		if ( $include_config ) {
-			$config_ips = Restricted_Site_Access::get_config_ips();
+			$config_ips = self::get_config_ips();
 		}
 
 		$result = array_unique( array_merge( $current_ips, $config_ips ) );
