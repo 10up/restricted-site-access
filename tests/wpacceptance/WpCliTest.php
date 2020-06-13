@@ -94,4 +94,45 @@ class WpCliTest extends \TestCase {
 		$this->assertStringContainsString( '10.0.0.6', $cli_result );
 	}
 
+	public function testSetMode() {
+		$I = $this->openBrowserPage();
+
+		$cli_result = $this->runCommand( 'rsa set-mode login' )['stdout'];
+		$this->assertStringContainsString( 'Site redirecting visitors to login', $cli_result );
+
+		$I->moveTo( '/sample-page' );
+		usleep( 500 );
+		$this->assertStringContainsString( 'wp-login.php', $I->getcurrentUrl() );
+
+		$cli_result = $this->runCommand( 'rsa set-mode disable' )['stdout'];
+		$this->assertStringContainsString( 'Site restrictions disabled.', $cli_result );
+
+		$cli_result = $this->runCommand( 'rsa set-mode disable' )['stdout'];
+		$this->assertStringContainsString( 'Site already not under restricted access', $cli_result );
+
+		$I->moveTo( '/sample-page' );
+		usleep( 500 );
+		$this->assertStringContainsString( 'sample-page', $I->getcurrentUrl() );
+
+		$cli_result = $this->runCommand( 'rsa set-mode redirect --redirect=http://example.com' )['stdout'];
+		$this->assertStringContainsString( 'example.com', $cli_result );
+
+		$I->moveTo( '/sample-page' );
+		usleep( 500 );
+		$this->assertStringContainsString( 'example.com', $I->getcurrentUrl() );
+
+		$cli_result = $this->runCommand( 'rsa set-mode message --text="None shall pass!"' )['stdout'];
+		$this->assertStringContainsString( 'message set', $cli_result );
+
+		$I->moveTo( '/sample-page' );
+		usleep( 500 );
+		$I->seeText( 'None shall pass' );
+
+		$cli_result = $this->runCommand( 'rsa set-mode page --page=2' )['stdout'];
+		$this->assertStringContainsString( 'Sample page', $cli_result );
+
+		$I->moveTo( '/' );
+		usleep( 500 );
+		$this->assertStringContainsString( 'example.com', $I->getcurrentUrl() );
+	}
 }

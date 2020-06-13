@@ -137,9 +137,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			WP_CLI::success(
 				sprintf(
 					/* translators: %s: What the user is updating: "Site" or "Network". */
-					__( '%s restrictions disabled.', 'restricted-site-access' )
-				),
-				$this->update_text()
+					__( '%s restrictions disabled.', 'restricted-site-access' ),
+					$this->update_text()
+				)
 			);
 			return; // Exit.
 		}
