@@ -83,7 +83,7 @@ class WpCliTest extends \TestCase {
 		$this->assertStringNotContainsString( '10.0.0.4', $cli_result );
 
 		$cli_result = $this->runCommand( 'rsa ip-set 10.0.0.5 10.0.0.6 --network' )['stdout'];
-		$this->assertStringContainsString( 'Set site IP whitelist to', $cli_result );
+		$this->assertStringContainsString( 'Set network IP whitelist to', $cli_result );
 		$this->assertStringContainsString( '10.0.0.5', $cli_result );
 		$this->assertStringContainsString( '10.0.0.6', $cli_result );
 
@@ -95,12 +95,12 @@ class WpCliTest extends \TestCase {
 	}
 
 	public function testSetMode() {
-		$I = $this->openBrowserPage();
-
 		$cli_result = $this->runCommand( 'rsa set-mode login' )['stdout'];
 		$this->assertStringContainsString( 'Site redirecting visitors to login', $cli_result );
 
-		$I->moveTo( '/sample-page' );
+		$I = $this->openBrowserPage();
+
+		$I->moveTo( '/' );
 		usleep( 500 );
 		$this->assertStringContainsString( 'wp-login.php', $I->getcurrentUrl() );
 
@@ -122,17 +122,17 @@ class WpCliTest extends \TestCase {
 		$this->assertStringContainsString( 'example.com', $I->getcurrentUrl() );
 
 		$cli_result = $this->runCommand( 'rsa set-mode message --text="None shall pass!"' )['stdout'];
-		$this->assertStringContainsString( 'message set', $cli_result );
+		$this->assertStringContainsString( 'Site showing message to visitors', $cli_result );
 
 		$I->moveTo( '/sample-page' );
 		usleep( 500 );
 		$I->seeText( 'None shall pass' );
 
 		$cli_result = $this->runCommand( 'rsa set-mode page --page=2' )['stdout'];
-		$this->assertStringContainsString( 'Sample page', $cli_result );
+		$this->assertStringContainsString( 'Sample Page', $cli_result );
 
 		$I->moveTo( '/' );
 		usleep( 500 );
-		$this->assertStringContainsString( 'example.com', $I->getcurrentUrl() );
+		$this->assertStringContainsString( 'sample-page', $I->getcurrentUrl() );
 	}
 }
