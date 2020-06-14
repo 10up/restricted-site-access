@@ -107,6 +107,8 @@ class WpCliTest extends \TestCase {
 		$cli_result = $this->runCommand( 'rsa set-mode disable' )['stdout'];
 		$this->assertStringContainsString( 'Site restrictions disabled.', $cli_result );
 
+		sleep( 5 );
+
 		$cli_result = $this->runCommand( 'rsa set-mode disable' )['stdout'];
 		$this->assertStringContainsString( 'Site already not under restricted access', $cli_result );
 
