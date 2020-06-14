@@ -107,11 +107,6 @@ class WpCliTest extends \TestCase {
 		$cli_result = $this->runCommand( 'rsa set-mode disable' )['stdout'];
 		$this->assertStringContainsString( 'Site restrictions disabled.', $cli_result );
 
-		sleep( 5 );
-
-		$cli_result = $this->runCommand( 'rsa set-mode disable' )['stdout'];
-		$this->assertStringContainsString( 'Site already not under restricted access', $cli_result );
-
 		$I->moveTo( '/sample-page' );
 		usleep( 500 );
 		$this->assertStringContainsString( 'sample-page', $I->getcurrentUrl() );
@@ -136,5 +131,20 @@ class WpCliTest extends \TestCase {
 		$I->moveTo( '/' );
 		usleep( 500 );
 		$this->assertStringContainsString( 'sample-page', $I->getcurrentUrl() );
+	}
+
+	public function testSetNetworkMode() {
+		$cli_result = $this->runCommand( 'rsa set-network-mode default' )['stdout'];
+		$this->assertStringContainsString( 'Cannot set network mode', $cli_result );
+
+		$I = $this->openBrowserPage();
+
+		$this->networkActivate( $I );
+
+		$cli_result = $this->runCommand( 'rsa set-network-mode default"' )['stdout'];
+		$this->assertStringContainsString( 'Mode is already set', $cli_result );
+
+		$cli_result = $this->runCommand( 'rsa set-network-mode enforce"' )['stdout'];
+		$this->assertStringContainsString( 'Set network mode to', $cli_result );
 	}
 }
