@@ -139,12 +139,19 @@ class WpCliTest extends \TestCase {
 
 		$I = $this->openBrowserPage();
 
+		$I->loginAs( 'wpsnapshots' );
+
 		$this->networkActivate( $I );
 
-		$cli_result = $this->runCommand( 'rsa set-network-mode default"' )['stdout'];
+		$cli_result = $this->runCommand( 'rsa set-network-mode default' )['stdout'];
 		$this->assertStringContainsString( 'Mode is already set', $cli_result );
 
-		$cli_result = $this->runCommand( 'rsa set-network-mode enforce"' )['stdout'];
+		$cli_result = $this->runCommand( 'rsa set-network-mode enforce' )['stdout'];
 		$this->assertStringContainsString( 'Set network mode to', $cli_result );
+
+		$I->moveTo( '/wp-admin/network/settings.php' );
+
+		$this->assertEquals( 'enforce', $I->executeJavaScript( 'return document.querySelector(\'input[name="rsa_mode"]:checked\').value;' ));
+		
 	}
 }
