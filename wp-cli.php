@@ -377,7 +377,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
@@ -447,7 +447,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
@@ -517,7 +517,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
@@ -543,7 +543,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * @param array $assoc_args Array with associative arguments.
 	 * @return void
 	 */
-	private function setup( $args = [], $assoc_args = [] ) {
+	private function setup( $args = array(), $assoc_args = array() ) {
 		$this->args       = $args;
 		$this->assoc_args = $assoc_args;
 
