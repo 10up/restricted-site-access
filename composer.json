@@ -16,7 +16,7 @@
   ],
   "require-dev": {
     "phpunit/phpunit": "^7.5",
-    "dealerdirect/phpcodesniffer-composer-installer": "*",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
     "phpcompatibility/php-compatibility": "*",
     "wp-coding-standards/wpcs": "*",
     "10up/wpacceptance": "dev-master"
