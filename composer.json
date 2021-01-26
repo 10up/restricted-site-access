@@ -5,7 +5,7 @@
   "type": "wordpress-plugin",
   "keywords": [],
   "homepage": "https://10up.com",
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "10up",
