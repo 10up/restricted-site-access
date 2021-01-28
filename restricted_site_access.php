@@ -1542,8 +1542,8 @@ class Restricted_Site_Access {
 			self::$rsa_options = self::get_options();
 		}
 		$ips         = (array) $ips;
-		$allowed_ips = isset( $rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
-		$comments    = isset( $rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
+		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
 		$i           = 0;
 		foreach ( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
