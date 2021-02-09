@@ -735,7 +735,7 @@ class Restricted_Site_Access {
 	public static function enqueue_admin_script() {
 		$current_screen = get_current_screen();
 
-		if ( ! empty( $current_screen ) && 'plugins-network' !== $current_screen->id ) {
+		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, [ 'plugins-network', 'options-reading' ], true ) ) {
 			return;
 		}
 
@@ -1503,7 +1503,33 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add ips programmatically
+	 * Get IPs programmatically
+	 *
+	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @param bool $include_labels Whether to include the comments. Default false.
+	 * @return array
+	 */
+	public static function get_ips( $include_config = true, $include_labels = false ) {
+		self::$rsa_options = self::get_options();
+		$current_ips       = (array) self::$rsa_options['allowed'];
+		$config_ips        = [];
+
+		if ( $include_labels ) {
+			$labels      = (array) self::$rsa_options['comment'];
+			$current_ips = array_combine( $labels, $current_ips );
+		}
+
+		if ( $include_config ) {
+			$config_ips = self::get_config_ips();
+		}
+
+		$result = array_unique( array_merge( $current_ips, $config_ips ) );
+
+		return $result;
+	}
+
+	/**
+	 * Add IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1521,8 +1547,8 @@ class Restricted_Site_Access {
 			self::$rsa_options = self::get_options();
 		}
 		$ips         = (array) $ips;
-		$allowed_ips = isset( $rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
-		$comments    = isset( $rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
+		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
 		$i           = 0;
 		foreach ( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
@@ -1540,7 +1566,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Remove ips programmatically
+	 * Remove IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1575,7 +1601,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Set ips programmatically
+	 * Set IPs programmatically
 	 * Same syntax as add_ips(), but this replaces existing IPs and comments.
 	 *
 	 * @param  string|array $ips list of IPs to set as default IPs.
@@ -1604,7 +1630,6 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
-
 	}
 }
 
