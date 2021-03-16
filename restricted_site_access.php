@@ -1325,7 +1325,7 @@ class Restricted_Site_Access {
 
 		// Check if constant disallowing restriction is defined.
 		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
-			$value = 1;
+			$value = 0;
 		}
 
 		// Check if constant forcing restriction is defined.
