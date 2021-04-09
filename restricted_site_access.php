@@ -735,7 +735,7 @@ class Restricted_Site_Access {
 	public static function enqueue_admin_script() {
 		$current_screen = get_current_screen();
 
-		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, [ 'plugins-network', 'options-reading' ], true ) ) {
+		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, array( 'plugins-network', 'options-reading' ), true ) ) {
 			return;
 		}
 
@@ -1325,7 +1325,7 @@ class Restricted_Site_Access {
 
 		// Check if constant disallowing restriction is defined.
 		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
-			$value = 1;
+			$value = 0;
 		}
 
 		// Check if constant forcing restriction is defined.
@@ -1512,7 +1512,7 @@ class Restricted_Site_Access {
 	public static function get_ips( $include_config = true, $include_labels = false ) {
 		self::$rsa_options = self::get_options();
 		$current_ips       = (array) self::$rsa_options['allowed'];
-		$config_ips        = [];
+		$config_ips        = array();
 
 		if ( $include_labels ) {
 			$labels      = (array) self::$rsa_options['comment'];
