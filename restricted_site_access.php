@@ -1,13 +1,15 @@
 <?php // phpcs:disable WordPress.Files.FileName
 /**
- * Plugin Name: Restricted Site Access
- * Plugin URI: https://10up.com/plugins/restricted-site-access-wordpress/
- * Description: <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version: 7.2.0
- * Author: Jake Goldman, 10up, Oomph
- * Author URI: https://10up.com
- * License: GPLv2 or later
- * Text Domain: restricted-site-access
+ * Plugin Name:       Restricted Site Access
+ * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
+ * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
+ * Version:           7.2.0
+ * Requires at least: 4.6
+ * Author:            Jake Goldman, 10up, Oomph
+ * Author URI:        https://10up.com
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       restricted-site-access
  */
 
 define( 'RSA_VERSION', '7.2.0' );
