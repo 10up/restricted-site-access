@@ -137,9 +137,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			WP_CLI::success(
 				sprintf(
 					/* translators: %s: What the user is updating: "Site" or "Network". */
-					__( '%s restrictions disabled.', 'restricted-site-access' )
-				),
-				$this->update_text()
+					__( '%s restrictions disabled.', 'restricted-site-access' ),
+					$this->update_text()
+				)
 			);
 			return; // Exit.
 		}
@@ -306,6 +306,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * [--exclude-config]
 	 * : Don't include IPs from the configuration file.
 	 *
+	 * [--include-labels]
+	 * : Include labels.
+	 *
 	 * [--format=<format>]
 	 * : Render output in a particular format.
 	 * ---
@@ -334,21 +337,29 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	public function ip_list( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
 
-		$no_config = WP_CLI\Utils\get_flag_value( $assoc_args, 'exclude-config', false );
-		$ips       = $this->get_current_ips( ! $no_config );
-		$items     = array();
+		$show_labels = WP_CLI\Utils\get_flag_value( $assoc_args, 'include-labels', false );
+		$no_config   = WP_CLI\Utils\get_flag_value( $assoc_args, 'exclude-config', false );
+		$ips         = $this->get_current_ips( ! $no_config, $show_labels );
+		$items       = array();
+		$fields      = $show_labels ? array( 'ip', 'label' ) : array( 'ip' );
 
 		if ( 0 === count( $ips ) ) {
 			WP_CLI::line( __( 'No IP addresses configured.', 'restricted-site-access' ) );
 			return;
 		}
 
-		foreach ( $ips as $ip ) {
-			$items[] = compact( 'ip' );
+		if ( $show_labels ) {
+			foreach ( $ips as $label => $ip ) {
+				$items[] = compact( 'ip', 'label' );
+			}
+		} else {
+			foreach ( $ips as $ip ) {
+				$items[] = compact( 'ip' );
+			}
 		}
 
 		$format = WP_CLI\Utils\get_flag_value( $assoc_args, 'format', 'table' );
-		WP_CLI\Utils\format_items( $format, $items, array( 'ip' ) );
+		WP_CLI\Utils\format_items( $format, $items, $fields );
 	}
 
 	/**
@@ -377,7 +388,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
@@ -399,8 +410,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Updates the option.
-		$options['allowed'] = array_merge( $this->get_current_ips( false ), $new_ips );
-		$new_options        = $this->update_options( $options );
+		Restricted_Site_Access::add_ips( $new_ips );
 
 		WP_CLI::success(
 			sprintf(
@@ -415,7 +425,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			sprintf(
 				/* translators: %2$s: IP addresses. %1$s: Context: "Site" or "Network". */
 				__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
-				implode( ', ', $new_options['allowed'] ),
+				implode( ', ', Restricted_Site_Access::get_ips() ),
 				$this->update_text( false )
 			)
 		);
@@ -447,7 +457,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
@@ -469,8 +479,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		}
 
 		// Updates the option.
-		$options['allowed'] = array_diff( $current_ips, $removed_ips );
-		$new_options        = $this->update_options( $options );
+		Restricted_Site_Access::remove_ips( $removed_ips );
 
 		WP_CLI::success(
 			sprintf(
@@ -485,7 +494,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			sprintf(
 				/* translators: %2$s: IP addresses. %1$s: Context: "Site" or "Network". */
 				__( 'Current %2$s whitelisted IPs are: %1$s', 'restricted-site-access' ),
-				implode( ', ', $new_options['allowed'] ),
+				implode( ', ', Restricted_Site_Access::get_ips() ),
 				$this->update_text( false )
 			)
 		);
@@ -517,20 +526,19 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, [ 'Restricted_Site_Access', 'is_ip' ] );
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
 
 		// Updates the option.
-		$options['allowed'] = $valid_ips;
-		$new_options        = $this->update_options( $options );
+		Restricted_Site_Access::set_ips( $valid_ips );
 
 		WP_CLI::success(
 			sprintf(
 				/* translators: %2$s: IPs to whitelist, %1$s: Context: "Site" or "Network". */
 				__( 'Set %2$s IP whitelist to %1$s.', 'restricted-site-access' ),
-				implode( ', ', $new_options['allowed'] ),
+				implode( ', ', Restricted_Site_Access::get_ips() ),
 				$this->update_text( false )
 			)
 		);
@@ -543,7 +551,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * @param array $assoc_args Array with associative arguments.
 	 * @return void
 	 */
-	private function setup( $args = [], $assoc_args = [] ) {
+	private function setup( $args = array(), $assoc_args = array() ) {
 		$this->args       = $args;
 		$this->assoc_args = $assoc_args;
 
@@ -568,18 +576,11 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * Gets all current IPs, optionally including config IPs.
 	 *
 	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @param bool $include_labels Whether to include the comments. Default false.
 	 * @return array
 	 */
-	private function get_current_ips( $include_config = true ) {
-		$options     = $this->get_options();
-		$current_ips = empty( $options['allowed'] ) ? array() : $options['allowed'];
-		$config_ips  = array();
-
-		if ( $include_config ) {
-			$config_ips = Restricted_Site_Access::get_config_ips();
-		}
-
-		return array_unique( array_merge( $current_ips, $config_ips ) );
+	private function get_current_ips( $include_config = true, $include_labels = false ) {
+		return Restricted_Site_Access::get_ips( $include_config, $include_labels );
 	}
 
 	/**
