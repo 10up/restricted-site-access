@@ -2,7 +2,7 @@
 
 > Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
-[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest)  ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v5.3%20tested-success.svg) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest)  ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v5.7%20tested-success.svg) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
 
 ## Table of Contents  
 * [Features](#features)
@@ -110,6 +110,26 @@ In your `wp-config.php` file, you can define the following:
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 ```
 
+In 7.1.1, the capacity to programmatically add / remove / set access IPs programmatically was introduced.
+
+The following are valid statements:
+
+Set IPs, ignoring all stored values (but not the constant defined values), if you're going to use the approach with array indices rather than mixing the two.
+```php
+Restricted_Site_Access::set_ips( array( '192.168.0.1', '192.168.0.2', '192.168.0.3' ) );
+Restricted_Site_Access::set_ips( array( 'labelfoo' => '192.168.0.1', 'labelbar' => 192.168.0.2', 'labelbaz' => 192.168.0.3' ) );
+```
+
+Add IPs, if they're not already added.
+```php
+Restricted_Site_Access::add_ips( array( 'five' => '192.168.1.5', 'six' => '192.168.1.6') );
+```
+
+Remove IPs, if they are in the list.
+```php
+Restricted_Site_Access::remove_ips( array( '192.168.1.2','192.168.1.5','192.168.1.6', ) );
+```
+
 ### Is there a constant I can set to ensure my site is (or is not) restricted?
 
 As of version 7.1.0, two constants were introduced that give you the ability to specify if the site should be in restricted mode.
@@ -144,5 +164,5 @@ Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/
 ## Like what you see?
 
 <p align="center">
-<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
+<a href="http://10up.com/contact/"><img src="https://10up.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
 </p>

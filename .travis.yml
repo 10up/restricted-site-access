@@ -14,7 +14,7 @@ cache:
     - vendor
 
 install:
-  - composer install --no-interaction
+  - composer install --no-interaction --ignore-platform-reqs
 
 # Declare which versions of WordPress to test against.
 env:
