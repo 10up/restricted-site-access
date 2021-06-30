@@ -35,8 +35,8 @@ Adds a number of new configuration options to the Reading settings panel as well
 
 ## Installation
 
-1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory
-2. Activate the plugin through the "Plugins" menu in WordPress
+1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory.
+2. Activate the plugin through the "Plugins" menu in WordPress.
 3. Configure the plugin by going to the Settings &rsaquo; Reading page in WordPress.
 
 ## Frequently Asked Questions
