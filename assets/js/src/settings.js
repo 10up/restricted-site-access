@@ -126,7 +126,7 @@
 			action: 'rsa_ip_check',
 			'ip_address': ip,
 			'ip_address_comment': comment,
-			nonce: rsaAdmin.nonce
+			nonce: rsaSettings.nonce
 		}, function(response) {
 			if ( response ) {
 				$( Cache.new_ip.parentNode ).effect( 'shake', shake_speed );
