@@ -719,6 +719,12 @@ class Restricted_Site_Access {
 	 * Enqueue Settings page scripts.
 	 */
 	public static function enqueue_settings_script() {
+		$current_screen = get_current_screen();
+
+		if ( ! empty( $current_screen ) && 'options-reading' !== $current_screen->id ) {
+			return;
+		}
+
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
@@ -728,6 +734,14 @@ class Restricted_Site_Access {
 			array( 'jquery-effects-shake' ),
 			RSA_VERSION,
 			true
+		);
+
+		wp_localize_script(
+			'rsa-settings',
+			'rsaSettings',
+			array(
+				'nonce'   => wp_create_nonce( 'rsa_admin_nonce' ),
+			)
 		);
 	}
 
