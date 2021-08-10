@@ -3,8 +3,10 @@ Contributors: jakemgold, rcbth, 10up, thinkoomph, tlovett1
 Donate link: https://10up.com/plugins/restricted-site-access-wordpress/
 Tags: privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 4.6
-Tested up to: 5.7
+Tested up to: 5.8
 Stable tag: 7.2.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
@@ -14,18 +16,18 @@ Limit access your site to visitors who are logged in or accessing the site from 
 
 Adds a number of new configuration options to the Reading settings panel as well as the Network Settings panel in multisite. From these panels you can:
 
-1. Enable or disable site restriction
-1. Change the restriction behavior: send to login, redirect, display a message, display a page
-1. Add IP addresses to an unrestricted list, including ranges
-1. Quickly add your current IP to the unrestricted list
-1. Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
-1. Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
+* Enable or disable site restriction
+* Change the restriction behavior: send to login, redirect, display a message, display a page
+* Add IP addresses to an unrestricted list, including ranges
+* Quickly add your current IP to the unrestricted list
+* Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
+* Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
 
 == Installation ==
 
-1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Configure the plugin by going to the "Reading" menu (WP3.5+) or "Privacy" (earlier versions) under "Settings"
+1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory.
+1. Activate the plugin through the 'Plugins' menu in WordPress.
+1. Configure the plugin by going to the "Reading" menu (WP3.5+) or "Privacy" (earlier versions) under "Settings".
 
 == Frequently Asked Questions ==
 
@@ -99,6 +101,48 @@ In your `wp-config.php` file, you can define the following:
 define( 'RSA_IP_WHITELIST', '192.0.0.1|192.0.0.10' );
 `
 
+In 7.1.1, the capacity to programmatically add / remove / set access IPs programmatically was introduced.
+
+The following are valid statements:
+
+Set IPs, ignoring all stored values (but not the constant defined values), if you're going to use the approach with array indices rather than mixing the two.
+
+`
+Restricted_Site_Access::set_ips( array( '192.168.0.1', '192.168.0.2', '192.168.0.3' ) );
+Restricted_Site_Access::set_ips( array( 'labelfoo' => '192.168.0.1', 'labelbar' => 192.168.0.2', 'labelbaz' => 192.168.0.3' ) );
+`
+
+Add IPs, if they're not already added.
+
+`
+Restricted_Site_Access::add_ips( array( 'five' => '192.168.1.5', 'six' => '192.168.1.6') );
+`
+
+Remove IPs, if they are in the list.
+
+`
+Restricted_Site_Access::remove_ips( array( '192.168.1.2','192.168.1.5','192.168.1.6', ) );
+`
+
+= Is there a constant I can set to ensure my site is (or is not) restricted? =
+
+As of version 7.1.0, two constants were introduced that give you the ability to specify if the site should be in restricted mode.
+
+You can force the plugin to be in restricted mode by adding the following to your `wp-config.php` file:
+
+`
+define( 'RSA_FORCE_RESTRICTION', true );
+`
+
+Or to ensure your site won't be in restricted mode:
+
+`
+define( 'RSA_FORBID_RESTRICTION', true );
+`
+
+Make sure you add it before the `/* That's all, stop editing! Happy blogging. */` line.
+
+Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
 == Screenshots ==
 
