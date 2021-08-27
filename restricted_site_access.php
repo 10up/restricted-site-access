@@ -1582,6 +1582,91 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Update an existing IP address or label.
+	 *
+	 * @param boolean|string $ip        The IP address that needs to be updated.
+	 * @param boolean|string $new_ip    The new IP address that will replace $ip.
+	 * @param boolean|string $new_label The new label that will replace the label of $ip.
+	 *
+	 * @return integer
+	 */
+	public static function update_ip_or_label( $ip = false, $new_ip = false, $new_label = false ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+
+		$IP_NOT_DEFINED    = 0;
+		$IP_INVALID_FORMAT = 1;
+		$IP_ALREADY_EXISTS = 2;
+		$IP_NOT_FOUND      = 3;
+		$UPDATE_SUCCESS    = 4;
+
+		if ( false === $ip ) {
+			return $IP_NOT_DEFINED;
+		}
+
+		$allowed_ips = (array) self::$rsa_options['allowed'];
+		$comments    = (array) self::$rsa_options['comment'];
+		$ip_index    = -1;
+
+		/**
+		 * Get the index of the ip address that needs
+		 * to be updated.
+		 */
+		foreach ( $allowed_ips as $index => $current_ip ) {
+			if ( $current_ip === $ip ) {
+				$ip_index = $index;
+				break;
+			}
+		}
+
+		/**
+		 * Return status code 3 if `$ip` not found.
+		 */
+		if ( -1 === $ip_index ) {
+			return $IP_NOT_FOUND;
+		}
+
+		/**
+		 * Return status code 1 if format of `$new_ip` is invalid.
+		 */
+		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
+			return $IP_INVALID_FORMAT;
+		}
+
+		/**
+		 * Return status code 2 if `$ip` doesn't exist in
+		 * `$allowed_ips` array.
+		 */
+		if ( in_array( $new_ip, $allowed_ips, true ) ) {
+			return $IP_ALREADY_EXISTS;
+		}
+
+		/**
+		 * Add `$new_ip` to the `$allowed_ips` array.
+		 */
+		if ( false !== $new_ip ) {
+			$allowed_ips[ $ip_index ] = $new_ip;
+		}
+
+		/**
+		 * Add `$new_label` to the `$comments` array.
+		 */
+		if ( false !== $new_label ) {
+			$comments[ $ip_index ] = $new_label;
+		}
+
+		self::$rsa_options['allowed'] = $allowed_ips;
+		self::$rsa_options['comment'] = $comments;
+		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+
+		return $UPDATE_SUCCESS;
+	}
+
+	/**
 	 * Remove IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.

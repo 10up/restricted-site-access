@@ -505,6 +505,70 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
+	 * <ip>
+	 * : IP address to update.
+	 *
+	 * [--new-ip]
+	 * : The IP address to replace with.
+	 *
+	 * [--new-label]
+	 * : The new label for the IP address.
+	 *
+	 * [--network]
+	 * : Multisite only. Sets configuration for the network as a whole.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *    # Sets IP whitelist to 192.0.0.1.
+	 *    $ wp rsa ip-set 192.0.0.1
+	 *    Success: Updated site IP whitelist to 192.0.0.1.
+	 *
+	 * @subcommand ip-update
+	 *
+	 * @param array $args       List of IPs to set.
+	 * @param array $assoc_args Optional flags.
+	 */
+	public function ip_update( $args, $assoc_args ) {
+		$this->setup( $args, $assoc_args );
+
+		if ( 0 === count( $assoc_args ) ) {
+			\WP_CLI::warning( 'Provide the arguments to update.', 'restricted-site-access' );
+		}
+
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
+
+		if ( 0 === count( $valid_ips ) ) {
+			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
+		}
+
+		$new_ip      = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-ip', false );
+		$new_label   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-label', false );
+
+		$status_code = Restricted_Site_Access::update_ip_or_label( $valid_ips[0], $new_ip, $new_label );
+
+		switch ( $status_code ) {
+			case 0:
+				WP_CLI::error( __( 'IP argument not found.', 'restricted-site-access' ) );
+				break;
+			case 1:
+				WP_CLI::error( __( 'The IP address format is incorrect.', 'restricted-site-access' ) );
+				break;
+			case 2:
+				WP_CLI::error( __( 'The IP address already exists', 'restricted-site-access' ) );
+				break;
+			case 4:
+				WP_CLI::success( __( 'Fields correctly updated.', 'restricted-site-access' ) );
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	 * Sets list of IPs to whitelist. Overwrites current settings.
+	 *
+	 * ## OPTIONS
+	 *
 	 * <ip>...
 	 * : List of IP addresses to whitelist.
 	 *
