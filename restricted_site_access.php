@@ -1553,9 +1553,10 @@ class Restricted_Site_Access {
 	 * or labels can be used as array indices
 	 * array( 'labelone' => '192.168.0.1', 'labeltwo' => '192.168.0.2' )
 	 *
-	 * @param  string|array $ips list of IPs to add.
+	 * @param  string|array $ips    list of IPs to add.
+	 * @param  array        $labels list of labels corressponding to the IP.
 	 */
-	public static function add_ips( $ips ) {
+	public static function add_ips( $ips, $labels = array() ) {
 		if ( is_null( self::$rsa_options ) ) {
 			if ( is_null( self::$fields ) ) {
 				self::populate_fields_array();
@@ -1565,13 +1566,12 @@ class Restricted_Site_Access {
 		$ips         = (array) $ips;
 		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
 		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
-		$i           = 0;
-		foreach ( $ips as $label => $ip ) {
+
+		foreach ( $ips as $index => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
-				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
+				$comments[]    = sanitize_text_field( $labels[ $index ] );
 			}
-			$i++;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
@@ -1598,14 +1598,14 @@ class Restricted_Site_Access {
 			self::$rsa_options = self::get_options();
 		}
 
-		$IP_NOT_DEFINED    = 0;
-		$IP_INVALID_FORMAT = 1;
-		$IP_ALREADY_EXISTS = 2;
-		$IP_NOT_FOUND      = 3;
-		$UPDATE_SUCCESS    = 4;
+		$ip_not_defined    = 0;
+		$ip_invalid_format = 1;
+		$ip_already_exists = 2;
+		$ip_not_found      = 3;
+		$update_success    = 4;
 
 		if ( false === $ip ) {
-			return $IP_NOT_DEFINED;
+			return $ip_not_defined;
 		}
 
 		$allowed_ips = (array) self::$rsa_options['allowed'];
@@ -1627,14 +1627,14 @@ class Restricted_Site_Access {
 		 * Return status code 3 if `$ip` not found.
 		 */
 		if ( -1 === $ip_index ) {
-			return $IP_NOT_FOUND;
+			return $ip_not_found;
 		}
 
 		/**
 		 * Return status code 1 if format of `$new_ip` is invalid.
 		 */
 		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
-			return $IP_INVALID_FORMAT;
+			return $ip_invalid_format;
 		}
 
 		/**
@@ -1642,7 +1642,7 @@ class Restricted_Site_Access {
 		 * `$allowed_ips` array.
 		 */
 		if ( in_array( $new_ip, $allowed_ips, true ) ) {
-			return $IP_ALREADY_EXISTS;
+			return $ip_already_exists;
 		}
 
 		/**
@@ -1663,7 +1663,7 @@ class Restricted_Site_Access {
 		self::$rsa_options['comment'] = $comments;
 		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 
-		return $UPDATE_SUCCESS;
+		return $update_success;
 	}
 
 	/**
