@@ -556,6 +556,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			case 2:
 				WP_CLI::error( __( 'The IP address already exists', 'restricted-site-access' ) );
 				break;
+			case 3:
+				WP_CLI::error( __( "The IP address doesn't exist", 'restricted-site-access' ) );
+				break;
 			case 4:
 				WP_CLI::success( __( 'Fields correctly updated.', 'restricted-site-access' ) );
 				break;
