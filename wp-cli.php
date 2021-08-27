@@ -414,27 +414,25 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		 *     ),
 		 * )
 		 */
-		$ips_and_labels_array = array_map(
-			function( $item ) {
-				$fragments = explode( '=', $item );
+		$ips_and_labels_array = array();
+		foreach ( $args as $index => $item ) {
+			$fragments = explode( '=', $item );
+			/**
+			 * If the IP doesn't have a corressponding label,
+			 * then set label to '[null]x', where 'x' is an
+			 * integer.
+			 */
+			if ( ! isset( $fragments[1] ) ) {
+				$fragments[1] = '[null]:' . $index++;
+			}
 
-				/**
-				 * If the IP doesn't have a corressponding label,
-				 * then set label to ''.
-				 */
-				if ( ! isset( $fragments[1] ) ) {
-					$fragments[1] = '';
-				}
+			$structure_ip_label_array = array(
+				'ip'    => $fragments[0],
+				'label' => $fragments[1],
+			);
 
-				$structure_ip_label_array = array(
-					'ip'    => $fragments[0],
-					'label' => $fragments[1],
-				);
-
-				return $structure_ip_label_array;
-			},
-			$args
-		);
+			$ips_and_labels_array[] = $structure_ip_label_array;
+		}
 
 		/**
 		 * Get all whitelisted IPs saved in DB.
@@ -470,17 +468,6 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			$filtered_ips_and_labels
 		);
 
-		/**
-		 * Extract all IP address labels from the filtered array
-		 * as an indexed array.
-		 */
-		$new_labels = array_map(
-			function( $ip_label_pair ) {
-				return $ip_label_pair['label'];
-			},
-			$filtered_ips_and_labels
-		);
-
 		// Validate the IP addresses.
 		$valid_ips = array_filter( $new_ips, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
@@ -499,8 +486,14 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			return;
 		}
 
+		$new_ip_label_pairs_structured = array();
+
+		foreach ( $filtered_ips_and_labels as $ip_label_pair ) {
+			$new_ip_label_pairs_structured[ $ip_label_pair['label'] ] = $ip_label_pair['ip'];
+		}
+
 		// Updates the option.
-		Restricted_Site_Access::add_ips( $new_ips, $new_labels );
+		Restricted_Site_Access::add_ips( $new_ip_label_pairs_structured );
 
 		WP_CLI::success(
 			sprintf(

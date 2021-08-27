@@ -1553,10 +1553,9 @@ class Restricted_Site_Access {
 	 * or labels can be used as array indices
 	 * array( 'labelone' => '192.168.0.1', 'labeltwo' => '192.168.0.2' )
 	 *
-	 * @param  string|array $ips    list of IPs to add.
-	 * @param  array        $labels list of labels corressponding to the IP.
+	 * @param  string|array $ips list of IPs to add.
 	 */
-	public static function add_ips( $ips, $labels = array() ) {
+	public static function add_ips( $ips ) {
 		if ( is_null( self::$rsa_options ) ) {
 			if ( is_null( self::$fields ) ) {
 				self::populate_fields_array();
@@ -1566,12 +1565,13 @@ class Restricted_Site_Access {
 		$ips         = (array) $ips;
 		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
 		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
-
-		foreach ( $ips as $index => $ip ) {
+		$i           = 0;
+		foreach ( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
-				$comments[]    = sanitize_text_field( $labels[ $index ] );
+				$comments[]    = $i !== $label && false === strpos( $label, '[null]:' ) ? sanitize_text_field( $label ) : '';
 			}
+			$i++;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
