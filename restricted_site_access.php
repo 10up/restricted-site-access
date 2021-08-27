@@ -740,7 +740,7 @@ class Restricted_Site_Access {
 			'rsa-settings',
 			'rsaSettings',
 			array(
-				'nonce'   => wp_create_nonce( 'rsa_admin_nonce' ),
+				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
 			)
 		);
 	}

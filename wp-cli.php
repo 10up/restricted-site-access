@@ -541,8 +541,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
 
-		$new_ip      = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-ip', false );
-		$new_label   = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-label', false );
+		$new_ip    = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-ip', false );
+		$new_label = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-label', false );
 
 		$status_code = Restricted_Site_Access::update_ip_or_label( $valid_ips[0], $new_ip, $new_label );
 
