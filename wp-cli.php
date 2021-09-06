@@ -392,7 +392,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		/**
-		 * The input arguments will can be of the form:
+		 * The input arguments can be of the form:
 		 * wp rsa ip-add 8.8.8.8=Google 9.9.9.9 1.1.1.1=Cloudflare.
 		 *
 		 * Some input IP addresses may be provided with a label while
@@ -419,8 +419,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			$fragments = explode( '=', $item );
 			/**
 			 * If the IP doesn't have a corressponding label,
-			 * then set label to '[null]x', where 'x' is an
-			 * integer.
+			 * then set label to '[null]:x', where 'x' is an
+			 * integer. This is because multiple IPs can have
+			 * the same label.
 			 */
 			if ( ! isset( $fragments[1] ) ) {
 				$fragments[1] = '[null]:' . $index++;
@@ -603,7 +604,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *    # Sets IP whitelist to 192.0.0.1.
-	 *    $ wp rsa ip-set 192.0.0.1
+	 *    $ wp rsa ip-update 192.0.0.1
 	 *    Success: Updated site IP whitelist to 192.0.0.1.
 	 *
 	 * @subcommand ip-update
@@ -615,7 +616,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		if ( 0 === count( $assoc_args ) ) {
-			\WP_CLI::warning( 'Provide the arguments to update.', 'restricted-site-access' );
+			\WP_CLI::warning( __( 'Provide the arguments to update.' ), 'restricted-site-access' );
 		}
 
 		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
