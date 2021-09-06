@@ -628,27 +628,13 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$new_ip    = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-ip', false );
 		$new_label = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-label', false );
 
-		$status_code = Restricted_Site_Access::update_ip_or_label( $valid_ips[0], $new_ip, $new_label );
+		$update_status = Restricted_Site_Access::update_ip_or_label( $valid_ips[0], $new_ip, $new_label );
 
-		switch ( $status_code ) {
-			case 0:
-				WP_CLI::error( __( 'IP argument not found.', 'restricted-site-access' ) );
-				break;
-			case 1:
-				WP_CLI::error( __( 'The IP address format is incorrect.', 'restricted-site-access' ) );
-				break;
-			case 2:
-				WP_CLI::error( __( 'The IP address already exists', 'restricted-site-access' ) );
-				break;
-			case 3:
-				WP_CLI::error( __( "The IP address doesn't exist", 'restricted-site-access' ) );
-				break;
-			case 4:
-				WP_CLI::success( __( 'Fields correctly updated.', 'restricted-site-access' ) );
-				break;
-			default:
-				break;
+		if ( is_wp_error( $update_status ) ) {
+			WP_CLI::error( $update_status->get_error_message() );
 		}
+
+		WP_CLI::success( __( 'Fields correctly updated.', 'restricted-site-access' ) );
 	}
 
 	/**

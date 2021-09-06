@@ -1598,14 +1598,8 @@ class Restricted_Site_Access {
 			self::$rsa_options = self::get_options();
 		}
 
-		$ip_not_defined    = 0;
-		$ip_invalid_format = 1;
-		$ip_already_exists = 2;
-		$ip_not_found      = 3;
-		$update_success    = 4;
-
 		if ( false === $ip ) {
-			return $ip_not_defined;
+			return new WP_Error( 0, __( 'IP argument not found.', 'restricted-site-access' ) );
 		}
 
 		$allowed_ips = (array) self::$rsa_options['allowed'];
@@ -1624,17 +1618,17 @@ class Restricted_Site_Access {
 		}
 
 		/**
-		 * Return status code 3 if `$ip` not found.
+		 * Return if `$ip` not found.
 		 */
 		if ( -1 === $ip_index ) {
-			return $ip_not_found;
+			return new WP_Error( 3, __( "The IP address doesn't exist", 'restricted-site-access' ) );
 		}
 
 		/**
-		 * Return status code 1 if format of `$new_ip` is invalid.
+		 * Return if the format of `$new_ip` is invalid.
 		 */
 		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
-			return $ip_invalid_format;
+			return new WP_Error( 1, __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
 		}
 
 		/**
@@ -1642,7 +1636,7 @@ class Restricted_Site_Access {
 		 * `$allowed_ips` array.
 		 */
 		if ( in_array( $new_ip, $allowed_ips, true ) ) {
-			return $ip_already_exists;
+			return new WP_Error( 2, __( 'The IP address already exists.', 'restricted-site-access' ) );
 		}
 
 		/**
@@ -1663,7 +1657,7 @@ class Restricted_Site_Access {
 		self::$rsa_options['comment'] = $comments;
 		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 
-		return $update_success;
+		return true;
 	}
 
 	/**
