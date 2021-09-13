@@ -1,5 +1,5 @@
 describe( 'Plugin admin settings are properly rendered.', () => {
-	it( 'Admin can reach the plugin settings.', () => {
+	it( 'Visit plugin settings.', () => {
 		cy.login( undefined, undefined, '/wp-admin/options-reading.php' );
 	} );
 

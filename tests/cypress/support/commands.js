@@ -85,3 +85,19 @@ Cypress.Commands.add( 'openDocumentSettingsPanel', ( name ) => {
 			}
 		} );
 } );
+
+Cypress.Commands.add( 'addPage', ( title, content ) => {
+	cy.login( undefined, undefined, '/wp-admin/post-new.php?post_type=page' );
+	cy.get( 'button[aria-label="Close dialog"]' ).click();
+
+	cy
+		.get( '.editor-post-title__input' )
+		.type( title );
+
+	cy.get( '.edit-post-header-toolbar__inserter-toggle' ).click();
+	cy.get( '.block-editor-inserter__search-input' ).type( 'paragraph' );
+	cy.get( '.editor-block-list-item-paragraph' ).click();
+	cy.get( '.editor-post-publish-button__button' ).click();
+	cy.get( '.editor-post-publish-panel__header-publish-button .editor-post-publish-button__button' ).click();
+	cy.wait( 1000 );
+} );
