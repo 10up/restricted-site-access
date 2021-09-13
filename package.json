@@ -3,6 +3,7 @@
   "description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
   "devDependencies": {
     "grunt": "^1.3.0",
+    "@wordpress/env": "^4.1.1",
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
