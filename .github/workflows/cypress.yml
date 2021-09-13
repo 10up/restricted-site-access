@@ -1,8 +1,7 @@
 on:
   push:
     branches:
-      - trunk
-      - develop
+      - e2e/55-default-admin-settings
 
 jobs:
   cypress:
