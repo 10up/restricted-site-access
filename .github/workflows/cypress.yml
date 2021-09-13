@@ -21,9 +21,6 @@ jobs:
     - name: Install dependencies
       run: npm i
 
-    - name: Build asset
-      run: npm run build
-
     - name: Set the core version
       run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}
 
