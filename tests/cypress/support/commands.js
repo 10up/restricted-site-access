@@ -28,8 +28,12 @@ import 'cypress-file-upload';
 
 Cypress.Commands.add(
 	'login',
-	( username = 'admin', password = 'password' ) => {
-		cy.visit( `/wp-admin` );
+	( username = 'admin', password = 'password', path = '' ) => {
+		if ( 0 === path.length ) {
+			cy.visit( `/wp-admin` );
+		} else {
+			cy.visit( path );
+		}
 		cy.get( 'body' ).then( ( $body ) => {
 			if ( $body.find( '#wpwrap' ).length == 0 ) {
 				cy.get( 'input#user_login' ).clear();
