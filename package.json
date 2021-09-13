@@ -10,6 +10,14 @@
     "grunt-phpcs": "^0.4.0",
     "grunt-phpunit": "^0.3.6"
   },
+  "scripts": {
+    "env": "wp-env",
+    "cypress:open": "cypress open --config-file tests/cypress/config.json",
+    "cypress:run": "cypress run --config-file tests/cypress/config.json"
+  },
   "author": "10up <sales@10up.com>",
-  "license": "GPLv2 (or later)"
+  "license": "GPLv2 (or later)",
+  "dependencies": {
+    "cypress-file-upload": "^5.0.8"
+  }
 }
