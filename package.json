@@ -2,6 +2,7 @@
   "name": "restricted-site-access",
   "description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
   "devDependencies": {
+    "@wordpress/env": "^4.1.1",
     "grunt": "^1.0.4",
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
