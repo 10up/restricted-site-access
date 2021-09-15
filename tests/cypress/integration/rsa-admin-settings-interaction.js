@@ -1,10 +1,6 @@
 describe( 'Plugin admin settings are properly interactive.', () => {
-	before( () => {
-		cy.addPage( 'RSA Notice Page', 'RSA: This is a restricted page' );
-	} );
-
 	it( 'Visit plugin settings.', () => {
-		cy.visit( '/wp-admin/options-reading.php' );
+		cy.visitAdminPage( 'options-reading.php' );
 	} );
 
 	it ( 'Select "Site visibility: public" radio button', function() {
@@ -43,7 +39,15 @@ describe( 'Plugin admin settings are properly interactive.', () => {
 			.check();
 
 		cy
-			.get( 'input[name="rsa_options[redirect_url]"], input[name="rsa_options[redirect_path]"], input[name="rsa_options[head_code]"]' )
+			.get( 'input[name="rsa_options[redirect_url]"]' )
+			.should( 'be.visible' );
+
+		cy
+			.get( 'input[name="rsa_options[redirect_path]"]' )
+			.should( 'be.visible' );
+
+		cy
+			.get( 'select[name="rsa_options[head_code]"]' )
 			.should( 'be.visible' );
 	} );
 

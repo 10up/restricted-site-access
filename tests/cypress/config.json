@@ -6,5 +6,12 @@
   "videosFolder": "tests/cypress/videos",
   "downloadsFolder": "tests/cypress/downloads",
   "supportFile": "tests/cypress/support/index.js",
-  "video": false
+  "video": false,
+  "testFiles": [
+    "rsa-settings-spec.js",
+    "rsa-admin-settings-interaction.js",
+    "rsa-add-remove-ip-addresses.js",
+    "rsa-redirection-settings.js",
+    "rsa-simple-message-settings.js"
+  ]
 }

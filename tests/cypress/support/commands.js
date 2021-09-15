@@ -28,12 +28,8 @@ import 'cypress-file-upload';
 
 Cypress.Commands.add(
 	'login',
-	( username = 'admin', password = 'password', path = '' ) => {
-		if ( 0 === path.length ) {
-			cy.visit( `/wp-admin` );
-		} else {
-			cy.visit( path );
-		}
+	( username = 'admin', password = 'password' ) => {
+		cy.visit( `/wp-admin` );
 		cy.get( 'body' ).then( ( $body ) => {
 			if ( $body.find( '#wpwrap' ).length == 0 ) {
 				cy.get( 'input#user_login' ).clear();
@@ -86,18 +82,8 @@ Cypress.Commands.add( 'openDocumentSettingsPanel', ( name ) => {
 		} );
 } );
 
-Cypress.Commands.add( 'addPage', ( title, content ) => {
-	cy.login( undefined, undefined, '/wp-admin/post-new.php?post_type=page' );
-	cy.get( 'button[aria-label="Close dialog"]' ).click();
-
+Cypress.Commands.add( 'saveRsaSettings', () => {
 	cy
-		.get( '.editor-post-title__input' )
-		.type( title );
-
-	cy.get( '.edit-post-header-toolbar__inserter-toggle' ).click();
-	cy.get( '.block-editor-inserter__search-input' ).type( 'paragraph' );
-	cy.get( '.editor-block-list-item-paragraph' ).click();
-	cy.get( '.editor-post-publish-button__button' ).click();
-	cy.get( '.editor-post-publish-panel__header-publish-button .editor-post-publish-button__button' ).click();
-	cy.wait( 1000 );
+		.get( '#submit' )
+		.click();
 } );

@@ -1,6 +1,6 @@
 describe( 'Plugin admin settings are properly rendered.', () => {
 	it( 'Visit plugin settings.', () => {
-		cy.login( undefined, undefined, '/wp-admin/options-reading.php' );
+		cy.visitAdminPage( 'options-reading.php' );
 	} );
 
 	it( 'Site visibility: "public" radio button', () => {
