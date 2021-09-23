@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         core:
-          - {name: 'WP minimum', version: 'WordPress/WordPress#5.8'}
+          - {name: 'WP minimum', version: 'WordPress/WordPress#4.6'}
 
     steps:
     - name: Checkout
