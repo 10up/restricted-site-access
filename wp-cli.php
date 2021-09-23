@@ -423,7 +423,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			 * integer.
 			 */
 			if ( ! isset( $fragments[1] ) ) {
-				$fragments[1] = '[null]:' . $index++;
+				$fragments[1] = '';
 			}
 
 			$structure_ip_label_array = array(
@@ -486,14 +486,19 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			return;
 		}
 
-		$new_ip_label_pairs_structured = array();
+		$ips_with_label    = array();
+		$ips_without_label = array();
 
 		foreach ( $filtered_ips_and_labels as $ip_label_pair ) {
-			$new_ip_label_pairs_structured[ $ip_label_pair['label'] ] = $ip_label_pair['ip'];
+			if ( empty( $ip_label_pair['label'] ) ) {
+				$ips_without_label[] = $ip_label_pair['ip'];
+			} else {
+				$ips_with_label[ $ip_label_pair['label'] ] = $ip_label_pair['ip'];
+			}
 		}
 
 		// Updates the option.
-		Restricted_Site_Access::add_ips( $new_ip_label_pairs_structured );
+		Restricted_Site_Access::add_ips( array_merge( $ips_without_label, $ips_with_label ) );
 
 		WP_CLI::success(
 			sprintf(

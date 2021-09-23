@@ -1569,7 +1569,7 @@ class Restricted_Site_Access {
 		foreach ( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
 				$allowed_ips[] = $ip;
-				$comments[]    = $i !== $label && false === strpos( $label, '[null]:' ) ? sanitize_text_field( $label ) : '';
+				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
 			$i++;
 		}
