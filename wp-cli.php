@@ -420,8 +420,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			/**
 			 * If the IP doesn't have a corressponding label,
 			 * then set label to '[null]:x', where 'x' is an
-			 * integer. This is because multiple IPs can have
-			 * the same label.
+			 * integer.
 			 */
 			if ( ! isset( $fragments[1] ) ) {
 				$fragments[1] = '[null]:' . $index++;
