@@ -87,3 +87,12 @@ Cypress.Commands.add( 'saveRsaSettings', () => {
 		.get( '#submit' )
 		.click();
 } );
+
+Cypress.Commands.add( 'logout', () => {
+	cy
+		.get( '#wp-admin-bar-logout > a' )
+		.invoke( 'attr', 'href' )
+		.then( href => {
+			cy.visit( href );
+		} );
+} );

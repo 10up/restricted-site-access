@@ -25,6 +25,7 @@ describe( 'Admin can add/remove IP addresses', () => {
 	it( 'Is able to add IPv4 and IPv6 address without and without label', () => {
 		cy
 			.get( '#newip' )
+			.clear()
 			.type( '10.2.4.23' )
 			.should( 'have.value', '10.2.4.23' );
 
@@ -34,11 +35,13 @@ describe( 'Admin can add/remove IP addresses', () => {
 
 		cy
 			.get( '#newip' )
+			.clear()
 			.type( '123.5.60.3' )
 			.should( 'have.value', '123.5.60.3' );
 
 		cy
 			.get( '#newipcomment' )
+			.clear()
 			.type( 'Google' )
 			.should( 'have.value', 'Google' );
 
@@ -48,11 +51,13 @@ describe( 'Admin can add/remove IP addresses', () => {
 
 		cy
 			.get( '#newip' )
+			.clear()
 			.type( '2a06:98c0::/29' )
 			.should( 'have.value', '2a06:98c0::/29' );
 
 		cy
 			.get( '#newipcomment' )
+			.clear()
 			.type( 'Cloudflare' )
 			.should( 'have.value', 'Cloudflare' );
 
@@ -101,6 +106,16 @@ describe( 'Admin can add/remove IP addresses', () => {
 			if ( 2 === index ) {
 				expect( ipEl ).to.have.value( '2a06:98c0::/29' );
 				expect( labelEl ).to.have.value( 'Cloudflare' );
+			}
+		} );
+	} );
+
+	after( () => {
+		cy.get( '#ip_list > div:not( #ip_list_empty )' ).each( ( $el, index ) => {
+			const removeBtn = $el.find( '.remove_btn' );
+
+			if ( removeBtn ) {
+				cy.wrap( removeBtn ).click();
 			}
 		} );
 	} );
