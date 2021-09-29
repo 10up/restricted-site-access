@@ -311,6 +311,14 @@ class Restricted_Site_Access {
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
 
+			/**
+			 * This conditional prevents a redirect loop if the redirect URL
+			 * belongs to the same domain.
+			 */
+			if ( trailingslashit( $results['url'] ) === trailingslashit( home_url( $wp->request ) ) ) {
+				return;
+			}
+
 			// Don't redirect during unit tests.
 			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
 				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
@@ -434,7 +442,16 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
+						$current_url_domain  = wp_parse_url( home_url( $wp->request ), PHP_URL_HOST );
+
+						/**
+						 * This conditional prevents a redirect loop if the redirect URL
+						 * belongs to the same domain.
+						 */
+						if ( $redirect_url_domain !== $current_url_domain ) {
+							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						}
 					}
 					break;
 				}
