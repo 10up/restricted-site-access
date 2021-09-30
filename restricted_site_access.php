@@ -315,7 +315,11 @@ class Restricted_Site_Access {
 			 * This conditional prevents a redirect loop if the redirect URL
 			 * belongs to the same domain.
 			 */
-			if ( trailingslashit( $results['url'] ) === trailingslashit( home_url( $wp->request ) ) ) {
+			$redirect_url_without_markup = trailingslashit( preg_replace("(^https?://)", "", $results['url'] ) );
+			$current_url_without_markup = trailingslashit( preg_replace("(^https?://)", "", home_url( $wp->request ) ) );
+			$current_url_path  = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+
+			if ( ( $current_url_path === $redirect_url_without_markup ) || ( $redirect_url_without_markup === $current_url_without_markup ) ) {
 				return;
 			}
 
@@ -449,7 +453,7 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( $redirect_url_domain !== $current_url_domain ) {
+						if ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 						}
 					}
