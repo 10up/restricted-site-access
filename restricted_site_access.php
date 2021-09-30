@@ -310,16 +310,15 @@ class Restricted_Site_Access {
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
-
 			/**
 			 * This conditional prevents a redirect loop if the redirect URL
 			 * belongs to the same domain.
 			 */
-			$redirect_url_without_markup = trailingslashit( preg_replace("(^https?://)", "", $results['url'] ) );
-			$current_url_without_markup = trailingslashit( preg_replace("(^https?://)", "", home_url( $wp->request ) ) );
-			$current_url_path  = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+			$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
+			$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
+			$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
 
-			if ( ( $current_url_path === $redirect_url_without_markup ) || ( $redirect_url_without_markup === $current_url_without_markup ) ) {
+			if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
 				return;
 			}
 
