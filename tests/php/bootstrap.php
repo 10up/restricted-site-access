@@ -60,7 +60,7 @@ class Restricted_Site_Access_Tests_Bootstrap {
 	public function manually_load_plugin() {
 		require $this->plugin_root . '/restricted_site_access.php';
 		define( 'RSA_TEST_PLUGIN_BASENAME', plugin_basename( 'restricted_site_access.php' ) );
-		define( 'WP_PHP_TESTS_DOMAIN', true );
+		define( 'PHP_UNIT_TESTS_ENV', true );
 	}
 }
 
