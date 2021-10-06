@@ -310,6 +310,17 @@ class Restricted_Site_Access {
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
+			/**
+			 * This conditional prevents a redirect loop if the redirect URL
+			 * belongs to the same domain.
+			 */
+			$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
+			$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
+			$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+
+			if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
+				return;
+			}
 
 			// Don't redirect during unit tests.
 			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
@@ -434,7 +445,16 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
+						$current_url_domain  = wp_parse_url( home_url( $wp->request ), PHP_URL_HOST );
+
+						/**
+						 * This conditional prevents a redirect loop if the redirect URL
+						 * belongs to the same domain.
+						 */
+						if ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) {
+							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						}
 					}
 					break;
 				}
