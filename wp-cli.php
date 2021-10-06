@@ -608,9 +608,13 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *    # Updates the label of IP 192.0.0.1 to "New label"
+	 *    # Update the label of IP 192.0.0.1 to "New label"
 	 *    $ wp rsa ip-update 192.0.0.1 --new-label="New label"
-	 *    Success: Updated site IP whitelist to 192.0.0.1.
+	 *    Success: Fields correctly updated.
+	 *
+	 *    # Replace the IP IP 192.0.0.1 to 200.1.2.3
+	 *    $ wp rsa ip-update 192.0.0.1 --new-ip=200.1.2.3
+	 *    Success: Fields correctly updated.
 	 *
 	 * @subcommand ip-update
 	 *
