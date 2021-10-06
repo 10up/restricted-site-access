@@ -1599,7 +1599,7 @@ class Restricted_Site_Access {
 		}
 
 		if ( false === $ip ) {
-			return new WP_Error( 0, __( 'IP argument not found.', 'restricted-site-access' ) );
+			return new WP_Error( 'ip_argument_not_found', __( 'IP argument not found.', 'restricted-site-access' ) );
 		}
 
 		$allowed_ips = (array) self::$rsa_options['allowed'];
@@ -1621,14 +1621,14 @@ class Restricted_Site_Access {
 		 * Return if `$ip` not found.
 		 */
 		if ( -1 === $ip_index ) {
-			return new WP_Error( 3, __( "The IP address doesn't exist", 'restricted-site-access' ) );
+			return new WP_Error( 'ip_address_does_not_exist', __( "The IP address doesn't exist.", 'restricted-site-access' ) );
 		}
 
 		/**
 		 * Return if the format of `$new_ip` is invalid.
 		 */
 		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
-			return new WP_Error( 1, __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
+			return new WP_Error( 'ip_address_is_invalid', __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
 		}
 
 		/**
@@ -1636,7 +1636,7 @@ class Restricted_Site_Access {
 		 * `$allowed_ips` array.
 		 */
 		if ( in_array( $new_ip, $allowed_ips, true ) ) {
-			return new WP_Error( 2, __( 'The IP address already exists.', 'restricted-site-access' ) );
+			return new WP_Error( 'ip_address_already_exists', __( 'The IP address already exists.', 'restricted-site-access' ) );
 		}
 
 		/**

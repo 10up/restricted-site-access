@@ -589,7 +589,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * Sets list of IPs to whitelist. Overwrites current settings.
+	 * Used to update an existing IP address or to
+	 * update the label of an existing IP address.
 	 *
 	 * ## OPTIONS
 	 *
@@ -607,8 +608,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *    # Sets IP whitelist to 192.0.0.1.
-	 *    $ wp rsa ip-update 192.0.0.1
+	 *    # Updates the label of IP 192.0.0.1 to "New label"
+	 *    $ wp rsa ip-update 192.0.0.1 --new-label="New label"
 	 *    Success: Updated site IP whitelist to 192.0.0.1.
 	 *
 	 * @subcommand ip-update
@@ -620,7 +621,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$this->setup( $args, $assoc_args );
 
 		if ( 0 === count( $assoc_args ) ) {
-			\WP_CLI::warning( __( 'Provide the arguments to update.' ), 'restricted-site-access' );
+			\WP_CLI::error( __( 'Provide the arguments to update.', 'restricted-site-access' ) );
 		}
 
 		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
@@ -635,7 +636,13 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$update_status = Restricted_Site_Access::update_ip_or_label( $valid_ips[0], $new_ip, $new_label );
 
 		if ( is_wp_error( $update_status ) ) {
-			WP_CLI::error( $update_status->get_error_message() );
+			WP_CLI::error(
+				sprintf(
+					'%s (%s)',
+					$update_status->get_error_message(),
+					$update_status->get_error_code()
+				)
+			);
 		}
 
 		WP_CLI::success( __( 'Fields correctly updated.', 'restricted-site-access' ) );
