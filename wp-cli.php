@@ -618,7 +618,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *
 	 * @subcommand ip-update
 	 *
-	 * @param array $args       List of IPs to set.
+	 * @param array $args       IP to update.
 	 * @param array $assoc_args Optional flags.
 	 */
 	public function ip_update( $args, $assoc_args ) {
@@ -649,7 +649,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			);
 		}
 
-		WP_CLI::success( __( 'Fields correctly updated.', 'restricted-site-access' ) );
+		WP_CLI::success( __( 'IP updated.', 'restricted-site-access' ) );
 	}
 
 	/**
