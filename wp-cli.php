@@ -379,6 +379,10 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 *    $ wp rsa ip-add 192.0.0.1
 	 *    Success: Added 192.0.0.1 to site whitelist.
 	 *
+	 *    # Adds 8.8.8.8 1.1.1.1 with labels Google and Cloudflare.
+	 *    $ wp rsa ip-add 8.8.8.8=Google 1.1.1.1=Cloudflare
+	 *    Success: Added 8.8.8.8, 1.1.1.1 to site whitelist.
+	 *
 	 * @subcommand ip-add
 	 *
 	 * @param array $args       List of IPs to whitelist.
@@ -387,15 +391,88 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	public function ip_add( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
 
+		/**
+		 * The input arguments can be of the form:
+		 * wp rsa ip-add 8.8.8.8=Google 9.9.9.9 1.1.1.1=Cloudflare.
+		 *
+		 * Some input IP addresses may be provided with a label while
+		 * other might not.
+		 *
+		 * We will normalise the input as:
+		 * array(
+		 *     array(
+		 *         'key' => '8.8.8.8',
+		 *         'label' => 'Google'
+		 *     ),
+		 *     array(
+		 *         'key' => '9.9.9.9',
+		 *         'label' => ''
+		 *     ),
+		 *      array(
+		 *         'key' => '1.1.1.1',
+		 *         'label' => 'Cloudflare'
+		 *     ),
+		 * )
+		 */
+		$ips_and_labels_array = array();
+		foreach ( $args as $index => $item ) {
+			$fragments = explode( '=', $item );
+			/**
+			 * If the IP doesn't have a corressponding label,
+			 * then set label to '[null]:x', where 'x' is an
+			 * integer.
+			 */
+			if ( ! isset( $fragments[1] ) ) {
+				$fragments[1] = '';
+			}
+
+			$structure_ip_label_array = array(
+				'ip'    => $fragments[0],
+				'label' => $fragments[1],
+			);
+
+			$ips_and_labels_array[] = $structure_ip_label_array;
+		}
+
+		/**
+		 * Get all whitelisted IPs saved in DB.
+		 */
+		$current_ips = $this->get_current_ips();
+
+		/**
+		 * This will only hold those input IP addresses
+		 * which are not already whitelisted.
+		 */
+		$filtered_ips_and_labels = array();
+
+		/**
+		 * A simple for loop to filter the input IP addresses.
+		 */
+		foreach ( $ips_and_labels_array as $ip_label_pair ) {
+			if ( ! in_array( $ip_label_pair['ip'], $current_ips, true ) ) {
+				$filtered_ips_and_labels[] = array(
+					'ip'    => $ip_label_pair['ip'],
+					'label' => $ip_label_pair['label'],
+				);
+			}
+		}
+
+		/**
+		 * Extract all IP address from the filtered array
+		 * as an indexed array.
+		 */
+		$new_ips = array_map(
+			function( $ip_label_pair ) {
+				return $ip_label_pair['ip'];
+			},
+			$filtered_ips_and_labels
+		);
+
 		// Validate the IP addresses.
-		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
+		$valid_ips = array_filter( $new_ips, array( 'Restricted_Site_Access', 'is_ip' ) );
 		if ( 0 === count( $valid_ips ) ) {
 			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
 		}
-
-		// Get the new IPs.
-		$current_ips = $this->get_current_ips();
-		$new_ips     = array_diff( $valid_ips, $current_ips );
 
 		if ( 0 === count( $new_ips ) ) {
 			// Only show a warning as this may be an automated process.
@@ -409,8 +486,19 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			return;
 		}
 
+		$ips_with_label    = array();
+		$ips_without_label = array();
+
+		foreach ( $filtered_ips_and_labels as $ip_label_pair ) {
+			if ( empty( $ip_label_pair['label'] ) ) {
+				$ips_without_label[] = $ip_label_pair['ip'];
+			} else {
+				$ips_with_label[ $ip_label_pair['label'] ] = $ip_label_pair['ip'];
+			}
+		}
+
 		// Updates the option.
-		Restricted_Site_Access::add_ips( $new_ips );
+		Restricted_Site_Access::add_ips( array_merge( $ips_without_label, $ips_with_label ) );
 
 		WP_CLI::success(
 			sprintf(
@@ -498,6 +586,70 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 				$this->update_text( false )
 			)
 		);
+	}
+
+	/**
+	 * Used to update an existing IP address or to
+	 * update the label of an existing IP address.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <ip>
+	 * : IP address to update.
+	 *
+	 * [--new-ip]
+	 * : The IP address to replace with.
+	 *
+	 * [--new-label]
+	 * : The new label for the IP address.
+	 *
+	 * [--network]
+	 * : Multisite only. Sets configuration for the network as a whole.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *    # Update the label of IP 192.0.0.1 to "New label"
+	 *    $ wp rsa ip-update 192.0.0.1 --new-label="New label"
+	 *    Success: Fields correctly updated.
+	 *
+	 *    # Replace the IP IP 192.0.0.1 to 200.1.2.3
+	 *    $ wp rsa ip-update 192.0.0.1 --new-ip=200.1.2.3
+	 *    Success: Fields correctly updated.
+	 *
+	 * @subcommand ip-update
+	 *
+	 * @param array $args       IP to update.
+	 * @param array $assoc_args Optional flags.
+	 */
+	public function ip_update( $args, $assoc_args ) {
+		$this->setup( $args, $assoc_args );
+
+		if ( 0 === count( $assoc_args ) ) {
+			\WP_CLI::error( __( 'Provide the arguments to update.', 'restricted-site-access' ) );
+		}
+
+		$valid_ips = array_filter( $args, array( 'Restricted_Site_Access', 'is_ip' ) );
+
+		if ( 0 === count( $valid_ips ) ) {
+			WP_CLI::error( __( 'No valid IP addresses provided.', 'restricted-site-access' ) );
+		}
+
+		$new_ip    = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-ip', false );
+		$new_label = \WP_CLI\Utils\get_flag_value( $assoc_args, 'new-label', false );
+
+		$update_status = Restricted_Site_Access::update_ip_or_label( $valid_ips[0], $new_ip, $new_label );
+
+		if ( is_wp_error( $update_status ) ) {
+			WP_CLI::error(
+				sprintf(
+					'%s (%s)',
+					$update_status->get_error_message(),
+					$update_status->get_error_code()
+				)
+			);
+		}
+
+		WP_CLI::success( __( 'IP updated.', 'restricted-site-access' ) );
 	}
 
 	/**
