@@ -314,12 +314,14 @@ class Restricted_Site_Access {
 			 * This conditional prevents a redirect loop if the redirect URL
 			 * belongs to the same domain.
 			 */
-			$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
-			$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
-			$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+			if ( 2 === self::$rsa_options['approach'] ) {
+				$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
+				$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
+				$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
 
-			if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
-				return;
+				if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
+					return;
+				}
 			}
 
 			// Don't redirect during unit tests.
