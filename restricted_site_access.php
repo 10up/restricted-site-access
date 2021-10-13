@@ -102,7 +102,7 @@ class Restricted_Site_Access {
 	public static function ajax_notice_dismiss() {
 
 		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+		if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 			if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 				wp_send_json_error();
 				exit;
@@ -128,7 +128,7 @@ class Restricted_Site_Access {
 		}
 
 		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+		if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 			wp_send_json_success();
 		}
 		// @codeCoverageIgnoreEnd
@@ -325,13 +325,13 @@ class Restricted_Site_Access {
 			}
 
 			// Don't redirect during unit tests.
-			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['url'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 				die();
 			}
 
 			// Don't die during unit tests.
-			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['die_message'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
