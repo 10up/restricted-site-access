@@ -8,8 +8,8 @@
 		<testsuite name="restricted-site-access-unit-tests">
 			<directory suffix=".php">tests/php</directory>
 			<exclude>tests/php/code-coverage.php</exclude>
-			<exclude suffix=".php">tests/php/multisite</exclude>
-			<exclude suffix=".php">tests/php/whitelist</exclude>
+			<exclude>tests/php/multisite</exclude>
+			<exclude>tests/php/whitelist</exclude>
 		</testsuite>
 	</testsuites>
 	<filter>
