@@ -1,5 +1,7 @@
 describe( 'Send restricted visitors to a web address', () => {
 	before( () => {
+		cy.setPermalink();
+		cy.saveSettings();
 		cy.visitAdminPage( 'options-reading.php' );
 		cy.get( '#blog-restricted' ).check();
 		cy.get( '#rsa-redirect-visitor' ).check();
@@ -8,7 +10,8 @@ describe( 'Send restricted visitors to a web address', () => {
 			.get( 'input[name="rsa_options[redirect_url]"]' )
 			.clear()
 			.type( `${ Cypress.config().baseUrl }non-existent-page` )
-		cy.saveRsaSettings();
+		cy.saveSettings();
+
 		cy.logout();
 	} );
 
@@ -43,12 +46,12 @@ function testRedirectStatusCode( $status_code = 301 ) {
 	cy
 		.get( '.rsa-setting_settings_field_redirect_code #redirect_code' )
 		.select( `${ $status_code }` );
-	cy.saveRsaSettings();
+	cy.saveSettings();
 	cy.logout();
 
 	cy.request({
 		method: 'GET',
-		url: 'http://osp.local/',
+		url: Cypress.config().baseUrl,
 		failOnStatusCode: false,
 		followRedirect: false
 	} ).then( ( response ) => {

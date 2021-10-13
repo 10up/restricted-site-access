@@ -23,7 +23,7 @@ describe( 'Plugin admin settings are properly interactive.', () => {
 			.should( 'not.be.visible' );
 	} );
 
-	it ( 'Select "Site visibility: no robots" radio button', function() {
+	it ( 'Select "Site visibility: blog restrcited" radio button', function() {
 		cy
 			.get( '#blog-restricted' )
 			.check();

@@ -82,7 +82,7 @@ Cypress.Commands.add( 'openDocumentSettingsPanel', ( name ) => {
 		} );
 } );
 
-Cypress.Commands.add( 'saveRsaSettings', () => {
+Cypress.Commands.add( 'saveSettings', () => {
 	cy
 		.get( '#submit' )
 		.click();
@@ -95,4 +95,12 @@ Cypress.Commands.add( 'logout', () => {
 		.then( href => {
 			cy.visit( href );
 		} );
+} );
+
+Cypress.Commands.add( 'setPermalink', () => {
+	cy.visitAdminPage( 'options-permalink.php' );
+	cy
+		.get( 'form[action="options-permalink.php"] input[type="radio"]' )
+		.eq(4)
+		.check();
 } );

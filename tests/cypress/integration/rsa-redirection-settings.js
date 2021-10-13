@@ -12,7 +12,7 @@ describe( 'Admin can correctly save redirection settings', () => {
 			.type( `${ Cypress.config().baseUrl }non-existent-page` )
 			.should( 'have.value', `${ Cypress.config().baseUrl }non-existent-page` );
 
-		cy.saveRsaSettings();
+		cy.saveSettings();
 	} );
 
 	it( 'Can check "Redirect to same path" checkbox', () => {
@@ -21,7 +21,7 @@ describe( 'Admin can correctly save redirection settings', () => {
 			.check()
 			.should( 'be.checked' );
 
-		cy.saveRsaSettings();
+		cy.saveSettings();
 	} );
 
 	it( 'Can select any of the "Redirection status code" options', () => {
@@ -34,7 +34,7 @@ describe( 'Admin can correctly save redirection settings', () => {
 			.select( '307' )
 			.should( 'have.value', '307' );
 
-		cy.saveRsaSettings();
+		cy.saveSettings();
 	} );
 
 	it( 'Verify all settings are correctly saved', () => {

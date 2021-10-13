@@ -3,7 +3,7 @@ describe( 'Send restricted visitors to login page', () => {
 		cy.visitAdminPage( 'options-reading.php' );
 		cy.get( '#blog-restricted' ).check();
 		cy.get( '#rsa-send-to-login' ).check();
-		cy.saveRsaSettings();
+		cy.saveSettings();
 		cy.logout();
 	} );
 

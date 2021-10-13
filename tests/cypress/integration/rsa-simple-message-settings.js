@@ -23,7 +23,7 @@ describe( 'Admin can correctly save redirection settings', () => {
 			.get( '#rsa_message' )
 			.should( 'have.value', '<strong>This is a restricted site. Please contact the admin.</strong>' );
 
-		cy.saveRsaSettings();
+		cy.saveSettings();
 	} );
 
 	it( 'Verify all settings are correctly saved', () => {
