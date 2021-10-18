@@ -14,6 +14,7 @@
     "rsa-redirection-settings.js",
     "rsa-simple-message-settings.js",
     "rsa-redirect-to-login.js",
-    "rsa-redirect-to-web-address.js"
+    "rsa-redirect-to-web-address.js",
+    "rsa-unrestrict-ip.js"
   ]
 }
