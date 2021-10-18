@@ -3,7 +3,11 @@ name: E2E Tests
 on:
   push:
     branches:
-      - e2e/55-default-admin-settings
+      - develop
+      - trunk
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   cypress:
