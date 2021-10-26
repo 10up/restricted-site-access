@@ -12,7 +12,7 @@
     "grunt-phpunit": "^0.3.6"
   },
   "scripts": {
-    "env": "wp-env",
+    "wp-env": "wp-env",
     "cypress:open": "cypress open --config-file tests/cypress/config.json",
     "cypress:run": "cypress run --config-file tests/cypress/config.json"
   },
