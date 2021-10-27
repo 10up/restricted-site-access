@@ -1,0 +1,37 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - trunk
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        core:
+          - {name: 'WP latest', version: 'latest'}
+          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
+          - {name: 'WP minimum', version: 'WordPress/WordPress#4.6'}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm i
+
+    - name: Set the core version
+      run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}
+
+    - name: Set up WP environment
+      run: npm run wp-env start
+
+    - name: Test
+      run: npm run cypress:run
