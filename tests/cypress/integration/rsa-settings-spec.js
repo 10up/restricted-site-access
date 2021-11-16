@@ -1,4 +1,23 @@
 describe( 'Plugin admin settings are properly rendered.', () => {
+	before( () => {
+		cy.visitAdminPage( 'post-new.php?post_type=page' );
+		cy.get( 'button[aria-label="Close dialog"]' ).click();
+		cy.get( '#post-title-0' ).click().type( 'Accessible page' );
+		cy.get( '.editor-post-publish-panel__toggle' ).click();
+		cy.get( '.editor-post-publish-button' ).click();
+		cy.get( '.components-snackbar', { timeout: 10000 } ).should(
+			'be.visible'
+		);
+
+		cy.visitAdminPage( 'post-new.php?post_type=page' );
+		cy.get( '#post-title-0' ).click().type( 'Page to redirect' );
+		cy.get( '.editor-post-publish-panel__toggle' ).click();
+		cy.get( '.editor-post-publish-button' ).click();
+		cy.get( '.components-snackbar', { timeout: 10000 } ).should(
+			'be.visible'
+		);
+	} );
+
 	it( 'Visit plugin settings.', () => {
 		cy.visitAdminPage( 'options-reading.php' );
 	} );

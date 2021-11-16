@@ -4,16 +4,6 @@ describe( 'Show a page to restricted users', () => {
 		cy.get( '#rsa-unblocked-page' ).check();
 		cy.saveSettings();
 
-		cy.visitAdminPage( 'post-new.php?post_type=page' );
-		cy.get( 'button[aria-label="Close dialog"]' ).click();
-		cy.get( '#post-title-0' ).click().type( 'Accessible page' );
-		cy.get( '.editor-post-publish-panel__toggle' ).click();
-		cy.get( '.editor-post-publish-button' ).click();
-		cy.get( '.components-snackbar', { timeout: 10000 } ).should(
-			'be.visible'
-		);
-
-
 		cy.logout();
 	} );
 
@@ -27,14 +17,6 @@ describe( 'Show a page to restricted users', () => {
 	} );
 
 	it( 'Show the selected page to restricted users', () => {
-		cy.visitAdminPage( 'post-new.php?post_type=page' );
-		cy.get( '#post-title-0' ).click().type( 'Page to redirect' );
-		cy.get( '.editor-post-publish-panel__toggle' ).click();
-		cy.get( '.editor-post-publish-button' ).click();
-		cy.get( '.components-snackbar', { timeout: 10000 } ).should(
-			'be.visible'
-		);
-
 		cy.visitAdminPage( 'options-reading.php' );
 		cy.get( '#rsa_page' ).select( 'Page to redirect' );
 		cy.saveSettings();
