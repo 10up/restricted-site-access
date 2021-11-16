@@ -3,7 +3,6 @@ describe( 'Show a page to restricted users', () => {
 		cy.visitAdminPage( 'options-reading.php' );
 		cy.get( '#rsa-unblocked-page' ).check();
 		cy.saveSettings();
-
 		cy.logout();
 	} );
 
@@ -12,8 +11,7 @@ describe( 'Show a page to restricted users', () => {
 			failOnStatusCode: false
 		} );
 
-		cy
-			.get( '.wp-die-message' ).contains( 'This is a restricted site. Please contact the admin.' );
+		cy.get( '.wp-die-message' ).contains( 'This is a restricted site. Please contact the admin.' );
 	} );
 
 	it( 'Show the selected page to restricted users', () => {

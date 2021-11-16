@@ -33,5 +33,8 @@ jobs:
     - name: Set up WP environment
       run: npm run wp-env start
 
+    - name: Create pages
+      run: npx wp-env run tests-cli "wp post create --post_type=page --post_title='Accessible page' --post_status='publish'" && npx wp-env run tests-cli "wp post create --post_type=page --post_title='Page to redirect' --post_status='publish'"
+
     - name: Test
       run: npm run cypress:run
