@@ -22,6 +22,7 @@ describe( 'Show a page to restricted users', () => {
 		cy.visit( '/', {
 			failOnStatusCode: false,
 		} );
+		cy.screenshot();
 		cy.url().should( 'include', `${ Cypress.config().baseUrl }page-to-redirect` );
 	} );
 
@@ -31,6 +32,7 @@ describe( 'Show a page to restricted users', () => {
 				'X-Forwarded': '193.168.20.30',
 			}
 		} );
+		cy.screenshot();
 		cy.url().should( 'include', `${ Cypress.config().baseUrl }accessible-page` )
 	} );
 } );

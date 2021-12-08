@@ -38,3 +38,13 @@ jobs:
 
     - name: Test
       run: npm run cypress:run
+
+    - name: Get working directory
+      run: pwd
+
+    - name: Upload RSA artifcats
+      uses: actions/upload-artifact@v2.3.0
+      with:
+        name: 'Cypress artifacts'
+        path: tests/cypress/screenshots/
+        if-no-files-found: warn
