@@ -26,29 +26,9 @@ describe( 'Show a page to restricted users', () => {
 	} );
 
 	it( 'Unrestricted user should be able to access the site', () => {
-		cy.visitAdminPage( 'options-reading.php' );
-		cy
-			.get( '#newip' )
-			.clear()
-			.type( '193.168.20.30' )
-
-		cy
-			.get( '#addip' )
-			.click();
-
-		cy.wait( 800 )
-
-		cy.saveSettings();
-		cy.logout();
-		cy.request({
-			method: 'GET',
-			url: `${ Cypress.config().baseUrl }accessible-page`,
-			failOnStatusCode: false,
-			headers: {
-				'X-Forwarded': '193.168.20.30',
-			}
-		} ).then( ( response ) => {
-			expect( response.body ).to.contain( 'Accessible page' );
+		cy.visit( `${ Cypress.config().baseUrl }accessible-page`, {
+			failOnStatusCode: false
 		} );
+		cy.url().should( 'include', `${ Cypress.config().baseUrl }accessible-page` )
 	} );
 } );
