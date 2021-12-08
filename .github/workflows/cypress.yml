@@ -44,6 +44,7 @@ jobs:
 
     - name: Upload RSA artifcats
       uses: actions/upload-artifact@v2.3.0
+      if: always()
       with:
         name: 'Cypress artifacts'
         path: tests/cypress/screenshots/
