@@ -19,7 +19,9 @@ describe( 'Show a page to restricted users', () => {
 		cy.get( '#rsa_page' ).select( 'Page to redirect' );
 		cy.saveSettings();
 		cy.logout();
-		cy.visit( '/' );
+		cy.visit( '/', {
+			failOnStatusCode: false,
+		} );
 		cy.url().should( 'include', `${ Cypress.config().baseUrl }page-to-redirect` );
 	} );
 
@@ -38,7 +40,6 @@ describe( 'Show a page to restricted users', () => {
 
 		cy.saveSettings();
 		cy.logout();
-		cy.visit( '/' );
 		cy.request({
 			method: 'GET',
 			url: `${ Cypress.config().baseUrl }accessible-page`,
@@ -47,7 +48,6 @@ describe( 'Show a page to restricted users', () => {
 				'X-Forwarded': '193.168.20.30',
 			}
 		} ).then( ( response ) => {
-			expect( response.status ).to.eq( 200 );
 			expect( response.body ).to.contain( 'Accessible page' );
 		} );
 	} );
