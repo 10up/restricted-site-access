@@ -37,7 +37,7 @@ jobs:
       run: npm run create-pages
 
     - name: Test
-      run: npm run cypress:run
+      run: npm run cypress:run --record
 
     - name: Get working directory
       run: pwd
@@ -47,5 +47,5 @@ jobs:
       if: always()
       with:
         name: 'Cypress artifacts'
-        path: tests/cypress/screenshots/
+        path: tests/cypress/videos/
         if-no-files-found: warn
