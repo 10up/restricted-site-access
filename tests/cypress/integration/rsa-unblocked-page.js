@@ -11,7 +11,7 @@ describe( 'Show a page to restricted users', () => {
 			failOnStatusCode: false
 		} );
 
-		cy.get( '.wp-die-message' ).contains( 'This is a restricted site. Please contact the admin.' );
+		cy.get( '#error-page' ).contains( 'This is a restricted site. Please contact the admin.' );
 	} );
 
 	it( 'Show the selected page to restricted users', () => {
@@ -48,7 +48,7 @@ describe( 'Show a page to restricted users', () => {
 			}
 		} ).then( ( response ) => {
 			expect( response.status ).to.eq( 200 );
-			expect( response.body ).to.contain( 'page-template-default page' );
+			expect( response.body ).to.contain( 'Accessible page' );
 		} );
 	} );
 } );
