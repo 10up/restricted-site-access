@@ -27,7 +27,9 @@ describe( 'Show a page to restricted users', () => {
 
 	it( 'Unrestricted user should be able to access the site', () => {
 		cy.visit( `${ Cypress.config().baseUrl }accessible-page`, {
-			failOnStatusCode: false
+			headers: {
+				'X-Forwarded': '193.168.20.30',
+			}
 		} );
 		cy.url().should( 'include', `${ Cypress.config().baseUrl }accessible-page` )
 	} );
