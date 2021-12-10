@@ -33,5 +33,19 @@ jobs:
     - name: Set up WP environment
       run: npm run wp-env start
 
+    - name: Create pages
+      run: npm run create-pages
+
     - name: Test
-      run: npm run cypress:run
+      run: npm run cypress:run --record
+
+    - name: Get working directory
+      run: pwd
+
+    - name: Upload RSA artifcats
+      uses: actions/upload-artifact@v2.3.0
+      if: always()
+      with:
+        name: 'Cypress artifacts'
+        path: tests/cypress/videos/
+        if-no-files-found: warn

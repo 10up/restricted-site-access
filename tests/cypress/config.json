@@ -6,8 +6,8 @@
   "videosFolder": "tests/cypress/videos",
   "downloadsFolder": "tests/cypress/downloads",
   "supportFile": "tests/cypress/support/index.js",
-  "video": false,
   "testFiles": [
+    "rsa-plugin-activation-deactivation",
     "rsa-settings-spec.js",
     "rsa-admin-settings-interaction.js",
     "rsa-add-remove-ip-addresses.js",
@@ -15,6 +15,7 @@
     "rsa-simple-message-settings.js",
     "rsa-redirect-to-login.js",
     "rsa-redirect-to-web-address.js",
-    "rsa-unrestrict-ip.js"
+    "rsa-unrestrict-ip.js",
+    "rsa-unblocked-page.js"
   ]
 }
