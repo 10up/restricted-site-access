@@ -5,6 +5,10 @@ on:
     branches:
       - develop
       - trunk
+    paths:
+      - '**.js'
+      - '**.php'
+      - '**.css'
   pull_request:
     branches:
       - develop
