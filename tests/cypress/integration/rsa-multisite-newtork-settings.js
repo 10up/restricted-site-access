@@ -1,7 +1,7 @@
 describe( 'Verify network settings', () => {
 	before( () => {
 		cy.visitAdminPage( 'network/plugins.php' );
-		cy.get( '#activate-restricted-site-access' ).click();
+		cy.contains( 'strong', 'Restricted Site Access' ).closest( 'td' ).find( '.activate > a' ).click();
 		cy.visitAdminPage( 'network/settings.php' );
 	} );
 
@@ -49,6 +49,6 @@ describe( 'Verify network settings', () => {
 		cy.visit( Cypress.config().baseUrl, {
 			failOnStatusCode: false
 		} );
-		cy.get( '.wp-die-message' ).contains( 'Access to this site is restricted. - From the network' );
+		cy.contains( 'Access to this site is restricted. - From the network' );
 	} );
 } );
