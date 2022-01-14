@@ -15,6 +15,7 @@
     "wp-env": "wp-env",
     "cypress:open": "cypress open --config-file tests/cypress/config.json",
     "cypress:run": "cypress run --config-file tests/cypress/config.json",
+    "to-multisite": "wp-env run tests-cli \"wp core multisite-convert --title='RSA Multisite'\"",
     "create-pages": "wp-env run tests-cli \"wp post create --post_type=page --post_title='Accessible page' --post_status='publish'\" && wp-env run tests-cli \"wp post create --post_type=page --post_title='Page to redirect' --post_status='publish'\""
   },
   "author": "10up <sales@10up.com>",

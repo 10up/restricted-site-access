@@ -743,7 +743,7 @@ class Restricted_Site_Access {
 	public static function enqueue_settings_script() {
 		$current_screen = get_current_screen();
 
-		if ( ! empty( $current_screen ) && 'options-reading' !== $current_screen->id ) {
+		if ( ! empty( $current_screen ) && ( 'options-reading' !== $current_screen->id && 'settings-network' !== $current_screen->id ) ) {
 			return;
 		}
 

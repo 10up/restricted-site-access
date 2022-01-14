@@ -7,7 +7,7 @@
   "downloadsFolder": "tests/cypress/downloads",
   "supportFile": "tests/cypress/support/index.js",
   "testFiles": [
-    "rsa-plugin-activation-deactivation",
+    "rsa-plugin-activation-deactivation.js",
     "rsa-settings-spec.js",
     "rsa-admin-settings-interaction.js",
     "rsa-add-remove-ip-addresses.js",
@@ -16,6 +16,7 @@
     "rsa-redirect-to-login.js",
     "rsa-redirect-to-web-address.js",
     "rsa-unrestrict-ip.js",
-    "rsa-unblocked-page.js"
+    "rsa-unblocked-page.js",
+    "rsa-multisite-newtork-settings.js"
   ]
 }
