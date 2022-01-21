@@ -31,5 +31,8 @@
     "lint": "phpcs --extensions=php -s .",
     "lint-fix": "phpcbf --extensions=php ."
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "config": {
+    "mlocati/ip-lib": "dist"
+  }
 }

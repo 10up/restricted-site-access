@@ -1,4 +1,7 @@
 node_modules
 vendor
+!vendor/autoload.php
+!vendor/mlocati
+!vendor/composer
 test-coverage
 screenshots
