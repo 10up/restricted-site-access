@@ -11,10 +11,21 @@
     "role": "developer"
   },
   "devDependencies": {
-    "grunt": "^1.0.4",
+    "@wordpress/env": "^4.1.1",
+    "cypress": "^8.3.1",
+    "cypress-file-upload": "^5.0.8",
+    "grunt": "^1.3.0",
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
     "grunt-phpunit": "^0.3.6"
-  }
+  },
+  "scripts": {
+    "wp-env": "wp-env",
+    "cypress:open": "cypress open --config-file tests/cypress/config.json",
+    "cypress:run": "cypress run --config-file tests/cypress/config.json",
+    "to-multisite": "wp-env run tests-cli \"wp core multisite-convert --title='RSA Multisite'\"",
+    "create-pages": "wp-env run tests-cli \"wp post create --post_type=page --post_title='Accessible page' --post_status='publish'\" && wp-env run tests-cli \"wp post create --post_type=page --post_title='Page to redirect' --post_status='publish'\""
+  },
+  "dependencies": {}
 }

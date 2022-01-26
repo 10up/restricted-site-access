@@ -119,10 +119,6 @@
 		},
 
 		init: function() {
-			if ( ! rsaAdmin.isNetworkWidePluginsPage ) {
-				return;
-			}
-
 			this.variables.disablingURL = document.getElementById( 'the-list' ).querySelector( '[data-slug="restricted-site-access"] .deactivate a' ).href;
 			this.bindEvents();
 			this.dialogSettings();

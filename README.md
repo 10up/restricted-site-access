@@ -2,9 +2,9 @@
 
 > Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
-[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![Build Status](https://travis-ci.org/10up/restricted-site-access.svg?branch=develop)](https://travis-ci.org/10up/restricted-site-access) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest)  ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v5.3%20tested-success.svg) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![E2E Tests](https://github.com/10up/restricted-site-access/actions/workflows/cypress.yml/badge.svg)](https://github.com/10up/restricted-site-access/actions/workflows/cypress.yml) [![PHPUnit](https://github.com/10up/restricted-site-access/actions/workflows/phpunit.yml/badge.svg)](https://github.com/10up/restricted-site-access/actions/workflows/phpunit.yml) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/restricted-site-access?label=WordPress) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
 
-## Table of Contents  
+## Table of Contents
 * [Features](#features)
 * [Installation](#installation)
 * [FAQs](#frequently-asked-questions)
@@ -24,7 +24,7 @@
 
 Limit access your site to visitors who are logged in or accessing the site from a set of specified IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. A great solution for Extranets, publicly hosted Intranets, or parallel development / staging sites.
 
-Adds a number of new configuration options to the Reading settings panel. From this panel you can:
+Adds a number of new configuration options to the Reading settings panel as well as the Network Settings panel in multisite. From this panel you can:
 
 * Enable or disable site restriction
 * Change the restriction behavior: send to login, redirect, display a message, display a page
@@ -35,12 +35,11 @@ Adds a number of new configuration options to the Reading settings panel. From t
 
 ## Installation
 
-1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory
-2. Activate the plugin through the "Plugins" menu in WordPress
+1. Install easily with the WordPress plugin control panel or manually download the plugin and upload the extracted folder to the `/wp-content/plugins/` directory.
+2. Activate the plugin through the "Plugins" menu in WordPress.
 3. Configure the plugin by going to the Settings &rsaquo; Reading page in WordPress.
 
-
-## Frequently-asked Questions
+## Frequently Asked Questions
 
 ### Where do I change the restriction settings?
 
@@ -75,6 +74,10 @@ function my_rsa_feed_override( $is_restricted, $wp ) {
 Visitors that are not logged in or allowed by IP address will not be able to browse your site (though be cautious of page caching plugin incompatibilities, mentioned above). Restricted Site Access does not block access to your, so direct links to files in your media and uploads folder (for instance) are not blocked. It is also important to remember that IP addresses can be spoofed. Because Restricted Site Access runs as a plug-in, it is subject to any other vulnerabilities present on your site.
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
+
+### I received a warning about page caching. What does it mean?
+
+Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
 
 ### Why can't logged-in users see all the sites on my multisite instance?
 
@@ -164,5 +167,5 @@ Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/
 ## Like what you see?
 
 <p align="center">
-<a href="http://10up.com/contact/"><img src="https://10updotcom-wpengine.s3.amazonaws.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
+<a href="http://10up.com/contact/"><img src="https://10up.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
 </p>

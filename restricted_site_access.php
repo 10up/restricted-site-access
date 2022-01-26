@@ -103,7 +103,7 @@ class Restricted_Site_Access {
 	public static function ajax_notice_dismiss() {
 
 		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+		if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 			if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 				wp_send_json_error();
 				exit;
@@ -129,7 +129,7 @@ class Restricted_Site_Access {
 		}
 
 		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+		if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 			wp_send_json_success();
 		}
 		// @codeCoverageIgnoreEnd
@@ -311,15 +311,28 @@ class Restricted_Site_Access {
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
+			/**
+			 * This conditional prevents a redirect loop if the redirect URL
+			 * belongs to the same domain.
+			 */
+			if ( 2 === self::$rsa_options['approach'] ) {
+				$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
+				$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
+				$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+
+				if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
+					return;
+				}
+			}
 
 			// Don't redirect during unit tests.
-			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['url'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 				die();
 			}
 
 			// Don't die during unit tests.
-			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['die_message'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
@@ -334,6 +347,11 @@ class Restricted_Site_Access {
 	public static function restrict_access_check( $wp ) {
 		self::$rsa_options = self::get_options();
 		$is_restricted     = self::is_restricted();
+
+		// Check to see if we're activating new user.
+		if ( 'wp-activate.php' === $wp->request ) {
+			return;
+		}
 
 		// Check to see if it's _not_ restricted.
 		if ( apply_filters( 'restricted_site_access_is_restricted', $is_restricted, $wp ) === false ) {
@@ -430,7 +448,16 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
+						$current_url_domain  = wp_parse_url( home_url( $wp->request ), PHP_URL_HOST );
+
+						/**
+						 * This conditional prevents a redirect loop if the redirect URL
+						 * belongs to the same domain.
+						 */
+						if ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) {
+							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						}
 					}
 					break;
 				}
@@ -715,6 +742,12 @@ class Restricted_Site_Access {
 	 * Enqueue Settings page scripts.
 	 */
 	public static function enqueue_settings_script() {
+		$current_screen = get_current_screen();
+
+		if ( ! empty( $current_screen ) && ( 'options-reading' !== $current_screen->id && 'settings-network' !== $current_screen->id ) ) {
+			return;
+		}
+
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
 
@@ -725,6 +758,14 @@ class Restricted_Site_Access {
 			RSA_VERSION,
 			true
 		);
+
+		wp_localize_script(
+			'rsa-settings',
+			'rsaSettings',
+			array(
+				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
+			)
+		);
 	}
 
 	/**
@@ -732,6 +773,10 @@ class Restricted_Site_Access {
 	 */
 	public static function enqueue_admin_script() {
 		$current_screen = get_current_screen();
+
+		if ( ! empty( $current_screen ) && ! in_array( $current_screen->id, array( 'plugins-network', 'options-reading' ), true ) ) {
+			return;
+		}
 
 		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
@@ -748,9 +793,8 @@ class Restricted_Site_Access {
 			'rsa-admin',
 			'rsaAdmin',
 			array(
-				'nonce'                    => wp_create_nonce( 'rsa_admin_nonce' ),
-				'isNetworkWidePluginsPage' => $current_screen && 'plugins-network' === $current_screen->id,
-				'strings'                  => array(
+				'nonce'   => wp_create_nonce( 'rsa_admin_nonce' ),
+				'strings' => array(
 					'confirm' => esc_html__( 'Network Disable Plugin', 'restricted-site-access' ),
 					'cancel'  => esc_html__( 'Cancel', 'restricted-site-access' ),
 					'message' => esc_html__( 'I understand', 'restricted-site-access' ),
@@ -1170,7 +1214,8 @@ class Restricted_Site_Access {
 			// @codeCoverageIgnoreEnd
 		}
 		?>
-		<fieldset><legend class="screen-reader-text"><span><?php esc_html( self::$rsa_options['redirect_path']['label'] ); ?></span></legend>
+		<fieldset>
+			<legend class="screen-reader-text"><span><?php esc_html_e( 'Redirect to same path', 'restricted-site-access' ); ?></span></legend>
 			<label for="redirect_path">
 				<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field" <?php checked( self::$rsa_options['redirect_path'] ); ?> />
 				<?php esc_html_e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
@@ -1320,7 +1365,7 @@ class Restricted_Site_Access {
 
 		// Check if constant disallowing restriction is defined.
 		if ( defined( 'RSA_FORBID_RESTRICTION' ) && RSA_FORBID_RESTRICTION === true ) {
-			$value = 1;
+			$value = 0;
 		}
 
 		// Check if constant forcing restriction is defined.
@@ -1498,7 +1543,33 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add ips programmatically
+	 * Get IPs programmatically
+	 *
+	 * @param bool $include_config Whether to include the config file IPs. Default true.
+	 * @param bool $include_labels Whether to include the comments. Default false.
+	 * @return array
+	 */
+	public static function get_ips( $include_config = true, $include_labels = false ) {
+		self::$rsa_options = self::get_options();
+		$current_ips       = (array) self::$rsa_options['allowed'];
+		$config_ips        = array();
+
+		if ( $include_labels ) {
+			$labels      = (array) self::$rsa_options['comment'];
+			$current_ips = array_combine( $labels, $current_ips );
+		}
+
+		if ( $include_config ) {
+			$config_ips = self::get_config_ips();
+		}
+
+		$result = array_unique( array_merge( $current_ips, $config_ips ) );
+
+		return $result;
+	}
+
+	/**
+	 * Add IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1516,8 +1587,8 @@ class Restricted_Site_Access {
 			self::$rsa_options = self::get_options();
 		}
 		$ips         = (array) $ips;
-		$allowed_ips = isset( $rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
-		$comments    = isset( $rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
+		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
 		$i           = 0;
 		foreach ( $ips as $label => $ip ) {
 			if ( ! in_array( $ip, $allowed_ips, true ) && self::is_ip( $ip ) ) {
@@ -1535,7 +1606,86 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Remove ips programmatically
+	 * Update an existing IP address or label.
+	 *
+	 * @param boolean|string $ip        The IP address that needs to be updated.
+	 * @param boolean|string $new_ip    The new IP address that will replace $ip.
+	 * @param boolean|string $new_label The new label that will replace the label of $ip.
+	 *
+	 * @return integer
+	 */
+	public static function update_ip_or_label( $ip = false, $new_ip = false, $new_label = false ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+
+		if ( false === $ip ) {
+			return new WP_Error( 'ip_argument_not_found', __( 'IP argument not found.', 'restricted-site-access' ) );
+		}
+
+		$allowed_ips = (array) self::$rsa_options['allowed'];
+		$comments    = (array) self::$rsa_options['comment'];
+		$ip_index    = -1;
+
+		/**
+		 * Get the index of the ip address that needs
+		 * to be updated.
+		 */
+		foreach ( $allowed_ips as $index => $current_ip ) {
+			if ( $current_ip === $ip ) {
+				$ip_index = $index;
+				break;
+			}
+		}
+
+		/**
+		 * Return if `$ip` not found.
+		 */
+		if ( -1 === $ip_index ) {
+			return new WP_Error( 'ip_address_does_not_exist', __( "The IP address doesn't exist.", 'restricted-site-access' ) );
+		}
+
+		/**
+		 * Return if the format of `$new_ip` is invalid.
+		 */
+		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
+			return new WP_Error( 'ip_address_is_invalid', __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
+		}
+
+		/**
+		 * Return status code 2 if `$ip` doesn't exist in
+		 * `$allowed_ips` array.
+		 */
+		if ( in_array( $new_ip, $allowed_ips, true ) ) {
+			return new WP_Error( 'ip_address_already_exists', __( 'The IP address already exists.', 'restricted-site-access' ) );
+		}
+
+		/**
+		 * Add `$new_ip` to the `$allowed_ips` array.
+		 */
+		if ( false !== $new_ip ) {
+			$allowed_ips[ $ip_index ] = $new_ip;
+		}
+
+		/**
+		 * Add `$new_label` to the `$comments` array.
+		 */
+		if ( false !== $new_label ) {
+			$comments[ $ip_index ] = $new_label;
+		}
+
+		self::$rsa_options['allowed'] = $allowed_ips;
+		self::$rsa_options['comment'] = $comments;
+		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+
+		return true;
+	}
+
+	/**
+	 * Remove IPs programmatically
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1570,7 +1720,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Set ips programmatically
+	 * Set IPs programmatically
 	 * Same syntax as add_ips(), but this replaces existing IPs and comments.
 	 *
 	 * @param  string|array $ips list of IPs to set as default IPs.
@@ -1599,7 +1749,6 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
-
 	}
 }
 
