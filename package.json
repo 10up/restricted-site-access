@@ -1,13 +1,20 @@
 {
   "name": "restricted-site-access",
+  "version": "7.3.0",
   "description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
+  "homepage": "https://github.com/10up/restricted-site-access#readme",
+  "license": "GPL-2.0-or-later",
+  "author": {
+    "name": "10up",
+    "email": "opensource@10up.com",
+    "url": "https://10up.com",
+    "role": "developer"
+  },
   "devDependencies": {
     "grunt": "^1.0.4",
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
     "grunt-phpunit": "^0.3.6"
-  },
-  "author": "10up <opensource@10up.com>",
-  "license": "GPLv2 (or later)"
+  }
 }
