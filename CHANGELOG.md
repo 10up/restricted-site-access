@@ -211,7 +211,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 ### Added
 - Initial public release
 
-[Unreleased]: https://github.com/10up/restricted-site-access/compare/master...develop
+[Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
 [7.3.0]: https://github.com/10up/restricted-site-access/compare/7.2.0...7.3.0
 [7.2.0]: https://github.com/10up/restricted-site-access/compare/7.1.0...7.2.0
 [7.1.0]: https://github.com/10up/restricted-site-access/compare/7.0.1...7.1.0
