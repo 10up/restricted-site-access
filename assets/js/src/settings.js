@@ -5,8 +5,8 @@
  * Copyright (c) 2013 10up, jakemgold
  * Licensed under the GPLv2+ license.
  *
- * @param  window
- * @param  $
+ * @param {Object} window Global window object
+ * @param {Object} $      The jQuery object.
  */
 ( function( window, $ ) {
 	'use strict';
@@ -103,12 +103,12 @@
 		);
 
 		Cache.add_btn.on( 'click', function() {
-			add_ip( Cache.new_ip.value, Cache.new_ip_comment.value );
+			addIp( Cache.new_ip.value, Cache.new_ip_comment.value );
 		} );
 
-		const myip_btn = document.getElementById( 'rsa_myip' );
-		if ( null !== myip_btn ) {
-			$( myip_btn ).on( 'click', function() {
+		const myipBtn = document.getElementById( 'rsa_myip' );
+		if ( null !== myipBtn ) {
+			$( myipBtn ).on( 'click', function() {
 				$( Cache.new_ip ).val( $( this ).data( 'myip' ) );
 			} );
 		}
@@ -120,19 +120,19 @@
 		} );
 	}
 
-	function add_ip( ip, comment ) {
-		if ( $.trim( ip ) == '' ) {
+	function addIp( ip, comment ) {
+		if ( $.trim( ip ) === '' ) {
 			return false;
 		}
 
-		const shake_speed = 600;
+		const shakeSpeed = 600;
 
 		Cache.add_btn.attr( 'disabled', 'disabled' );
-		const ip_list = $( document.querySelectorAll( '#ip_list input' ) );
+		const ipList = $( document.querySelectorAll( '#ip_list input' ) );
 
-		for ( let i = 0, l = ip_list.length; i < ip_list.length; i++ ) {
-			if ( ip_list[ i ].value == ip ) {
-				$( ip_list[ i ] ).parent().effect( 'shake', shake_speed );
+		for ( let i = 0; i < ipList.length; i++ ) {
+			if ( ipList[ i ].value === ip ) {
+				$( ipList[ i ] ).parent().effect( 'shake', shakeSpeed );
 				Cache.add_btn.removeAttr( 'disabled' );
 				return false;
 			}
@@ -148,18 +148,18 @@
 			},
 			function( response ) {
 				if ( response ) {
-					$( Cache.new_ip.parentNode ).effect( 'shake', shake_speed );
+					$( Cache.new_ip.parentNode ).effect( 'shake', shakeSpeed );
 					Cache.add_btn.removeAttr( 'disabled' );
 					return false;
 				}
-				const new_ip = Cache.empty_ip
+				const newIp = Cache.empty_ip
 					.clone()
 					.appendTo( Cache.ip_list_wrap );
-				new_ip.children( 'input.ip' ).val( ip );
-				new_ip.children( 'input.comment' ).val( comment );
-				new_ip.removeAttr( 'id' ).slideDown( 250 );
+				newIp.children( 'input.ip' ).val( ip );
+				newIp.children( 'input.comment' ).val( comment );
+				newIp.removeAttr( 'id' ).slideDown( 250 );
 
-				if ( ip == Cache.new_ip.value ) {
+				if ( ip === Cache.new_ip.value ) {
 					$( Cache.new_ip ).val( '' );
 					$( Cache.new_ip_comment ).val( '' );
 				}

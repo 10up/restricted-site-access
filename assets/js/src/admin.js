@@ -5,8 +5,8 @@
  * Copyright (c) 2013 10up, jakemgold
  * Licensed under the GPLv2+ license.
  *
- * @param  window
- * @param  $
+ * @param {Object} window Global window object
+ * @param {Object} $      The jQuery object.
  */
 ( function( window, $ ) {
 	'use strict';
@@ -125,18 +125,21 @@
 				'.deactivate a',
 				this.openDialog.bind( this )
 			);
-			this.els.userMessage.addEventListener(
-				'keyup',
-				this.maybeSubmit.bind( this )
-			);
+			if ( this.els.userMessage ) {
+				this.els.userMessage.addEventListener(
+					'keyup',
+					this.maybeSubmit.bind( this )
+				);
+			}
 		},
 
 		init() {
-			this.variables.disablingURL = document
-				.getElementById( 'the-list' )
-				.querySelector(
+			const list = document.getElementById( 'the-list' );
+			if ( list ) {
+				this.variables.disablingURL = list.querySelector(
 					'[data-slug="restricted-site-access"] .deactivate a'
 				).href;
+			}
 			this.bindEvents();
 			this.dialogSettings();
 		},
