@@ -199,4 +199,37 @@ class MultiSiteTest extends \TestCase {
 		$this->assertTrue( $contains );
 	}
 
+	public function testEnqueueAssets() {
+
+		$I = $this->openBrowserPage();
+
+		$I->loginAs( 'wpsnapshots' );
+
+		$I->moveTo( 'wp-admin/index.php' );
+
+		$I->waitUntilElementVisible( '#wpadminbar' );
+
+		$source = $I->getPageSource();
+
+		$this->assertNotContains( 'restricted-site-access/assets/js/admin', $source );
+
+		$this->networkActivate( $I );
+
+		$I->moveTo( 'wp-admin/network/plugins.php' );
+
+		$I->waitUntilElementVisible( '#wpadminbar' );
+
+		$source = $I->getPageSource();
+
+		$this->assertContains( 'restricted-site-access/assets/js/admin', $source );
+
+		$I->moveTo( 'wp-admin/index.php' );
+
+		$I->waitUntilElementVisible( '#wpadminbar' );
+
+		$source = $I->getPageSource();
+
+		$this->assertNotContains( 'restricted-site-access/assets/js/admin', $source );
+	}
+
 }
