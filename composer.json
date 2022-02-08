@@ -1,6 +1,6 @@
 {
 	"name": "10up/restricted-site-access",
-	"description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors."
+	"description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
 	"authors": [
       {
         "name": "10up",
