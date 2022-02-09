@@ -1312,7 +1312,24 @@ class Restricted_Site_Access {
 			if ( empty( $ip_parts[1] ) || ! is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
 				return false;
 			}
+
 			$ip_address = $ip_parts[0];
+
+			$protocol = self::get_ip_protocol( $ip_address );
+
+			if ( 'IPv4' === $protocol && (int)$ip_parts[1] > 32 ) {
+				/**
+				 * Return if the prefix length is greater than 32.
+				 * IPv4 can use maximum of 32 bits for address space.
+				 */
+				return false;
+			} else if ( 'IPv6' === $protocol && (int)$ip_parts[1] > 128 ) {
+				/**
+				 * Return if the prefix length is greater than 128.
+				 * IPv6 can use maximum of 128 bits for address space.
+				 */
+				return false;
+			}
 		}
 
 		// confirm IP part is a valid IPv6 or IPv4 IP.
@@ -1749,6 +1766,32 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
+	}
+
+	/**
+	 * Returns the protocol used by the IP address.
+	 *
+	 * @param string $ip IPv4 or IPv6 address without the netmask.
+	 * @return string|boolean Returns the protocol. `false` if IP is invalid.
+	 */
+	public static function get_ip_protocol( $ip = '' ) {
+		if ( empty( $ip ) ) {
+			return false;
+		}
+
+		$protocol = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 );
+
+		if ( false !== $protocol ) {
+			return 'IPv4';
+		}
+
+		$protocol = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 );
+
+		if ( false !== $protocol ) {
+			return 'IPv6';
+		}
+
+		return false;
 	}
 }
 
