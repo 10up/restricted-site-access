@@ -1293,9 +1293,10 @@ class Restricted_Site_Access {
 		}
 
 		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) ) ) ) {
-			die( '1' );
+			wp_send_json_error( __( 'The IP entered is invalid.', 'restricted-site-access' ) );
 		}
-		die;
+
+		wp_send_json_success();
 	}
 
 	/**

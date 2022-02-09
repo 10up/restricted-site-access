@@ -147,9 +147,10 @@
 				nonce: rsaSettings.nonce,
 			},
 			function( response ) {
-				if ( response ) {
+				if ( ! response.success ) {
 					$( Cache.new_ip.parentNode ).effect( 'shake', shakeSpeed );
 					Cache.add_btn.removeAttr( 'disabled' );
+					alert( response.data );
 					return false;
 				}
 				const newIp = Cache.empty_ip
