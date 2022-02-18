@@ -3,8 +3,9 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.2.0
+ * Version:           7.3.0
  * Requires at least: 4.6
+ * Requires PHP:      
  * Author:            Jake Goldman, 10up, Oomph
  * Author URI:        https://10up.com
  * License:           GPL v2 or later
@@ -102,7 +103,7 @@ class Restricted_Site_Access {
 	public static function ajax_notice_dismiss() {
 
 		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+		if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 			if ( ! check_ajax_referer( 'rsa_admin_nonce', 'nonce', false ) ) {
 				wp_send_json_error();
 				exit;
@@ -128,7 +129,7 @@ class Restricted_Site_Access {
 		}
 
 		// @codeCoverageIgnoreStart
-		if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
+		if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 			wp_send_json_success();
 		}
 		// @codeCoverageIgnoreEnd
@@ -310,15 +311,28 @@ class Restricted_Site_Access {
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
+			/**
+			 * This conditional prevents a redirect loop if the redirect URL
+			 * belongs to the same domain.
+			 */
+			if ( 2 === self::$rsa_options['approach'] ) {
+				$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
+				$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
+				$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+
+				if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
+					return;
+				}
+			}
 
 			// Don't redirect during unit tests.
-			if ( ! empty( $results['url'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['url'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 				die();
 			}
 
 			// Don't die during unit tests.
-			if ( ! empty( $results['die_message'] ) && ! defined( 'WP_TESTS_DOMAIN' ) ) {
+			if ( ! empty( $results['die_message'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
@@ -434,7 +448,16 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
+						$current_url_domain  = wp_parse_url( home_url( $wp->request ), PHP_URL_HOST );
+
+						/**
+						 * This conditional prevents a redirect loop if the redirect URL
+						 * belongs to the same domain.
+						 */
+						if ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) {
+							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						}
 					}
 					break;
 				}
@@ -721,7 +744,7 @@ class Restricted_Site_Access {
 	public static function enqueue_settings_script() {
 		$current_screen = get_current_screen();
 
-		if ( ! empty( $current_screen ) && 'options-reading' !== $current_screen->id ) {
+		if ( ! empty( $current_screen ) && ( 'options-reading' !== $current_screen->id && 'settings-network' !== $current_screen->id ) ) {
 			return;
 		}
 
@@ -740,7 +763,7 @@ class Restricted_Site_Access {
 			'rsa-settings',
 			'rsaSettings',
 			array(
-				'nonce'   => wp_create_nonce( 'rsa_admin_nonce' ),
+				'nonce' => wp_create_nonce( 'rsa_admin_nonce' ),
 			)
 		);
 	}
@@ -1191,7 +1214,8 @@ class Restricted_Site_Access {
 			// @codeCoverageIgnoreEnd
 		}
 		?>
-		<fieldset><legend class="screen-reader-text"><span><?php esc_html( self::$fields['redirect_path']['label'] ); ?></span></legend>
+		<fieldset>
+			<legend class="screen-reader-text"><span><?php esc_html_e( 'Redirect to same path', 'restricted-site-access' ); ?></span></legend>
 			<label for="redirect_path">
 				<input type="checkbox" name="rsa_options[redirect_path]" value="1" id="redirect_path" class="rsa_redirect_field" <?php checked( self::$rsa_options['redirect_path'] ); ?> />
 				<?php esc_html_e( 'Send restricted visitor to same path (relative URL) at the new web address', 'restricted-site-access' ); ?></label>
@@ -1584,6 +1608,85 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
+	}
+
+	/**
+	 * Update an existing IP address or label.
+	 *
+	 * @param boolean|string $ip        The IP address that needs to be updated.
+	 * @param boolean|string $new_ip    The new IP address that will replace $ip.
+	 * @param boolean|string $new_label The new label that will replace the label of $ip.
+	 *
+	 * @return integer
+	 */
+	public static function update_ip_or_label( $ip = false, $new_ip = false, $new_label = false ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+
+		if ( false === $ip ) {
+			return new WP_Error( 'ip_argument_not_found', __( 'IP argument not found.', 'restricted-site-access' ) );
+		}
+
+		$allowed_ips = (array) self::$rsa_options['allowed'];
+		$comments    = (array) self::$rsa_options['comment'];
+		$ip_index    = -1;
+
+		/**
+		 * Get the index of the ip address that needs
+		 * to be updated.
+		 */
+		foreach ( $allowed_ips as $index => $current_ip ) {
+			if ( $current_ip === $ip ) {
+				$ip_index = $index;
+				break;
+			}
+		}
+
+		/**
+		 * Return if `$ip` not found.
+		 */
+		if ( -1 === $ip_index ) {
+			return new WP_Error( 'ip_address_does_not_exist', __( "The IP address doesn't exist.", 'restricted-site-access' ) );
+		}
+
+		/**
+		 * Return if the format of `$new_ip` is invalid.
+		 */
+		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
+			return new WP_Error( 'ip_address_is_invalid', __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
+		}
+
+		/**
+		 * Return status code 2 if `$ip` doesn't exist in
+		 * `$allowed_ips` array.
+		 */
+		if ( in_array( $new_ip, $allowed_ips, true ) ) {
+			return new WP_Error( 'ip_address_already_exists', __( 'The IP address already exists.', 'restricted-site-access' ) );
+		}
+
+		/**
+		 * Add `$new_ip` to the `$allowed_ips` array.
+		 */
+		if ( false !== $new_ip ) {
+			$allowed_ips[ $ip_index ] = $new_ip;
+		}
+
+		/**
+		 * Add `$new_label` to the `$comments` array.
+		 */
+		if ( false !== $new_label ) {
+			$comments[ $ip_index ] = $new_label;
+		}
+
+		self::$rsa_options['allowed'] = $allowed_ips;
+		self::$rsa_options['comment'] = $comments;
+		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
+
+		return true;
 	}
 
 	/**

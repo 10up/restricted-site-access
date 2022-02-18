@@ -1,0 +1,58 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - trunk
+    paths:
+      - '**.js'
+      - '**.php'
+      - '**.css'
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        core:
+          - {name: 'WP latest', version: 'latest'}
+          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
+          - {name: 'WP minimum', version: 'WordPress/WordPress#4.6'}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm i
+
+    - name: Set the core version
+      run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}
+
+    - name: Set up WP environment
+      run: npm run wp-env start
+
+    - name: Convert to multisite
+      run: npm run to-multisite
+
+    - name: Create pages
+      run: npm run create-pages
+
+    - name: Test
+      run: npm run cypress:run --record
+
+    - name: Get working directory
+      run: pwd
+
+    - name: Upload RSA artifcats
+      uses: actions/upload-artifact@v2.3.0
+      if: always()
+      with:
+        name: 'Cypress artifacts'
+        path: tests/cypress/videos/
+        if-no-files-found: warn
