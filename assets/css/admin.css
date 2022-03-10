@@ -6,3 +6,7 @@ input#rsa-user-message {
 .rsa-user-message {
 	text-align: center
 }
+
+.rsa-ip-addresses-field-wrapper {
+	position: relative;
+}

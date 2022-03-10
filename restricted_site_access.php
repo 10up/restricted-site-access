@@ -1108,7 +1108,7 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_allowed() {
 		?>
-		<div class="hide-if-no-js">
+		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
 			<div id="ip_list">
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip code" value="" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
@@ -1136,6 +1136,7 @@ class Restricted_Site_Access {
 				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
+				<p id="rsa-error-container" style="color: #DC3232;"></p>
 			</div>
 
 			<?php

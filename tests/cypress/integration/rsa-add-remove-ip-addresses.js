@@ -110,6 +110,73 @@ describe( 'Admin can add/remove IP addresses', () => {
 		} );
 	} );
 
+	it( 'Adding invalid IPv4 address throws error', function() {
+		cy
+			.get( '#newip' )
+			.clear()
+			.type( '123.5.60.3/33' );
+
+		cy
+			.get( '#addip' )
+			.click();
+
+		/**
+		 * Wait for the Ajax response.
+		 */
+		cy.wait( 1000 );
+
+		cy
+			.get( '#rsa-error-container' )
+			.contains( 'The IP entered is invalid.' );
+
+		cy
+			.get( '#newip' )
+			.clear()
+			.type( '123.5.60.3/32' );
+
+		cy
+			.get( '#addip' )
+			.click();
+
+		/**
+		 * Wait for the Ajax response.
+		 */
+		cy.wait( 1000 );
+
+		cy
+			.get( '#rsa-error-container' )
+			.should( 'contain', '' );
+	} );
+
+	it( 'Adding invalid IPv6 address throws error', function() {
+		cy
+			.get( '#newip' )
+			.clear()
+			.type( '2a06:98c0::/129' );
+
+		cy
+			.get( '#addip' )
+			.click();
+
+		/**
+		 * Wait for the Ajax response.
+		 */
+		cy.wait( 1000 );
+
+		cy
+			.get( '#rsa-error-container' )
+			.contains( 'The IP entered is invalid.' );
+
+		cy
+			.get( '#newip' )
+			.clear()
+			.type( '2a06:98c0::/128' );
+
+		cy
+			.get( '#addip' )
+			.click();
+	} );
+
 	after( () => {
 		cy.get( '#ip_list > div:not( #ip_list_empty )' ).each( ( $el, index ) => {
 			const removeBtn = $el.find( '.remove_btn' );
