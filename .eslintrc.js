@@ -12,9 +12,5 @@ module.exports = {
 		rsaAdmin: 'readonly',
 		rsaSettings: 'readonly',
 		ajaxurl: 'readonly',
-		alert: 'readonly',
-	},
-	rules: {
-		'no-alert': 'off',
 	},
 };
