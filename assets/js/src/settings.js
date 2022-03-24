@@ -25,6 +25,7 @@
 		redirect_fields: '',
 		message_field: '',
 		page_field: '',
+		error_field: '',
 	};
 
 	function init() {
@@ -34,6 +35,7 @@
 		Cache.ip_list_wrap = document.getElementById( 'ip_list' );
 		Cache.empty_ip = $( document.getElementById( 'ip_list_empty' ) );
 		Cache.restrict_radio = document.getElementById( 'blog-restricted' );
+		Cache.error_field = document.getElementById( 'rsa-error-container' );
 		Cache.table = $(
 			document.getElementById( 'rsa-send-to-login' )
 		).closest( 'table' );
@@ -147,11 +149,14 @@
 				nonce: rsaSettings.nonce,
 			},
 			function( response ) {
-				if ( response ) {
+				if ( ! response.success ) {
 					$( Cache.new_ip.parentNode ).effect( 'shake', shakeSpeed );
 					Cache.add_btn.removeAttr( 'disabled' );
+					$( Cache.error_field ).text( response.data );
 					return false;
 				}
+
+				$( Cache.error_field ).text( '' );
 				const newIp = Cache.empty_ip
 					.clone()
 					.appendTo( Cache.ip_list_wrap );

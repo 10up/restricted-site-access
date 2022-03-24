@@ -1108,7 +1108,7 @@ class Restricted_Site_Access {
 	 */
 	public static function settings_field_allowed() {
 		?>
-		<div class="hide-if-no-js">
+		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
 			<div id="ip_list">
 				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip code" value="" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
 			<?php
@@ -1136,6 +1136,7 @@ class Restricted_Site_Access {
 				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
+				<p id="rsa-error-container" style="color: #DC3232;"></p>
 			</div>
 
 			<?php
@@ -1293,9 +1294,10 @@ class Restricted_Site_Access {
 		}
 
 		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) ) ) ) {
-			die( '1' );
+			wp_send_json_error( __( 'The IP entered is invalid.', 'restricted-site-access' ) );
 		}
-		die;
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -1312,7 +1314,24 @@ class Restricted_Site_Access {
 			if ( empty( $ip_parts[1] ) || ! is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
 				return false;
 			}
+
 			$ip_address = $ip_parts[0];
+
+			$protocol = self::get_ip_protocol( $ip_address );
+
+			if ( 'IPv4' === $protocol && (int)$ip_parts[1] > 32 ) {
+				/**
+				 * Return if the prefix length is greater than 32.
+				 * IPv4 can use maximum of 32 bits for address space.
+				 */
+				return false;
+			} else if ( 'IPv6' === $protocol && (int)$ip_parts[1] > 128 ) {
+				/**
+				 * Return if the prefix length is greater than 128.
+				 * IPv6 can use maximum of 128 bits for address space.
+				 */
+				return false;
+			}
 		}
 
 		// confirm IP part is a valid IPv6 or IPv4 IP.
@@ -1749,6 +1768,32 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
+	}
+
+	/**
+	 * Returns the protocol used by the IP address.
+	 *
+	 * @param string $ip IPv4 or IPv6 address without the netmask.
+	 * @return string|boolean Returns the protocol. `false` if IP is invalid.
+	 */
+	public static function get_ip_protocol( $ip = '' ) {
+		if ( empty( $ip ) ) {
+			return false;
+		}
+
+		$protocol = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 );
+
+		if ( false !== $protocol ) {
+			return 'IPv4';
+		}
+
+		$protocol = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 );
+
+		if ( false !== $protocol ) {
+			return 'IPv6';
+		}
+
+		return false;
 	}
 }
 
