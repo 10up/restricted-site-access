@@ -1,10 +1,6 @@
 describe( 'Admin can add/remove IP addresses', () => {
 	const expectedTuples = [
 		{
-			ip: '',
-			label: '',
-		},
-		{
 			ip: '10.2.4.23',
 			label: '',
 		},
@@ -70,7 +66,7 @@ describe( 'Admin can add/remove IP addresses', () => {
 			.get( '#submit' )
 			.click();
 
-		cy.get( '#ip_list > div' ).each( ( $el, index ) => {
+		cy.get( '.rsa_unrestricted_ip_row' ).each( ( $el, index ) => {
 			const ipEl    = $el.find( 'input[name="rsa_options[allowed][]"]' );
 			const labelEl = $el.find( 'input[name="rsa_options[comment][]"]' );
 
@@ -81,8 +77,8 @@ describe( 'Admin can add/remove IP addresses', () => {
 
 	it( 'Is able to remove IP address', () => {
 		cy
-			.get( '#ip_list > div' )
-			.eq( 2 )
+			.get( '.rsa_unrestricted_ip_row' )
+			.eq( 1 )
 			.then( $el => {
 				const removeBtn = $el.find( '.remove_btn' );
 				cy.wrap( removeBtn ).click();
@@ -94,16 +90,11 @@ describe( 'Admin can add/remove IP addresses', () => {
 			} )
 
 
-		cy.get( '#ip_list > div' ).each( ( $el, index ) => {
+		cy.get( '.rsa_unrestricted_ip_row' ).each( ( $el, index ) => {
 			const ipEl    = $el.find( 'input[name="rsa_options[allowed][]"]' );
 			const labelEl = $el.find( 'input[name="rsa_options[comment][]"]' );
 
 			if ( 1 === index ) {
-				expect( ipEl ).to.have.value( '10.2.4.23' );
-				expect( labelEl ).to.have.value( '' );
-			}
-
-			if ( 2 === index ) {
 				expect( ipEl ).to.have.value( '2a06:98c0::/29' );
 				expect( labelEl ).to.have.value( 'Cloudflare' );
 			}
@@ -178,7 +169,7 @@ describe( 'Admin can add/remove IP addresses', () => {
 	} );
 
 	after( () => {
-		cy.get( '#ip_list > div:not( #ip_list_empty )' ).each( ( $el, index ) => {
+		cy.get( '.rsa_unrestricted_ip_row' ).each( ( $el, index ) => {
 			const removeBtn = $el.find( '.remove_btn' );
 
 			if ( removeBtn ) {
