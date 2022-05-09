@@ -3,7 +3,7 @@ Contributors:      jakemgold, rcbth, 10up, thinkoomph, tlovett1
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 4.6
-Tested up to:      5.9
+Tested up to:      6.0
 Stable tag:        7.3.0
 Requires PHP:      
 License:           GPLv2 or later
