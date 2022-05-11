@@ -73,7 +73,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$data = $wp_scripts->get_data( 'rsa-admin', 'data' );
 
-		$this->assertContains( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ), $data );
+		$this->assertStringContainsString( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ), $data );
 	}
 
 	public function test_load_options_page() {
@@ -96,7 +96,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::settings_field_handling();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4"  checked=\'checked\' />', $html );
+		$this->assertStringContainsString( 'id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4"  checked=\'checked\' />', $html );
 	}
 
 	public function test_filter_page_dropdown() {
@@ -148,7 +148,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::admin_notice();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message.', $html );
+		$this->assertStringContainsString( 'Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message.', $html );
 
 		$options = $rsa::get_options( false );
 		$options['approach'] = 2;
@@ -162,7 +162,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::admin_notice();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'Please enter the web address you would like to redirect restricted visitors to. If no address is entered, visitors will be redirected to the login screen.', $html );
+		$this->assertStringContainsString( 'Please enter the web address you would like to redirect restricted visitors to. If no address is entered, visitors will be redirected to the login screen.', $html );
 	}
 
 	public function test_page_cache_notice() {
@@ -185,7 +185,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::page_cache_notice();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'Page caching appears to be enabled. Restricted Site Access may not work as expected', $html );
+		$this->assertStringContainsString( 'Page caching appears to be enabled. Restricted Site Access may not work as expected', $html );
 
 		$rsa::ajax_notice_dismiss();
 
@@ -230,7 +230,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::settings_field_rsa_page();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'value="' . $page_id . '" selected="selected"', $html );
+		$this->assertStringContainsString( 'value="' . $page_id . '" selected="selected"', $html );
 	}
 
 	public function test_blog_privacy_selector() {
@@ -242,7 +242,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::blog_privacy_selector();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'name="blog_public" value="2"  />', $html );
+		$this->assertStringContainsString( 'name="blog_public" value="2"  />', $html );
 
 		update_option( 'blog_public', 2 );
 
@@ -250,7 +250,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::blog_privacy_selector();
 		$html = ob_get_clean();
 
-		$this->assertContains( 'name="blog_public" value="2"  checked=\'checked\' />', $html );
+		$this->assertStringContainsString( 'name="blog_public" value="2"  checked=\'checked\' />', $html );
 	}
 
 	public function test_admin_head() {
@@ -269,11 +269,11 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$content = $tabs['restricted-site-access']['content'];
 
-		$this->assertContains( '<p><strong>Handle restricted visitors</strong> - Choose the method for handling visitors to your site that are restricted.</p>', $content );
-		$this->assertContains( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', $content );
-		$this->assertContains( 'The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', $content );
-		$this->assertContains( 'The web address of the site you want the visitor redirected to.', $content );
-		$this->assertContains( 'redirect the visitor to the same path (URI) entered at this site.', $content );
-		$this->assertContains( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect.', $content );
+		$this->assertStringContainsString( '<p><strong>Handle restricted visitors</strong> - Choose the method for handling visitors to your site that are restricted.</p>', $content );
+		$this->assertStringContainsString( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', $content );
+		$this->assertStringContainsString( 'The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', $content );
+		$this->assertStringContainsString( 'The web address of the site you want the visitor redirected to.', $content );
+		$this->assertStringContainsString( 'redirect the visitor to the same path (URI) entered at this site.', $content );
+		$this->assertStringContainsString( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect.', $content );
 	}
 }
