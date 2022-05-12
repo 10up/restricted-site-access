@@ -1529,36 +1529,85 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		$ip      = '';
-		$headers = array(
-			'HTTP_CF_CONNECTING_IP',
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
-		);
-		foreach ( $headers as $key ) {
-
-			if ( ! isset( $_SERVER[ $key ] ) ) {
+		$ip                    = '';
+		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
+	
+		/**
+		 * Assume empty REMOTE_ADDR as unreliable.
+		 */
+		if ( false === $remote_addr_header_ip ) {
+			return '';
+		}
+	
+		/**
+		 * Accepts the string 'REMOTE_ADDR' or array of trusted proxies.
+		 * It is advisable to pass 'REMOTE_ADDR' if your proxy server doesn't have
+		 * a static IP.
+		 *
+		 * @param string|array
+		 *
+		 * @since 7.3.1
+		 */
+		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', 'REMOTE_ADDR' );
+	
+		/**
+		 * Add headers that your reverse proxy uses to send client IP information.
+		 *
+		 * Example of possible values are:
+		 *
+		 * HTTP_CF_CONNECTING_IP
+		 * HTTP_CLIENT_IP
+		 * HTTP_X_FORWARDED_FOR
+		 * HTTP_X_FORWARDED
+		 * HTTP_X_CLUSTER_CLIENT_IP
+		 * HTTP_FORWARDED_FOR
+		 * HTTP_FORWARDED
+		 *
+		 * @param array
+		 *
+		 * @since 7.3.1
+		 */
+		$proxy_trusted_headers = apply_filters( 'rsa_proxy_trusted_headers', array( 'HTTP_X_FORWARDED_FOR' ) );
+	
+		if ( is_string( $trusted_proxies ) && 'REMOTE_ADDR' === $trusted_proxies ) {
+			if ( ! empty( $proxy_trusted_headers ) ) {
+				return self::get_ip_from_headers( $proxy_trusted_headers );
+			} else {
+				return $remote_addr_header_ip;
+			}
+		} else if ( is_array( $trusted_proxies ) && ! empty( $trusted_proxies ) ) {
+			if ( in_array( $remote_addr_header_ip, $trusted_proxies ) ) {
+				return self::get_ip_from_headers( $proxy_trusted_headers );
+			}
+		}
+	
+		return '';
+	}
+	
+	/**
+	 * Returns the first matched IP from the list of array of headers.
+	 *
+	 * @return string
+	 */
+	public static function get_ip_from_headers( $headers = array() ) {
+		foreach ( $headers as $header ) {
+			if ( ! isset( $_SERVER[ $header ] ) ) {
 				continue;
 			}
-
+	
 			foreach ( explode(
 				',',
-				sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) )
+				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
-
+	
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
 					return $ip;
 				}
 			}
 		}
-
-		return $ip;
+	
+		return '';
 	}
 
 	/**
