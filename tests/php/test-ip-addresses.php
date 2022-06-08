@@ -10,6 +10,8 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 			'127.0.0.1',
 			'192.168.0.1',
 			'192.168.5.2/16',
+			'435:23f::45:23/101',
+			'2a02:6b8::/32',
 		);
 
 		$invalid_ips = array(
@@ -21,6 +23,8 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 			'198.51.100.0/24',
 			'203.0.113.0/24',
 			'203.0.113.0/ten',
+			'192.0.2.0/33',
+			'2001:800::/129',
 		);
 
 		foreach ( $valid_ips as $valid ) {
