@@ -1124,12 +1124,12 @@ class Restricted_Site_Access {
 
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
-					echo '<div><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					echo '<div class="rsa_unrestricted_ip_row"><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
 				}
 			}
 			?>
 			</div>
-			<div>
+			<div id="rsa_add_new_ip_fields">
 				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
 				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
