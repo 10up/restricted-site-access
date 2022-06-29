@@ -21,7 +21,8 @@
     "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
-    "grunt-phpunit": "^0.3.6"
+    "grunt-phpunit": "^0.3.6",
+    "simple-git": "^3.3.0"
   },
   "scripts": {
     "lint:js": "npx eslint assets/js/src",
