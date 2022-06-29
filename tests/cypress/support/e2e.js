@@ -1,5 +1,5 @@
 // ***********************************************************
-// This example support/index.js is processed and
+// This example support/e2e.js is processed and
 // loaded automatically before your test files.
 //
 // This is a great place to put global configuration and
@@ -13,16 +13,20 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
-import './commands';
+import "@10up/cypress-wp-utils";
 
-/**
- * @todo This is just for testing and should be removed.
- * This was added to bypass an existing console error in
- * the `develop` branch.
- */
-Cypress.on( 'uncaught:exception', (err, runnable) => {
-	return false;
-} )
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+// Import commands.js using ES2015 syntax:
+import "./commands";
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // returning false here prevents Cypress from
+  // failing the test
+  return false
+})
+
+// Preserve WP cookies.
+beforeEach(() => {
+  Cypress.Cookies.defaults({
+    preserve: /^wordpress.*?/,
+  });
+});
