@@ -22,7 +22,7 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
     "grunt-phpunit": "^0.3.6",
-    "simple-git": "^3.3.0"
+    "simple-git": "3.6.0"
   },
   "scripts": {
     "lint:js": "npx eslint assets/js/src",
@@ -33,5 +33,9 @@
     "env:stop": "wp-env stop",
     "postenv:start": "./tests/bin/initialize.sh"
   },
-  "dependencies": {}
+  "overrides": {
+    "@wordpress/env": {
+      "simple-git": "3.6.0"
+    }
+  }
 }

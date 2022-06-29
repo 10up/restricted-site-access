@@ -16,7 +16,6 @@ on:
 jobs:
   cypress:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         core:
