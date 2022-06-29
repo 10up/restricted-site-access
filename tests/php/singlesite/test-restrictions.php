@@ -264,7 +264,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		$this->assertSame( 403, $results['die_code'] );
 		$this->assertSame( get_bloginfo( 'name' ) . ' - Site Access Restricted', $results['die_title'] );
-		$this->assertContains( 'You shall not pass!', $results['die_message'] );
+		$this->assertStringContainsString( 'You shall not pass!', $results['die_message'] );
 	}
 
 	public function test_singlesite_restrict_access_redirect_to_url() {
