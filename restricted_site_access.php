@@ -748,12 +748,9 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
-
 		wp_enqueue_script(
 			'rsa-settings',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'settings' . $min . '.js',
+			plugin_dir_url( __FILE__ ) . 'assets/js/build/settings.min.js',
 			array( 'jquery-effects-shake' ),
 			RSA_VERSION,
 			true
@@ -778,12 +775,9 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
-
 		wp_enqueue_script(
 			'rsa-admin',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
+			plugin_dir_url( __FILE__ ) . 'assets/js/build/admin.min.js',
 			array( 'jquery', 'jquery-ui-dialog' ),
 			RSA_VERSION,
 			true

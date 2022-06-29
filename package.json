@@ -14,14 +14,10 @@
     "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
     "@wordpress/env": "4.1.1",
     "@wordpress/eslint-plugin": "^10.0.2",
+    "@wordpress/scripts": "^23.4.0",
     "cypress": "^10.3.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^8.8.0",
-    "grunt": "^1.5.3",
-    "grunt-contrib-uglify-es": "^3.3.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-phpcs": "^0.4.0",
-    "grunt-phpunit": "^0.3.6",
     "simple-git": "3.6.0"
   },
   "scripts": {
@@ -31,7 +27,9 @@
     "env": "wp-env",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
-    "postenv:start": "./tests/bin/initialize.sh"
+    "postenv:start": "./tests/bin/initialize.sh",
+    "start": "wp-scripts start",
+    "build": "wp-scripts build"
   },
   "overrides": {
     "@wordpress/env": {
