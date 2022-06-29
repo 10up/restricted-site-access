@@ -153,12 +153,15 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 == Changelog ==
 
-= 7.3.1 - 2022-05-13 =
+= 7.3.1 - 2022-06-29 =
 * **Added:** Dependency security scanning GitHub Action (props [@jeffpaul](https://github.com/jeffpaul)).
+* **Added:** PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter)).
 * **Changed:** Documentation and asset updates (props [@Sidsector9](https://github.com/Sidsector9)).
+* **Changed:** Admin settings HTML semantics for easier testing (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
+* **Changed:** Bump WordPress "tested up to" version 6.0 (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@cadic](https://github.com/cadic), [@jeffpaul](https://github.com/jeffpaul)).
 * **Fixed:** Check netmask range before IP is added (props [@Sidsector9](https://github.com/Sidsector9), [@PypWalters](https://github.com/PypWalters)).
 * **Security:** Bump `minimist` from 1.2.5 to 1.2.6 (props [@dependabot](https://github.com/apps/dependabot)).
-* **Security:** Bump `grunt` from 1.4.1 to 1.5.2 (props [@dependabot](https://github.com/apps/dependabot)).
+* **Security:** Bump `grunt` from 1.4.1 to 1.5.3 (props [@dependabot](https://github.com/apps/dependabot)).
 * **Security:** Bump `async` from 2.6.3 to 2.6.4 (props [@dependabot](https://github.com/apps/dependabot)).
 
 = 7.3.0 - 2022-02-08 =

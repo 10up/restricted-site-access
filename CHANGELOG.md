@@ -4,19 +4,22 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased]
 
-## [7.3.1] - 2022-05-13
+## [7.3.1] - 2022-06-29
 ### Added
 - Dependency security scanning GitHub Action (props [@jeffpaul](https://github.com/jeffpaul) via [#188](https://github.com/10up/restricted-site-access/pull/188)).
+- PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter) via [#183](https://github.com/10up/restricted-site-access/pull/183)).
 
 ### Changed
 - Documentation and asset updates (props [@Sidsector9](https://github.com/Sidsector9) via [#180](https://github.com/10up/restricted-site-access/pull/180)).
+- Admin settings HTML semantics for easier testing (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#193](https://github.com/10up/restricted-site-access/pull/193)).
+- Bump WordPress "tested up to" version 6.0 (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@cadic](https://github.com/cadic), [@jeffpaul](https://github.com/jeffpaul) via [#194](https://github.com/10up/restricted-site-access/pull/194), [#196](https://github.com/10up/restricted-site-access/pull/196)).
 
 ### Fixed
 - Check netmask range before IP is added (props [@Sidsector9](https://github.com/Sidsector9), [@PypWalters](https://github.com/PypWalters) via [#178](https://github.com/10up/restricted-site-access/pull/178)).
 
 ### Security
 - Bump `minimist` from 1.2.5 to 1.2.6 (props [@dependabot](https://github.com/apps/dependabot) via [#185](https://github.com/10up/restricted-site-access/pull/185)).
-- Bump `grunt` from 1.4.1 to 1.5.2 (props [@dependabot](https://github.com/apps/dependabot) via [#189](https://github.com/10up/restricted-site-access/pull/189)).
+- Bump `grunt` from 1.4.1 to 1.5.3 (props [@dependabot](https://github.com/apps/dependabot) via [#189](https://github.com/10up/restricted-site-access/pull/189), [#199](https://github.com/10up/restricted-site-access/pull/199)).
 - Bump `async` from 2.6.3 to 2.6.4 (props [@dependabot](https://github.com/apps/dependabot) via [#190](https://github.com/10up/restricted-site-access/pull/190)).
 
 ## [7.3.0] - 2022-02-08
