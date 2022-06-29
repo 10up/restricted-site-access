@@ -955,7 +955,7 @@ class Restricted_Site_Access {
 		$screen->add_help_tab(
 			array(
 				'id'      => 'restricted-site-access',
-				'title'   => esc_html_x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
+				'title'   => esc_html_x( 'Restricted Site Access', 'help screen title', 'restricted-site-access' ),
 				'content' => implode( PHP_EOL, $content ),
 			)
 		);
