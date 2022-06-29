@@ -1,5 +1,5 @@
 === Restricted Site Access ===
-Contributors:      jakemgold, rcbth, 10up, thinkoomph, tlovett1
+Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomnom99
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.0
