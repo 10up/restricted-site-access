@@ -19,9 +19,22 @@ import "@10up/cypress-wp-utils";
 import "./commands";
 
 Cypress.on('uncaught:exception', (err, runnable) => {
+
+  /**
+   * Not sure why these 2 errors occur. On inspecting with the GUI,
+   * all the necessary elements are present as expected, yet Cypress
+   * fails.
+   */
+  if (
+    err.message.includes( `Cannot read properties of null (reading 'href')` )
+    || err.message.includes( `Cannot read properties of null (reading 'checked')` )
+  ) {
+    return false;
+  }
+
   // returning false here prevents Cypress from
   // failing the test
-  return false
+  return true
 })
 
 // Preserve WP cookies.
