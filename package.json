@@ -1,6 +1,6 @@
 {
   "name": "restricted-site-access",
-  "version": "7.3.0",
+  "version": "7.3.1",
   "description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
   "homepage": "https://github.com/10up/restricted-site-access#readme",
   "license": "GPL-2.0-or-later",
