@@ -4,15 +4,15 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased]
 
-## [7.3.1] - 2022-06-29
+## [7.3.1] - 2022-06-30
 ### Added
-- Dependency security scanning GitHub Action (props [@jeffpaul](https://github.com/jeffpaul) via [#188](https://github.com/10up/restricted-site-access/pull/188)).
 - PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter) via [#183](https://github.com/10up/restricted-site-access/pull/183)).
+- Dependency security scanning GitHub Action (props [@jeffpaul](https://github.com/jeffpaul) via [#188](https://github.com/10up/restricted-site-access/pull/188)).
 
 ### Changed
-- Documentation and asset updates (props [@Sidsector9](https://github.com/Sidsector9) via [#180](https://github.com/10up/restricted-site-access/pull/180)).
 - Admin settings HTML semantics for easier testing (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#193](https://github.com/10up/restricted-site-access/pull/193)).
 - Bump WordPress "tested up to" version 6.0 (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@cadic](https://github.com/cadic), [@jeffpaul](https://github.com/jeffpaul) via [#194](https://github.com/10up/restricted-site-access/pull/194), [#196](https://github.com/10up/restricted-site-access/pull/196)).
+- Documentation, asset, and e2e test updates (props [@Sidsector9](https://github.com/Sidsector9), [@iamdharmesh](https://github.com/iamdharmesh) via [#180](https://github.com/10up/restricted-site-access/pull/180), [#201](https://github.com/10up/restricted-site-access/pull/201)).
 
 ### Fixed
 - Check netmask range before IP is added (props [@Sidsector9](https://github.com/Sidsector9), [@PypWalters](https://github.com/PypWalters) via [#178](https://github.com/10up/restricted-site-access/pull/178)).
