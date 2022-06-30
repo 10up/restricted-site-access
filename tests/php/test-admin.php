@@ -265,7 +265,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$tabs = $screen->get_help_tabs();
 
 		$this->assertArrayHasKey( 'restricted-site-access', $tabs );
-		$this->assertSame( 'Restricted Site Acccess', $tabs['restricted-site-access']['title'] );
+		$this->assertSame( 'Restricted Site Access', $tabs['restricted-site-access']['title'] );
 
 		$content = $tabs['restricted-site-access']['content'];
 

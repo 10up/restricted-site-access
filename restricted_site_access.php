@@ -542,7 +542,7 @@ class Restricted_Site_Access {
 
 		// settings for restricted site access.
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
-		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
+		add_settings_section( 'restricted-site-access', __( 'Restricted Site Access', 'restricted-site-access' ), '__return_empty_string', self::$settings_page );
 
 		// Limit when additional settings fields show up.
 		if (
@@ -955,7 +955,7 @@ class Restricted_Site_Access {
 		$screen->add_help_tab(
 			array(
 				'id'      => 'restricted-site-access',
-				'title'   => esc_html_x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
+				'title'   => esc_html_x( 'Restricted Site Access', 'help screen title', 'restricted-site-access' ),
 				'content' => implode( PHP_EOL, $content ),
 			)
 		);
