@@ -2,28 +2,32 @@
 	"name": "10up/restricted-site-access",
 	"description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
 	"authors": [
-      {
-        "name": "10up",
-        "email": "opensource@10up.com",
-		"homepage": "https://10up.com",
-		"role": "Developer"
-      }
-    ],
+		{
+			"name": "10up",
+			"email": "opensource@10up.com",
+			"homepage": "https://10up.com",
+			"role": "Developer"
+		}
+	],
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
-    "require-dev": {
-        "phpunit/phpunit": "^7.5",
-        "dealerdirect/phpcodesniffer-composer-installer": "*",
-        "phpcompatibility/php-compatibility": "*",
-        "wp-coding-standards/wpcs": "*",
-        "10up/wpacceptance": "dev-master",
+	"require-dev": {
+		"10up/phpcs-composer": "dev-master",
 		"yoast/phpunit-polyfills": "1.x-dev"
-    },
+	},
 	"scripts": {
-      "test": "phpunit",
-      "test:acceptance": "wpacceptance run",
-      "lint": "phpcs --extensions=php -s .",
-      "lint-fix": "phpcbf --extensions=php ."
-    },
-    "minimum-stability": "dev"
+		"test": "phpunit",
+		"test:acceptance": "wpacceptance run",
+		"lint": "phpcs --extensions=php -s .",
+		"lint-fix": "phpcbf --extensions=php ."
+	},
+	"minimum-stability": "dev",
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"require": {
+		"phpunit/phpunit": "9.4.4"
+	}
 }
