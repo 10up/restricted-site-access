@@ -1,6 +1,6 @@
 {
   "name": "restricted-site-access",
-  "version": "7.3.0",
+  "version": "7.3.1",
   "description": "Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.",
   "homepage": "https://github.com/10up/restricted-site-access#readme",
   "license": "GPL-2.0-or-later",
@@ -11,24 +11,31 @@
     "role": "developer"
   },
   "devDependencies": {
-    "@wordpress/env": "^4.1.1",
-    "@wordpress/eslint-plugin": "^10.0.0",
-    "cypress": "^8.3.1",
+    "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
+    "@wordpress/env": "4.1.1",
+    "@wordpress/eslint-plugin": "^10.0.2",
+    "cypress": "^10.3.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^8.8.0",
     "grunt": "^1.5.3",
     "grunt-contrib-uglify-es": "^3.3.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-phpcs": "^0.4.0",
-    "grunt-phpunit": "^0.3.6"
+    "grunt-phpunit": "^0.3.6",
+    "simple-git": "3.6.0"
   },
   "scripts": {
-    "wp-env": "wp-env",
-    "cypress:open": "cypress open --config-file tests/cypress/config.json",
-    "cypress:run": "cypress run --config-file tests/cypress/config.json",
-    "to-multisite": "wp-env run tests-cli \"wp core multisite-convert --title='RSA Multisite'\"",
-    "create-pages": "wp-env run tests-cli \"wp post create --post_type=page --post_title='Accessible page' --post_status='publish'\" && wp-env run tests-cli \"wp post create --post_type=page --post_title='Page to redirect' --post_status='publish'\"",
-    "lint:js": "npx eslint assets/js/src"
+    "lint:js": "npx eslint assets/js/src",
+    "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
+    "cypress:run": "cypress run --config-file tests/cypress/config.js",
+    "env": "wp-env",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "postenv:start": "./tests/bin/initialize.sh"
   },
-  "dependencies": {}
+  "overrides": {
+    "@wordpress/env": {
+      "simple-git": "3.6.0"
+    }
+  }
 }
