@@ -37,7 +37,7 @@ describe( 'Plugin admin settings are properly rendered.', () => {
 		cy
 			.get( 'label[for="blog-restricted"]' )
 			.should( 'be.visible' )
-			.and( 'have.text', 'Restrict site access to visitors who are logged in or allowed by IP address' )
+			.and( 'have.text', 'Restrict site access to visitors who are logged in or allowed by IP address' );
 	} );
 
 	it( 'Handle restricted visitors: "send to login" radio button', () => {
@@ -101,20 +101,20 @@ describe( 'Plugin admin settings are properly rendered.', () => {
 			.should( 'be.visible' )
 			.and( ( $el ) => expect( $el ).to.have.attr( 'placeholder', 'Identify this entry' ) );
 	} );
-	
+
 	it( '"Add" button', () => {
 		cy
 			.get( '#addip' )
 			.should( 'be.visible' )
-			.and( 'have.value', 'Add' );
-	} )
+			.and( 'have.value', 'Add this IP' );
+	} );
 
 	it( '"Add My Current IP Address" button', () => {
 		cy
 			.get( '#rsa_myip' )
 			.should( 'be.visible' )
 			.and( 'have.value', 'Add My Current IP Address' );
-	} )
+	} );
 
 	it( '"Redirect web address" input field should be hidden', () => {
 		cy
@@ -145,4 +145,4 @@ describe( 'Plugin admin settings are properly rendered.', () => {
 			.get( 'select[name="rsa_options[page]"]' )
 			.should( 'not.be.visible' );
 	} );
-} )
+} );

@@ -123,11 +123,12 @@
 	}
 
 	function addIp( ip, comment ) {
+		const shakeSpeed = 600;
+
 		if ( $.trim( ip ) === '' ) {
+			$( Cache.new_ip ).effect( 'shake', shakeSpeed );
 			return false;
 		}
-
-		const shakeSpeed = 600;
 
 		Cache.add_btn.attr( 'disabled', 'disabled' );
 		const ipList = $( document.querySelectorAll( '#ip_list input' ) );
