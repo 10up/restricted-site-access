@@ -1529,31 +1529,54 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		$ip                    = '';
+		/** REMOTE_ADDR IP Address. */
 		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
-	
-		/**
-		 * Assume empty REMOTE_ADDR as unreliable.
-		 */
-		if ( false === $remote_addr_header_ip ) {
+
+		/** Return if REMOTE_ADDR is not set. */
+		if ( empty( $remote_addr_header_ip ) ) {
 			return '';
 		}
-	
-		/**
-		 * Accepts the string 'REMOTE_ADDR' or array of trusted proxies.
-		 * It is advisable to pass 'REMOTE_ADDR' if your proxy server doesn't have
-		 * a static IP.
+
+		/*
+		 * Filter hook to set array of trusted proxies.
 		 *
-		 * @param string|array
+		 * Some reverse proxies (like AWS Elastic Load Balancing) don't have
+		 * a static IP address or even a range that you can target with the CIDR notation.
+		 * In this case, you'll need to - very carefully - trust all proxies by setting
+		 * $trusted_proxies to an empty array - (default behaviour).
 		 *
-		 * @since 7.3.1
+		 * In case your reverse proxy uses static IP addresses, then you can add those
+		 * addresses to the $trusted_proxies array.
+		 *
+		 * (Note: This is for advanced users only.)
 		 */
-		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', 'REMOTE_ADDR' );
+		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', array() );
+
+		if ( ! empty( $trusted_proxies ) ) {
+
+			/** If REMOTE_ADDR is found in the array of trusted proxies... */
+			if ( in_array( $remote_addr_header_ip, $trusted_proxies ) ) {
+				return self::get_ip_from_headers();
+			} else {
+				return '';
+			}
+		} else {
+			return self::get_ip_from_headers();
+		}
+	}
 	
-		/**
-		 * Add headers that your reverse proxy uses to send client IP information.
+	/**
+	 * Returns the first matched IP from the list of array of headers.
+	 *
+	 * @return string
+	 */
+	public static function get_ip_from_headers() {
+		/*
+		 * If your site is not behind a reverse proxy, then REMOTE_ADDR will contain the
+		 * actual client IP address. In this case, set $trusted_headers to an empty array - (default behaviour).
 		 *
-		 * Example of possible values are:
+		 * In case of a proxy server, the proxy server will replace REMOTE_ADDR with its own IP address and
+		 * forward the client IP address using one of the following headers depending on the implementation.
 		 *
 		 * HTTP_CF_CONNECTING_IP
 		 * HTTP_CLIENT_IP
@@ -1563,34 +1586,21 @@ class Restricted_Site_Access {
 		 * HTTP_FORWARDED_FOR
 		 * HTTP_FORWARDED
 		 *
-		 * @param array
+		 * Use the `rsa_trusted_headers` filter hook to set the headers that should be trusted with client IP
+		 * address.
 		 *
-		 * @since 7.3.1
+		 * (Note: This is for advanced users only.)
 		 */
-		$proxy_trusted_headers = apply_filters( 'rsa_proxy_trusted_headers', array( 'HTTP_X_FORWARDED_FOR' ) );
-	
-		if ( is_string( $trusted_proxies ) && 'REMOTE_ADDR' === $trusted_proxies ) {
-			if ( ! empty( $proxy_trusted_headers ) ) {
-				return self::get_ip_from_headers( $proxy_trusted_headers );
-			} else {
-				return $remote_addr_header_ip;
-			}
-		} else if ( is_array( $trusted_proxies ) && ! empty( $trusted_proxies ) ) {
-			if ( in_array( $remote_addr_header_ip, $trusted_proxies ) ) {
-				return self::get_ip_from_headers( $proxy_trusted_headers );
-			}
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', array() );
+
+		/*
+		 * If trusted_headers array is empty, then we return REMOTE_ADDR. 
+		 */
+		if ( empty( $trusted_headers ) ) {
+			return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 		}
-	
-		return '';
-	}
-	
-	/**
-	 * Returns the first matched IP from the list of array of headers.
-	 *
-	 * @return string
-	 */
-	public static function get_ip_from_headers( $headers = array() ) {
-		foreach ( $headers as $header ) {
+
+		foreach ( $trusted_headers as $header ) {
 			if ( ! isset( $_SERVER[ $header ] ) ) {
 				continue;
 			}
@@ -1600,13 +1610,13 @@ class Restricted_Site_Access {
 				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
-	
+
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
 					return $ip;
 				}
 			}
 		}
-	
+
 		return '';
 	}
 
