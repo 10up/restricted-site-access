@@ -1553,7 +1553,7 @@ class Restricted_Site_Access {
 				$ip = trim( $ip ); // just to be safe.
 
 				/** Hook to filter IP flags. */
-				$filter_flags = apply_filters( 'rsa_get_client_ip_address_flags', FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+				$filter_flags = apply_filters( 'rsa_get_client_ip_address_filter_flags', FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
 
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
 					return $ip;
