@@ -1529,10 +1529,10 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		/** REMOTE_ADDR IP Address. */
+		// REMOTE_ADDR IP address.
 		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
 
-		/** Return if REMOTE_ADDR is not set. */
+		// Return if REMOTE_ADDR is not set.
 		if ( empty( $remote_addr_header_ip ) ) {
 			return '';
 		}
@@ -1548,63 +1548,75 @@ class Restricted_Site_Access {
 		 * In case your reverse proxy uses static IP addresses, then you can add those
 		 * addresses to the $trusted_proxies array.
 		 *
-		 * (Note: This is for advanced users only.)
+		 * @param string[] $trusted_proxies The IP addresses of the proxy we want to trust.
 		 */
 		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', array() );
 
 		if ( ! empty( $trusted_proxies ) ) {
-
-			/** If REMOTE_ADDR is found in the array of trusted proxies... */
-			if ( in_array( $remote_addr_header_ip, $trusted_proxies ) ) {
-				return self::get_ip_from_headers();
-			} else {
-				return '';
+			foreach ( $trusted_proxies as $trusted_proxy ) {
+				// If REMOTE_ADDR is found in our trusted proxy, get IP from headers.
+				if ( self::ip_in_range( $remote_addr_header_ip, $trusted_proxy ) ) {
+					return self::get_ip_from_headers();
+				}
 			}
+
+			return '';
 		} else {
 			return self::get_ip_from_headers();
 		}
 	}
-	
+
 	/**
 	 * Returns the first matched IP from the list of array of headers.
 	 *
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
-		/*
-		 * If your site is not behind a reverse proxy, then REMOTE_ADDR will contain the
-		 * actual client IP address. In this case, set $trusted_headers to an empty array - (default behaviour).
-		 *
-		 * In case of a proxy server, the proxy server will replace REMOTE_ADDR with its own IP address and
-		 * forward the client IP address using one of the following headers depending on the implementation.
-		 *
-		 * HTTP_CF_CONNECTING_IP
-		 * HTTP_CLIENT_IP
-		 * HTTP_X_FORWARDED_FOR
-		 * HTTP_X_FORWARDED
-		 * HTTP_X_CLUSTER_CLIENT_IP
-		 * HTTP_FORWARDED_FOR
-		 * HTTP_FORWARDED
-		 *
-		 * Use the `rsa_trusted_headers` filter hook to set the headers that should be trusted with client IP
-		 * address.
-		 *
-		 * (Note: This is for advanced users only.)
-		 */
-		$trusted_headers = apply_filters( 'rsa_trusted_headers', array() );
+		$trusted_headers = array(
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+		);
 
 		/*
-		 * If trusted_headers array is empty, then we return REMOTE_ADDR. 
+		 * Filter hook to set array of trusted IP address headers.
+		 *
+		 * Most CDN providers will set the IP address of the client in a number
+		 * of headers. This allows the plugin to detect the IP address of the client
+		 * even if it is behind a proxy.
+		 *
+		 * Use this hook to modify the permitted proxy headers. For sites without a
+		 * CDN (or local proxy) it is recommended to add a filter to this hook to
+		 * return an empty array.
+		 *
+		 * add_filter( 'rsa_trusted_headers', '__return_empty_array' );
+		 *
+		 * By default, the following headers are trusted:
+		 * - HTTP_CF_CONNECTING_IP
+		 * - HTTP_CLIENT_IP
+		 * - HTTP_X_FORWARDED_FOR
+		 * - HTTP_X_FORWARDED
+		 * - HTTP_X_CLUSTER_CLIENT_IP
+		 * - HTTP_FORWARDED_FOR
+		 * - HTTP_FORWARDED
+		 *
+		 * To allow for CDNs, these headers take priority over the REMOTE_ADDR value.
+		 *
+		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
 		 */
-		if ( empty( $trusted_headers ) ) {
-			return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
-		}
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
 
-		foreach ( $trusted_headers as $header ) {
+		// Add the REMOTE_ADDR value to the end of the array.
+		$trusted_headers[] = 'REMOTE_ADDR';
+
+		foreach ( array_unique( $trusted_headers ) as $header ) {
 			if ( ! isset( $_SERVER[ $header ] ) ) {
 				continue;
 			}
-	
+
 			foreach ( explode(
 				',',
 				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
