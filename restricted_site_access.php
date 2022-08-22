@@ -1634,7 +1634,7 @@ class Restricted_Site_Access {
 			}
 		}
 
-		return '';
+		return $ip;
 	}
 
 	/**
