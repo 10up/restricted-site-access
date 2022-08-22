@@ -1560,7 +1560,7 @@ class Restricted_Site_Access {
 				}
 			}
 
-			return '';
+			return $remote_addr_header_ip;
 		} else {
 			return self::get_ip_from_headers();
 		}
@@ -1572,6 +1572,7 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
+		$ip              = '';
 		$trusted_headers = array(
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
