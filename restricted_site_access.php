@@ -1560,7 +1560,7 @@ class Restricted_Site_Access {
 				}
 			}
 
-			return $remote_addr_header_ip;
+			return '';
 		} else {
 			return self::get_ip_from_headers();
 		}
