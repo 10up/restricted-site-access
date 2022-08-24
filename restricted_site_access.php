@@ -1537,7 +1537,7 @@ class Restricted_Site_Access {
 			return '';
 		}
 
-		/*
+		/**
 		 * Filter hook to set array of trusted proxies.
 		 *
 		 * Some reverse proxies (like AWS Elastic Load Balancing) don't have
@@ -1583,7 +1583,7 @@ class Restricted_Site_Access {
 			'HTTP_FORWARDED',
 		);
 
-		/*
+		/**
 		 * Filter hook to set array of trusted IP address headers.
 		 *
 		 * Most CDN providers will set the IP address of the client in a number

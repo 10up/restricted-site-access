@@ -98,8 +98,6 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 
 		$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
 
-		// Reset the filter.
-		add_filter( 'rsa_trusted_proxies', '__return_empty_array' );
 		unset( $_SERVER['REMOTE_ADDR'] );
 	}
 
@@ -153,10 +151,6 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		unset( $_SERVER['HTTP_X_FORWARDED'] );
 		unset( $_SERVER['HTTP_FORWARDED'] );
 
-		// Reset things.
-		add_filter( 'rsa_get_client_ip_address_filter_flags', function() {
-			return FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
-		} );
 		unset( $_SERVER['REMOTE_ADDR'] );
 	}
 
