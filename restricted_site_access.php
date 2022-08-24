@@ -372,7 +372,7 @@ class Restricted_Site_Access {
 
 			// iterate through the allow list.
 			foreach ( $allowed_ips as $line ) {
-				if ( self::ip_in_range( $remote_ip, $line ) ) {
+				if ( $remote_ip && self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
