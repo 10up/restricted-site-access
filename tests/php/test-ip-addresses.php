@@ -72,86 +72,117 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_rsa_trusted_proxies() {
+	/**
+	 * Test trusted proxies.
+	 *
+	 * @dataProvider trusted_proxy_provider
+	 *
+	 * @param string $remote_ip Remote IP address.
+	 * @param array $proxies Proxies to trust.
+	 */
+	public function test_rsa_trusted_proxies( string $remote_ip = '', array $proxies = array() ) {
 		$rsa = Restricted_Site_Access::get_instance();
 
 		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-		// Test that if the REMOTE_ADDR matches our proxy, we return a proper IP.
-		add_filter( 'rsa_trusted_proxies', function() {
-			return array( '127.0.0.1/24' );
+		add_filter( 'rsa_trusted_proxies', function() use ( $proxies ) {
+			return $proxies;
 		} );
 
-		$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
-
-		// Test that if the REMOTE_ADDR doesn't match our proxy, we return an empty string.
-		add_filter( 'rsa_trusted_proxies', function() {
-			return array( '10.0.0.0/8' );
-		} );
-
-		$this->assertSame( '', $rsa::get_client_ip_address() );
-
-		// Test if we have multiple proxies and one matches, we return a proper IP.
-		add_filter( 'rsa_trusted_proxies', function() {
-			return array( '10.0.0.0/8', '127.0.0.1' );
-		} );
-
-		$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
+		$this->assertSame( $remote_ip, $rsa::get_client_ip_address() );
 
 		unset( $_SERVER['REMOTE_ADDR'] );
 	}
 
-	public function test_rsa_trusted_headers() {
-		$rsa = Restricted_Site_Access::get_instance();
+	public function trusted_proxy_provider() {
+		/**
+		 * Data to use in our trusted proxy tests
+		 *
+		 * First key is a string containing our REMOTE_ADDR IP.
+		 * Second is an array of proxy IP addresses.
+		 */
+		return array(
+			// Test that if the REMOTE_ADDR matches our proxy, we return a proper IP.
+			array( '127.0.0.1', array( '127.0.0.1/24' ) ),
+			// Test that if the REMOTE_ADDR doesn't match our proxy, we return an empty string.
+			array( '', array( '10.0.0.0/8' ) ),
+			// Test if we have multiple proxies and one matches, we return a proper IP.
+			array( '127.0.0.1', array( '10.0.0.0/8', '127.0.0.1' ) ),
+		);
+	}
 
-		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+	/**
+	 * Test trusted headers
+	 *
+	 * @dataProvider trusted_headers_provider
+	 *
+	 * @param string $remote_ip Remote IP address
+	 * @param array $headers Headers to set.
+	 * @param array $trusted_headers Headers we want to trust.
+	 */
+	public function test_rsa_trusted_headers( string $remote_ip = '', array $headers = array(), array $trusted_headers = array() ) {
+		$rsa = Restricted_Site_Access::get_instance();
 
 		add_filter( 'rsa_get_client_ip_address_filter_flags', function() {
 			return FILTER_FLAG_NO_RES_RANGE;
 		} );
 
-		$headers = array(
-			'HTTP_CF_CONNECTING_IP',
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-		);
+		add_filter( 'rsa_trusted_headers', function() use ( $trusted_headers ) {
+			return $trusted_headers;
+		} );
 
-		// Test that each header returns the value we expect.
-		foreach( $headers as $header ) {
-			$_SERVER[ $header ] = '127.0.0.1';
-			$this->assertSame( '127.0.0.1', $rsa::get_ip_from_headers() );
-			unset( $_SERVER[ $header ] );
+		foreach( $headers as $header => $ip ) {
+			$_SERVER[ $header ] = $ip;
 		}
 
-		// Test that if we don't trust any headers, we get the REMOTE_ADDR value.
-		$_SERVER['HTTP_CLIENT_IP'] = '10.0.0.0';
-		add_filter( 'rsa_trusted_headers', '__return_empty_array' );
-		$this->assertSame( '127.0.0.1', $rsa::get_ip_from_headers() );
-		unset( $_SERVER['HTTP_CLIENT_IP'] );
+		$this->assertSame( $remote_ip, $rsa::get_ip_from_headers() );
 
-		// Test if we trust a single header, we get that value back.
-		$_SERVER['HTTP_CLIENT_IP'] = '10.0.0.0';
-		add_filter( 'rsa_trusted_headers', function() {
-			return array( 'HTTP_CLIENT_IP' );
-		} );
-		$this->assertSame( '10.0.0.0', $rsa::get_ip_from_headers() );
-		unset( $_SERVER['HTTP_CLIENT_IP'] );
+		foreach( $headers as $header ) {
+			unset( $_SERVER[ $header ] );
+		}
+	}
 
-		// Test if we trust multiple headers, we get the first matched value back.
-		$_SERVER['HTTP_X_FORWARDED'] = '10.0.0.8';
-		$_SERVER['HTTP_FORWARDED']   = '10.0.0.0';
-		add_filter( 'rsa_trusted_headers', function() use ( $headers ) {
-			return $headers;
-		} );
-		$this->assertSame( '10.0.0.8', $rsa::get_ip_from_headers() );
-		unset( $_SERVER['HTTP_X_FORWARDED'] );
-		unset( $_SERVER['HTTP_FORWARDED'] );
-
-		unset( $_SERVER['REMOTE_ADDR'] );
+	public function trusted_headers_provider() {
+		/**
+		 * Data to use in our trusted header tests
+		 *
+		 * First key is a string containing our expected IP.
+		 * Second is an array of headers and the IP they are set to.
+		 * Third is an array of headers to trust.
+		 */
+		return array(
+			// Test that if we don't trust any headers, we get the REMOTE_ADDR value.
+			array(
+				'127.0.0.1',
+				array(
+					'HTTP_CLIENT_IP' => '10.0.0.0',
+					'REMOTE_ADDR'    => '127.0.0.1',
+				),
+				array()
+			),
+			// Test if we trust a single header, we get that value back.
+			array(
+				'10.0.0.0',
+				array(
+					'HTTP_CLIENT_IP' => '10.0.0.0',
+					'REMOTE_ADDR'    => '127.0.0.1',
+				),
+				array( 'HTTP_CLIENT_IP' )
+			),
+			// Test if we trust multiple headers, we get the first matched value back.
+			array(
+				'10.0.0.8',
+				array(
+					'HTTP_FORWARDED'   => '10.0.0.0',
+					'HTTP_X_FORWARDED' => '10.0.0.8',
+					'REMOTE_ADDR'      => '127.0.0.1',
+				),
+				array(
+					'HTTP_X_FORWARDED',
+					'HTTP_FORWARDED',
+				)
+			),
+		);
 	}
 
 }
