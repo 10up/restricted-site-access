@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Changed
 - Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#200](https://github.com/10up/restricted-site-access/pull/200)).
-- Bump minimum WordPress and PHP versions to 5.7 and 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
+- Bump minimum WordPress version from 5.0 to 5.7 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
+- Bump minimum PHP version from 5.6 to 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
 
 ## [7.3.1] - 2022-06-30
 ### Added
