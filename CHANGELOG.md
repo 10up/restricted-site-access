@@ -4,7 +4,25 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased]
 
-## [7.3.0] - TBD
+## [7.3.1] - 2022-06-30
+### Added
+- PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter) via [#183](https://github.com/10up/restricted-site-access/pull/183)).
+- Dependency security scanning GitHub Action (props [@jeffpaul](https://github.com/jeffpaul) via [#188](https://github.com/10up/restricted-site-access/pull/188)).
+
+### Changed
+- Admin settings HTML semantics for easier testing (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#193](https://github.com/10up/restricted-site-access/pull/193)).
+- Bump WordPress "tested up to" version 6.0 (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@cadic](https://github.com/cadic), [@jeffpaul](https://github.com/jeffpaul) via [#194](https://github.com/10up/restricted-site-access/pull/194), [#196](https://github.com/10up/restricted-site-access/pull/196)).
+- Documentation, asset, and e2e test updates (props [@Sidsector9](https://github.com/Sidsector9), [@iamdharmesh](https://github.com/iamdharmesh) via [#180](https://github.com/10up/restricted-site-access/pull/180), [#201](https://github.com/10up/restricted-site-access/pull/201)).
+
+### Fixed
+- Check netmask range before IP is added (props [@Sidsector9](https://github.com/Sidsector9), [@PypWalters](https://github.com/PypWalters) via [#178](https://github.com/10up/restricted-site-access/pull/178)).
+
+### Security
+- Bump `minimist` from 1.2.5 to 1.2.6 (props [@dependabot](https://github.com/apps/dependabot) via [#185](https://github.com/10up/restricted-site-access/pull/185)).
+- Bump `grunt` from 1.4.1 to 1.5.3 (props [@dependabot](https://github.com/apps/dependabot) via [#189](https://github.com/10up/restricted-site-access/pull/189), [#199](https://github.com/10up/restricted-site-access/pull/199)).
+- Bump `async` from 2.6.3 to 2.6.4 (props [@dependabot](https://github.com/apps/dependabot) via [#190](https://github.com/10up/restricted-site-access/pull/190)).
+
+## [7.3.0] - 2022-02-08
 ### Added
 - Ability to add, remove, and set IPs programatically (props [@ivankruchkoff](https://github.com/ivankruchkoff), [@helen](https://github.com/helen), [@paulschreiber](https://github.com/paulschreiber) via [#104](https://github.com/10up/restricted-site-access/pull/104)).
 - Cloudflare IP detection compatibility (props [@eightam](https://github.com/eightam), [@dinhtungdu](https://github.com/dinhtungdu) via [#110](https://github.com/10up/restricted-site-access/pull/110)).
@@ -212,6 +230,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.3.1]: https://github.com/10up/restricted-site-access/compare/7.3.0...7.3.1
 [7.3.0]: https://github.com/10up/restricted-site-access/compare/7.2.0...7.3.0
 [7.2.0]: https://github.com/10up/restricted-site-access/compare/7.1.0...7.2.0
 [7.1.0]: https://github.com/10up/restricted-site-access/compare/7.0.1...7.1.0

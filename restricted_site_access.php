@@ -3,9 +3,9 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.3.0
- * Requires at least: 5.0
- * Requires PHP:      5.6
+ * Version:           7.3.1
+ * Requires at least: 5.7
+ * Requires PHP:      7.4
  * Author:            Jake Goldman, 10up, Oomph
  * Author URI:        https://10up.com
  * License:           GPL v2 or later
@@ -13,7 +13,7 @@
  * Text Domain:       restricted-site-access
  */
 
-define( 'RSA_VERSION', '7.2.0' );
+define( 'RSA_VERSION', '7.3.1' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -542,7 +542,7 @@ class Restricted_Site_Access {
 
 		// settings for restricted site access.
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
-		add_settings_section( 'restricted-site-access', '', '__return_empty_string', self::$settings_page );
+		add_settings_section( 'restricted-site-access', __( 'Restricted Site Access', 'restricted-site-access' ), '__return_empty_string', self::$settings_page );
 
 		// Limit when additional settings fields show up.
 		if (
@@ -952,7 +952,7 @@ class Restricted_Site_Access {
 		$screen->add_help_tab(
 			array(
 				'id'      => 'restricted-site-access',
-				'title'   => esc_html_x( 'Restricted Site Acccess', 'help screen title', 'restricted-site-access' ),
+				'title'   => esc_html_x( 'Restricted Site Access', 'help screen title', 'restricted-site-access' ),
 				'content' => implode( PHP_EOL, $content ),
 			)
 		);
@@ -1549,7 +1549,10 @@ class Restricted_Site_Access {
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
 
-				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
+				/** Hook to filter IP flags. */
+				$filter_flags = apply_filters( 'rsa_get_client_ip_address_filter_flags', FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+
+				if ( filter_var( $ip, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
 					return $ip;
 				}
 			}

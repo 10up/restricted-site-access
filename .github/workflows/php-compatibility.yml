@@ -11,7 +11,7 @@ on:
 
 jobs:
   php-compatibility:
-    name: PHP minimum 5.6
+    name: PHP minimum 7.4
 
     runs-on: ubuntu-latest
 
@@ -22,7 +22,7 @@ jobs:
       - name: Set PHP version
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.3'
+          php-version: '7.4'
           tools: composer:v2
           coverage: none
 
@@ -30,4 +30,4 @@ jobs:
         run: composer install
 
       - name: Run PHP Compatibility
-        run: vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 5.6-
+        run: vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4-
