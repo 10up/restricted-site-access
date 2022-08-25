@@ -153,7 +153,7 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 == Changelog ==
 
-= 7.3.1 - 2022-08-29 =
+= 7.3.2 - 2022-08-29 =
 
 * **Changed:** Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9)).
 * **Changed:** Bump minimum WordPress and PHP versions to 5.7 and 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
