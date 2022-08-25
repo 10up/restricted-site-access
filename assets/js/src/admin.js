@@ -1,3 +1,5 @@
+import 'jquery-ui-dialog';
+
 /**
  * 10up
  * http://10up.com
@@ -11,20 +13,22 @@
 ( function( window, $ ) {
 	'use strict';
 
-	$( '.notice' ).on( 'click', '.notice-dismiss', function( event ) {
-		const notice = event.delegateTarget.getAttribute( 'data-rsa-notice' );
-
-		if ( ! notice ) {
-			return;
-		}
-
-		$.ajax( {
-			method: 'post',
-			data: {
-				nonce: rsaAdmin.nonce,
-				action: 'rsa_notice_dismiss',
-			},
-			url: ajaxurl,
+	$( function() {
+		$( '.notice' ).on( 'click', '.notice-dismiss', function( event ) {
+			const notice = event.delegateTarget.getAttribute( 'data-rsa-notice' );
+	
+			if ( ! notice ) {
+				return;
+			}
+	
+			$.ajax( {
+				method: 'post',
+				data: {
+					nonce: rsaAdmin.nonce,
+					action: 'rsa_notice_dismiss',
+				},
+				url: ajaxurl,
+			} );
 		} );
 	} );
 }( window, jQuery ) );
@@ -145,5 +149,7 @@
 		},
 	};
 
-	RSADisablePlugin.init();
+	$( function() {
+		RSADisablePlugin.init();
+	} );
 }( window, jQuery ) );

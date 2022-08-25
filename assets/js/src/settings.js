@@ -1,3 +1,5 @@
+import 'jquery-effects-shake';
+
 /**
  * 10up
  * http://10up.com
@@ -175,5 +177,7 @@
 		);
 	}
 
-	init();
+	$( function() {
+		init();
+	} );
 }( window, jQuery ) );
