@@ -1110,7 +1110,11 @@ class Restricted_Site_Access {
 		?>
 		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
 			<div id="ip_list">
-				<div id="ip_list_empty" style="display: none;"><input type="text" name="rsa_options[allowed][]" class="ip code" value="" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" /> <a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a></div>
+				<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
+					<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
+					<input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
+					<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
+				</div>
 			<?php
 			$ips      = (array) self::$rsa_options['allowed'];
 			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
@@ -1124,15 +1128,23 @@ class Restricted_Site_Access {
 
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
-					echo '<div class="rsa_unrestricted_ip_row"><input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" readonly="true" size="20" /> <input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" /> <a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a></div>';
+					echo '<div class="rsa_unrestricted_ip_row">
+							<input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" size="20" placeholder="' . esc_attr__( 'IP Address or Range' ) . '" />
+							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" placeholder="' . esc_attr__( 'Identify this entry' ) . '" />
+							<a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a>
+						</div>';
 				}
 			}
 			?>
+			<div class="rsa_unrestricted_ip_row">
+				<input type="text" name="rsa_options[allowed][]" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
+				<input type="text" name="rsa_options[comment][]" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" />
+				<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
+			</div>
 			</div>
 			<div id="rsa_add_new_ip_fields">
-				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
-				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add this IP' ); ?>" />
-				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
+				<p class="description"><label><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
+				<input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add new IP' ); ?>" style="margin-top: 5px;" />
 				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>

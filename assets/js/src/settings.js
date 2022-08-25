@@ -105,13 +105,20 @@
 		);
 
 		Cache.add_btn.on( 'click', function() {
-			addIp( Cache.new_ip.value, Cache.new_ip_comment.value );
+			const newIp = Cache.empty_ip
+				.clone()
+				.appendTo( Cache.ip_list_wrap );
+			newIp.removeAttr( 'id' ).slideDown( 250 );
+		} );
+
+		$( Cache.ip_list_wrap ).on( 'blur', '.ip.code', function() {
+			addIp( $( this ).val(), $( this ).next().val(), $( this ) );
 		} );
 
 		const myipBtn = document.getElementById( 'rsa_myip' );
 		if ( null !== myipBtn ) {
 			$( myipBtn ).on( 'click', function() {
-				$( Cache.new_ip ).val( $( this ).data( 'myip' ) );
+				$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
 			} );
 		}
 
@@ -122,22 +129,22 @@
 		} );
 	}
 
-	function addIp( ip, comment ) {
+	function addIp( ip, comment, obj ) {
 		const shakeSpeed = 600;
+		$( '#submit' ).prop( 'disabled', true );
 
 		if ( $.trim( ip ) === '' ) {
-			$( Cache.new_ip ).effect( 'shake', shakeSpeed );
-			return false;
+			$( '#submit' ).prop( 'disabled', false );
+			return;
 		}
 
-		Cache.add_btn.attr( 'disabled', 'disabled' );
 		const ipList = $( document.querySelectorAll( '#ip_list input' ) );
 
 		for ( let i = 0; i < ipList.length; i++ ) {
-			if ( ipList[ i ].value === ip ) {
+			if ( ! obj.is( ipList[ i ] ) && ipList[ i ].value === ip ) {
 				$( ipList[ i ] ).parent().effect( 'shake', shakeSpeed );
-				Cache.add_btn.removeAttr( 'disabled' );
-				return false;
+				$( obj ).focus();
+				return;
 			}
 		}
 
@@ -151,25 +158,14 @@
 			},
 			function( response ) {
 				if ( ! response.success ) {
-					$( Cache.new_ip.parentNode ).effect( 'shake', shakeSpeed );
-					Cache.add_btn.removeAttr( 'disabled' );
+					$( obj ).effect( 'shake', shakeSpeed ).focus();
 					$( Cache.error_field ).text( response.data );
 					return false;
 				}
 
 				$( Cache.error_field ).text( '' );
-				const newIp = Cache.empty_ip
-					.clone()
-					.appendTo( Cache.ip_list_wrap );
-				newIp.children( 'input.ip' ).val( ip );
-				newIp.children( 'input.comment' ).val( comment );
-				newIp.removeAttr( 'id' ).slideDown( 250 );
 
-				if ( ip === Cache.new_ip.value ) {
-					$( Cache.new_ip ).val( '' );
-					$( Cache.new_ip_comment ).val( '' );
-				}
-				Cache.add_btn.removeAttr( 'disabled' );
+				$( '#submit' ).prop( 'disabled', false );
 
 				return true;
 			}
