@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased]
 
+## [7.3.2] - 2022-08-29
+
+### Changed
+- Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#200](https://github.com/10up/restricted-site-access/pull/200)).
+- Bump minimum WordPress and PHP versions to 5.7 and 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
+
 ## [7.3.1] - 2022-06-30
 ### Added
 - PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter) via [#183](https://github.com/10up/restricted-site-access/pull/183)).

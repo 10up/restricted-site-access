@@ -4,7 +4,7 @@ Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
 Tested up to:      6.0
-Stable tag:        7.3.1
+Stable tag:        7.3.2
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,11 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.3.1 - 2022-08-29 =
+
+* **Changed:** Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9)).
+* **Changed:** Bump minimum WordPress and PHP versions to 5.7 and 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
 
 = 7.3.1 - 2022-06-30 =
 * **Added:** PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter)).
