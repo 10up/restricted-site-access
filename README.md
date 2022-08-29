@@ -75,6 +75,51 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
+In 7.3.2, two new filters have been added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. By default, these filters will not change existing behavior. It is recommended to review these filters and utilize them appropriately for your site to secure things further.
+
+If your site is not running behind a proxy, we recommend doing the following:
+
+```php
+add_filter( 'rsa_trusted_headers', '__return_empty_array' );
+```
+
+This will then only use the `REMOTE_ADDR` HTTP header to determine the IP address of the visitor. This header can't be spoofed, so this will increase security.
+
+If your site is running behind a proxy (like a CDN), you can't rely on the `REMOTE_ADDR` HTTP header, as this will contain the IP address of the proxy, not the user. If your proxy uses static IP addresses, we recommend using the `rsa_trusted_proxies` filter to set those trusted IP addresses:
+
+```php
+add_filter( 'rsa_trusted_proxies', 'my_rsa_trusted_proxies' );
+
+function my_rsa_trusted_proxies( $trusted_proxies = array() ) {
+  // Set one or more trusted proxy IP addresses.
+  $proxy_ips       = array(
+    '10.0.0.0/24',
+    '10.0.0.0/32',
+  );
+  $trusted_proxies = array_merge( $trusted_proxies, $proxy_ips );
+
+  return array_unique( $trusted_proxies );
+}
+```
+
+And then use the `rsa_trusted_headers` filter to set which HTTP headers you want to trust. Consult with your proxy provider to determine which header(s) they use to hold the original client IP:
+
+```php
+add_filter( 'rsa_trusted_headers', 'my_rsa_trusted_headers' );
+
+function my_rsa_trusted_headers( $trusted_headers = array() ) {
+  // Set one or more trusted HTTP headers.
+  $headers = array(
+    'HTTP_X_FORWARDED',
+    'HTTP_FORWARDED',
+  );
+
+  return $headers;
+}
+```
+
+If your proxy does not use static IP addresses, you can still utilize the `rsa_trusted_headers` filter to change which HTTP headers you want to trust.
+
 ### I received a warning about page caching. What does it mean?
 
 Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.

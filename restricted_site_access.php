@@ -372,7 +372,7 @@ class Restricted_Site_Access {
 
 			// iterate through the allow list.
 			foreach ( $allowed_ips as $line ) {
-				if ( self::ip_in_range( $remote_ip, $line ) ) {
+				if ( $remote_ip && self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -1529,8 +1529,51 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		$ip      = '';
-		$headers = array(
+		// REMOTE_ADDR IP address.
+		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
+
+		// Return if REMOTE_ADDR is not set.
+		if ( empty( $remote_addr_header_ip ) ) {
+			return '';
+		}
+
+		/**
+		 * Filter hook to set array of trusted proxies.
+		 *
+		 * Some reverse proxies (like AWS Elastic Load Balancing) don't have
+		 * a static IP address or even a range that you can target with the CIDR notation.
+		 * In this case, you'll need to - very carefully - trust all proxies by setting
+		 * $trusted_proxies to an empty array - (default behaviour).
+		 *
+		 * In case your reverse proxy uses static IP addresses, then you can add those
+		 * addresses to the $trusted_proxies array.
+		 *
+		 * @param string[] $trusted_proxies The IP addresses of the proxy we want to trust.
+		 */
+		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', array() );
+
+		if ( ! empty( $trusted_proxies ) ) {
+			foreach ( $trusted_proxies as $trusted_proxy ) {
+				// If REMOTE_ADDR is found in our trusted proxy, get IP from headers.
+				if ( self::ip_in_range( $remote_addr_header_ip, $trusted_proxy ) ) {
+					return self::get_ip_from_headers();
+				}
+			}
+
+			return '';
+		} else {
+			return self::get_ip_from_headers();
+		}
+	}
+
+	/**
+	 * Returns the first matched IP from the list of array of headers.
+	 *
+	 * @return string
+	 */
+	public static function get_ip_from_headers() {
+		$ip              = '';
+		$trusted_headers = array(
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
@@ -1538,17 +1581,47 @@ class Restricted_Site_Access {
 			'HTTP_X_CLUSTER_CLIENT_IP',
 			'HTTP_FORWARDED_FOR',
 			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
 		);
-		foreach ( $headers as $key ) {
 
-			if ( ! isset( $_SERVER[ $key ] ) ) {
+		/**
+		 * Filter hook to set array of trusted IP address headers.
+		 *
+		 * Most CDN providers will set the IP address of the client in a number
+		 * of headers. This allows the plugin to detect the IP address of the client
+		 * even if it is behind a proxy.
+		 *
+		 * Use this hook to modify the permitted proxy headers. For sites without a
+		 * CDN (or local proxy) it is recommended to add a filter to this hook to
+		 * return an empty array.
+		 *
+		 * add_filter( 'rsa_trusted_headers', '__return_empty_array' );
+		 *
+		 * By default, the following headers are trusted:
+		 * - HTTP_CF_CONNECTING_IP
+		 * - HTTP_CLIENT_IP
+		 * - HTTP_X_FORWARDED_FOR
+		 * - HTTP_X_FORWARDED
+		 * - HTTP_X_CLUSTER_CLIENT_IP
+		 * - HTTP_FORWARDED_FOR
+		 * - HTTP_FORWARDED
+		 *
+		 * To allow for CDNs, these headers take priority over the REMOTE_ADDR value.
+		 *
+		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
+		 */
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
+
+		// Add the REMOTE_ADDR value to the end of the array.
+		$trusted_headers[] = 'REMOTE_ADDR';
+
+		foreach ( array_unique( $trusted_headers ) as $header ) {
+			if ( ! isset( $_SERVER[ $header ] ) ) {
 				continue;
 			}
 
 			foreach ( explode(
 				',',
-				sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) )
+				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
 
