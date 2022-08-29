@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Bump minimum WordPress version from 5.0 to 5.7 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
 - Bump minimum PHP version from 5.6 to 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
 
+### Security
+- New filters - `rsa_trusted_proxies` and `rsa_trusted_headers` have been added to help prevent IP spoofing attacks (props [dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@marcS0H](https://github.com/marcS0H), [Vlad Visse](https://patchstack.com/), [@Sidsector9](https://github.com/Sidsector9) via [#198](https://github.com/10up/restricted-site-access/pull/198)).
+
 ## [7.3.1] - 2022-06-30
 ### Added
 - PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter) via [#183](https://github.com/10up/restricted-site-access/pull/183)).
