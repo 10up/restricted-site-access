@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [Unreleased] - TBD
 
 ## [7.3.2] - 2022-08-29
+
+### Added
+- New filter - `rsa_get_client_ip_address_filter_flags` to modify the range of accepted IP addresses (props [@dsXLII](https://github.com/dsXLII), [@dinhtungdu](https://github.com/dinhtungdu), [@Sidsector9](https://github.com/Sidsector9) via [#113](https://github.com/10up/restricted-site-access/pull/113)).
+
 ### Changed
 - Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#200](https://github.com/10up/restricted-site-access/pull/200)).
 - Bump minimum WordPress version from 5.0 to 5.7 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
