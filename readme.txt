@@ -199,7 +199,6 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 == Changelog ==
 
 = 7.3.2 - 2022-08-29 =
-
 * **Changed:** Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9)).
 * **Changed:** Bump minimum WordPress version from 5.0 to 5.7 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
 * **Changed:** Bump minimum PHP version from 5.6 to 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
@@ -367,14 +366,6 @@ __Note: There is currently an edge case bug affecting IP whitelisting. This bug 
 
 == Upgrade Notice ==
 
-= 5.1 =
-Drops support for versions of WordPress prior to 3.5.
-
-= 4.0 =
-This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
-
-== Upgrade Notice ==
-
 = 7.3.2 =
 Drops support for versions of WordPress prior to 5.7.
 Drops support for versions of PHP prior to 7.4.
@@ -387,3 +378,9 @@ IMPORTANT MULTISITE FUNCTIONALITY CHANGE: User access is now checked against the
 
 = 6.1.0 =
 * Important: version 6.1 improves testing visitors for allowed IP addresses ("Unrestricted IP addresses"). We recommend testing IP based restrictions after updating.
+
+= 5.1 =
+Drops support for versions of WordPress prior to 3.5.
+
+= 4.0 =
+This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
