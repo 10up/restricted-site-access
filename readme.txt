@@ -4,7 +4,7 @@ Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
 Tested up to:      6.0
-Stable tag:        7.3.1
+Stable tag:        7.3.2
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -198,6 +198,13 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 == Changelog ==
 
+= 7.3.2 - 2022-08-29 =
+* **Added:** New filter - `rsa_get_client_ip_address_filter_flags` to modify the range of accepted IP addresses.
+* **Changed:** Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9)).
+* **Changed:** Bump minimum WordPress version from 5.0 to 5.7 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
+* **Changed:** Bump minimum PHP version from 5.6 to 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi)).
+* **Security:** New filters - `rsa_trusted_proxies` and `rsa_trusted_headers` have been added to help prevent IP spoofing attacks.
+
 = 7.3.1 - 2022-06-30 =
 * **Added:** PHP8 compatibility check GitHub Action (props [@Sidsector9](https://github.com/Sidsector9), [dkotter](https://github.com/dkotter)).
 * **Added:** Dependency security scanning GitHub Action (props [@jeffpaul](https://github.com/jeffpaul)).
@@ -360,13 +367,9 @@ __Note: There is currently an edge case bug affecting IP whitelisting. This bug 
 
 == Upgrade Notice ==
 
-= 5.1 =
-Drops support for versions of WordPress prior to 3.5.
-
-= 4.0 =
-This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
-
-== Upgrade Notice ==
+= 7.3.2 =
+Drops support for versions of WordPress prior to 5.7.
+Drops support for versions of PHP prior to 7.4.
 
 = 6.2.1 =
 IMPORTANT MULTISITE FUNCTIONALITY CHANGE: User access is now checked against their role on a given site in multisite. To restore previous behavior, use the new restricted_site_access_user_can_access filter.
@@ -376,3 +379,9 @@ IMPORTANT MULTISITE FUNCTIONALITY CHANGE: User access is now checked against the
 
 = 6.1.0 =
 * Important: version 6.1 improves testing visitors for allowed IP addresses ("Unrestricted IP addresses"). We recommend testing IP based restrictions after updating.
+
+= 5.1 =
+Drops support for versions of WordPress prior to 3.5.
+
+= 4.0 =
+This update improves performance, refines the user interface, and adds support for showing restricted visitors a specific page. Please be advised that this udpate is specifically designed for WordPress 3.2+, and like WordPress 3.2, <strong>no longer supports PHP < 5.2.4</strong>.
