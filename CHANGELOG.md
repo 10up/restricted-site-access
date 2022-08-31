@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [Unreleased] - TBD
 
 ## [7.3.2] - 2022-08-29
+**Note:** this release contains two new filters that we recommend using to further secure your site. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
 
 ### Added
 - New filter - `rsa_get_client_ip_address_filter_flags` to modify the range of accepted IP addresses (props [@dsXLII](https://github.com/dsXLII), [@dinhtungdu](https://github.com/dinhtungdu), [@Sidsector9](https://github.com/Sidsector9) via [#113](https://github.com/10up/restricted-site-access/pull/113)).
