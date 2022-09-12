@@ -1130,8 +1130,8 @@ class Restricted_Site_Access {
 			?>
 			</div>
 			<div id="rsa_add_new_ip_fields">
-				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
-				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range', 'restricted-site-access' ); ?>" size="20" />
+				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry', 'restricted-site-access' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add', 'restricted-site-access' ); ?>" />
 				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
