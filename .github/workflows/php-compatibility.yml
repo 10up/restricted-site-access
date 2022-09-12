@@ -29,8 +29,21 @@ jobs:
       - name: Install dependencies
         run: composer install
 
-      - name: Run PHP Compatibility
-        run: vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4-
+      - name: WPCS check
+        uses: 10up/wpcs-action@stable
+        with:
+          enable_warnings: false
+          paths: '.'
+          excludes: 'vendor tests'
+          phpcs_bin_path: './vendor/bin/phpcs'
+          use_local_config: 'true'
 
-      - name: Run PHP Linting
-        run: vendor/bin/phpcs . --ignore=vendor --extensions=php -s
+      - name: PHP Compatibility check
+        uses: 10up/wpcs-action@stable
+        with:
+          enable_warnings: false
+          paths: '.'
+          standard: 'PHPCompatibilityWP'
+          excludes: 'vendor'
+          phpcs_bin_path: './vendor/bin/phpcs'
+          extra_args: ' --runtime-set testVersion 7.4-'
