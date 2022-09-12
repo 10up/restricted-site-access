@@ -11,7 +11,7 @@ on:
 
 jobs:
   php-compatibility:
-    name: PHP minimum 7.4
+    name: Sniffs and Compatibility
 
     runs-on: ubuntu-latest
 
