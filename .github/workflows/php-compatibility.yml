@@ -23,24 +23,14 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: composer:v2
+          tools: composer:v2, cs2pr
           coverage: none
 
       - name: Install dependencies
         run: composer install
 
       - name: WPCS check
-        uses: 10up/wpcs-action@stable
-        with:
-          use_local_config: 'true'
-          excludes: 'vendor tests'
-          phpcs_bin_path: './vendor/bin/phpcs'
+        run: ./vendor/bin/phpcs -q -n --report=checkstyle | cs2pr
 
       - name: PHP Compatibility check
-        uses: 10up/wpcs-action@stable
-        with:
-          use_local_config: 'true'
-          standard: 'PHPCompatibilityWP'
-          excludes: 'vendor'
-          phpcs_bin_path: './vendor/bin/phpcs'
-          extra_args: ' --runtime-set testVersion 7.4-'
+        run: ./vendor/bin/phpcs -q -n --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
