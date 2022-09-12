@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <ruleset name="Project Rules">
 	<rule ref="10up-Default" />
-	<rule ref="WordPress-VIP-Go"/>
+	<rule ref="WordPress-VIP-Go">
+		<!--
+			This plugin is designed to run on both standard WordPress installs
+			and on WordPress VIP installs. As such the WP-CLI command included
+			needs to be able to run without the WordPress VIP mu-plugins.
+		-->
+		<exclude name="WordPressVIPMinimum.Classes.RestrictedExtendClasses.wp_cli" />
+	</rule>
 </ruleset>
