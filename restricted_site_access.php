@@ -303,7 +303,7 @@ class Restricted_Site_Access {
 	/**
 	 * Redirects restricted requests.
 	 *
-	 * @param array $wp WordPress request.
+	 * @param \WP $wp WordPress request.
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
@@ -341,7 +341,7 @@ class Restricted_Site_Access {
 	/**
 	 * Determine whether page should be restricted at point of request.
 	 *
-	 * @param array $wp WordPress The main WP request.
+	 * @param \WP $wp WordPress The main WP request.
 	 * @return array              List of URL and code, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
@@ -1133,7 +1133,10 @@ class Restricted_Site_Access {
 				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
 				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
 				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
-				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
+				<?php
+				//phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+				if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) :
+					?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
 				<p id="rsa-error-container" style="color: #DC3232;"></p>
@@ -1150,7 +1153,7 @@ class Restricted_Site_Access {
 				<ul class="ul-disc">
 					<?php
 					foreach ( $config_ips as $ip ) {
-						echo '<li><code>' . esc_attr( $ip ) . '</code></li>';
+						echo '<li><code>' . esc_html( $ip ) . '</code></li>';
 					}
 					?>
 				</ul>
@@ -1319,13 +1322,13 @@ class Restricted_Site_Access {
 
 			$protocol = self::get_ip_protocol( $ip_address );
 
-			if ( 'IPv4' === $protocol && (int)$ip_parts[1] > 32 ) {
+			if ( 'IPv4' === $protocol && (int) $ip_parts[1] > 32 ) {
 				/**
 				 * Return if the prefix length is greater than 32.
 				 * IPv4 can use maximum of 32 bits for address space.
 				 */
 				return false;
-			} else if ( 'IPv6' === $protocol && (int)$ip_parts[1] > 128 ) {
+			} elseif ( 'IPv6' === $protocol && (int) $ip_parts[1] > 128 ) {
 				/**
 				 * Return if the prefix length is greater than 128.
 				 * IPv6 can use maximum of 128 bits for address space.
@@ -1530,6 +1533,7 @@ class Restricted_Site_Access {
 	 */
 	public static function get_client_ip_address() {
 		// REMOTE_ADDR IP address.
+		// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
 		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
 
 		// Return if REMOTE_ADDR is not set.
