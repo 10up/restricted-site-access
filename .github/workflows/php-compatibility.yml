@@ -32,17 +32,14 @@ jobs:
       - name: WPCS check
         uses: 10up/wpcs-action@stable
         with:
-          enable_warnings: false
-          paths: '.'
+          use_local_config: 'true'
           excludes: 'vendor tests'
           phpcs_bin_path: './vendor/bin/phpcs'
-          use_local_config: 'true'
 
       - name: PHP Compatibility check
         uses: 10up/wpcs-action@stable
         with:
-          enable_warnings: false
-          paths: '.'
+          use_local_config: 'true'
           standard: 'PHPCompatibilityWP'
           excludes: 'vendor'
           phpcs_bin_path: './vendor/bin/phpcs'
