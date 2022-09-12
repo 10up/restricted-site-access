@@ -1,4 +1,4 @@
-name: PHP Compatibility
+name: PHP Linting
 
 on:
   push:
@@ -31,3 +31,6 @@ jobs:
 
       - name: Run PHP Compatibility
         run: vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4-
+
+      - name: Run PHP Linting
+        run: vendor/bin/phpcs . --ignore=vendor --extensions=php -s
