@@ -1917,32 +1917,3 @@ function restricted_site_access_uninstall() {
 }
 
 register_uninstall_hook( __FILE__, 'restricted_site_access_uninstall' );
-
-if ( ! function_exists( 'inet_pton' ) ) :
-
-	/**
-	 * Inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2).
-	 *
-	 * @param string $ip IP Address.
-	 *
-	 * @return array|string
-	 *
-	 * @codeCoverageIgnore
-	 */
-	function inet_pton( $ip ) {
-		if ( strpos( $ip, '.' ) !== false ) {
-			// ipv4.
-			$ip = pack( 'N', ip2long( $ip ) );
-		} elseif ( strpos( $ip, ':' ) !== false ) {
-			// ipv6.
-			$ip  = explode( ':', $ip );
-			$res = str_pad( '', ( 4 * ( 8 - count( $ip ) ) ), '0000', STR_PAD_LEFT );
-			foreach ( $ip as $seg ) {
-				$res .= str_pad( $seg, 4, '0', STR_PAD_LEFT );
-			}
-			$ip = pack( 'H' . strlen( $res ), $res );
-		}
-			return $ip;
-	}
-
-endif;
