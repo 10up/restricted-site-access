@@ -45,10 +45,49 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
+		// IPv4 tests.
 		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.0/24' ) );
 		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1/32' ) );
 		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1' ) );
 		$this->assertFalse( $rsa::ip_in_range( '192.168.1.1', '127.0.0.0/24' ) );
+
+		// IPv4 single address match.
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.4' ) );
+
+		// IPv4 single address don't match.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.23.5' ) );
+
+		// Invalid IPv4 range.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.23.4/33' ) );
+
+		// IPv4 in subnet range.
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.4/3' ) );
+
+		// IPv4 in pattern range.
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.*' ) );
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.*.*' ) );
+
+		// IPv6 not in pattern range.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.*.5' ) );
+
+		// IPv4 not in subnet range.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.30.48', '172.10.30.40/28' ) );
+
+		// IPv6 single address match.
+		$this->assertTrue( $rsa::ip_in_range( '2001:0db8:85a3:0000:0000:8a2e:0370:7334', '2001:0db8:85a3:0000:0000:8a2e:0370:7334' ) );
+
+		// IPv6 single address don't match.
+		$this->assertFalse( $rsa::ip_in_range( '2001:0db8:85a3:0000:0000:8a2e:0370:7334', '2001:0db8:85a3:0000:0000:8a2e:0370:7335' ) );
+
+		// IPv6 in subnet range.
+		$this->assertTrue( $rsa::ip_in_range( '2001:db8:3333:4444:5555:6666:7777:8888', '2001:0db8:3333:4444:0000:0000:0000:0000/64' ) );
+		$this->assertTrue( $rsa::ip_in_range( '2001:db8:3333:4444:5555:6666:7777:8888', '2001:0db8:3333:4444::0000/32' ) );
+
+		// IPv6 in pattern range.
+		$this->assertTrue( $rsa::ip_in_range( '2001:db8:3333:4444:5555:6666:7777:8888', '2001:db8:3333:4444:5555:6666:*:*' ) );
+
+		// IPv6 not in subnet range.
+		$this->assertFalse( $rsa::ip_in_range( '2001:db8:3333:4445:5555:6666:7777:8888', '2001:0db8:3333:4444:0000:0000:0000:0000/64' ) );
 	}
 
 	public function test_get_client_ip_address() {

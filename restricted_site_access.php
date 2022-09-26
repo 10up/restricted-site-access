@@ -13,6 +13,8 @@
  * Text Domain:       restricted-site-access
  */
 
+require_once 'vendor/autoload.php';
+
 define( 'RSA_VERSION', '7.3.2' );
 
 /**
@@ -358,21 +360,15 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$allowed_ips = self::get_config_ips();
-		if (
-			! empty( self::$rsa_options['allowed'] ) &&
-			is_array( self::$rsa_options['allowed'] )
-		) {
-			$allowed_ips = array_merge( $allowed_ips, self::$rsa_options['allowed'] );
-		}
+		$allowed_ips = self::get_ips();
 
 		// check for the allow list, if its empty block everything.
 		if ( count( $allowed_ips ) > 0 ) {
 			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list.
-			foreach ( $allowed_ips as $line ) {
-				if ( $remote_ip && self::ip_in_range( $remote_ip, $line ) ) {
+			foreach ( $allowed_ips as $allowed_ip ) {
+				if ( $remote_ip && self::ip_in_range( $remote_ip, $allowed_ip ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -383,10 +379,10 @@ class Restricted_Site_Access {
 					 *
 					 * @since 6.0.2
 					 *
-					 * @param string $remote_ip The remote IP address being checked.
-					 * @param string $line      The matched masked IP address.
+					 * @param string $remote_ip  The remote IP address being checked.
+					 * @param string $allowed_ip The matched masked IP address.
 					 */
-					do_action( 'restrict_site_access_ip_match', $remote_ip, $line );
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $allowed_ip );
 					return;
 				}
 			}
@@ -1296,7 +1292,9 @@ class Restricted_Site_Access {
 			exit;
 		}
 
-		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) ) ) ) {
+		$input_ip = stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) );
+
+		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( $input_ip ) ) {
 			wp_send_json_error( __( 'The IP entered is invalid.', 'restricted-site-access' ) );
 		}
 
@@ -1311,34 +1309,9 @@ class Restricted_Site_Access {
 	 * @return bool True if its a valid IP address.
 	 */
 	public static function is_ip( $ip_address ) {
-		// very basic validation of ranges.
-		if ( strpos( $ip_address, '/' ) ) {
-			$ip_parts = explode( '/', $ip_address );
-			if ( empty( $ip_parts[1] ) || ! is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
-				return false;
-			}
+		$address = \IPLib\Factory::parseRangeString( $ip_address );
 
-			$ip_address = $ip_parts[0];
-
-			$protocol = self::get_ip_protocol( $ip_address );
-
-			if ( 'IPv4' === $protocol && (int) $ip_parts[1] > 32 ) {
-				/**
-				 * Return if the prefix length is greater than 32.
-				 * IPv4 can use maximum of 32 bits for address space.
-				 */
-				return false;
-			} elseif ( 'IPv6' === $protocol && (int) $ip_parts[1] > 128 ) {
-				/**
-				 * Return if the prefix length is greater than 128.
-				 * IPv6 can use maximum of 128 bits for address space.
-				 */
-				return false;
-			}
-		}
-
-		// confirm IP part is a valid IPv6 or IPv4 IP.
-		if ( empty( $ip_address ) || ! inet_pton( stripslashes( $ip_address ) ) ) {
+		if ( is_null( $address ) ) {
 			return false;
 		}
 
@@ -1514,16 +1487,21 @@ class Restricted_Site_Access {
 	 * @return boolean true if the ip is in this range / false if not.
 	 */
 	public static function ip_in_range( $ip, $range ) {
-		if ( strpos( $range, '/' ) === false ) {
-			$range .= '/32';
+		$in_range     = false;
+		$parsed_range = \IPLib\Factory::parseRangeString( $range );
+		$user_address = \IPLib\Factory::parseAddressString( $ip );
+
+		if ( empty( $user_address ) ) {
+			return false;
 		}
-		// $range is in IP/CIDR format eg 127.0.0.1/24
-		list( $range, $netmask ) = explode( '/', $range, 2 );
-		$range_decimal           = ip2long( $range );
-		$ip_decimal              = ip2long( $ip );
-		$wildcard_decimal        = pow( 2, ( 32 - $netmask ) ) - 1;
-		$netmask_decimal         = ~ $wildcard_decimal;
-		return ( ( $ip_decimal & $netmask_decimal ) === ( $range_decimal & $netmask_decimal ) );
+
+		if ( $parsed_range instanceof \IPLib\Range\Single ) {
+			$in_range = $user_address->matches( $parsed_range );
+		} else if ( $parsed_range instanceof \IPLib\Range\Subnet || $parsed_range instanceof \IPLib\Range\Pattern ) {
+			$in_range = $parsed_range->contains( $user_address );
+		}
+
+		return $in_range;
 	}
 
 	/**
@@ -1642,7 +1620,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Get IPs programmatically
+	 * Get whitelisted IPs programmatically from the database.
 	 *
 	 * @param bool $include_config Whether to include the config file IPs. Default true.
 	 * @param bool $include_labels Whether to include the comments. Default false.
