@@ -1292,6 +1292,10 @@ class Restricted_Site_Access {
 			exit;
 		}
 
+		if ( ! isset( $_POST['ip_address'] ) ) {
+			wp_send_json_error( __( 'IP cannot be blank.', 'restricted-site-access' ) );
+		}
+
 		$input_ip = stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) );
 
 		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( $input_ip ) ) {
