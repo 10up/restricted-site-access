@@ -360,7 +360,13 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$allowed_ips = self::get_ips();
+		$allowed_ips = self::get_config_ips();
+		if (
+			! empty( self::$rsa_options['allowed'] ) &&
+			is_array( self::$rsa_options['allowed'] )
+		) {
+			$allowed_ips = array_merge( $allowed_ips, self::$rsa_options['allowed'] );
+		}
 
 		// check for the allow list, if its empty block everything.
 		if ( count( $allowed_ips ) > 0 ) {
