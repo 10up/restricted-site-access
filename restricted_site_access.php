@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.3.1
+ * Version:           7.3.2
  * Requires at least: 5.7
  * Requires PHP:      7.4
  * Author:            Jake Goldman, 10up, Oomph
@@ -13,7 +13,7 @@
  * Text Domain:       restricted-site-access
  */
 
-define( 'RSA_VERSION', '7.3.1' );
+define( 'RSA_VERSION', '7.3.2' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -303,7 +303,7 @@ class Restricted_Site_Access {
 	/**
 	 * Redirects restricted requests.
 	 *
-	 * @param array $wp WordPress request.
+	 * @param \WP $wp WordPress request.
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
@@ -341,7 +341,7 @@ class Restricted_Site_Access {
 	/**
 	 * Determine whether page should be restricted at point of request.
 	 *
-	 * @param array $wp WordPress The main WP request.
+	 * @param \WP $wp WordPress The main WP request.
 	 * @return array              List of URL and code, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
@@ -372,7 +372,7 @@ class Restricted_Site_Access {
 
 			// iterate through the allow list.
 			foreach ( $allowed_ips as $line ) {
-				if ( self::ip_in_range( $remote_ip, $line ) ) {
+				if ( $remote_ip && self::ip_in_range( $remote_ip, $line ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -1127,10 +1127,13 @@ class Restricted_Site_Access {
 			?>
 			</div>
 			<div id="rsa_add_new_ip_fields">
-				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
-				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add' ); ?>" />
+				<input type="text" name="newip" id="newip" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range', 'restricted-site-access' ); ?>" size="20" />
+				<input type="text" name="newipcomment" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry', 'restricted-site-access' ); ?>" size="20" /> <input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add', 'restricted-site-access' ); ?>" />
 				<p class="description"><label for="newip"><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
-				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
+				<?php
+				//phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+				if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) :
+					?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
 				<p id="rsa-error-container" style="color: #DC3232;"></p>
@@ -1147,7 +1150,7 @@ class Restricted_Site_Access {
 				<ul class="ul-disc">
 					<?php
 					foreach ( $config_ips as $ip ) {
-						echo '<li><code>' . esc_attr( $ip ) . '</code></li>';
+						echo '<li><code>' . esc_html( $ip ) . '</code></li>';
 					}
 					?>
 				</ul>
@@ -1316,13 +1319,13 @@ class Restricted_Site_Access {
 
 			$protocol = self::get_ip_protocol( $ip_address );
 
-			if ( 'IPv4' === $protocol && (int)$ip_parts[1] > 32 ) {
+			if ( 'IPv4' === $protocol && (int) $ip_parts[1] > 32 ) {
 				/**
 				 * Return if the prefix length is greater than 32.
 				 * IPv4 can use maximum of 32 bits for address space.
 				 */
 				return false;
-			} else if ( 'IPv6' === $protocol && (int)$ip_parts[1] > 128 ) {
+			} elseif ( 'IPv6' === $protocol && (int) $ip_parts[1] > 128 ) {
 				/**
 				 * Return if the prefix length is greater than 128.
 				 * IPv6 can use maximum of 128 bits for address space.
@@ -1526,8 +1529,52 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		$ip      = '';
-		$headers = array(
+		// REMOTE_ADDR IP address.
+		// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
+		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
+
+		// Return if REMOTE_ADDR is not set.
+		if ( empty( $remote_addr_header_ip ) ) {
+			return '';
+		}
+
+		/**
+		 * Filter hook to set array of trusted proxies.
+		 *
+		 * Some reverse proxies (like AWS Elastic Load Balancing) don't have
+		 * a static IP address or even a range that you can target with the CIDR notation.
+		 * In this case, you'll need to - very carefully - trust all proxies by setting
+		 * $trusted_proxies to an empty array - (default behaviour).
+		 *
+		 * In case your reverse proxy uses static IP addresses, then you can add those
+		 * addresses to the $trusted_proxies array.
+		 *
+		 * @param string[] $trusted_proxies The IP addresses of the proxy we want to trust.
+		 */
+		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', array() );
+
+		if ( ! empty( $trusted_proxies ) ) {
+			foreach ( $trusted_proxies as $trusted_proxy ) {
+				// If REMOTE_ADDR is found in our trusted proxy, get IP from headers.
+				if ( self::ip_in_range( $remote_addr_header_ip, $trusted_proxy ) ) {
+					return self::get_ip_from_headers();
+				}
+			}
+
+			return '';
+		} else {
+			return self::get_ip_from_headers();
+		}
+	}
+
+	/**
+	 * Returns the first matched IP from the list of array of headers.
+	 *
+	 * @return string
+	 */
+	public static function get_ip_from_headers() {
+		$ip              = '';
+		$trusted_headers = array(
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
@@ -1535,17 +1582,47 @@ class Restricted_Site_Access {
 			'HTTP_X_CLUSTER_CLIENT_IP',
 			'HTTP_FORWARDED_FOR',
 			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
 		);
-		foreach ( $headers as $key ) {
 
-			if ( ! isset( $_SERVER[ $key ] ) ) {
+		/**
+		 * Filter hook to set array of trusted IP address headers.
+		 *
+		 * Most CDN providers will set the IP address of the client in a number
+		 * of headers. This allows the plugin to detect the IP address of the client
+		 * even if it is behind a proxy.
+		 *
+		 * Use this hook to modify the permitted proxy headers. For sites without a
+		 * CDN (or local proxy) it is recommended to add a filter to this hook to
+		 * return an empty array.
+		 *
+		 * add_filter( 'rsa_trusted_headers', '__return_empty_array' );
+		 *
+		 * By default, the following headers are trusted:
+		 * - HTTP_CF_CONNECTING_IP
+		 * - HTTP_CLIENT_IP
+		 * - HTTP_X_FORWARDED_FOR
+		 * - HTTP_X_FORWARDED
+		 * - HTTP_X_CLUSTER_CLIENT_IP
+		 * - HTTP_FORWARDED_FOR
+		 * - HTTP_FORWARDED
+		 *
+		 * To allow for CDNs, these headers take priority over the REMOTE_ADDR value.
+		 *
+		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
+		 */
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
+
+		// Add the REMOTE_ADDR value to the end of the array.
+		$trusted_headers[] = 'REMOTE_ADDR';
+
+		foreach ( array_unique( $trusted_headers ) as $header ) {
+			if ( ! isset( $_SERVER[ $header ] ) ) {
 				continue;
 			}
 
 			foreach ( explode(
 				',',
-				sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) )
+				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
 

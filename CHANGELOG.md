@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file, per [the Keep a Changelog standard](http://keepachangelog.com/).  Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Unreleased] - TBD
+
+## [7.3.2] - 2022-08-29
+**Note:** this release contains two new filters that we recommend using to further secure your site. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
+
+### Added
+- New filter - `rsa_get_client_ip_address_filter_flags` to modify the range of accepted IP addresses (props [@dsXLII](https://github.com/dsXLII), [@dinhtungdu](https://github.com/dinhtungdu), [@Sidsector9](https://github.com/Sidsector9) via [#113](https://github.com/10up/restricted-site-access/pull/113)).
+
+### Changed
+- Avoid disjointed plugin settings (props [@helen](https://github.com/helen), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#200](https://github.com/10up/restricted-site-access/pull/200)).
+- Bump minimum WordPress version from 5.0 to 5.7 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
+- Bump minimum PHP version from 5.6 to 7.4 (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#207](https://github.com/10up/restricted-site-access/pull/207)).
+
+### Security
+- New filters - `rsa_trusted_proxies` and `rsa_trusted_headers` have been added to help prevent IP spoofing attacks (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@marcS0H](https://github.com/marcS0H), [@DanielRuf](https://github.com/DanielRuf), [@Sidsector9](https://github.com/Sidsector9) via [#198](https://github.com/10up/restricted-site-access/pull/198)).
 
 ## [7.3.1] - 2022-06-30
 ### Added
@@ -230,6 +244,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.3.2]: https://github.com/10up/restricted-site-access/compare/7.3.1...7.3.2
 [7.3.1]: https://github.com/10up/restricted-site-access/compare/7.3.0...7.3.1
 [7.3.0]: https://github.com/10up/restricted-site-access/compare/7.2.0...7.3.0
 [7.2.0]: https://github.com/10up/restricted-site-access/compare/7.1.0...7.2.0
