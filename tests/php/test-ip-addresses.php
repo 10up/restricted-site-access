@@ -67,7 +67,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.*' ) );
 		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.*.*' ) );
 
-		// IPv6 not in pattern range.
+		// IPv4 not in pattern range.
 		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.*.5' ) );
 
 		// IPv4 not in subnet range.
