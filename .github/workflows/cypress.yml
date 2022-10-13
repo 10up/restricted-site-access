@@ -20,7 +20,6 @@ jobs:
       matrix:
         core:
           - {name: 'WP latest', version: 'latest'}
-          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
           - {name: 'WP minimum', version: 'WordPress/WordPress#5.7'}
 
     steps:
