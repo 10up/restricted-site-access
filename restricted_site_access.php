@@ -1504,7 +1504,7 @@ class Restricted_Site_Access {
 
 		if ( $parsed_range instanceof \IPLib\Range\Single ) {
 			$in_range = $user_address->matches( $parsed_range );
-		} else if ( $parsed_range instanceof \IPLib\Range\Subnet || $parsed_range instanceof \IPLib\Range\Pattern ) {
+		} elseif ( $parsed_range instanceof \IPLib\Range\Subnet || $parsed_range instanceof \IPLib\Range\Pattern ) {
 			$in_range = $parsed_range->contains( $user_address );
 		}
 
