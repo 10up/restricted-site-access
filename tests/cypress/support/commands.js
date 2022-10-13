@@ -101,3 +101,15 @@ Cypress.Commands.add( 'setPermalink', () => {
 		.eq(4)
 		.check();
 } );
+
+Cypress.Commands.add( 'resetState', () => {
+	cy.wpCli( `network meta set 1 blog_public 2` );
+	cy.wpCli( `network meta set 1 rsa_options '{"approach":1,"message":"Access to this site is restricted.","redirect_path":0,"head_code":302,"redirect_url":"","page":0,"allowed":[],"comment":[""]}' --format=json` );
+} );
+
+Cypress.Commands.add( 'addIp', ( ip = '', label = '' ) => {
+	cy.get( '#rsa_add_new_ip_fields input[name="newip"]' ).type( ip );
+	cy.get( '#rsa_add_new_ip_fields input[name="newipcomment"]' ).type( label );
+	cy.get( '#addip' ).click();
+	cy.wait( 600 );
+} );
