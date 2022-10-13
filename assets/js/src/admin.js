@@ -39,35 +39,35 @@ import 'jquery-ui-dialog';
 				dialog: document.getElementById( 'rsa-disable-dialog' ),
 				userMessage: document.getElementById( 'rsa-user-message' ),
 			},
-	
+
 			variables: {
 				expectedAnswer: rsaAdmin.strings.message.toLowerCase(),
 				disablingURL: null,
 			},
-	
+
 			openDialog( event ) {
 				event.preventDefault();
 				$( this.els.dialog ).dialog( 'open' );
 			},
-	
+
 			isExpectedAnswer() {
 				const userMessage = this.els.userMessage.value.toLowerCase();
-	
+
 				if ( userMessage === this.variables.expectedAnswer ) {
 					return true;
 				}
-	
+
 				return false;
 			},
 			dialogSettings() {
 				const self = this;
-	
+
 				self.close = function() {
 					$( self.els.dialog ).dialog( 'close' );
 					self.els.userMessage.style.border = '1px solid #ddd';
 					self.els.userMessage.value = '';
 				};
-	
+
 				$( this.els.dialog ).dialog( {
 					dialogClass: 'wp-dialog',
 					autoOpen: false,
@@ -106,13 +106,13 @@ import 'jquery-ui-dialog';
 						$( this ).siblings( '.ui-dialog-titlebar' ).hide();
 					},
 				} );
-	
+
 				this.els.buttons = $( this.els.dialog ).dialog(
 					'option',
 					'buttons'
 				);
 			},
-	
+
 			maybeSubmit( event ) {
 				switch ( event.key ) {
 					case 'Enter':
@@ -120,7 +120,7 @@ import 'jquery-ui-dialog';
 						break;
 				}
 			},
-	
+
 			bindEvents() {
 				$( '[data-slug="restricted-site-access"]' ).on(
 					'click',
@@ -134,7 +134,7 @@ import 'jquery-ui-dialog';
 					);
 				}
 			},
-	
+
 			init() {
 				const list = document.getElementById( 'the-list' );
 				if ( list ) {
@@ -146,7 +146,7 @@ import 'jquery-ui-dialog';
 				this.dialogSettings();
 			},
 		};
-		
+
 		RSADisablePlugin.init();
 	} );
 }( window, jQuery ) );
