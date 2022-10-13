@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#build",
-    "@wordpress/env": "4.1.1",
+    "@wordpress/env": "5.4.0",
     "@wordpress/eslint-plugin": "^10.0.2",
     "cypress": "^10.3.0",
     "cypress-file-upload": "^5.0.8",
