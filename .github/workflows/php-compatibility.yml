@@ -30,7 +30,7 @@ jobs:
         run: composer install
 
       - name: WPCS check
-        run: ./vendor/bin/phpcs -q -n --report=checkstyle | cs2pr
+        run: ./vendor/bin/phpcs .
 
       - name: PHP Compatibility check
-        run: ./vendor/bin/phpcs . -q -n --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
+        run: ./vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
