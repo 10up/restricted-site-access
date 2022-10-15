@@ -20,12 +20,12 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa = Restricted_Site_Access::get_instance();
 		$this->run_admin_init();
 
-		$this->assertSame( 10, has_filter( 'privacy_on_link_text', [ 'Restricted_Site_Access', 'privacy_on_link_text' ] ) );
-		$this->assertSame( 10, has_filter( 'privacy_on_link_title', [ 'Restricted_Site_Access', 'privacy_on_link_title' ] ) );
-		$this->assertSame( 10, has_filter( 'plugin_action_links_' . RSA_TEST_PLUGIN_BASENAME, [ 'Restricted_Site_Access', 'plugin_action_links' ] ) );
-		$this->assertSame( 10, has_action( 'load-options-' . $settings_page . '.php', [ 'Restricted_Site_Access', 'load_options_page' ] ) );
-		$this->assertSame( 10, has_action( 'blog_privacy_selector', [ 'Restricted_Site_Access', 'blog_privacy_selector' ] ) );
-		$this->assertSame( 10, has_action( 'admin_notices', [ 'Restricted_Site_Access', 'page_cache_notice' ] ) );
+		$this->assertSame( 10, has_filter( 'privacy_on_link_text', array( 'Restricted_Site_Access', 'privacy_on_link_text' ) ) );
+		$this->assertSame( 10, has_filter( 'privacy_on_link_title', array( 'Restricted_Site_Access', 'privacy_on_link_title' ) ) );
+		$this->assertSame( 10, has_filter( 'plugin_action_links_' . RSA_TEST_PLUGIN_BASENAME, array( 'Restricted_Site_Access', 'plugin_action_links' ) ) );
+		$this->assertSame( 10, has_action( 'load-options-' . $settings_page . '.php', array( 'Restricted_Site_Access', 'load_options_page' ) ) );
+		$this->assertSame( 10, has_action( 'blog_privacy_selector', array( 'Restricted_Site_Access', 'blog_privacy_selector' ) ) );
+		$this->assertSame( 10, has_action( 'admin_notices', array( 'Restricted_Site_Access', 'page_cache_notice' ) ) );
 
 		$settings = get_registered_settings();
 
@@ -79,16 +79,16 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_load_options_page() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		$options = $rsa::get_options( false );
+		$options             = $rsa::get_options( false );
 		$options['approach'] = 4;
 
 		update_option( 'rsa_options', $options );
 
 		$rsa::load_options_page();
 
-		$this->assertSame( 10, has_action( 'admin_notices', [ 'Restricted_Site_Access', 'admin_notice' ] ) );
-		$this->assertSame( 10, has_action( 'admin_head', [ 'Restricted_Site_Access', 'admin_head' ] ) );
-		$this->assertSame( 10, has_filter( 'wp_dropdown_pages', [ 'Restricted_Site_Access', 'filter_page_dropdown' ] ) );
+		$this->assertSame( 10, has_action( 'admin_notices', array( 'Restricted_Site_Access', 'admin_notice' ) ) );
+		$this->assertSame( 10, has_action( 'admin_head', array( 'Restricted_Site_Access', 'admin_head' ) ) );
+		$this->assertSame( 10, has_filter( 'wp_dropdown_pages', array( 'Restricted_Site_Access', 'filter_page_dropdown' ) ) );
 
 		// Run tests for specific fields that aren't covered in the
 		// multisite tests.
@@ -103,19 +103,25 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
-		$html = $rsa::filter_page_dropdown( 'test', [] );
+		$html = $rsa::filter_page_dropdown( 'test', array() );
 
 		$this->assertSame( 'test', $html );
 
-		$html = $rsa::filter_page_dropdown( 'test', [
-			'id' => 'not-rsa',
-		] );
+		$html = $rsa::filter_page_dropdown(
+			'test',
+			array(
+				'id' => 'not-rsa',
+			)
+		);
 
 		$this->assertSame( 'test', $html );
 
-		$html = $rsa::filter_page_dropdown( '', [
-			'id' => 'rsa_page',
-		] );
+		$html = $rsa::filter_page_dropdown(
+			'',
+			array(
+				'id' => 'rsa_page',
+			)
+		);
 
 		$this->assertSame( '<p class="description" id="rsa_page">No published pages found.</p>', $html );
 	}
@@ -123,7 +129,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_admin_notice() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		$options = $rsa::get_options( false );
+		$options             = $rsa::get_options( false );
 		$options['approach'] = 0;
 
 		update_option( 'rsa_options', $options );
@@ -136,9 +142,9 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertEmpty( $html );
 
-		$options = $rsa::get_options( false );
+		$options             = $rsa::get_options( false );
 		$options['approach'] = 4;
-		$options['page'] = 0;
+		$options['page']     = 0;
 
 		update_option( 'rsa_options', $options );
 
@@ -150,8 +156,8 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'Please select the page you want to show restricted visitors. If no page is selected, WordPress will simply show a general restriction message.', $html );
 
-		$options = $rsa::get_options( false );
-		$options['approach'] = 2;
+		$options                 = $rsa::get_options( false );
+		$options['approach']     = 2;
 		$options['redirect_url'] = '';
 
 		update_option( 'rsa_options', $options );
@@ -201,7 +207,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_plugin_action_links() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		$links = $rsa::plugin_action_links( [] );
+		$links = $rsa::plugin_action_links( array() );
 
 		$this->assertCount( 1, $links );
 
@@ -212,14 +218,14 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa = Restricted_Site_Access::get_instance();
 
 		$page_id = self::factory()->post->create(
-			[
-				'post_type' => 'page',
-				'post_title' => 'test_settings_field_rsa_page',
+			array(
+				'post_type'   => 'page',
+				'post_title'  => 'test_settings_field_rsa_page',
 				'post_status' => 'publish',
-			]
+			)
 		);
 
-		$options = $rsa::get_options( false );
+		$options         = $rsa::get_options( false );
 		$options['page'] = $page_id;
 
 		update_option( 'rsa_options', $options );
@@ -262,7 +268,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::admin_head();
 
 		$screen = get_current_screen();
-		$tabs = $screen->get_help_tabs();
+		$tabs   = $screen->get_help_tabs();
 
 		$this->assertArrayHasKey( 'restricted-site-access', $tabs );
 		$this->assertSame( 'Restricted Site Access', $tabs['restricted-site-access']['title'] );

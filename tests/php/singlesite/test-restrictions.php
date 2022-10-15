@@ -11,7 +11,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		// First, test the filter.
 		add_filter( 'restricted_site_access_is_restricted', '__return_false' );
-	
+
 		$this->go_to( home_url( '/' ) );
 		$wp = $GLOBALS['wp'];
 
@@ -45,7 +45,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertNotEmpty( $results );
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( $url, $results['url'] );
-	
+
 		// Login a user and verify they can access the site.
 		wp_set_current_user( 1 );
 		$this->assertTrue( is_user_logged_in() );
@@ -98,7 +98,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertSame( $url, $results['url'] );
 
 		// Add our IP to the allowed list.
-		$options = $rsa::get_options( false );
+		$options              = $rsa::get_options( false );
 		$options['allowed'][] = '127.0.0.1';
 
 		update_option( 'rsa_options', $options );
@@ -119,7 +119,7 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		unset( $_SERVER['HTTP_CLIENT_IP'] );
 
 		// Reset the site's whitelist.
-		$options['allowed'] = [];
+		$options['allowed'] = array();
 		update_option( 'rsa_option', $options );
 
 		// TODO we'll need some way to network activate the plugin as a separate test suite
@@ -136,9 +136,9 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		// Set site to to restricted.
 		update_option( 'blog_public', 2 );
 
-		$options = $rsa::get_options( false );
+		$options             = $rsa::get_options( false );
 		$options['approach'] = 4; // Show them a page.
-		$options['page'] = 99999; // First test with an invalid page.
+		$options['page']     = 99999; // First test with an invalid page.
 
 		update_option( 'rsa_options', $options );
 
@@ -157,11 +157,11 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		// Now test it with a valid page.
 		$page_id = self::factory()->post->create(
-			[
-				'post_type' => 'page',
-				'post_title' => 'Restrcted Landing Page',
+			array(
+				'post_type'   => 'page',
+				'post_title'  => 'Restrcted Landing Page',
 				'post_status' => 'publish',
-			]
+			)
 		);
 
 		$this->assertGreaterThan( 0, $page_id );
@@ -215,23 +215,23 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 	}
 
 	public function test_add_remove_set_ips() {
-		$rsa = Restricted_Site_Access::get_instance();
-		$my_ip = '127.0.0.1';
+		$rsa       = Restricted_Site_Access::get_instance();
+		$my_ip     = '127.0.0.1';
 		$not_my_ip = '10.9.8.7';
 
 		$options = $rsa::get_options();
-		$rsa::set_ips(array()); // Remove all IPs
+		$rsa::set_ips( array() ); // Remove all IPs
 		$this->assertEmpty( $options['allowed'] );
 
-		$rsa::add_ips(array( $my_ip, $not_my_ip )); // Add two IPs
+		$rsa::add_ips( array( $my_ip, $not_my_ip ) ); // Add two IPs
 		$options = $rsa::get_options();
 		$this->assertContains( $my_ip, $options['allowed'] );
 
-		$rsa::remove_ips(array( $my_ip )); // Remove one IP
+		$rsa::remove_ips( array( $my_ip ) ); // Remove one IP
 		$options = $rsa::get_options();
 		$this->assertNotContains( $my_ip, $options['allowed'] );
 
-		$rsa::set_ips(array()); // Remove all IPs
+		$rsa::set_ips( array() ); // Remove all IPs
 		$options = $rsa::get_options();
 		$this->assertEmpty( $options['allowed'] );
 	}
@@ -243,9 +243,9 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		// Set site to to restricted.
 		update_option( 'blog_public', 2 );
 
-		$options = $rsa::get_options( false );
+		$options             = $rsa::get_options( false );
 		$options['approach'] = 3; // Show them a message.
-		$options['message'] = 'You shall not pass!';
+		$options['message']  = 'You shall not pass!';
 
 		update_option( 'rsa_options', $options );
 
@@ -274,11 +274,11 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		// Set site to to restricted.
 		update_option( 'blog_public', 2 );
 
-		$options = $rsa::get_options( false );
-		$options['approach'] = 2; // Redirect them to a specified web address.
-		$options['redirect_url'] = 'https://10up.com';
+		$options                  = $rsa::get_options( false );
+		$options['approach']      = 2; // Redirect them to a specified web address.
+		$options['redirect_url']  = 'https://10up.com';
 		$options['redirect_path'] = 0;
-		$options['head_code'] = 301;
+		$options['head_code']     = 301;
 
 		update_option( 'rsa_options', $options );
 
@@ -297,10 +297,10 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertSame( 'https://10up.com', $results['url'] );
 
 		// Update the site options.
-		$options = $rsa::get_options( false );
-		$options['redirect_url'] = 'https://10up.com';
+		$options                  = $rsa::get_options( false );
+		$options['redirect_url']  = 'https://10up.com';
 		$options['redirect_path'] = 1; // Send them to the same path at the new URL.
-		$options['head_code'] = 302;
+		$options['head_code']     = 302;
 
 		update_option( 'rsa_options', $options );
 

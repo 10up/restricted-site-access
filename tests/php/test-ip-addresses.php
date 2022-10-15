@@ -104,7 +104,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 			'REMOTE_ADDR',
 		);
 
-		foreach( $headers as $header ) {
+		foreach ( $headers as $header ) {
 			$_SERVER[ $header ] = '127.0.0.1';
 			$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
 			unset( $_SERVER[ $header ] );
@@ -117,16 +117,19 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 	 * @dataProvider trusted_proxy_provider
 	 *
 	 * @param string $remote_ip Remote IP address.
-	 * @param array $proxies Proxies to trust.
+	 * @param array  $proxies Proxies to trust.
 	 */
 	public function test_rsa_trusted_proxies( string $remote_ip = '', array $proxies = array() ) {
 		$rsa = Restricted_Site_Access::get_instance();
 
 		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-		add_filter( 'rsa_trusted_proxies', function() use ( $proxies ) {
-			return $proxies;
-		} );
+		add_filter(
+			'rsa_trusted_proxies',
+			function() use ( $proxies ) {
+				return $proxies;
+			}
+		);
 
 		$this->assertSame( $remote_ip, $rsa::get_client_ip_address() );
 
@@ -156,27 +159,33 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 	 * @dataProvider trusted_headers_provider
 	 *
 	 * @param string $remote_ip Remote IP address
-	 * @param array $headers Headers to set.
-	 * @param array $trusted_headers Headers we want to trust.
+	 * @param array  $headers Headers to set.
+	 * @param array  $trusted_headers Headers we want to trust.
 	 */
 	public function test_rsa_trusted_headers( string $remote_ip = '', array $headers = array(), array $trusted_headers = array() ) {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		add_filter( 'rsa_get_client_ip_address_filter_flags', function() {
-			return FILTER_FLAG_NO_RES_RANGE;
-		} );
+		add_filter(
+			'rsa_get_client_ip_address_filter_flags',
+			function() {
+				return FILTER_FLAG_NO_RES_RANGE;
+			}
+		);
 
-		add_filter( 'rsa_trusted_headers', function() use ( $trusted_headers ) {
-			return $trusted_headers;
-		} );
+		add_filter(
+			'rsa_trusted_headers',
+			function() use ( $trusted_headers ) {
+				return $trusted_headers;
+			}
+		);
 
-		foreach( $headers as $header => $ip ) {
+		foreach ( $headers as $header => $ip ) {
 			$_SERVER[ $header ] = $ip;
 		}
 
 		$this->assertSame( $remote_ip, $rsa::get_ip_from_headers() );
 
-		foreach( $headers as $header ) {
+		foreach ( $headers as $header ) {
 			unset( $_SERVER[ $header ] );
 		}
 	}
@@ -197,7 +206,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 					'HTTP_CLIENT_IP' => '10.0.0.0',
 					'REMOTE_ADDR'    => '127.0.0.1',
 				),
-				array()
+				array(),
 			),
 			// Test if we trust a single header, we get that value back.
 			array(
@@ -206,7 +215,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 					'HTTP_CLIENT_IP' => '10.0.0.0',
 					'REMOTE_ADDR'    => '127.0.0.1',
 				),
-				array( 'HTTP_CLIENT_IP' )
+				array( 'HTTP_CLIENT_IP' ),
 			),
 			// Test if we trust multiple headers, we get the first matched value back.
 			array(
@@ -219,7 +228,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 				array(
 					'HTTP_X_FORWARDED',
 					'HTTP_FORWARDED',
-				)
+				),
 			),
 		);
 	}

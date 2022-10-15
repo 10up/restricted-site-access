@@ -754,9 +754,12 @@ class Restricted_Site_Access {
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/settings.min.asset.php';
 		$script_asset      = file_exists( $script_asset_path );
 		$script_asset      = file_exists( $script_asset_path )
-			? require( $script_asset_path )
-			: array( 'dependencies' => array(), 'version' => filemtime( $script_path ) );
-		$script_url = plugins_url( $script_path, __FILE__ );
+			? require $script_asset_path
+			: array(
+				'dependencies' => array(),
+				'version'      => filemtime( $script_path ),
+			);
+		$script_url        = plugins_url( $script_path, __FILE__ );
 
 		wp_enqueue_script( 'rsa-settings', $script_url, $script_asset['dependencies'], $script_asset['version'] );
 
@@ -782,9 +785,12 @@ class Restricted_Site_Access {
 		$script_path       = 'assets/js/build/admin.min.js';
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/admin.min.asset.php';
 		$script_asset      = file_exists( $script_asset_path )
-			? require( $script_asset_path )
-			: array( 'dependencies' => array(), 'version' => filemtime( $script_path ) );
-		$script_url = plugins_url( $script_path, __FILE__ );
+			? require $script_asset_path
+			: array(
+				'dependencies' => array(),
+				'version'      => filemtime( $script_path ),
+			);
+		$script_url        = plugins_url( $script_path, __FILE__ );
 
 		wp_enqueue_script( 'rsa-admin', $script_url, $script_asset['dependencies'], $script_asset['version'] );
 
