@@ -1,6 +1,6 @@
 <?php
 
-// Init the Composer autoloader
+/** Init the Composer autoloader. */
 require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/autoload.php';
 
 $files = array(

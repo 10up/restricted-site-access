@@ -761,7 +761,7 @@ class Restricted_Site_Access {
 			);
 		$script_url        = plugins_url( $script_path, __FILE__ );
 
-		wp_enqueue_script( 'rsa-settings', $script_url, $script_asset['dependencies'], $script_asset['version'] );
+		wp_enqueue_script( 'rsa-settings', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
 		wp_localize_script(
 			'rsa-settings',
@@ -792,7 +792,7 @@ class Restricted_Site_Access {
 			);
 		$script_url        = plugins_url( $script_path, __FILE__ );
 
-		wp_enqueue_script( 'rsa-admin', $script_url, $script_asset['dependencies'], $script_asset['version'] );
+		wp_enqueue_script( 'rsa-admin', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
 		wp_localize_script(
 			'rsa-admin',

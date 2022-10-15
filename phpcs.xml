@@ -3,7 +3,7 @@
 
 	<description>A custom set of rules to check for the Restricted Site Access project.</description>
 
-    
+    <arg name="extensions" value="php"/>
 
 	<!-- Exclude the Composer Vendor directory. -->
 	<exclude-pattern>/vendor/*</exclude-pattern>
@@ -17,10 +17,24 @@
     <!-- Exclude the assets directory. -->
 	<exclude-pattern>assets</exclude-pattern>
 
+	<exclude-pattern>tests/php/bootstrap.php</exclude-pattern>
+
 	<!-- Let's also check that everything is properly documented. -->
 	<rule ref="WordPress">
         <exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase" />
     </rule>
+
+	<rule ref="Squiz.Commenting.FileComment.Missing">
+		<exclude-pattern>tests</exclude-pattern>
+	</rule>
+
+	<rule ref="Squiz.Commenting.ClassComment.Missing">
+		<exclude-pattern>tests</exclude-pattern>
+	</rule>
+
+	<rule ref="Squiz.Commenting.FunctionComment.Missing">
+		<exclude-pattern>tests</exclude-pattern>
+	</rule>
 
 	<!-- Add in some extra rules from other standards. -->
 	<config name="minimum_supported_wp_version" value="5.7"/>

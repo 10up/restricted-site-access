@@ -158,7 +158,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 	 *
 	 * @dataProvider trusted_headers_provider
 	 *
-	 * @param string $remote_ip Remote IP address
+	 * @param string $remote_ip Remote IP address.
 	 * @param array  $headers Headers to set.
 	 * @param array  $trusted_headers Headers we want to trust.
 	 */

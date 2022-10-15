@@ -220,18 +220,18 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$not_my_ip = '10.9.8.7';
 
 		$options = $rsa::get_options();
-		$rsa::set_ips( array() ); // Remove all IPs
+		$rsa::set_ips( array() ); // Remove all IPs.
 		$this->assertEmpty( $options['allowed'] );
 
-		$rsa::add_ips( array( $my_ip, $not_my_ip ) ); // Add two IPs
+		$rsa::add_ips( array( $my_ip, $not_my_ip ) ); // Add two IPs.
 		$options = $rsa::get_options();
 		$this->assertContains( $my_ip, $options['allowed'] );
 
-		$rsa::remove_ips( array( $my_ip ) ); // Remove one IP
+		$rsa::remove_ips( array( $my_ip ) ); // Remove one IP.
 		$options = $rsa::get_options();
 		$this->assertNotContains( $my_ip, $options['allowed'] );
 
-		$rsa::set_ips( array() ); // Remove all IPs
+		$rsa::set_ips( array() ); // Remove all IPs.
 		$options = $rsa::get_options();
 		$this->assertEmpty( $options['allowed'] );
 	}

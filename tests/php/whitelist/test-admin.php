@@ -2,13 +2,18 @@
 
 class Restricted_Site_Access_Test_Whitelist_Admin extends WP_UnitTestCase {
 
-	private $_init_done = false;
+	/**
+	 * Boolean that shows if RSA instance is loaded.
+	 *
+	 * @var boolean
+	 */
+	private $init_done = false;
 
 	public function run_admin_init() {
-		if ( ! $this->_init_done ) {
+		if ( ! $this->init_done ) {
 			$rsa = Restricted_Site_Access::get_instance();
 			$rsa::admin_init();
-			$this->_init_done = true;
+			$this->init_done = true;
 		}
 	}
 
