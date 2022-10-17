@@ -25,6 +25,6 @@ module.exports = {
 					return 'jquery-ui-dialog';
 				}
 			},
-		} )
+		} ),
 	],
 };
