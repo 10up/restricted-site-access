@@ -752,7 +752,6 @@ class Restricted_Site_Access {
 
 		$script_path       = 'assets/js/build/settings.min.js';
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/settings.min.asset.php';
-		$script_asset      = file_exists( $script_asset_path );
 		$script_asset      = file_exists( $script_asset_path )
 			? require $script_asset_path
 			: array(
