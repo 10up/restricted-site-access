@@ -20,7 +20,6 @@ jobs:
       matrix:
         core:
           - {name: 'WP latest', version: 'latest'}
-          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
           - {name: 'WP minimum', version: 'WordPress/WordPress#5.7'}
 
     steps:
@@ -39,6 +38,9 @@ jobs:
 
     - name: Install JS dependencies
       run: npm i
+
+    - name: Build
+      run: npm run build
 
     - name: Set the core version
       run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}

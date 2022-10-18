@@ -750,16 +750,17 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
+		$script_path       = 'assets/js/build/settings.min.js';
+		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/settings.min.asset.php';
+		$script_asset      = file_exists( $script_asset_path )
+			? require $script_asset_path
+			: array(
+				'dependencies' => array(),
+				'version'      => filemtime( $script_path ),
+			);
+		$script_url        = plugins_url( $script_path, __FILE__ );
 
-		wp_enqueue_script(
-			'rsa-settings',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'settings' . $min . '.js',
-			array( 'jquery-effects-shake' ),
-			RSA_VERSION,
-			true
-		);
+		wp_enqueue_script( 'rsa-settings', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
 		wp_localize_script(
 			'rsa-settings',
@@ -780,16 +781,17 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
+		$script_path       = 'assets/js/build/admin.min.js';
+		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/admin.min.asset.php';
+		$script_asset      = file_exists( $script_asset_path )
+			? require $script_asset_path
+			: array(
+				'dependencies' => array(),
+				'version'      => filemtime( $script_path ),
+			);
+		$script_url        = plugins_url( $script_path, __FILE__ );
 
-		wp_enqueue_script(
-			'rsa-admin',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
-			array( 'jquery', 'jquery-ui-dialog' ),
-			RSA_VERSION,
-			true
-		);
+		wp_enqueue_script( 'rsa-admin', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
 		wp_localize_script(
 			'rsa-admin',
