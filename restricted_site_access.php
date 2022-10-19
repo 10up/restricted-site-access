@@ -3,9 +3,9 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.3.1
- * Requires at least: 5.0
- * Requires PHP:      5.6
+ * Version:           7.3.2
+ * Requires at least: 5.7
+ * Requires PHP:      7.4
  * Author:            Jake Goldman, 10up, Oomph
  * Author URI:        https://10up.com
  * License:           GPL v2 or later
@@ -13,7 +13,9 @@
  * Text Domain:       restricted-site-access
  */
 
-define( 'RSA_VERSION', '7.3.1' );
+require_once 'vendor/autoload.php';
+
+define( 'RSA_VERSION', '7.3.2' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -303,7 +305,7 @@ class Restricted_Site_Access {
 	/**
 	 * Redirects restricted requests.
 	 *
-	 * @param array $wp WordPress request.
+	 * @param \WP $wp WordPress request.
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
@@ -341,7 +343,7 @@ class Restricted_Site_Access {
 	/**
 	 * Determine whether page should be restricted at point of request.
 	 *
-	 * @param array $wp WordPress The main WP request.
+	 * @param \WP $wp WordPress The main WP request.
 	 * @return array              List of URL and code, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
@@ -371,8 +373,8 @@ class Restricted_Site_Access {
 			$remote_ip = self::get_client_ip_address();
 
 			// iterate through the allow list.
-			foreach ( $allowed_ips as $line ) {
-				if ( self::ip_in_range( $remote_ip, $line ) ) {
+			foreach ( $allowed_ips as $allowed_ip ) {
+				if ( $remote_ip && self::ip_in_range( $remote_ip, $allowed_ip ) ) {
 
 					/**
 					 * Fires when an ip address match occurs.
@@ -383,10 +385,10 @@ class Restricted_Site_Access {
 					 *
 					 * @since 6.0.2
 					 *
-					 * @param string $remote_ip The remote IP address being checked.
-					 * @param string $line      The matched masked IP address.
+					 * @param string $remote_ip  The remote IP address being checked.
+					 * @param string $allowed_ip The matched masked IP address.
 					 */
-					do_action( 'restrict_site_access_ip_match', $remote_ip, $line );
+					do_action( 'restrict_site_access_ip_match', $remote_ip, $allowed_ip );
 					return;
 				}
 			}
@@ -748,16 +750,17 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
+		$script_path       = 'assets/js/build/settings.min.js';
+		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/settings.min.asset.php';
+		$script_asset      = file_exists( $script_asset_path )
+			? require $script_asset_path
+			: array(
+				'dependencies' => array(),
+				'version'      => filemtime( $script_path ),
+			);
+		$script_url        = plugins_url( $script_path, __FILE__ );
 
-		wp_enqueue_script(
-			'rsa-settings',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'settings' . $min . '.js',
-			array( 'jquery-effects-shake' ),
-			RSA_VERSION,
-			true
-		);
+		wp_enqueue_script( 'rsa-settings', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
 		wp_localize_script(
 			'rsa-settings',
@@ -778,16 +781,17 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		$min    = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$folder = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? 'src/' : '';
+		$script_path       = 'assets/js/build/admin.min.js';
+		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/admin.min.asset.php';
+		$script_asset      = file_exists( $script_asset_path )
+			? require $script_asset_path
+			: array(
+				'dependencies' => array(),
+				'version'      => filemtime( $script_path ),
+			);
+		$script_url        = plugins_url( $script_path, __FILE__ );
 
-		wp_enqueue_script(
-			'rsa-admin',
-			plugin_dir_url( __FILE__ ) . 'assets/js/' . $folder . 'admin' . $min . '.js',
-			array( 'jquery', 'jquery-ui-dialog' ),
-			RSA_VERSION,
-			true
-		);
+		wp_enqueue_script( 'rsa-admin', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
 		wp_localize_script(
 			'rsa-admin',
@@ -1162,7 +1166,7 @@ class Restricted_Site_Access {
 				<ul class="ul-disc">
 					<?php
 					foreach ( $config_ips as $ip ) {
-						echo '<li><code>' . esc_attr( $ip ) . '</code></li>';
+						echo '<li><code>' . esc_html( $ip ) . '</code></li>';
 					}
 					?>
 				</ul>
@@ -1305,7 +1309,13 @@ class Restricted_Site_Access {
 			exit;
 		}
 
-		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) ) ) ) {
+		if ( ! isset( $_POST['ip_address'] ) ) {
+			wp_send_json_error( __( 'IP cannot be blank.', 'restricted-site-access' ) );
+		}
+
+		$input_ip = stripslashes( sanitize_text_field( wp_unslash( $_POST['ip_address'] ) ) );
+
+		if ( empty( $_POST['ip_address'] ) || ! self::is_ip( $input_ip ) ) {
 			wp_send_json_error( __( 'The IP entered is invalid.', 'restricted-site-access' ) );
 		}
 
@@ -1320,34 +1330,9 @@ class Restricted_Site_Access {
 	 * @return bool True if its a valid IP address.
 	 */
 	public static function is_ip( $ip_address ) {
-		// very basic validation of ranges.
-		if ( strpos( $ip_address, '/' ) ) {
-			$ip_parts = explode( '/', $ip_address );
-			if ( empty( $ip_parts[1] ) || ! is_numeric( $ip_parts[1] ) || strlen( $ip_parts[1] ) > 3 ) {
-				return false;
-			}
+		$address = \IPLib\Factory::parseRangeString( $ip_address );
 
-			$ip_address = $ip_parts[0];
-
-			$protocol = self::get_ip_protocol( $ip_address );
-
-			if ( 'IPv4' === $protocol && (int)$ip_parts[1] > 32 ) {
-				/**
-				 * Return if the prefix length is greater than 32.
-				 * IPv4 can use maximum of 32 bits for address space.
-				 */
-				return false;
-			} else if ( 'IPv6' === $protocol && (int)$ip_parts[1] > 128 ) {
-				/**
-				 * Return if the prefix length is greater than 128.
-				 * IPv6 can use maximum of 128 bits for address space.
-				 */
-				return false;
-			}
-		}
-
-		// confirm IP part is a valid IPv6 or IPv4 IP.
-		if ( empty( $ip_address ) || ! inet_pton( stripslashes( $ip_address ) ) ) {
+		if ( is_null( $address ) ) {
 			return false;
 		}
 
@@ -1523,16 +1508,21 @@ class Restricted_Site_Access {
 	 * @return boolean true if the ip is in this range / false if not.
 	 */
 	public static function ip_in_range( $ip, $range ) {
-		if ( strpos( $range, '/' ) === false ) {
-			$range .= '/32';
+		$in_range     = false;
+		$parsed_range = \IPLib\Factory::parseRangeString( $range );
+		$user_address = \IPLib\Factory::parseAddressString( $ip );
+
+		if ( empty( $user_address ) ) {
+			return false;
 		}
-		// $range is in IP/CIDR format eg 127.0.0.1/24
-		list( $range, $netmask ) = explode( '/', $range, 2 );
-		$range_decimal           = ip2long( $range );
-		$ip_decimal              = ip2long( $ip );
-		$wildcard_decimal        = pow( 2, ( 32 - $netmask ) ) - 1;
-		$netmask_decimal         = ~ $wildcard_decimal;
-		return ( ( $ip_decimal & $netmask_decimal ) === ( $range_decimal & $netmask_decimal ) );
+
+		if ( $parsed_range instanceof \IPLib\Range\Single ) {
+			$in_range = $user_address->matches( $parsed_range );
+		} elseif ( $parsed_range instanceof \IPLib\Range\Subnet || $parsed_range instanceof \IPLib\Range\Pattern ) {
+			$in_range = $parsed_range->contains( $user_address );
+		}
+
+		return $in_range;
 	}
 
 	/**
@@ -1541,8 +1531,52 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_client_ip_address() {
-		$ip      = '';
-		$headers = array(
+		// REMOTE_ADDR IP address.
+		// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
+		$remote_addr_header_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
+
+		// Return if REMOTE_ADDR is not set.
+		if ( empty( $remote_addr_header_ip ) ) {
+			return '';
+		}
+
+		/**
+		 * Filter hook to set array of trusted proxies.
+		 *
+		 * Some reverse proxies (like AWS Elastic Load Balancing) don't have
+		 * a static IP address or even a range that you can target with the CIDR notation.
+		 * In this case, you'll need to - very carefully - trust all proxies by setting
+		 * $trusted_proxies to an empty array - (default behaviour).
+		 *
+		 * In case your reverse proxy uses static IP addresses, then you can add those
+		 * addresses to the $trusted_proxies array.
+		 *
+		 * @param string[] $trusted_proxies The IP addresses of the proxy we want to trust.
+		 */
+		$trusted_proxies = apply_filters( 'rsa_trusted_proxies', array() );
+
+		if ( ! empty( $trusted_proxies ) ) {
+			foreach ( $trusted_proxies as $trusted_proxy ) {
+				// If REMOTE_ADDR is found in our trusted proxy, get IP from headers.
+				if ( self::ip_in_range( $remote_addr_header_ip, $trusted_proxy ) ) {
+					return self::get_ip_from_headers();
+				}
+			}
+
+			return '';
+		} else {
+			return self::get_ip_from_headers();
+		}
+	}
+
+	/**
+	 * Returns the first matched IP from the list of array of headers.
+	 *
+	 * @return string
+	 */
+	public static function get_ip_from_headers() {
+		$ip              = '';
+		$trusted_headers = array(
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
@@ -1550,21 +1584,54 @@ class Restricted_Site_Access {
 			'HTTP_X_CLUSTER_CLIENT_IP',
 			'HTTP_FORWARDED_FOR',
 			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
 		);
-		foreach ( $headers as $key ) {
 
-			if ( ! isset( $_SERVER[ $key ] ) ) {
+		/**
+		 * Filter hook to set array of trusted IP address headers.
+		 *
+		 * Most CDN providers will set the IP address of the client in a number
+		 * of headers. This allows the plugin to detect the IP address of the client
+		 * even if it is behind a proxy.
+		 *
+		 * Use this hook to modify the permitted proxy headers. For sites without a
+		 * CDN (or local proxy) it is recommended to add a filter to this hook to
+		 * return an empty array.
+		 *
+		 * add_filter( 'rsa_trusted_headers', '__return_empty_array' );
+		 *
+		 * By default, the following headers are trusted:
+		 * - HTTP_CF_CONNECTING_IP
+		 * - HTTP_CLIENT_IP
+		 * - HTTP_X_FORWARDED_FOR
+		 * - HTTP_X_FORWARDED
+		 * - HTTP_X_CLUSTER_CLIENT_IP
+		 * - HTTP_FORWARDED_FOR
+		 * - HTTP_FORWARDED
+		 *
+		 * To allow for CDNs, these headers take priority over the REMOTE_ADDR value.
+		 *
+		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
+		 */
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
+
+		// Add the REMOTE_ADDR value to the end of the array.
+		$trusted_headers[] = 'REMOTE_ADDR';
+
+		foreach ( array_unique( $trusted_headers ) as $header ) {
+			if ( ! isset( $_SERVER[ $header ] ) ) {
 				continue;
 			}
 
 			foreach ( explode(
 				',',
-				sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) )
+				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
 			) as $ip ) {
 				$ip = trim( $ip ); // just to be safe.
 
-				if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false ) {
+				/** Hook to filter IP flags. */
+				$filter_flags = apply_filters( 'rsa_get_client_ip_address_filter_flags', FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+
+				if ( filter_var( $ip, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
 					return $ip;
 				}
 			}
@@ -1574,7 +1641,7 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Get IPs programmatically
+	 * Get whitelisted IPs programmatically from the database.
 	 *
 	 * @param bool $include_config Whether to include the config file IPs. Default true.
 	 * @param bool $include_labels Whether to include the comments. Default false.
@@ -1849,32 +1916,3 @@ function restricted_site_access_uninstall() {
 }
 
 register_uninstall_hook( __FILE__, 'restricted_site_access_uninstall' );
-
-if ( ! function_exists( 'inet_pton' ) ) :
-
-	/**
-	 * Inet_pton is not included in PHP < 5.3 on Windows (WP requires PHP 5.2).
-	 *
-	 * @param string $ip IP Address.
-	 *
-	 * @return array|string
-	 *
-	 * @codeCoverageIgnore
-	 */
-	function inet_pton( $ip ) {
-		if ( strpos( $ip, '.' ) !== false ) {
-			// ipv4.
-			$ip = pack( 'N', ip2long( $ip ) );
-		} elseif ( strpos( $ip, ':' ) !== false ) {
-			// ipv6.
-			$ip  = explode( ':', $ip );
-			$res = str_pad( '', ( 4 * ( 8 - count( $ip ) ) ), '0000', STR_PAD_LEFT );
-			foreach ( $ip as $seg ) {
-				$res .= str_pad( $seg, 4, '0', STR_PAD_LEFT );
-			}
-			$ip = pack( 'H' . strlen( $res ), $res );
-		}
-			return $ip;
-	}
-
-endif;

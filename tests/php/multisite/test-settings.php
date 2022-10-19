@@ -91,17 +91,17 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 		$this->assertFalse( get_site_option( 'rsa_options' ) );
 
 		// Setup the $_POST variable.
-		$_POST['rsa_mode'] = ' enforce';
+		$_POST['rsa_mode']    = ' enforce';
 		$_POST['blog_public'] = 2;
-		$_POST['rsa_options'] = [
-			'approach' => 99,
-			'message' => 'Hello world<script>',
-			'head_code' => 404,
+		$_POST['rsa_options'] = array(
+			'approach'     => 99,
+			'message'      => 'Hello world<script>',
+			'head_code'    => 404,
 			'redirect_url' => 'https://10up.com',
-			'allowed' => [
+			'allowed'      => array(
 				'127.0.0.1',
-			],
-		];
+			),
+		);
 
 		$rsa::save_network_settings();
 

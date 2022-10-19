@@ -13,7 +13,9 @@
 	"license": "GPL-2.0-or-later",
 	"require-dev": {
 		"10up/phpcs-composer": "dev-master",
-		"yoast/phpunit-polyfills": "1.x-dev"
+		"phpunit/phpunit": "9.4.4",
+		"yoast/phpunit-polyfills": "1.x-dev",
+		"automattic/vipwpcs": "dev-develop"
 	},
 	"scripts": {
 		"test": "phpunit",
@@ -28,6 +30,6 @@
 		}
 	},
 	"require": {
-		"phpunit/phpunit": "9.4.4"
+		"mlocati/ip-lib": "dev-master"
 	}
 }

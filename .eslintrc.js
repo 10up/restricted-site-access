@@ -13,4 +13,7 @@ module.exports = {
 		rsaSettings: 'readonly',
 		ajaxurl: 'readonly',
 	},
+	rules: {
+		"import/no-unresolved": "off"
+	}
 };
