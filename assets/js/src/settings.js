@@ -28,6 +28,7 @@ import 'jquery-effects-shake';
 		message_field: '',
 		page_field: '',
 		error_field: '',
+		submit_btn: '',
 	};
 
 	function init() {
@@ -55,6 +56,7 @@ import 'jquery-effects-shake';
 		Cache.page_field = $( document.getElementById( 'rsa_page' ) ).closest(
 			'tr'
 		);
+		Cache.submit_btn = $( '#submit' );
 
 		if ( Cache.restrict_radio && ! Cache.restrict_radio.checked ) {
 			Cache.table.hide();
@@ -133,10 +135,10 @@ import 'jquery-effects-shake';
 
 	function addIp( ip, comment, obj ) {
 		const shakeSpeed = 600;
-		$( '#submit' ).prop( 'disabled', true );
+		Cache.submit_btn.prop( 'disabled', true );
 
 		if ( $.trim( ip ) === '' ) {
-			$( '#submit' ).prop( 'disabled', false );
+			Cache.submit_btn.prop( 'disabled', false );
 			return;
 		}
 
@@ -167,7 +169,7 @@ import 'jquery-effects-shake';
 
 				$( Cache.error_field ).text( '' );
 
-				$( '#submit' ).prop( 'disabled', false );
+				Cache.submit_btn.prop( 'disabled', false );
 
 				return true;
 			}
