@@ -1113,12 +1113,12 @@ class Restricted_Site_Access {
 	public static function settings_field_allowed() {
 		?>
 		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
+			<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
+				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
+				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
+				<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
+			</div>
 			<div id="ip_list">
-				<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
-					<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
-					<input type="text" name="rsa_options[comment][]" value="" class="comment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
-					<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
-				</div>
 			<?php
 			$ips      = (array) self::$rsa_options['allowed'];
 			$comments = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
@@ -1134,7 +1134,7 @@ class Restricted_Site_Access {
 				if ( ! empty( $ip ) ) {
 					echo '<div class="rsa_unrestricted_ip_row">
 							<input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" size="20" placeholder="' . esc_attr__( 'IP Address or Range' ) . '" />
-							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" size="20" placeholder="' . esc_attr__( 'Identify this entry' ) . '" />
+							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" class="newipcomment" size="20" placeholder="' . esc_attr__( 'Identify this entry' ) . '" />
 							<a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a>
 						</div>';
 				}
@@ -1142,7 +1142,7 @@ class Restricted_Site_Access {
 			?>
 			<div class="rsa_unrestricted_ip_row">
 				<input type="text" name="rsa_options[allowed][]" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
-				<input type="text" name="rsa_options[comment][]" id="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" />
+				<input type="text" name="rsa_options[comment][]" class="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" />
 				<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
 			</div>
 			</div>

@@ -108,8 +108,8 @@ Cypress.Commands.add( 'resetState', () => {
 } );
 
 Cypress.Commands.add( 'addIp', ( ip = '', label = '' ) => {
-	cy.get( '#rsa_add_new_ip_fields input[name="newip"]' ).type( ip );
-	cy.get( '#rsa_add_new_ip_fields input[name="newipcomment"]' ).type( label );
+	cy.get( '#ip_list .rsa_unrestricted_ip_row .ip.code' ).last().type( ip );
+	cy.get( '#ip_list .rsa_unrestricted_ip_row .newipcomment' ).last().type( label );
 	cy.get( '#addip' ).click();
 	cy.wait( 600 );
 } );
