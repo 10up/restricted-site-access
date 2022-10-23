@@ -2,9 +2,7 @@ describe( 'Add & save valid IPv4, IPv6 addresses', () => {
 	before( () => {
 		cy.request( {
 			url: '/wp-json/rsa/v1/seed/add-valid-addresses'
-		} ).then( response => {
-			console.log( response )
-		} );
+		} )
 		cy.login();
 		cy.visitAdminPage( 'network/settings.php' );
 	} );
