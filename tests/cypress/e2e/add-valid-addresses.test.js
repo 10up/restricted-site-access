@@ -1,6 +1,10 @@
 describe( 'Add & save valid IPv4, IPv6 addresses', () => {
 	before( () => {
-		cy.resetState();
+		cy.request( {
+			url: '/wp-json/rsa/v1/seed/add-valid-addresses'
+		} ).then( response => {
+			console.log( response )
+		} );
 		cy.login();
 		cy.visitAdminPage( 'network/settings.php' );
 	} );
@@ -27,6 +31,7 @@ describe( 'Add & save valid IPv4, IPv6 addresses', () => {
 
 	it( 'Add IPv6 pattern', () => {
 		cy.addIp( '2001:db8:3333:4444:5555:6666:*:*', 'IPv6 pattern' );
+		cy.wait(300);
 	} );
 
 	after( () => {

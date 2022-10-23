@@ -111,5 +111,4 @@ Cypress.Commands.add( 'addIp', ( ip = '', label = '' ) => {
 	cy.get( '#rsa_add_new_ip_fields input[name="newip"]' ).type( ip );
 	cy.get( '#rsa_add_new_ip_fields input[name="newipcomment"]' ).type( label );
 	cy.get( '#addip' ).click();
-	cy.wait( 600 );
 } );

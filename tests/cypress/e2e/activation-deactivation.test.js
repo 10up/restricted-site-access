@@ -1,7 +1,8 @@
 describe( 'Activation/Deactivation', () => {
 	before( () => {
-		cy.resetState();
-		cy.wpCli( 'plugin deactivate restricted-site-access --network' );
+		cy.request( {
+			url: '/wp-json/rsa/v1/seed/activation-deactivation'
+		} );
 		cy.login();
 	} );
 
