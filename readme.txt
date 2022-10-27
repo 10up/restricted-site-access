@@ -198,6 +198,14 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 == Changelog ==
 
+= 7.3.3 - 2022-10-31 =
+* **Added:** WP VIP Coding Standards (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@eflorea](https://github.com/eflorea)).
+* **Added:** Support for IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic)).
+* **Added:** Support for subnet range and pattern formats for IPv4 and IPv6 addresses. (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic)).
+* **Changed:** Replace Grunt with Webpack (props [@cadic](https://github.com/cadic), [@Sidsector9](https://github.com/Sidsector9)).
+* **Changed:** Improved adding IP user experience via settings (props [@ankitguptaindia](https://github.com/ankitguptaindia), [@dhanendran](https://github.com/dhanendran), [@Sidsector9](https://github.com/Sidsector9), [@dinhtungdu](https://github.com/dinhtungdu)).
+* **Fixed:** Missing textdomains to translatable strings. (props [@pedro-mendonca](https://github.com/pedro-mendonca), [@Sidsector9](https://github.com/Sidsector9)).
+
 = 7.3.2 - 2022-08-29 =
 **Note:** this release contains two new filters that we recommend using to further secure your site. See the [readme](https://wordpress.org/plugins/restricted-site-access/#how%20secure%20is%20this%20plug-in%3F) for full details.
 
