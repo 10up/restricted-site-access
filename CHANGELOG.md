@@ -7,17 +7,16 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [7.3.3] - 2022-10-31
 
 ### Added
-- WP VIP Coding Standards (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@eflorea](https://github.com/eflorea) via [#212](https://github.com/10up/restricted-site-access/pull/212)).
 - Support for IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic) via [#217](https://github.com/10up/restricted-site-access/pull/217)).
-- Support for subnet range and pattern formats for IPv4 and IPv6 addresses. (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic) via [#217](https://github.com/10up/restricted-site-access/pull/217)).
+- Support for subnet range and pattern formats for IPv4 and IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic) via [#217](https://github.com/10up/restricted-site-access/pull/217)).
+- WP VIP Coding Standards (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@eflorea](https://github.com/eflorea) via [#212](https://github.com/10up/restricted-site-access/pull/212)).
 
 ### Changed
-- Replace Grunt with Webpack (props [@cadic](https://github.com/cadic), [@Sidsector9](https://github.com/Sidsector9) via [#202](https://github.com/10up/restricted-site-access/pull/202)).
 - Improved adding IP user experience via settings (props [@ankitguptaindia](https://github.com/ankitguptaindia), [@dhanendran](https://github.com/dhanendran), [@Sidsector9](https://github.com/Sidsector9), [@dinhtungdu](https://github.com/dinhtungdu) via [#205](https://github.com/10up/restricted-site-access/pull/205)).
+- Replace Grunt with Webpack (props [@cadic](https://github.com/cadic), [@Sidsector9](https://github.com/Sidsector9) via [#202](https://github.com/10up/restricted-site-access/pull/202)).
 
 ### Fixed
-- Missing textdomains to translatable strings. (props [@pedro-mendonca](https://github.com/pedro-mendonca), [@Sidsector9](https://github.com/Sidsector9) via [#214](https://github.com/10up/restricted-site-access/pull/214)).
-
+- Missing textdomains to translatable strings (props [@pedro-mendonca](https://github.com/pedro-mendonca), [@Sidsector9](https://github.com/Sidsector9) via [#214](https://github.com/10up/restricted-site-access/pull/214)).
 
 ## [7.3.2] - 2022-08-29
 **Note:** this release contains two new filters that we recommend using to further secure your site. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
