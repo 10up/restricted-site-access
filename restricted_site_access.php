@@ -457,7 +457,7 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) {
+						if ( ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) || filter_var( self::$rsa_options['redirect_url'], FILTER_VALIDATE_URL ) ) {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 						}
 					}
