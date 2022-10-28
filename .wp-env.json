@@ -1,6 +1,6 @@
 {
 	"core": null,
-	"plugins": [ "." ],
+	"plugins": [ ".", "./tests/rsa-seeder" ],
 	"config": {
 		"WP_ALLOW_MULTISITE": true
 	},

@@ -111,5 +111,4 @@ Cypress.Commands.add( 'addIp', ( ip = '', label = '' ) => {
 	cy.get( '#ip_list .rsa_unrestricted_ip_row .ip.code' ).last().type( ip );
 	cy.get( '#ip_list .rsa_unrestricted_ip_row .newipcomment' ).last().type( label );
 	cy.get( '#addip' ).click();
-	cy.wait( 600 );
 } );

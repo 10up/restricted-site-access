@@ -20,6 +20,9 @@ module.exports = defineConfig({
     ],
     supportFile: 'tests/cypress/support/e2e.js'
   },
+  retries: {
+    runMode: 3,
+  }
 });
 
 /**
