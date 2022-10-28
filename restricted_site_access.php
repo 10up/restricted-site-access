@@ -98,7 +98,7 @@ class Restricted_Site_Access {
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'add_inline_js' ) );
-		add_filter( 'redirect_canonical', array( __CLASS__ ,'remove_redirect_guess_404_permalink' ) );
+		add_filter( 'redirect_canonical', array( __CLASS__, 'remove_redirect_guess_404_permalink' ) );
 	}
 
 	/**
@@ -336,7 +336,6 @@ class Restricted_Site_Access {
 				}
 			}
 
-
 			// Don't redirect during unit tests.
 			if ( ! empty( $results['url'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
@@ -466,15 +465,13 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( ! empty( $redirect_url_domain ) ) {
-						}
-						if ( ! isset( $_GET['rsa_redirect'] ) ) {
+						if ( ! isset( $_GET['rsa_redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 						} else {
 							self::$rsa_options['redirect_url'] = home_url( $wp->request );
 						}
 					}
-					
+
 					break;
 				}
 
@@ -1893,7 +1890,7 @@ class Restricted_Site_Access {
 	/**
 	 * Prevent WordPress from auto-resolving 404 URLs.
 	 *
-	 * @param string $redirect_url.
+	 * @param string $redirect_url The redirect URL.
 	 */
 	public static function remove_redirect_guess_404_permalink( $redirect_url ) {
 		if ( is_404() ) {
@@ -1907,10 +1904,13 @@ class Restricted_Site_Access {
 	 * Hide rsa_redirect query param when redirect happens on the same URL.
 	 */
 	public static function add_inline_js() {
+		// phpcs:disable
 		wp_register_script( 'dummy-rsa-script', '' );
 		wp_enqueue_script( 'dummy-rsa-script' );
+		// phpcs:enable
 
-		ob_start(); ?>
+		ob_start();
+		?>
 
 		const url = new URL( window.location );
 		const searchParams = new URLSearchParams( url.search );
@@ -1920,7 +1920,8 @@ class Restricted_Site_Access {
 			window.history.replaceState( {}, '', `${url.protocol}//${url.host}${url.pathname}${searchParams.toString()}` );
 		}
 
-		<?php $script = ob_get_clean();
+		<?php
+		$script = ob_get_clean();
 		wp_add_inline_script( 'dummy-rsa-script', $script );
 	}
 }
