@@ -327,14 +327,15 @@ class Restricted_Site_Access {
 				if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
 					return;
 				}
+
+				$redirection_url_host = trailingslashit( wp_parse_url( $results['url'], PHP_URL_HOST ) );
+				$current_url_host     = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_HOST ) );
+
+				if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
+					$results['url'] = $results['url'] . '?rsa_redirect=yes';
+				}
 			}
 
-			$redirection_url_host = trailingslashit( wp_parse_url( $results['url'], PHP_URL_HOST ) );
-			$current_url_host     = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_HOST ) );
-
-			if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
-				$results['url'] = $results['url'] . '?rsa_redirect=yes';
-			}
 
 			// Don't redirect during unit tests.
 			if ( ! empty( $results['url'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
