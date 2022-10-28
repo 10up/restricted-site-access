@@ -97,6 +97,8 @@ class Restricted_Site_Access {
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'add_inline_js' ) );
+		add_filter( 'redirect_canonical', array( __CLASS__ ,'remove_redirect_guess_404_permalink' ) );
 	}
 
 	/**
@@ -327,6 +329,13 @@ class Restricted_Site_Access {
 				}
 			}
 
+			$redirection_url_host = trailingslashit( wp_parse_url( $results['url'], PHP_URL_HOST ) );
+			$current_url_host     = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_HOST ) );
+
+			if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
+				$results['url'] = $results['url'] . '?rsa_redirect=yes';
+			}
+
 			// Don't redirect during unit tests.
 			if ( ! empty( $results['url'] ) && ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				wp_redirect( $results['url'], $results['code'] ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
@@ -451,18 +460,23 @@ class Restricted_Site_Access {
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
 						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
-						$current_url_domain  = wp_parse_url( home_url( $wp->request ), PHP_URL_HOST );
 
 						/**
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) || filter_var( self::$rsa_options['redirect_url'], FILTER_VALIDATE_URL ) ) {
+						if ( ! empty( $redirect_url_domain ) ) {
+						}
+						if ( ! isset( $_GET['rsa_redirect'] ) ) {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						} else {
+							self::$rsa_options['redirect_url'] = home_url( $wp->request );
 						}
 					}
+					
 					break;
 				}
+
 				// No break, fall thru to default.
 			default:
 				self::validate_blog_access();
@@ -1873,6 +1887,32 @@ class Restricted_Site_Access {
 		}
 
 		return false;
+	}
+
+	public static function remove_redirect_guess_404_permalink( $redirect_url ) {
+		if ( is_404() ) {
+			return false;
+		}
+
+		return $redirect_url;
+	}
+
+	public static function add_inline_js() {
+		wp_register_script( 'dummy-rsa-script', '' );
+		wp_enqueue_script( 'dummy-rsa-script' );
+
+		ob_start(); ?>
+
+		const url = new URL( window.location );
+		const searchParams = new URLSearchParams( url.search );
+
+		if ( searchParams.has( 'rsa_redirect' ) ) {
+			searchParams.delete( 'rsa_redirect' );
+			window.history.replaceState( {}, '', `${url.protocol}//${url.host}${url.pathname}${searchParams.toString()}` );
+		}
+
+		<?php $script = ob_get_clean();
+		wp_add_inline_script( 'dummy-rsa-script', $script );
 	}
 }
 
