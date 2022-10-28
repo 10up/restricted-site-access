@@ -1890,6 +1890,11 @@ class Restricted_Site_Access {
 		return false;
 	}
 
+	/**
+	 * Prevent WordPress from auto-resolving 404 URLs.
+	 *
+	 * @param string $redirect_url.
+	 */
 	public static function remove_redirect_guess_404_permalink( $redirect_url ) {
 		if ( is_404() ) {
 			return false;
@@ -1898,6 +1903,9 @@ class Restricted_Site_Access {
 		return $redirect_url;
 	}
 
+	/**
+	 * Hide rsa_redirect query param when redirect happens on the same URL.
+	 */
 	public static function add_inline_js() {
 		wp_register_script( 'dummy-rsa-script', '' );
 		wp_enqueue_script( 'dummy-rsa-script' );
