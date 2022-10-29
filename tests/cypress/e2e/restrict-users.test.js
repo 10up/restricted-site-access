@@ -21,7 +21,7 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			followRedirect: false,
 		} ).then( ( resp ) => {
 			expect( resp.status ).to.eq( 301 );
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/' );
 		} );
 	} );
 
@@ -34,7 +34,7 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			followRedirect: false,
 		} ).then( ( resp ) => {
 			expect( resp.status ).to.eq( 302 );
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/' );
 		} );
 	} );
 
@@ -47,7 +47,7 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			followRedirect: false,
 		} ).then( ( resp ) => {
 			expect( resp.status ).to.eq( 307 );
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/' );
 		} );
 	} );
 
@@ -110,7 +110,7 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			url: '/',
 			followRedirect: false,
 		} ).then( ( resp ) => {
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/' );
 		} );
 	} );
 
@@ -122,7 +122,7 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			url: '/main',
 			followRedirect: false,
 		} ).then( ( resp ) => {
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/main?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/main' );
 		} );
 	} );
 
@@ -134,13 +134,13 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			url: '/',
 			followRedirect: false,
 		} ).then( ( resp ) => {
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect' );
 		} );
 		cy.request( {
 			url: '/main',
 			followRedirect: false,
 		} ).then( ( resp ) => {
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect' );
 		} );
 	} );
 
@@ -152,13 +152,7 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			url: '/main',
 			followRedirect: false,
 		} ).then( ( resp ) => {
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/main?rsa_redirect=yes' );
-		} );
-		cy.request( {
-			url: '/main',
-			followRedirect: false,
-		} ).then( ( resp ) => {
-			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/main?rsa_redirect=yes' );
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/main' );
 		} );
 	} );
 } );
