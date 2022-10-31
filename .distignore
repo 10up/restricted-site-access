@@ -10,6 +10,7 @@
 .distignore
 .editorconfig
 .eslintrc.js
+.gitattributes
 .gitignore
 .wp-env.json
 CHANGELOG.md
@@ -22,5 +23,7 @@ LICENSE.md
 package-lock.json
 package.json
 phpcs.xml
-phpunit.xml.dist
+phpcs.xml.dist
+phpunit.xml
 README.md
+webpack.config.js
