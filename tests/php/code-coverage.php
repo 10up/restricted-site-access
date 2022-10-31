@@ -1,13 +1,13 @@
 <?php
 
-// Init the Composer autoloader
+/** Init the Composer autoloader. */
 require_once dirname( dirname( dirname( __FILE__ ) ) ) . '/vendor/autoload.php';
 
-$files = [
+$files = array(
 	'coverage.serialized',
 	'multisite-coverage.serialized',
 	'whitelist-coverage.serialized',
-];
+);
 
 foreach ( $files as $filename ) {
 	if ( file_exists( 'test-coverage/' . $filename ) ) {

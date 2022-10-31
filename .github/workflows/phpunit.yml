@@ -26,10 +26,18 @@ jobs:
       with:
         php-version: '7.4'
         coverage: none
-        tools: composer:v1
+        tools: composer:v2
 
     - name: Install dependencies
       run: composer install
+
+    - name: install node v16
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+
+    - name: Install dependencies
+      run: npm i && npm run build
 
     - name: Setup WP Tests
       run: bash bin/install-wp-tests.sh wordpress_test root '' 127.0.0.1

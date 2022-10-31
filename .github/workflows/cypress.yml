@@ -19,16 +19,29 @@ jobs:
     strategy:
       matrix:
         core:
+          - {name: 'WP 6.1-RC4', version: 'https://wordpress.org/wordpress-6.1-RC5.zip'}
           - {name: 'WP latest', version: 'latest'}
-          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
           - {name: 'WP minimum', version: 'WordPress/WordPress#5.7'}
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Set PHP version
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        coverage: none
+        tools: composer:v2
+
+    - name: Install PHP dependencies
+      run: composer i
+
+    - name: Install JS dependencies
       run: npm i
+
+    - name: Build
+      run: npm run build
 
     - name: Set the core version
       run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}

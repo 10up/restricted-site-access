@@ -25,3 +25,4 @@
 /README.md export-ignore
 /run-wpacceptance.sh export-ignore
 /wpacceptance.json export-ignore
+/webpack.config.js export-ignore
