@@ -4,7 +4,7 @@ Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
 Tested up to:      6.1
-Stable tag:        7.3.3
+Stable tag:        7.3.4
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -197,6 +197,9 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.3.4 - 2022-11-01 =
+* **Fixed:** Fatal error due to missing vendor directory.
 
 = 7.3.3 - 2022-10-31 =
 * **Added:** Support for IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic)).

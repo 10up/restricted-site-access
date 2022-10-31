@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.3.4] - 2022-11-01
+
+### Fixed
+- Fatal error due to missing vendor directory.
+
 ## [7.3.3] - 2022-10-31
 
 ### Added
