@@ -3,8 +3,8 @@ Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomno
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
-Tested up to:      6.0
-Stable tag:        7.3.2
+Tested up to:      6.1
+Stable tag:        7.3.4
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -197,6 +197,17 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.3.4 - 2022-11-01 =
+* **Fixed:** Fatal error due to missing vendor directory.
+
+= 7.3.3 - 2022-10-31 =
+* **Added:** Support for IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic)).
+* **Added:** Support for subnet range and pattern formats for IPv4 and IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic)).
+* **Added:** WP VIP Coding Standards (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@faisal-alvi](https://github.com/faisal-alvi), [@eflorea](https://github.com/eflorea)).
+* **Changed:** Improved adding IP user experience via settings (props [@ankitguptaindia](https://github.com/ankitguptaindia), [@dhanendran](https://github.com/dhanendran), [@Sidsector9](https://github.com/Sidsector9), [@dinhtungdu](https://github.com/dinhtungdu)).
+* **Changed:** Replace Grunt with Webpack (props [@cadic](https://github.com/cadic), [@Sidsector9](https://github.com/Sidsector9)).
+* **Fixed:** Missing textdomains to translatable strings (props [@pedro-mendonca](https://github.com/pedro-mendonca), [@Sidsector9](https://github.com/Sidsector9)).
 
 = 7.3.2 - 2022-08-29 =
 **Note:** this release contains two new filters that we recommend using to further secure your site. See the [readme](https://wordpress.org/plugins/restricted-site-access/#how%20secure%20is%20this%20plug-in%3F) for full details.
