@@ -332,7 +332,6 @@ class Restricted_Site_Access {
 
 				if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
 					$_SESSION['rsa_redirect'] = 1;
-					// $results['url'] = $results['url'] . '?rsa_redirect=yes';
 				}
 			}
 
