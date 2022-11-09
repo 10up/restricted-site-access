@@ -458,7 +458,6 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
 						/**
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
