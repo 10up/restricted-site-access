@@ -97,7 +97,9 @@ class Restricted_Site_Access {
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
-		add_filter( 'redirect_canonical', array( __CLASS__, 'remove_redirect_guess_404_permalink' ) );
+
+		// Prevent WordPress from auto-resolving 404 URLs.
+		add_filter( 'do_redirect_guess_404_permalink', array( __CLASS__, '__return_true' ) );
 	}
 
 	/**
@@ -1883,19 +1885,6 @@ class Restricted_Site_Access {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Prevent WordPress from auto-resolving 404 URLs.
-	 *
-	 * @param string $redirect_url The redirect URL.
-	 */
-	public static function remove_redirect_guess_404_permalink( $redirect_url ) {
-		if ( is_404() ) {
-			return false;
-		}
-
-		return $redirect_url;
 	}
 }
 
