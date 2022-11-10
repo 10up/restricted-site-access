@@ -312,7 +312,10 @@ class Restricted_Site_Access {
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
-		session_start();
+		if ( session_status() === PHP_SESSION_NONE ) {
+			session_start();
+		}
+
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
