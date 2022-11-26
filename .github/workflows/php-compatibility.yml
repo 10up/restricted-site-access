@@ -29,8 +29,15 @@ jobs:
       - name: Install dependencies
         run: composer install
 
+      - name: Get updated PHP files
+        id: changed-files
+        uses: tj-actions/changed-files@v32
+        with:
+            files: |
+              **/*.php
+
       - name: WPCS check
-        run: ./vendor/bin/phpcs .
+        run: ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: PHP Compatibility check
-        run: ./vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
+        run: ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }} --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
