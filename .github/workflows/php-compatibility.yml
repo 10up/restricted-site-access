@@ -42,7 +42,7 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }}
+            ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }} && echo "Yaasss"
           elif [ "${{ github.event_name }}" == "push" ]; then
             ./vendor/bin/phpcs .
           fi
