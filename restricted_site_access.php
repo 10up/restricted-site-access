@@ -1652,7 +1652,7 @@ class Restricted_Site_Access {
 		$current_ips       = (array) self::$rsa_options['allowed'];
 		$config_ips        = array();
 
-		if ($include_labels ) {
+		if ( $include_labels ) {
 			$labels      = (array) self::$rsa_options['comment'];
 			$current_ips = array_combine( $labels, $current_ips );
 		}
