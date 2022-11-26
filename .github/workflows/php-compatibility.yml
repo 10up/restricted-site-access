@@ -39,7 +39,9 @@ jobs:
               **/*.php
 
       - name: WPCS check
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: PHP Compatibility check
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
         run: ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }} --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
