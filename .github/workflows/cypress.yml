@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get updated files
+      - name: Get updated JS files
         id: changed-files
         uses: tj-actions/changed-files@v32
         with:
