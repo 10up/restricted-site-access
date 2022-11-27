@@ -31,7 +31,7 @@ jobs:
 
       - id: files-changed
         run: |
-          if [ ( "${{ github.event_name }}" == 'pull_request' && "${{ steps.changed-files.outputs.any_changed }}" == "true" ) ]; then
+          if [[ ( "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ) || "${{ github.event_name }}" == "push" ]]; then
             echo "RSA_FILES_CHANGED=yes" >> $GITHUB_OUTPUT
           fi
 
