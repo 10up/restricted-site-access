@@ -40,16 +40,16 @@ jobs:
 
       - name: WPCS check
         run: |
-          if [ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]; then
+          if [[ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]]; then
             ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }}
-          elif [ "${{ github.event_name }}" == "push" ]; then
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
             ./vendor/bin/phpcs .
           fi
 
       - name: PHP Compatibility check
         run: |
-          if [ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]; then
+          if [[ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]]; then
             ./vendor/bin/phpcs ${{ steps.changed-files.outputs.all_changed_files }} --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
-          elif [ "${{ github.event_name }}" == "push" ]; then
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
             ./vendor/bin/phpcs . --standard=PHPCompatibilityWP --ignore=vendor --extensions=php --runtime-set testVersion 7.4- --report=checkstyle | cs2pr
           fi

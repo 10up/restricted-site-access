@@ -25,7 +25,7 @@ class Restricted_Site_Access {
 	/**
 	 * Plugin basename.
 	 *
-	 * @var array $basename The plugin base name.
+	 * @var array $basename The plugin base name 1.
 	 */
 	private static $basename;
 
