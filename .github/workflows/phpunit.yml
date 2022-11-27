@@ -13,7 +13,7 @@ jobs:
   check-diffs:
     runs-on: ubuntu-latest
     outputs:
-      has_changed: ${{ steps.files-changed.outputs.RSA_FILES_CHANGED }}
+      has_changed: ${{ steps.files-changed.outputs.RSA_PHP_FILES_CHANGED }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
       - id: files-changed
         run: |
           if [[ ( "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ) || "${{ github.event_name }}" == "push" ]]; then
-            echo "RSA_FILES_CHANGED=yes" >> $GITHUB_OUTPUT
+            echo "RSA_PHP_FILES_CHANGED=yes" >> $GITHUB_OUTPUT
           fi
   phpunit:
     runs-on: ubuntu-latest
