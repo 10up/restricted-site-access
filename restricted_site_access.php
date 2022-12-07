@@ -1330,7 +1330,7 @@ class Restricted_Site_Access {
 	 * @return bool True if its a valid IP address.
 	 */
 	public static function is_ip( $ip_address ) {
-		$address = \IPLib\Factory::parseRangeString( $ip_address );
+		$address = \Restricted_Site_Access\IPLib\Factory::parseRangeString( $ip_address );
 
 		if ( is_null( $address ) ) {
 			return false;
@@ -1509,16 +1509,16 @@ class Restricted_Site_Access {
 	 */
 	public static function ip_in_range( $ip, $range ) {
 		$in_range     = false;
-		$parsed_range = \IPLib\Factory::parseRangeString( $range );
-		$user_address = \IPLib\Factory::parseAddressString( $ip );
+		$parsed_range = \Restricted_Site_Access\IPLib\Factory::parseRangeString( $range );
+		$user_address = \Restricted_Site_Access\IPLib\Factory::parseAddressString( $ip );
 
 		if ( empty( $user_address ) ) {
 			return false;
 		}
 
-		if ( $parsed_range instanceof \IPLib\Range\Single ) {
+		if ( $parsed_range instanceof \Restricted_Site_Access\IPLib\Range\Single ) {
 			$in_range = $user_address->matches( $parsed_range );
-		} elseif ( $parsed_range instanceof \IPLib\Range\Subnet || $parsed_range instanceof \IPLib\Range\Pattern ) {
+		} elseif ( $parsed_range instanceof \Restricted_Site_Access\IPLib\Range\Subnet || $parsed_range instanceof \Restricted_Site_Access\IPLib\Range\Pattern ) {
 			$in_range = $parsed_range->contains( $user_address );
 		}
 
