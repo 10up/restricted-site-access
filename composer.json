@@ -17,6 +17,11 @@
 		"yoast/phpunit-polyfills": "1.x-dev",
 		"automattic/vipwpcs": "dev-develop"
 	},
+	"autoload": {
+		"psr-4": {
+			"Restricted_Site_Access\\IPLib\\": "vendor-namespaced/IPLib/"
+		}
+	},
 	"scripts": {
 		"test": "phpunit",
 		"test:acceptance": "wpacceptance run",
@@ -31,5 +36,17 @@
 	},
 	"require": {
 		"mlocati/ip-lib": "dev-master"
+	},
+	"extra": {
+		"mozart": {
+			"dep_namespace": "Restricted_Site_Access",
+			"dep_directory": "/vendor-prefixed/",
+			"classmap_directory": "/vendor-prefixed/",
+			"classmap_prefix": "RSA_",
+			"packages": [
+				"mlocati/ip-lib"
+			],
+			"delete_vendor_directories": true
+		}
 	}
 }
