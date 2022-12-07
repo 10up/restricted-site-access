@@ -15,18 +15,27 @@
 		"10up/phpcs-composer": "dev-master",
 		"phpunit/phpunit": "9.4.4",
 		"yoast/phpunit-polyfills": "1.x-dev",
-		"automattic/vipwpcs": "dev-develop"
+		"automattic/vipwpcs": "dev-develop",
+		"coenjacobs/mozart": "dev-master"
 	},
 	"autoload": {
 		"psr-4": {
-			"Restricted_Site_Access\\IPLib\\": "vendor-namespaced/IPLib/"
+			"Restricted_Site_Access\\IPLib\\": "vendor-prefixed/IPLib/"
 		}
 	},
 	"scripts": {
 		"test": "phpunit",
 		"test:acceptance": "wpacceptance run",
 		"lint": "phpcs --extensions=php -s .",
-		"lint-fix": "phpcbf --extensions=php ."
+		"lint-fix": "phpcbf --extensions=php .",
+		"post-install-cmd": [
+			"\"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		],
+		"post-update-cmd": [
+			"\"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		]
 	},
 	"minimum-stability": "dev",
 	"config": {

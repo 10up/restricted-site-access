@@ -14,7 +14,10 @@ jobs:
         npm install
         npm run build
     - name: Install PHP dependencies
-      run: composer i --no-dev 
+      run: |
+        composer i
+        rm -rf vendor
+        composer dump-autoload
     - name: WordPress Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@stable
       env:

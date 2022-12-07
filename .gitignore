@@ -1,5 +1,6 @@
 node_modules
 vendor
+vendor-prefixed
 test-coverage
 .DS_Store
 screenshots
