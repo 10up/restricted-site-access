@@ -13,7 +13,7 @@
  * Text Domain:       restricted-site-access
  */
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 define( 'RSA_VERSION', '7.3.4' );
 
