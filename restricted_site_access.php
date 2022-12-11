@@ -13,7 +13,32 @@
  * Text Domain:       restricted-site-access
  */
 
-require_once 'vendor/autoload.php';
+// Try and include our autoloader.
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+} elseif ( ! class_exists( 'IPLib\\Factory' ) ) {
+	add_action(
+		'admin_notices',
+		function() {
+			?>
+			<div class="notice notice-error">
+				<p>
+					<?php
+					echo wp_kses_post(
+						sprintf(
+							/* translators: %1$s is the command that needs to be run. */
+							__( 'You appear to be running a development version of Restricted Site Access. Please run %1$s in order for things to work properly.', 'restricted-site-access' ),
+							'<code>composer install</code>'
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+	);
+	return;
+}
 
 define( 'RSA_VERSION', '7.3.4' );
 
