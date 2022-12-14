@@ -4,13 +4,26 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
-## [7.3.4] - 2022-11-01
+## [7.3.5] - 2022-12-14
+### Added
+- Show an admin notice if our autoloader doesn't exist (props [@dkotter](https://github.com/dkotter), [@pablojmarti](https://github.com/pablojmarti), [@shahzaib10up](https://github.com/shahzaib10up), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#231](https://github.com/10up/restricted-site-access/pull/231)).
 
+### Fixed
+- Ensure we load our autoloader from the root of our plugin directory (props [@dkotter](https://github.com/dkotter), [@pablojmarti](https://github.com/pablojmarti), [@shahzaib10up](https://github.com/shahzaib10up), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#231](https://github.com/10up/restricted-site-access/pull/231)).
+
+### Changed
+- Improved performance of our E2E tests (props [@Sidsector9](https://github.com/Sidsector9), [@iamdharmesh](https://github.com/iamdharmesh) via [#218](https://github.com/10up/restricted-site-access/pull/218)).
+- Release instructions and release ZIP building via GitHub Action (props [@dkotter](https://github.com/dkotter), [@faisal-alvi](https://github.com/faisal-alvi) via [#232](https://github.com/10up/restricted-site-access/pull/232)).
+
+### Security
+- Bump `loader-utils` from 2.0.3 to 2.0.4 (props [@dependabot](https://github.com/apps/dependabot) via [#226](https://github.com/10up/restricted-site-access/pull/226)).
+- Bump `simple-git` from 3.6.0 to 3.15.0 (props [@dependabot](https://github.com/apps/dependabot) via [#230](https://github.com/10up/restricted-site-access/pull/230)).
+
+## [7.3.4] - 2022-11-01
 ### Fixed
 - Fatal error due to missing vendor directory.
 
 ## [7.3.3] - 2022-10-31
-
 ### Added
 - Support for IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic) via [#217](https://github.com/10up/restricted-site-access/pull/217)).
 - Support for subnet range and pattern formats for IPv4 and IPv6 addresses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic) via [#217](https://github.com/10up/restricted-site-access/pull/217)).
@@ -263,6 +276,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.3.5]: https://github.com/10up/restricted-site-access/compare/7.3.4...7.3.5
+[7.3.4]: https://github.com/10up/restricted-site-access/compare/7.3.3...7.3.4
+[7.3.3]: https://github.com/10up/restricted-site-access/compare/7.3.2...7.3.3
 [7.3.2]: https://github.com/10up/restricted-site-access/compare/7.3.1...7.3.2
 [7.3.1]: https://github.com/10up/restricted-site-access/compare/7.3.0...7.3.1
 [7.3.0]: https://github.com/10up/restricted-site-access/compare/7.2.0...7.3.0
