@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Changed
 - Improved performance of our E2E tests (props [@Sidsector9](https://github.com/Sidsector9), [@iamdharmesh](https://github.com/iamdharmesh) via [#218](https://github.com/10up/restricted-site-access/pull/218)).
-- Release insstructions and release ZIP building via GitHub Action (props [@dkotter](https://github.com/dkotter), [@faisal-alvi](https://github.com/faisal-alvi) via [#232](https://github.com/10up/restricted-site-access/pull/232)).
+- Release instructions and release ZIP building via GitHub Action (props [@dkotter](https://github.com/dkotter), [@faisal-alvi](https://github.com/faisal-alvi) via [#232](https://github.com/10up/restricted-site-access/pull/232)).
 
 ### Security
 - Bump `loader-utils` from 2.0.3 to 2.0.4 (props [@dependabot](https://github.com/apps/dependabot) via [#226](https://github.com/10up/restricted-site-access/pull/226)).
