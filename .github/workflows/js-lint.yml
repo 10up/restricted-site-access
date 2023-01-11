@@ -14,12 +14,29 @@ jobs:
     name: eslint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
     - name: install node v16
       uses: actions/setup-node@v1
       with:
         node-version: 16
+
+    - name: Get updated JS files
+      id: changed-files
+      uses: tj-actions/changed-files@v32
+      with:
+        files: |
+          **/*.js
+
     - name: Install dependencies
       run: npm install
+
     - name: Run JS linting
-      run: npm run lint:js
+      run: |
+        if [[ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]]; then
+          npx eslint ${{ steps.changed-files.outputs.all_changed_files }}
+        elif [[ "${{ github.event_name }}" == "push" ]]; then
+          npm run lint:js
+        fi
