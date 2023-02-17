@@ -21,6 +21,7 @@ import 'jquery-effects-shake';
 		empty_ip: '',
 		restrict_radio: '',
 		table: '',
+		header: '',
 		redirect_choice: '',
 		message_choice: '',
 		page_choice: '',
@@ -42,6 +43,7 @@ import 'jquery-effects-shake';
 		Cache.table = $(
 			document.getElementById( 'rsa-send-to-login' )
 		).closest( 'table' );
+		Cache.header = Cache.table.prev( 'h2' );
 		Cache.redirect_choice = document.getElementById(
 			'rsa-redirect-visitor'
 		);
@@ -60,6 +62,7 @@ import 'jquery-effects-shake';
 
 		if ( Cache.restrict_radio && ! Cache.restrict_radio.checked ) {
 			Cache.table.hide();
+			Cache.header.hide();
 		}
 
 		if ( Cache.redirect_choice && ! Cache.redirect_choice.checked ) {
@@ -101,8 +104,10 @@ import 'jquery-effects-shake';
 			'change',
 			function() {
 				if ( Cache.restrict_radio.checked ) {
+					Cache.header.show();
 					Cache.table.show();
 				} else {
+					Cache.header.hide();
 					Cache.table.hide();
 				}
 			}
