@@ -3,19 +3,44 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.3.4
+ * Version:           7.3.5
  * Requires at least: 5.7
  * Requires PHP:      7.4
- * Author:            Jake Goldman, 10up, Oomph
+ * Author:            10up
  * Author URI:        https://10up.com
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       restricted-site-access
  */
 
-require_once 'vendor/autoload.php';
+// Try and include our autoloader.
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+} elseif ( ! class_exists( 'IPLib\\Factory' ) ) {
+	add_action(
+		'admin_notices',
+		function() {
+			?>
+			<div class="notice notice-error">
+				<p>
+					<?php
+					echo wp_kses_post(
+						sprintf(
+							/* translators: %1$s is the command that needs to be run. */
+							__( 'You appear to be running a development version of Restricted Site Access. Please run %1$s in order for things to work properly.', 'restricted-site-access' ),
+							'<code>composer install</code>'
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+	);
+	return;
+}
 
-define( 'RSA_VERSION', '7.3.4' );
+define( 'RSA_VERSION', '7.3.5' );
 
 /**
  * Class responsible for all plugin funcitonality.
