@@ -28,7 +28,7 @@ jobs:
       uses: tj-actions/changed-files@v32
       with:
         files: |
-          **/*.js
+          assets/js/src/*.js
 
     - name: Install dependencies
       run: npm install
