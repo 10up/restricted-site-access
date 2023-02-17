@@ -50,6 +50,8 @@ class Restricted_Site_Access {
 	 */
 	private static $fields;
 
+	private static $redirection_nonce;
+
 	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
@@ -85,6 +87,7 @@ class Restricted_Site_Access {
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
+		add_action( 'init', array( __CLASS__, 'generate_nonce' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
@@ -100,6 +103,10 @@ class Restricted_Site_Access {
 
 		// Prevent WordPress from auto-resolving 404 URLs.
 		add_filter( 'do_redirect_guess_404_permalink', '__return_true' );
+	}
+
+	public static function generate_nonce() {
+		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
 	}
 
 	/**
@@ -305,6 +312,18 @@ class Restricted_Site_Access {
 		return false;
 	}
 
+	private static function generate_redirection_cookie( $url ) {
+		$cookie_value = sprintf(
+			'rsa_redirect:%1$s%2$s',
+			trailingslashit( $url ),
+			self::$redirection_nonce
+		);
+
+		$hash = md5( $cookie_value );
+
+		return $hash;
+	}
+
 	/**
 	 * Redirects restricted requests.
 	 *
@@ -313,7 +332,7 @@ class Restricted_Site_Access {
 	 */
 	public static function restrict_access( $wp ) {
 		if ( session_status() === PHP_SESSION_NONE ) {
-			session_start();
+			// session_start();
 		}
 
 		$results = self::restrict_access_check( $wp );
@@ -336,7 +355,7 @@ class Restricted_Site_Access {
 				$current_url_host     = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_HOST ) );
 
 				if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
-					$_SESSION['rsa_redirect'] = 1;
+					setcookie( 'wp-rsa_redirect', self::generate_redirection_cookie( $results['url'] ) );
 				}
 			}
 
@@ -467,11 +486,11 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( ! isset( $_SESSION['rsa_redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
-						} else {
-							unset( $_SESSION['rsa_redirect'] );
+						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && $_COOKIE['wp-rsa_redirect'] === self::generate_redirection_cookie( home_url( $wp->request ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+							// unset( $_SESSION['rsa_redirect'] );
 							self::$rsa_options['redirect_url'] = home_url( $wp->request );
+						} else {
+							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 						}
 					}
 
