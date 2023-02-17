@@ -50,6 +50,11 @@ class Restricted_Site_Access {
 	 */
 	private static $fields;
 
+	/**
+	 * The redirection nonce.
+	 *
+	 * @var string
+	 */
 	private static $redirection_nonce;
 
 	/**
@@ -105,6 +110,9 @@ class Restricted_Site_Access {
 		add_filter( 'do_redirect_guess_404_permalink', '__return_true' );
 	}
 
+	/**
+	 * Generates a nonce on init.
+	 */
 	public static function generate_nonce() {
 		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
 	}
@@ -312,6 +320,12 @@ class Restricted_Site_Access {
 		return false;
 	}
 
+	/**
+	 * Generates a cookie that is used to prevent redirection loops.
+	 *
+	 * @param string $url The current URL.
+	 * @return string
+	 */
 	private static function generate_redirection_cookie( $url ) {
 		$cookie_value = sprintf(
 			'rsa_redirect:%1$s%2$s',
@@ -331,10 +345,6 @@ class Restricted_Site_Access {
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
-		if ( session_status() === PHP_SESSION_NONE ) {
-			// session_start();
-		}
-
 		$results = self::restrict_access_check( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
@@ -486,8 +496,7 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && $_COOKIE['wp-rsa_redirect'] === self::generate_redirection_cookie( home_url( $wp->request ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-							// unset( $_SESSION['rsa_redirect'] );
+						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $wp->request ) ) === $_COOKIE['wp-rsa_redirect'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 							self::$rsa_options['redirect_url'] = home_url( $wp->request );
 						} else {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
