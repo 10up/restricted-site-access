@@ -385,7 +385,6 @@ class Restricted_Site_Access {
 			return;
 		}
 
-
 		if ( self::has_valid_custom_header() === false ) {
 			return;
 		}
