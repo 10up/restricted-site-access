@@ -403,13 +403,14 @@ class Restricted_Site_Access {
 		 *
 		 * @param array $allowed_custom_trusted_headers Array of custom trusted headers. Default empty array.
 		 */
-		if ( $allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() ) ) {
+		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
+		if ( $allowed_custom_trusted_headers ) {
 			// Check if the custom trusted headers are set and have the correct value.
 			// If not, return.
 			foreach ( $allowed_custom_trusted_headers as $header => $value ) {
 				if (
 					empty( $_SERVER[ $header ] ) ||
-					$value !== $_SERVER[ $header ] // phpcs:ignore
+					$value !== $_SERVER[ $header ]
 				) {
 					return;
 				}
