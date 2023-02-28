@@ -385,36 +385,9 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		/**
-		 * Filters custom trusted headers.
-		 *
-		 * All headers should be present in request and have the correct value.
-		 * Example:
-		 * add_filter(
-		 *     'rsa_custom_trusted_headers',
-		 *     function( $headers ) {
-		 *         $headers['x-gt-matrix'] = 'SomeValue1';
-		 *         $headers['x-custom-header'] = 'SomeValue2';
-		 *         return $headers;
-		 *     }
-		 * )
-		 *
-		 * @since x.x.x
-		 *
-		 * @param array $allowed_custom_trusted_headers Array of custom trusted headers. Default empty array.
-		 */
-		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
-		if ( $allowed_custom_trusted_headers ) {
-			// Check if the custom trusted headers are set and have the correct value.
-			// If not, return.
-			foreach ( $allowed_custom_trusted_headers as $header => $value ) {
-				if (
-					empty( $_SERVER[ $header ] ) ||
-					$value !== $_SERVER[ $header ]
-				) {
-					return;
-				}
-			}
+
+		if ( self::has_valid_custom_header() === false ) {
+			return;
 		}
 
 		$allowed_ips = self::get_config_ips();
@@ -1930,6 +1903,43 @@ class Restricted_Site_Access {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Filters custom trusted headers.
+	 *
+	 * All headers should be present in request and have the correct value.
+	 * Example:
+	 * add_filter(
+	 *     'rsa_custom_trusted_headers',
+	 *     function( $headers ) {
+	 *         $headers['x-gt-matrix'] = 'SomeValue1';
+	 *         $headers['x-custom-header'] = 'SomeValue2';
+	 *         return $headers;
+	 *     }
+	 * )
+	 *
+	 * @since x.x.x
+	 */
+	public static function has_valid_custom_header(): ?bool{
+		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
+
+		if ( $allowed_custom_trusted_headers ) {
+			// Check if the custom trusted headers are set and have the correct value.
+			// If not, return.
+			foreach ( $allowed_custom_trusted_headers as $header => $value ) {
+				if (
+					empty( $_SERVER[ $header ] ) ||
+					$value !== $_SERVER[ $header ]
+				) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return null;
 	}
 }
 
