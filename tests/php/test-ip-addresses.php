@@ -206,7 +206,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		);
 		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
 
-		$SERVER['x-custom-header2'] = '1234';
+		$_SERVER['x-custom-header2'] = '1234';
 		add_filter(
 			'rsa_custom_trusted_headers',
 			function ( $headers ) {
