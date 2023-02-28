@@ -118,11 +118,19 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 		cy.request( {
 			url: '/wp-json/rsa/v1/seed/restrict-users/redirect-to-internal-url-with-path-to-a-new-path'
 		} );
+
 		cy.request( {
 			url: '/main',
 			followRedirect: false,
 		} ).then( ( resp ) => {
 			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/main' );
+		} );
+
+		cy.request( {
+			url: '/one/two',
+			followRedirect: false,
+		} ).then( ( resp ) => {
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/one/two' );
 		} );
 	} );
 
@@ -141,6 +149,33 @@ describe( 'Handle restricted visitors - Redirect to web address', () => {
 			followRedirect: false,
 		} ).then( ( resp ) => {
 			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect' );
+		} );
+	} );
+
+	it( 'Verify - Redirect to path using same path', () => {
+		cy.request( {
+			url: '/wp-json/rsa/v1/seed/restrict-users/redirect-to-path-and-redirect-to-same-path'
+		} );
+
+		cy.request( {
+			url: '/',
+			followRedirect: false,
+		} ).then( ( resp ) => {
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/' );
+		} );
+
+		cy.request( {
+			url: '/hello',
+			followRedirect: false,
+		} ).then( ( resp ) => {
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/hello' );
+		} );
+
+		cy.request( {
+			url: '/one/two',
+			followRedirect: false,
+		} ).then( ( resp ) => {
+			expect( resp.redirectedToUrl ).to.eq( 'http://localhost:8889/page-to-redirect/one/two' );
 		} );
 	} );
 

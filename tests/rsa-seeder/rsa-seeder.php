@@ -28,6 +28,7 @@ function my_rsa_feed_override( $is_restricted, $wp ) {
 		'wp-json/rsa/v1/seed/restrict-users/redirect-to-internal-url',
 		'wp-json/rsa/v1/seed/restrict-users/redirect-to-internal-url-with-path-to-a-new-path',
 		'wp-json/rsa/v1/seed/restrict-users/redirect-to-path',
+		'wp-json/rsa/v1/seed/restrict-users/redirect-to-path-and-redirect-to-same-path',
 		'wp-json/rsa/v1/seed/restrict-users/redirect-to-path-to-a-new-path',
 	);
 
@@ -397,6 +398,27 @@ add_action(
 					$mock_rsa_options['head_code'] = 307;
 					$mock_rsa_options['redirect_url'] = '/page-to-redirect';
 					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-path-and-redirect-to-same-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/page-to-redirect';
+					$mock_rsa_options['redirect_path'] = 1;
 					$mock_rsa_options['allowed'] = array();
 
 					update_site_option( 'rsa_mode', $mock_rsa_mode );

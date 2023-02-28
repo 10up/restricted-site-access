@@ -388,9 +388,13 @@ class Restricted_Site_Access {
 
 				$redirection_url_host = trailingslashit( wp_parse_url( $results['url'], PHP_URL_HOST ) );
 				$current_url_host     = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_HOST ) );
+				$cookie_path          = wp_parse_url( home_url( '/' ), PHP_URL_PATH );
 
 				if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
-					setcookie( 'wp-rsa_redirect', self::generate_redirection_cookie( $results['url'] ) );
+					if ( ! filter_var( $results['url'], FILTER_VALIDATE_URL ) ) {
+						$results['url'] = home_url( $results['url'] );
+					}
+					setcookie( 'wp-rsa_redirect', self::generate_redirection_cookie( $results['url'] ), 0, $cookie_path );
 				}
 			}
 
@@ -521,7 +525,8 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $wp->request ) ) === $_COOKIE['wp-rsa_redirect'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $wp->request ) ) === $_COOKIE['wp-rsa_redirect'] ) {
 							self::$rsa_options['redirect_url'] = home_url( $wp->request );
 						} else {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
