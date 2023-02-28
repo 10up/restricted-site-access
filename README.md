@@ -120,6 +120,18 @@ function my_rsa_trusted_headers( $trusted_headers = array() ) {
 
 If your proxy does not use static IP addresses, you can still utilize the `rsa_trusted_headers` filter to change which HTTP headers you want to trust.
 
+You can also use `rsa_custom_trusted_headers` filter hooks to allow request with custom headers.
+All custom headers should be present in request with unique value. You can change this value if compromised to protect your site.
+
+```php
+add_filter( 'rsa_custom_trusted_headers', 'my_rsa_custom_trusted_headers' );
+function my_rsa_custom_trusted_headers ( $headers ) {
+  $headers['x-gt-matrix'] = 'SomeValue1';
+  $headers['x-custom-header'] = 'SomeValue2';
+  
+  return $headers;
+}
+```
 ### I received a warning about page caching. What does it mean?
 
 Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
