@@ -206,11 +206,29 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		);
 		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
 
-		$_SERVER['x-custom-header2'] = '1234';
+		$_SERVER['x-custom-header2'] = '';
 		add_filter(
 			'rsa_custom_trusted_headers',
 			function ( $headers ) {
 				return array( 'x-custom-header2' => '1234' );
+			}
+		);
+		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
+
+		$_SERVER['x-custom-header3'] = '5678';
+		add_filter(
+			'rsa_custom_trusted_headers',
+			function ( $headers ) {
+				return array( 'x-custom-header3' => '1234' );
+			}
+		);
+		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
+
+		$_SERVER['x-custom-header4'] = '1234';
+		add_filter(
+			'rsa_custom_trusted_headers',
+			function ( $headers ) {
+				return array( 'x-custom-header4' => '1234' );
 			}
 		);
 		$this->assertTrue( Restricted_Site_Access::has_valid_custom_header() );
