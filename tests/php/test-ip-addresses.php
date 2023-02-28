@@ -197,13 +197,13 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 	public function test_rsa_custom_trusted_headers( $custom_header ) {
 		$this->assertNull(Restricted_Site_Access::has_valid_custom_header());
 
-		add_filter( 'rsa_custom_trusted_headers', function() {
+		add_filter( 'rsa_custom_trusted_headers', function($headers) {
 			return array( 'x-custom-header1' => '1234' );
 		});
 		$this->assertFalse(Restricted_Site_Access::has_valid_custom_header());
 
 		$SERVER['x-custom-header2'] = '1234';
-		add_filter( 'rsa_custom_trusted_headers', function() {
+		add_filter( 'rsa_custom_trusted_headers', function($headers) {
 			return array( 'x-custom-header2' => '1234' );
 		});
 		$this->assertTrue(Restricted_Site_Access::has_valid_custom_header());
