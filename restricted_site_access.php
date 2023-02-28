@@ -1920,7 +1920,7 @@ class Restricted_Site_Access {
 	 *
 	 * @since x.x.x
 	 */
-	public static function has_valid_custom_header(): ?bool{
+	public static function has_valid_custom_header(): ?bool {
 		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
 
 		if ( $allowed_custom_trusted_headers ) {
