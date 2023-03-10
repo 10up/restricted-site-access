@@ -120,8 +120,8 @@ function my_rsa_trusted_headers( $trusted_headers = array() ) {
 
 If your proxy does not use static IP addresses, you can still utilize the `rsa_trusted_headers` filter to change which HTTP headers you want to trust.
 
-You can also use `rsa_custom_trusted_headers` filter hooks to allow request with custom headers.
-All custom headers should be present in request with unique value. You can change this value if compromised to protect your site.
+You can also use the `rsa_custom_trusted_headers` filter to allow a request with custom headers.
+All custom headers should be present in the request and with unique values. You can change these values if compromised to protect your site.
 
 ```php
 add_filter( 'rsa_custom_trusted_headers', 'my_rsa_custom_trusted_headers' );
