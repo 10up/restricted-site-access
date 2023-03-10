@@ -122,20 +122,25 @@ class Restricted_Site_Access {
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
-		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request') );
+		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
 	}
 
 	/**
-	 * Add filter to override application_password_is_api_request filter. This has to be done since rest API isn't been loaded until we call restrict_access
+	 * Add filter to override application_password_is_api_request filter. This has to be done since rest API isn't been loaded until we call restrict_access.
 	 *
-	 * @param bool $original_value Original value passed by filter
+	 * @param bool $original_value Original value passed by filter.
 	 * @return bool
 	 */
 	public static function is_api_request( $original_value ) {
 
-		// We need to determine current URL via php because $wp->request is not set at this point
-		$current_request = ( isset($_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ? "https" : "http" ) . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+		$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ? 'https' : 'http' );
+		$request  = isset( $_SERVER['HTTP_HOST'] ) && sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) )
+		. isset( $_SERVER['REQUEST_URI'] ) && sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 
+		// We need to determine current URL via php because $wp->request is not set at this point.
+		$current_request = esc_url_raw( "$protocol://$request" );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! get_option( 'permalink_structure' ) && isset( $_GET['rest_route'] ) ) {
 			return true;
 		} elseif ( strpos( $current_request, home_url( '/wp-json' ) ) === 0 ) {
