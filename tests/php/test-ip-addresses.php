@@ -204,9 +204,9 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 				return array( 'x-custom-header1' => '1234' );
 			}
 		);
-		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
+		$this->assertNull( Restricted_Site_Access::has_valid_custom_header() );
 
-		$_SERVER['x-custom-header2'] = '';
+		$_SERVER['HTTP_X_CUSTOM_HEADER2'] = '';
 		add_filter(
 			'rsa_custom_trusted_headers',
 			function ( $headers ) {
@@ -215,7 +215,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		);
 		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
 
-		$_SERVER['x-custom-header3'] = '5678';
+		$_SERVER['HTTP_X_CUSTOM_HEADER3'] = '5678';
 		add_filter(
 			'rsa_custom_trusted_headers',
 			function ( $headers ) {
@@ -224,7 +224,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		);
 		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
 
-		$_SERVER['x-custom-header4'] = '1234';
+		$_SERVER['HTTP_X_CUSTOM_HEADER4'] = '1234';
 		add_filter(
 			'rsa_custom_trusted_headers',
 			function ( $headers ) {
