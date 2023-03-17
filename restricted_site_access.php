@@ -385,8 +385,12 @@ class Restricted_Site_Access {
 			return;
 		}
 
-		if ( self::has_valid_custom_header() === false ) {
-			return;
+		// If null, then custom header does not exist in $_SERVER, so we should check ip.
+		// If true, then custom header exists and is valid, so we can bypass ip check and show content.
+		// If false, then custom header exists but has invalid value, so we should check ip.
+		$verify_custom_header = self::has_valid_custom_header();
+		if ( true === $verify_custom_header ) {
+				return;
 		}
 
 		$allowed_ips = self::get_config_ips();
@@ -1910,6 +1914,8 @@ class Restricted_Site_Access {
 	 * All headers should be present in request and have the correct value.
 	 *
 	 * @since x.x.x
+	 *
+	 * @return bool|null Returns true if custom trusted headers are valid, false if not, null if no custom trusted headers are set.
 	 */
 	public static function has_valid_custom_header(): ?bool {
 		/**
@@ -1928,16 +1934,44 @@ class Restricted_Site_Access {
 		 *
 		 * @since x.x.x
 		 */
-		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
+		$allowed_custom_trusted_headers = (array) apply_filters( 'rsa_custom_trusted_headers', array() );
 
-		if ( is_array(  $allowed_custom_trusted_headers ) && ! empty(  $allowed_custom_trusted_headers ) ) {
-			// Check if the custom trusted headers are set and have the correct value.
+		// Remove empty values and sanitize header values.
+		$allowed_custom_trusted_headers = array_filter(array_map('sanitize_text_field', $allowed_custom_trusted_headers ) );
+		$allowed_custom_trusted_header_ids = array_keys( $allowed_custom_trusted_headers );
+		$allowed_custom_trusted_header_values = array_values( $allowed_custom_trusted_headers );
+
+		// Rename header ids to match $_SERVER format.
+		$modified_allowed_custom_trusted_header_ids = array_map(
+			static function($header_id){
+				$header_id = str_replace( '-', '_', $header_id );
+
+				// If header starts with HTTP_ return it as uppercase.
+				if( strpos( $header_id, 'HTTP_' ) === 0 ) {
+					return strtoupper($header_id);
+				}
+
+				// Otherwise, return it as HTTP_ + uppercase.
+  				return 'HTTP_' . strtoupper($header_id);
+			},
+			$allowed_custom_trusted_header_ids
+		);
+
+		$allowed_custom_trusted_headers = array_combine(
+			$modified_allowed_custom_trusted_header_ids,
+			$allowed_custom_trusted_header_values
+		);
+
+		if ( ! empty(  $allowed_custom_trusted_headers ) ) {
+			// Trusted custom header should exist in request.
+			if( ! array_intersect_key( $_SERVER, $allowed_custom_trusted_headers ) ) {
+				return null;
+			}
+
+			// Check if the custom trusted headers have the correct value.
 			// If not, return.
 			foreach ( $allowed_custom_trusted_headers as $header => $value ) {
-				if (
-					empty( $_SERVER[ $header ] ) ||
-					$value !== $_SERVER[ $header ]
-				) {
+				if ( $value !== $_SERVER[ $header ] ) {
 					return false;
 				}
 			}
