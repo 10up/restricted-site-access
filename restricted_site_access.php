@@ -1930,7 +1930,7 @@ class Restricted_Site_Access {
 		 */
 		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
 
-		if ( $allowed_custom_trusted_headers ) {
+		if ( is_array(  $allowed_custom_trusted_headers ) && ! empty(  $allowed_custom_trusted_headers ) ) {
 			// Check if the custom trusted headers are set and have the correct value.
 			// If not, return.
 			foreach ( $allowed_custom_trusted_headers as $header => $value ) {
