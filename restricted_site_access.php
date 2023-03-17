@@ -1908,19 +1908,26 @@ class Restricted_Site_Access {
 	 * Filters custom trusted headers.
 	 *
 	 * All headers should be present in request and have the correct value.
-	 * Example:
-	 * add_filter(
-	 *     'rsa_custom_trusted_headers',
-	 *     function( $headers ) {
-	 *         $headers['x-gt-matrix'] = 'SomeValue1';
-	 *         $headers['x-custom-header'] = 'SomeValue2';
-	 *         return $headers;
-	 *     }
-	 * )
 	 *
 	 * @since x.x.x
 	 */
 	public static function has_valid_custom_header(): ?bool {
+		/**
+		 * Filters custom trusted headers.
+		 *
+		 * This filter can be used to add custom trusted headers.
+		 * Example:
+		 * add_filter(
+		 *     'rsa_custom_trusted_headers',
+		 *     function( $headers ) {
+		 *         $headers['x-gt-matrix'] = 'SomeValue1';
+		 *         $headers['x-custom-header'] = 'SomeValue2';
+		 *         return $headers;
+		 *     }
+		 * )
+		 *
+		 * @since x.x.x
+		 */
 		$allowed_custom_trusted_headers = apply_filters( 'rsa_custom_trusted_headers', array() );
 
 		if ( $allowed_custom_trusted_headers ) {
