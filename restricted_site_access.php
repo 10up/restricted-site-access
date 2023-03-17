@@ -1937,22 +1937,22 @@ class Restricted_Site_Access {
 		$allowed_custom_trusted_headers = (array) apply_filters( 'rsa_custom_trusted_headers', array() );
 
 		// Remove empty values and sanitize header values.
-		$allowed_custom_trusted_headers = array_filter(array_map('sanitize_text_field', $allowed_custom_trusted_headers ) );
-		$allowed_custom_trusted_header_ids = array_keys( $allowed_custom_trusted_headers );
+		$allowed_custom_trusted_headers       = array_filter( array_map( 'sanitize_text_field', $allowed_custom_trusted_headers ) );
+		$allowed_custom_trusted_header_ids    = array_keys( $allowed_custom_trusted_headers );
 		$allowed_custom_trusted_header_values = array_values( $allowed_custom_trusted_headers );
 
 		// Rename header ids to match $_SERVER format.
 		$modified_allowed_custom_trusted_header_ids = array_map(
-			static function($header_id){
+			static function( $header_id ) {
 				$header_id = str_replace( '-', '_', $header_id );
 
 				// If header starts with HTTP_ return it as uppercase.
-				if( strpos( $header_id, 'HTTP_' ) === 0 ) {
-					return strtoupper($header_id);
+				if ( 0 === strpos( $header_id, 'HTTP_' ) ) {
+					return strtoupper( $header_id );
 				}
 
 				// Otherwise, return it as HTTP_ + uppercase.
-  				return 'HTTP_' . strtoupper($header_id);
+				return 'HTTP_' . strtoupper( $header_id );
 			},
 			$allowed_custom_trusted_header_ids
 		);
@@ -1962,9 +1962,9 @@ class Restricted_Site_Access {
 			$allowed_custom_trusted_header_values
 		);
 
-		if ( ! empty(  $allowed_custom_trusted_headers ) ) {
+		if ( ! empty( $allowed_custom_trusted_headers ) ) {
 			// Trusted custom header should exist in request.
-			if( ! array_intersect_key( $_SERVER, $allowed_custom_trusted_headers ) ) {
+			if ( ! array_intersect_key( $_SERVER, $allowed_custom_trusted_headers ) ) {
 				return null;
 			}
 
