@@ -1971,7 +1971,7 @@ class Restricted_Site_Access {
 			// Check if the custom trusted headers have the correct value.
 			// If not, return.
 			foreach ( $allowed_custom_trusted_headers as $header => $value ) {
-				if ( $value !== $_SERVER[ $header ] ) {
+				if ( $value !== $_SERVER[ $header ] ) { // phpcs:ignore
 					return false;
 				}
 			}
