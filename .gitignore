@@ -4,4 +4,4 @@ test-coverage
 .DS_Store
 screenshots
 assets/js/build
-
+.wp-env.override.json
