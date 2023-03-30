@@ -19,8 +19,7 @@ process.argv
     });
 
 if ( ! args.core && ! args.plugins ) {
-	/* eslint-disable */
-    return;
+    return; // eslint-disable-line
 }
 
 if ( 'latest' === args.core ) {
@@ -28,8 +27,7 @@ if ( 'latest' === args.core ) {
 }
 
 if( Object.keys(args).length === 0 ) {
-	/* eslint-disable */
-    return;
+    return; // eslint-disable-line
 }
 
 if ( args.plugins ) {
