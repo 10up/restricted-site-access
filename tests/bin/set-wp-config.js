@@ -18,31 +18,29 @@ process.argv
         }
     });
 
-(function(){
-	if ( ! args.core && ! args.plugins ) {
-		return;
-	}
+if ( ! args.core && ! args.plugins ) {
+    return;
+}
 
-	if ( 'latest' === args.core ) {
-		delete args.core;
-	}
+if ( 'latest' === args.core ) {
+    delete args.core;
+}
 
-	if( Object.keys(args).length === 0 ) {
-		return;
-	}
+if( Object.keys(args).length === 0 ) {
+    return;
+}
 
-	if ( args.plugins ) {
-		args.plugins = args.plugins.split(',');
-	}
+if ( args.plugins ) {
+    args.plugins = args.plugins.split(',');
+}
 
-	config = {
-		...config,
-		...args,
-	}
+config = {
+    ...config,
+    ...args,
+}
 
-	try {
-	fs.writeFileSync( path, JSON.stringify( config ) );
-	} catch ( err ) {
-		console.error( err );
-	}
-})();
+try {
+   fs.writeFileSync( path, JSON.stringify( config ) );
+} catch ( err ) {
+    console.error( err );
+}
