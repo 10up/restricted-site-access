@@ -27,6 +27,7 @@ jobs:
             files: |
               **/*.php
               **/*.js
+              **/*.json
               **/*.css
 
       - id: files-changed
