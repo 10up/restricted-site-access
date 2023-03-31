@@ -38,9 +38,8 @@ jobs:
   build: 
     uses: 10up/restricted-site-access/.github/workflows/build-release-zip.yml@update/238 # TODO: Update this to develop branch.
   cypress:
-    needs: build
     runs-on: ubuntu-latest
-    needs: check-diffs
+    needs: [check-diffs, build]
     if: needs.check-diffs.outputs.has_changed == 'yes'
     strategy:
       matrix:
