@@ -126,7 +126,12 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add filter to override application_password_is_api_request filter. This has to be done since rest API isn't been loaded until we call restrict_access.
+	 * Determine if this is a REST request.
+	 * 
+	 * Determine whether this is a REST API request based on the URL. As RSA redirects prior
+	 * to the `init` hook running, RSA needs to replace the API check in wp_authenticate_application_password().
+	 *
+	 * @since x.x.x
 	 *
 	 * @param bool $original_value Original value passed by filter.
 	 * @return bool
