@@ -141,12 +141,14 @@ class Restricted_Site_Access {
 			return $original_value;
 		}
 
-		$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ? 'https' : 'http' );
-		$request  = isset( $_SERVER['HTTP_HOST'] ) && sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) )
-		. isset( $_SERVER['REQUEST_URI'] ) && sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http';
+		$host     = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+		$path     = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 
 		// We need to determine current URL via php because $wp->request is not set at this point.
-		$current_request = esc_url_raw( "$protocol://$request" );
+		$current_request = esc_url_raw( "{$protocol}://{$host}{$path}" );
+		// Strip the query string.
+		$current_request = explode( '?', $current_request, 2 )[0];
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! get_option( 'permalink_structure' ) && isset( $_GET['rest_route'] ) ) {
