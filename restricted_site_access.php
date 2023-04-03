@@ -151,7 +151,10 @@ class Restricted_Site_Access {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! get_option( 'permalink_structure' ) && isset( $_GET['rest_route'] ) ) {
 			return true;
-		} elseif ( strpos( $current_request, home_url( '/wp-json' ) ) === 0 ) {
+		} elseif (
+			strpos( $current_request, home_url( '/wp-json/' ) ) === 0
+			|| home_url( '/wp-json' ) === $current_request
+		) {
 			return true;
 		}
 
