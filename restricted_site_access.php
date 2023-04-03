@@ -137,6 +137,9 @@ class Restricted_Site_Access {
 	 * @return bool
 	 */
 	public static function is_api_request( $original_value ) {
+		if ( did_action( 'init' ) ) {
+			return $original_value;
+		}
 
 		$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ? 'https' : 'http' );
 		$request  = isset( $_SERVER['HTTP_HOST'] ) && sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) )
