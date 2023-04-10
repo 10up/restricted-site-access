@@ -132,7 +132,7 @@ class Restricted_Site_Access {
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 
 		// Prevent WordPress from auto-resolving 404 URLs.
-		add_filter( 'do_redirect_guess_404_permalink', '__return_true' );
+		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
 	}
 
 	/**
