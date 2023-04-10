@@ -130,6 +130,7 @@ class Restricted_Site_Access {
 
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
+		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
 
 		// Prevent WordPress from auto-resolving 404 URLs.
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
@@ -140,6 +141,44 @@ class Restricted_Site_Access {
 	 */
 	public static function generate_nonce() {
 		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
+	}
+
+	/**
+	 * Determine if this is a REST request.
+	 *
+	 * Determine whether this is a REST API request based on the URL. As RSA redirects prior
+	 * to the `init` hook running, RSA needs to replace the API check in wp_authenticate_application_password().
+	 *
+	 * @since x.x.x
+	 *
+	 * @param bool $original_value Original value passed by filter.
+	 * @return bool
+	 */
+	public static function is_api_request( $original_value ) {
+		if ( did_action( 'init' ) ) {
+			return $original_value;
+		}
+
+		$protocol = ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http';
+		$host     = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+		$path     = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+
+		// We need to determine current URL via php because $wp->request is not set at this point.
+		$current_request = esc_url_raw( "{$protocol}://{$host}{$path}" );
+		// Strip the query string.
+		$current_request = explode( '?', $current_request, 2 )[0];
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! get_option( 'permalink_structure' ) && isset( $_GET['rest_route'] ) ) {
+			return true;
+		} elseif (
+			strpos( $current_request, home_url( '/wp-json/' ) ) === 0
+			|| home_url( '/wp-json' ) === $current_request
+		) {
+			return true;
+		}
+
+		return $original_value;
 	}
 
 	/**
