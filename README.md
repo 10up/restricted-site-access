@@ -16,7 +16,7 @@
   * [Is there a way to configure this with WP-CLI?](#is-there-a-way-to-configure-this-with-wp-cli)
   * [How can I programmatically define whitelisted IPs?](#how-can-i-programmatically-define-whitelisted-ips)
   * [Is there a constant to control my site restriction?](#is-there-a-constant-i-can-set-to-ensure-my-site-is-or-is-not-restricted)
-  * [Can I access website based on whitelist custom https headers?](#can-i-access-website-based-on-whitelist-custom-https-headers)
+  * [Can I provide access to my site based on custom HTTP headers?](#can-i-provide-access-to-my-site-based-on-custom-http-headers)
 * [Support](#support-level)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
@@ -198,12 +198,12 @@ Make sure you add it before the `/* That's all, stop editing! Happy blogging. */
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
-### Can I access website based on whitelist custom https headers?
-You can use the `restricted_site_access_is_restricted` filter hook to allow site access to whitelist custom headers.
-Whitelist custom header should be present in the request with unique value. You can whitelist more than one custom trusted header.
+### Can I provide access to my site based on custom HTTP headers?
+You can use the `restricted_site_access_is_restricted` filter hook to allow access based on custom headers.
+The custom header you want to allow should be present in the request with a unique value. You can allow more than one custom header.
 You can change these values if compromised to protect your site.
 
-Add custom trusted header in `$allowed_custom_trusted_headers` in code snippet and Place the following PHP code in the theme's functions.php file or in a simple plug-in:
+See below for an example code snippet you can utilize:
 
 ```php
 <?php
@@ -212,10 +212,10 @@ Add custom trusted header in `$allowed_custom_trusted_headers` in code snippet a
  *
  * IP restriction will be bypassed if the trusted custom header is present and has the correct value.
  */
-add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted ){
+add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted ) {
 	// Custom trusted headers; array key should be the header name and value should be the header value.
 	$allowed_custom_trusted_headers = array(
-		'HTTP_RSA_CUSTOM_HEADER' => 'value' // Replace value with the header value.
+		'HTTP_RSA_CUSTOM_HEADER' => 'value' // Replace header and value with your custom details.
 	);
 
 	// Ensure trusted headers exist in request.
