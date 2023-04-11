@@ -16,6 +16,7 @@
   * [Is there a way to configure this with WP-CLI?](#is-there-a-way-to-configure-this-with-wp-cli)
   * [How can I programmatically define whitelisted IPs?](#how-can-i-programmatically-define-whitelisted-ips)
   * [Is there a constant to control my site restriction?](#is-there-a-constant-i-can-set-to-ensure-my-site-is-or-is-not-restricted)
+  * [Can I access website based on whitelist custom https headers?](#can-i-access-website-based-on-whitelist-custom-https-headers)
 * [Support](#support-level)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
@@ -120,18 +121,6 @@ function my_rsa_trusted_headers( $trusted_headers = array() ) {
 
 If your proxy does not use static IP addresses, you can still utilize the `rsa_trusted_headers` filter to change which HTTP headers you want to trust.
 
-You can also use the `rsa_custom_trusted_headers` filter to allow a request with custom headers.
-All custom headers should be present in the request and with unique values. You can change these values if compromised to protect your site.
-
-```php
-add_filter( 'rsa_custom_trusted_headers', 'my_rsa_custom_trusted_headers' );
-function my_rsa_custom_trusted_headers ( $headers ) {
-  $headers['x-gt-matrix'] = 'SomeValue1';
-  $headers['x-custom-header'] = 'SomeValue2';
-  
-  return $headers;
-}
-```
 ### I received a warning about page caching. What does it mean?
 
 Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
@@ -208,6 +197,45 @@ define( 'RSA_FORBID_RESTRICTION', true );
 Make sure you add it before the `/* That's all, stop editing! Happy blogging. */` line.
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+
+### Can I access website based on whitelist custom https headers?
+You can use the `restricted_site_access_is_restricted` filter hook to allow site access to whitelist custom headers.
+Whitelist custom header should be present in the request with unique value. You can whitelist more than one custom trusted header.
+You can change these values if compromised to protect your site.
+
+Add custom trusted header in `$allowed_custom_trusted_headers` in code snippet and Place the following PHP code in the theme's functions.php file or in a simple plug-in:
+
+```php
+<?php
+/**
+ * Add custom trusted header validation.
+ *
+ * IP restriction will be bypassed if the trusted custom header is present and has the correct value.
+ */
+add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted ){
+	// Custom trusted headers; array key should be the header name and value should be the header value.
+	$allowed_custom_trusted_headers = array(
+		'HTTP_RSA_CUSTOM_HEADER' => 'value' // Replace value with the header value.
+	);
+
+	// Ensure trusted headers exist in request.
+	if ( ! array_intersect_key( $_SERVER, $allowed_custom_trusted_headers ) ) {
+		return $is_restricted;
+	}
+
+	// Ensure all the trusted headers have the correct value.
+	foreach ( $allowed_custom_trusted_headers as $header => $value ) {
+		if ( $value !== $_SERVER[ $header ] ) { // phpcs:ignore
+
+			// Return true to apply ip restriction.
+			return true;
+		}
+	}
+
+	// Return false to bypass ip restriction.
+	return false;
+} );
+```
 
 ## Support Level
 
