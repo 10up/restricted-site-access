@@ -190,50 +190,6 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		}
 	}
 
-	/**
-	 * Test custom trusted headers
-	 *
-	 * @since x.x.x
-	 */
-	public function test_rsa_custom_trusted_headers() {
-		$this->assertNull( Restricted_Site_Access::has_valid_custom_header() );
-
-		add_filter(
-			'rsa_custom_trusted_headers',
-			function ( $headers ) {
-				return array( 'x-custom-header1' => '1234' );
-			}
-		);
-		$this->assertNull( Restricted_Site_Access::has_valid_custom_header() );
-
-		$_SERVER['HTTP_X_CUSTOM_HEADER2'] = '';
-		add_filter(
-			'rsa_custom_trusted_headers',
-			function ( $headers ) {
-				return array( 'x-custom-header2' => '1234' );
-			}
-		);
-		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
-
-		$_SERVER['HTTP_X_CUSTOM_HEADER3'] = '5678';
-		add_filter(
-			'rsa_custom_trusted_headers',
-			function ( $headers ) {
-				return array( 'x-custom-header3' => '1234' );
-			}
-		);
-		$this->assertFalse( Restricted_Site_Access::has_valid_custom_header() );
-
-		$_SERVER['HTTP_X_CUSTOM_HEADER4'] = '1234';
-		add_filter(
-			'rsa_custom_trusted_headers',
-			function ( $headers ) {
-				return array( 'x-custom-header4' => '1234' );
-			}
-		);
-		$this->assertTrue( Restricted_Site_Access::has_valid_custom_header() );
-	}
-
 	public function trusted_headers_provider() {
 		/**
 		 * Data to use in our trusted header tests
