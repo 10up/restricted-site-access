@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.4.0] - TBD
+### Added
+- Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
+
+### Fixed
+- Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#236](https://github.com/10up/restricted-site-access/pull/236)).
+
+### Changed
+- Improve Github actions workflow (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#227](https://github.com/10up/restricted-site-access/pull/227)).
+
+### Security
+- Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#241](https://github.com/10up/restricted-site-access/pull/241)).
+- Bump `simple-git` from `3.15.0` to `3.16.0` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#243](https://github.com/10up/restricted-site-access/pull/243)).
+- Bump `webpack` from `5.74.0` to `5.76.1` (props [@Sidsector9](https://github.com/Sidsector9) via [#248](https://github.com/10up/restricted-site-access/pull/248)).
+
 ## [7.3.5] - 2022-12-14
 ### Added
 - Show an admin notice if our autoloader doesn't exist (props [@dkotter](https://github.com/dkotter), [@pablojmarti](https://github.com/pablojmarti), [@shahzaib10up](https://github.com/shahzaib10up), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#231](https://github.com/10up/restricted-site-access/pull/231)).
@@ -276,6 +291,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.4.0]: https://github.com/10up/restricted-site-access/compare/7.3.5...7.4.0
 [7.3.5]: https://github.com/10up/restricted-site-access/compare/7.3.4...7.3.5
 [7.3.4]: https://github.com/10up/restricted-site-access/compare/7.3.3...7.3.4
 [7.3.3]: https://github.com/10up/restricted-site-access/compare/7.3.2...7.3.3

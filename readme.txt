@@ -4,7 +4,7 @@ Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
 Tested up to:      6.1
-Stable tag:        7.3.5
+Stable tag:        7.4.0
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -197,6 +197,14 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.4.0 - TBD =
+* **Added:** Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
+* **Fixed:** Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#236](https://github.com/10up/restricted-site-access/pull/236)).
+* **Changed:** Improve Github actions workflow (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#227](https://github.com/10up/restricted-site-access/pull/227)).
+* **Security:** Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#241](https://github.com/10up/restricted-site-access/pull/241)).
+* **Security:** Bump `simple-git` from `3.15.0` to `3.16.0` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#243](https://github.com/10up/restricted-site-access/pull/243)).
+* **Security:** Bump `webpack` from `5.74.0` to `5.76.1` (props [@Sidsector9](https://github.com/Sidsector9) via [#248](https://github.com/10up/restricted-site-access/pull/248)).
 
 = 7.3.5 - 2022-12-14 =
 * **Added:** Show an admin notice if our autoloader doesn't exist (props [@dkotter](https://github.com/dkotter), [@pablojmarti](https://github.com/pablojmarti), [@shahzaib10up](https://github.com/shahzaib10up), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#231](https://github.com/10up/restricted-site-access/pull/231)).
