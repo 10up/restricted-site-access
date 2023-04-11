@@ -351,7 +351,7 @@ add_action(
 				},
 			)
 		);
-// ---
+
 		register_rest_route(
 			'rsa/v1',
 			'seed/restrict-users/case-1-to-3',
@@ -367,7 +367,6 @@ add_action(
 					update_site_option( 'rsa_mode', $mock_rsa_mode );
 					update_site_option( 'blog_public', $mock_blog_public );
 					update_site_option( 'rsa_options', $mock_rsa_options );
-					return 'lol';
 					return true;
 				},
 			)
