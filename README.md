@@ -200,8 +200,8 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 ### Can I provide access to my site based on custom HTTP headers?
 You can use the `restricted_site_access_is_restricted` filter hook to allow access based on custom headers.
-The custom header you want to allow should be present in the request with a unique value. You can allow more than one custom header.
-You can change these values if compromised to protect your site.
+The custom header you want to allow should be present in the request and should contain a unique value. If needed, you can allow more than one header.
+If these header/value pairs are ever compromised, you should change the accepted values in order to protect your site.
 
 See below for an example code snippet you can utilize:
 
