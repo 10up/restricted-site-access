@@ -16,6 +16,7 @@
   * [Is there a way to configure this with WP-CLI?](#is-there-a-way-to-configure-this-with-wp-cli)
   * [How can I programmatically define whitelisted IPs?](#how-can-i-programmatically-define-whitelisted-ips)
   * [Is there a constant to control my site restriction?](#is-there-a-constant-i-can-set-to-ensure-my-site-is-or-is-not-restricted)
+  * [Can I provide access to my site based on custom HTTP headers?](#can-i-provide-access-to-my-site-based-on-custom-http-headers)
 * [Support](#support-level)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
@@ -196,6 +197,45 @@ define( 'RSA_FORBID_RESTRICTION', true );
 Make sure you add it before the `/* That's all, stop editing! Happy blogging. */` line.
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
+
+### Can I provide access to my site based on custom HTTP headers?
+You can use the `restricted_site_access_is_restricted` filter hook to allow access based on custom headers.
+The custom header you want to allow should be present in the request and should contain a unique value. If needed, you can allow more than one header.
+If these header/value pairs are ever compromised, you should change the accepted values in order to protect your site.
+
+See below for an example code snippet you can utilize:
+
+```php
+<?php
+/**
+ * Add custom trusted header validation.
+ *
+ * IP restriction will be bypassed if the trusted custom header is present and has the correct value.
+ */
+add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted ) {
+	// Custom trusted headers; array key should be the header name and value should be the header value.
+	$allowed_custom_trusted_headers = array(
+		'HTTP_RSA_CUSTOM_HEADER' => 'value' // Replace header and value with your custom details.
+	);
+
+	// Ensure trusted headers exist in request.
+	if ( ! array_intersect_key( $_SERVER, $allowed_custom_trusted_headers ) ) {
+		return $is_restricted;
+	}
+
+	// Ensure all the trusted headers have the correct value.
+	foreach ( $allowed_custom_trusted_headers as $header => $value ) {
+		if ( $value !== $_SERVER[ $header ] ) { // phpcs:ignore
+
+			// Return true to apply ip restriction.
+			return true;
+		}
+	}
+
+	// Return false to bypass ip restriction.
+	return false;
+} );
+```
 
 ## Support Level
 
