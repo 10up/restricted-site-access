@@ -10,17 +10,18 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
 
 ### Changed
-- [Support Level](https://github.com/10up/restricted-site-access) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul, [@Sidsector9](https://github.com/Sidsector9)) via [#244](https://github.com/10up/Ad-Refresh-Control/pull/244)).
+- [Support Level](https://github.com/10up/restricted-site-access) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#244](https://github.com/10up/Ad-Refresh-Control/pull/244)).
 
 ### Fixed
-- Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#236](https://github.com/10up/restricted-site-access/pull/236)).
+- Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9) via [#236](https://github.com/10up/restricted-site-access/pull/236)).
 
 ### Changed
-- Improve Github actions workflow (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#227](https://github.com/10up/restricted-site-access/pull/227)).
+- Improve Github actions workflow (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9) via [#227](https://github.com/10up/restricted-site-access/pull/227)).
 
 ### Security
-- Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#241](https://github.com/10up/restricted-site-access/pull/241)).
-- Bump `simple-git` from `3.15.0` to `3.16.0` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#243](https://github.com/10up/restricted-site-access/pull/243)).
+- Run E2E tests on the final ZIP build (props [@iamdharmesh](https://github.com/iamdharmesh), [@jayedul](https://github.com/jayedul) via [#249](https://github.com/10up/restricted-site-access/pull/249)).
+- Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#241](https://github.com/10up/restricted-site-access/pull/241)).
+- Bump `simple-git` from `3.15.0` to `3.16.0` (props [@Sidsector9](https://github.com/Sidsector9) via [#243](https://github.com/10up/restricted-site-access/pull/243)).
 - Bump `webpack` from `5.74.0` to `5.76.1` (props [@Sidsector9](https://github.com/Sidsector9) via [#248](https://github.com/10up/restricted-site-access/pull/248)).
 
 ## [7.3.5] - 2022-12-14
