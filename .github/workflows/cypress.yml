@@ -45,8 +45,8 @@ jobs:
     strategy:
       matrix:
         core:
-          - {name: 'WP 6.1-RC4', version: 'https://wordpress.org/wordpress-6.1-RC5.zip'}
           - {name: 'WP latest', version: 'latest'}
+          - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
           - {name: 'WP minimum', version: 'WordPress/WordPress#5.7'}
 
     steps:
