@@ -29,6 +29,7 @@ jobs:
               **/*.js
               **/*.json
               **/*.css
+              readme.txt
 
       - id: files-changed
         run: |
