@@ -36,9 +36,11 @@ jobs:
             echo "RSA_FILES_CHANGED=yes" >> $GITHUB_OUTPUT
           fi
 
+  build: 
+    uses: 10up/restricted-site-access/.github/workflows/build-release-zip.yml@develop
   cypress:
     runs-on: ubuntu-latest
-    needs: check-diffs
+    needs: [check-diffs, build]
     if: needs.check-diffs.outputs.has_changed == 'yes'
     strategy:
       matrix:
@@ -61,15 +63,29 @@ jobs:
     - name: Install PHP dependencies
       run: composer i
 
-    - name: Install JS dependencies
-      run: npm i
-
-    - name: Build
-      run: npm run build
-
-    - name: Set the core version
-      run: ./tests/bin/set-core-version.js ${{ matrix.core.version }}
-
+    - name: Download build zip
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ github.event.repository.name }}
+        path: ${{ github.event.repository.name }}
+    - name: Display structure of downloaded files
+      run: ls -R
+      working-directory: ${{ github.event.repository.name }}
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: |
+          node_modules
+          ~/.cache
+          ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      run: npm install
+    - name: Set the core version and plugins config 
+      run: ./tests/bin/set-wp-config.js --core=${{ matrix.core.version }} --plugins=./${{ github.event.repository.name }},./tests/rsa-seeder
     - name: Set up WP environment
       run: npm run env:start
 
