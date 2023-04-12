@@ -201,6 +201,7 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 = 7.4.0 - TBD =
 * **Added:** Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
 * **Added:** Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
+* **Changed:** * **Changed:** [Support Level](https://github.com/10up/restricted-site-access) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul, [@Sidsector9](https://github.com/Sidsector9)) via [#244](https://github.com/10up/Ad-Refresh-Control/pull/244)).
 * **Fixed:** Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#236](https://github.com/10up/restricted-site-access/pull/236)).
 * **Changed:** Improve Github actions workflow (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#227](https://github.com/10up/restricted-site-access/pull/227)).
 * **Security:** Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9)) via ([#241](https://github.com/10up/restricted-site-access/pull/241)).
