@@ -19,7 +19,7 @@
     "cypress": "^10.3.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^8.8.0",
-    "simple-git": "3.15.0"
+    "simple-git": "3.16.0"
   },
   "scripts": {
     "lint:js": "npx eslint assets/js/src",
