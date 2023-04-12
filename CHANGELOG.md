@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [7.4.0] - TBD
 ### Added
 - Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
+- Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
 
 ### Fixed
 - Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9)) via ([#236](https://github.com/10up/restricted-site-access/pull/236)).
