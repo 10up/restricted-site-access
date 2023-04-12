@@ -5,3 +5,5 @@ test-coverage
 screenshots
 assets/js/build
 .wp-env.override.json
+.idea
+
