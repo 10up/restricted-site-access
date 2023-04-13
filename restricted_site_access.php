@@ -403,6 +403,33 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Returns the request URI of the current page.
+	 *
+	 * @param \WP $wp The WP instance object.
+	 *
+	 * @return boolean
+	 */
+	public static function get_request_uri( $wp ) {
+		if ( ! $wp instanceof \WP ) {
+			return '';
+		}
+
+		if ( $wp->request ) {
+			return $wp->request;
+		}
+
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$request_uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_URL );
+
+			if ( false !== $request_uri ) {
+				return trim( $request_uri, '/' );
+			}
+		}
+
+		return '';
+	}
+
+	/**
 	 * Redirects restricted requests.
 	 *
 	 * @param \WP $wp WordPress request.
@@ -412,7 +439,7 @@ class Restricted_Site_Access {
 		$results = self::restrict_access_check( $wp );
 
 		// We do this because ` $wp->request` is defined for a multisite setup but not for a single site.
-		$request_uri = $wp->request ? $wp->request : trim( $_SERVER['REQUEST_URI'], '/' );
+		$request_uri = self::get_request_uri( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
 			/**
@@ -464,7 +491,7 @@ class Restricted_Site_Access {
 		$is_restricted     = self::is_restricted();
 
 		// We do this because ` $wp->request` is defined for a multisite setup but not for a single site.
-		$request_uri = $wp->request ? $wp->request : trim( $_SERVER['REQUEST_URI'], '/' );
+		$request_uri = self::get_request_uri( $wp );
 
 		// Check to see if we're activating new user.
 		if ( 'wp-activate.php' === $request_uri ) {
