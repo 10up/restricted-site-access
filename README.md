@@ -2,7 +2,7 @@
 
 > Limit access to visitors who are logged in or allowed by IP addresses. Includes many options for handling blocked visitors.
 
-[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![E2E Tests](https://github.com/10up/restricted-site-access/actions/workflows/cypress.yml/badge.svg)](https://github.com/10up/restricted-site-access/actions/workflows/cypress.yml) [![PHPUnit](https://github.com/10up/restricted-site-access/actions/workflows/phpunit.yml/badge.svg)](https://github.com/10up/restricted-site-access/actions/workflows/phpunit.yml) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/restricted-site-access?label=WordPress) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-stable-blue.svg)](#support-level) [![E2E Tests](https://github.com/10up/restricted-site-access/actions/workflows/cypress.yml/badge.svg)](https://github.com/10up/restricted-site-access/actions/workflows/cypress.yml) [![PHPUnit](https://github.com/10up/restricted-site-access/actions/workflows/phpunit.yml/badge.svg)](https://github.com/10up/restricted-site-access/actions/workflows/phpunit.yml) [![Release Version](https://img.shields.io/github/release/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/releases/latest) ![WordPress tested up to version](https://img.shields.io/wordpress/plugin/tested/restricted-site-access?label=WordPress) [![GPLv2 License](https://img.shields.io/github/license/10up/restricted-site-access.svg)](https://github.com/10up/restricted-site-access/blob/develop/LICENSE.md)
 
 ## Table of Contents
 * [Features](#features)
@@ -16,6 +16,7 @@
   * [Is there a way to configure this with WP-CLI?](#is-there-a-way-to-configure-this-with-wp-cli)
   * [How can I programmatically define whitelisted IPs?](#how-can-i-programmatically-define-whitelisted-ips)
   * [Is there a constant to control my site restriction?](#is-there-a-constant-i-can-set-to-ensure-my-site-is-or-is-not-restricted)
+  * [Can I provide access to my site based on custom HTTP headers?](#can-i-provide-access-to-my-site-based-on-custom-http-headers)
 * [Support](#support-level)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
@@ -197,9 +198,48 @@ Make sure you add it before the `/* That's all, stop editing! Happy blogging. */
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
+### Can I provide access to my site based on custom HTTP headers?
+You can use the `restricted_site_access_is_restricted` filter hook to allow access based on custom headers.
+The custom header you want to allow should be present in the request and should contain a unique value. If needed, you can allow more than one header.
+If these header/value pairs are ever compromised, you should change the accepted values in order to protect your site.
+
+See below for an example code snippet you can utilize:
+
+```php
+<?php
+/**
+ * Add custom trusted header validation.
+ *
+ * IP restriction will be bypassed if the trusted custom header is present and has the correct value.
+ */
+add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted ) {
+	// Custom trusted headers; array key should be the header name and value should be the header value.
+	$allowed_custom_trusted_headers = array(
+		'HTTP_RSA_CUSTOM_HEADER' => 'value' // Replace header and value with your custom details.
+	);
+
+	// Ensure trusted headers exist in request.
+	if ( ! array_intersect_key( $_SERVER, $allowed_custom_trusted_headers ) ) {
+		return $is_restricted;
+	}
+
+	// Ensure all the trusted headers have the correct value.
+	foreach ( $allowed_custom_trusted_headers as $header => $value ) {
+		if ( $value !== $_SERVER[ $header ] ) { // phpcs:ignore
+
+			// Return true to apply ip restriction.
+			return true;
+		}
+	}
+
+	// Return false to bypass ip restriction.
+	return false;
+} );
+```
+
 ## Support Level
 
-**Active:** 10up is actively working on this, and we expect to continue work for the foreseeable future including keeping tested up to the most recent version of WordPress.  Bug reports, feature requests, questions, and pull requests are welcome.
+**Stable:** 10up is not planning to develop any new features for this, but will still respond to bug reports and security concerns. We welcome PRs, but any that include new features should be small and easy to integrate and should not include breaking changes. We otherwise intend to keep this tested up to the most recent version of WordPress.
 
 ## Changelog
 
