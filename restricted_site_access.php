@@ -76,6 +76,13 @@ class Restricted_Site_Access {
 	private static $fields;
 
 	/**
+	 * The redirection nonce.
+	 *
+	 * @var string
+	 */
+	private static $redirection_nonce;
+
+	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
 	 * @return null|Restricted_Site_Access
@@ -110,6 +117,7 @@ class Restricted_Site_Access {
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
+		add_action( 'init', array( __CLASS__, 'generate_nonce' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
@@ -123,6 +131,16 @@ class Restricted_Site_Access {
 		add_filter( 'pre_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
+
+		// Prevent WordPress from auto-resolving 404 URLs.
+		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
+	}
+
+	/**
+	 * Generates a nonce on init.
+	 */
+	public static function generate_nonce() {
+		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
 	}
 
 	/**
@@ -367,14 +385,61 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Generates a cookie that is used to prevent redirection loops.
+	 *
+	 * @param string $url The current URL.
+	 * @return string
+	 */
+	private static function generate_redirection_cookie( $url ) {
+		$cookie_value = sprintf(
+			'rsa_redirect:%1$s%2$s',
+			trailingslashit( $url ),
+			self::$redirection_nonce
+		);
+
+		$hash = md5( $cookie_value );
+
+		return $hash;
+	}
+
+	/**
+	 * Returns the request URI of the current page.
+	 *
+	 * @param \WP $wp The WP instance object.
+	 *
+	 * @return boolean
+	 */
+	public static function get_request_uri( $wp ) {
+		if ( ! $wp instanceof \WP ) {
+			return '';
+		}
+
+		if ( $wp->request ) {
+			return $wp->request;
+		}
+
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$request_uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_URL );
+
+			if ( false !== $request_uri ) {
+				return trim( $request_uri, '/' );
+			}
+		}
+
+		return '';
+	}
+
+	/**
 	 * Redirects restricted requests.
 	 *
 	 * @param \WP $wp WordPress request.
 	 * @codeCoverageIgnore
 	 */
 	public static function restrict_access( $wp ) {
-
 		$results = self::restrict_access_check( $wp );
+
+		// We do this because ` $wp->request` is defined for a multisite setup but not for a single site.
+		$request_uri = self::get_request_uri( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
 			/**
@@ -383,11 +448,22 @@ class Restricted_Site_Access {
 			 */
 			if ( 2 === self::$rsa_options['approach'] ) {
 				$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
-				$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $wp->request ) ) );
-				$current_url_path            = trailingslashit( wp_parse_url( home_url( $wp->request ), PHP_URL_PATH ) );
+				$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $request_uri ) ) );
+				$current_url_path            = trailingslashit( wp_parse_url( home_url( $request_uri ), PHP_URL_PATH ) );
 
 				if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
 					return;
+				}
+
+				$redirection_url_host = trailingslashit( wp_parse_url( $results['url'], PHP_URL_HOST ) );
+				$current_url_host     = trailingslashit( wp_parse_url( home_url( $request_uri ), PHP_URL_HOST ) );
+				$cookie_path          = wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+
+				if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {
+					if ( ! filter_var( $results['url'], FILTER_VALIDATE_URL ) ) {
+						$results['url'] = home_url( $results['url'] );
+					}
+					setcookie( 'wp-rsa_redirect', self::generate_redirection_cookie( $results['url'] ), 0, $cookie_path );
 				}
 			}
 
@@ -414,8 +490,11 @@ class Restricted_Site_Access {
 		self::$rsa_options = self::get_options();
 		$is_restricted     = self::is_restricted();
 
+		// We do this because ` $wp->request` is defined for a multisite setup but not for a single site.
+		$request_uri = self::get_request_uri( $wp );
+
 		// Check to see if we're activating new user.
-		if ( 'wp-activate.php' === $wp->request ) {
+		if ( 'wp-activate.php' === $request_uri ) {
 			return;
 		}
 
@@ -514,19 +593,21 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						$redirect_url_domain = wp_parse_url( self::$rsa_options['redirect_url'], PHP_URL_HOST );
-						$current_url_domain  = wp_parse_url( home_url( $wp->request ), PHP_URL_HOST );
-
 						/**
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						if ( ! empty( $redirect_url_domain ) && $redirect_url_domain !== $current_url_domain ) {
+						// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $request_uri ) ) === $_COOKIE['wp-rsa_redirect'] ) {
+							self::$rsa_options['redirect_url'] = home_url( $request_uri );
+						} else {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 						}
 					}
+
 					break;
 				}
+
 				// No break, fall thru to default.
 			default:
 				self::validate_blog_access();

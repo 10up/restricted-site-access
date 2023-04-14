@@ -25,4 +25,8 @@
 	<logging>
 		<log type="coverage-php" target="test-coverage/coverage.serialized"/>
 	</logging>
+	<php>
+		<ini name="session.use_cookies" value="0" />
+		<ini name="session.cache_limiter" value="" />
+	</php>
 </phpunit>
