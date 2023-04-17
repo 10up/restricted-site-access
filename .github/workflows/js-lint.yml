@@ -29,6 +29,7 @@ jobs:
       with:
         files: |
           assets/js/src/*.js
+          **/*.json
 
     - name: Install dependencies
       run: npm install
