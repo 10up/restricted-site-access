@@ -23,21 +23,8 @@ jobs:
       with:
         node-version-file: '.nvmrc'
 
-    - name: Get updated JS files
-      id: changed-files
-      uses: tj-actions/changed-files@v32
-      with:
-        files: |
-          assets/js/src/*.js
-          **/*.json
-
     - name: Install dependencies
       run: npm install
 
     - name: Run JS linting
-      run: |
-        if [[ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]]; then
-          npx eslint ${{ steps.changed-files.outputs.all_changed_files }}
-        elif [[ "${{ github.event_name }}" == "push" ]]; then
-          npm run lint:js
-        fi
+      run: npm run lint:js
