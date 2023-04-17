@@ -3,8 +3,8 @@ Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomno
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
-Tested up to:      6.1
-Stable tag:        7.3.5
+Tested up to:      6.2
+Stable tag:        7.4.0
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -198,6 +198,21 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 == Changelog ==
 
+= 7.4.0 - TBD =
+* **Added:** Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
+* **Added:** Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
+* **Changed:** [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul, [@Sidsector9](https://github.com/Sidsector9)) via [#244](https://github.com/10up/Ad-Refresh-Control/pull/244)).
+* **Changed:** Bump WordPress "tested up to" version 6.2 (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#251](https://github.com/10up/restricted-site-access/pull/251))
+* **Changed:** Improve Github actions workflow (props [@Sidsector9](https://github.com/Sidsector9), [@dkotter](https://github.com/dkotter) via [#227](https://github.com/10up/restricted-site-access/pull/227), [#253](https://github.com/10up/restricted-site-access/pull/253)).
+* **Fixed:** Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9) via [#236](https://github.com/10up/restricted-site-access/pull/236)).
+* **Fixed:** Issue that caused redirect loop (props [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic), [@peterwilsoncc](https://github.com/peterwilsoncc)) via [#221](https://github.com/10up/restricted-site-access/issues/221).
+* **Security:** Run E2E tests on the final ZIP build (props [@iamdharmesh](https://github.com/iamdharmesh), [@jayedul](https://github.com/jayedul) via [#249](https://github.com/10up/restricted-site-access/pull/249)).
+* **Security:** Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#241](https://github.com/10up/restricted-site-access/pull/241)).
+* **Security:** Bump `simple-git` from `3.15.0` to `3.16.0` (props [@Sidsector9](https://github.com/Sidsector9) via [#243](https://github.com/10up/restricted-site-access/pull/243)).
+* **Security:** Bump `http-cache-semantics` from 4.1.0 to 4.1.1 (props [@Sidsector9](https://github.com/Sidsector9) via [#245](https://github.com/10up/restricted-site-access/pull/245)).
+* **Security:** Bump `@sideway/formula` from 3.0.0 to 3.0.1 (props [@Sidsector9](https://github.com/Sidsector9) via [#246](https://github.com/10up/restricted-site-access/pull/246)).
+* **Security:** Bump `webpack` from `5.74.0` to `5.76.1` (props [@Sidsector9](https://github.com/Sidsector9) via [#248](https://github.com/10up/restricted-site-access/pull/248)).
+
 = 7.3.5 - 2022-12-14 =
 * **Added:** Show an admin notice if our autoloader doesn't exist (props [@dkotter](https://github.com/dkotter), [@pablojmarti](https://github.com/pablojmarti), [@shahzaib10up](https://github.com/shahzaib10up), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#231](https://github.com/10up/restricted-site-access/pull/231)).
 * **Fixed:** Ensure we load our autoloader from the root of our plugin directory (props [@dkotter](https://github.com/dkotter), [@pablojmarti](https://github.com/pablojmarti), [@shahzaib10up](https://github.com/shahzaib10up), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#231](https://github.com/10up/restricted-site-access/pull/231)).
@@ -387,6 +402,9 @@ __Note: There is currently an edge case bug affecting IP whitelisting. This bug 
 * **Added:** Initial public release.
 
 == Upgrade Notice ==
+
+= 7.4.0 =
+Changes the [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable`.
 
 = 7.3.2 =
 Drops support for versions of WordPress prior to 5.7.

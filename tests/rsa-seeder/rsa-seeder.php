@@ -21,6 +21,21 @@ function my_rsa_feed_override( $is_restricted, $wp ) {
 		'wp-json/rsa/v1/seed/restrict-users/redirect-to-web-address/with-302',
 		'wp-json/rsa/v1/seed/restrict-users/redirect-to-web-address/with-307',
 		'wp-json/rsa/v1/seed/restrict-users/show-simple-message',
+		'wp-json/rsa/v1/seed/restrict-users/redirect-to-external-url',
+		'wp-json/rsa/v1/seed/restrict-users/redirect-to-external-url-with-path',
+		'wp-json/rsa/v1/seed/restrict-users/redirect-to-external-url-to-new-path',
+		'wp-json/rsa/v1/seed/restrict-users/redirect-to-external-with-path-to-aurl-to-new-path',
+		'wp-json/rsa/v1/seed/restrict-users/case-1-to-3',
+		'wp-json/rsa/v1/seed/restrict-users/case-4-to-6',
+		'wp-json/rsa/v1/seed/restrict-users/case-7-to-9',
+		'wp-json/rsa/v1/seed/restrict-users/case-10-to-12',
+		'wp-json/rsa/v1/seed/restrict-users/case-13-to-15',
+		'wp-json/rsa/v1/seed/restrict-users/case-16-to-19',
+		'wp-json/rsa/v1/seed/restrict-users/case-20-to-22',
+		'wp-json/rsa/v1/seed/restrict-users/case-23-to-25',
+		'wp-json/rsa/v1/seed/restrict-users/case-26-to-28',
+		'wp-json/rsa/v1/seed/restrict-users/case-29-to-31',
+		'wp-json/rsa/v1/seed/restrict-users/case-32-to-34',
 	);
 
 	if ( in_array( $wp->request, $unrestrcited_routes, true ) ) {
@@ -245,6 +260,406 @@ add_action(
 					$mock_rsa_options['allowed'] = array(
 						'172.13.24.5',
 					);
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-external-url',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'https://www.google.com/';
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-external-url-with-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'https://www.google.com/main';
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-external-url-to-new-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'https://www.google.com/';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-external-with-path-to-aurl-to-new-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'https://www.google.com/cool';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-1-to-3',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'http://localhost:8889/';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-4-to-6',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'http://localhost:8889/one';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-7-to-9',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'http://localhost:8889/blog/category/now';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					wp_insert_term( 'Now', 'category' );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-10-to-12',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-13-to-15',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/one';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-16-to-19',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/blog/category/now';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					wp_insert_term( 'Now', 'category' );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-20-to-22',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'http://localhost:8889/';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-23-to-25',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'http://localhost:8889/one';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-26-to-28',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/blog/category/now';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-29-to-31',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/case-32-to-34',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/one';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-internal-url-with-path-to-a-new-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = 'http://localhost:8889/page-to-redirect/';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/page-to-redirect';
+					$mock_rsa_options['redirect_path'] = 0;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-path-and-redirect-to-same-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/page-to-redirect';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
+
+					update_site_option( 'rsa_mode', $mock_rsa_mode );
+					update_site_option( 'blog_public', $mock_blog_public );
+					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/restrict-users/redirect-to-path-to-a-new-path',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $mock_rsa_mode, $mock_blog_public, $mock_rsa_options ) {
+					$mock_rsa_options['approach'] = 2;
+					$mock_rsa_options['head_code'] = 307;
+					$mock_rsa_options['redirect_url'] = '/page-to-redirect';
+					$mock_rsa_options['redirect_path'] = 1;
+					$mock_rsa_options['allowed'] = array();
 
 					update_site_option( 'rsa_mode', $mock_rsa_mode );
 					update_site_option( 'blog_public', $mock_blog_public );
