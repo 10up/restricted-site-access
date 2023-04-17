@@ -12,6 +12,7 @@
 .eslintrc.js
 .gitattributes
 .gitignore
+.nvmrc
 .wp-env.json
 CHANGELOG.md
 CODE_OF_CONDUCT.md

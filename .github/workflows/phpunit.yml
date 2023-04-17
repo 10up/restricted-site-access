@@ -53,9 +53,9 @@ jobs:
       run: composer install
 
     - name: install node v16
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version-file: '.nvmrc'
 
     - name: Install dependencies
       run: npm i && npm run build
