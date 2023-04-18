@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Fixed
 - Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9) via [#236](https://github.com/10up/restricted-site-access/pull/236)).
-- Issue that caused redirect loop (props [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic), [@peterwilsoncc](https://github.com/peterwilsoncc)) via [#221](https://github.com/10up/restricted-site-access/issues/221).
+- Issue that caused redirect loop (props [@mikegibbons4](https://wordpress.org/support/users/mikegibbons4), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic), [@peterwilsoncc](https://github.com/peterwilsoncc)) via [#221](https://github.com/10up/restricted-site-access/issues/221).
 
 ### Security
 - Run E2E tests on the final ZIP build (props [@iamdharmesh](https://github.com/iamdharmesh), [@jayedul](https://github.com/jayedul) via [#249](https://github.com/10up/restricted-site-access/pull/249)).
