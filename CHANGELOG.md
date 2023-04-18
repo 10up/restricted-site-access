@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
 
 ### Changed
-- [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#244](https://github.com/10up/Ad-Refresh-Control/pull/244)).
+- [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#244](https://github.com/10up/restricted-site-access/pull/244)).
 - Bump WordPress "tested up to" version 6.2 (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [251](https://github.com/10up/restricted-site-access/pull/251)).
 - Improve Github actions workflow (props [@Sidsector9](https://github.com/Sidsector9), [@dkotter](https://github.com/dkotter) via [#227](https://github.com/10up/restricted-site-access/pull/227), [#253](https://github.com/10up/restricted-site-access/pull/253)).
 

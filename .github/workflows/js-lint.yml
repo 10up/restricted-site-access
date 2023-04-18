@@ -19,24 +19,12 @@ jobs:
         fetch-depth: 0
 
     - name: install node v16
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
-        node-version: 16
-
-    - name: Get updated JS files
-      id: changed-files
-      uses: tj-actions/changed-files@v32
-      with:
-        files: |
-          assets/js/src/*.js
+        node-version-file: '.nvmrc'
 
     - name: Install dependencies
       run: npm install
 
     - name: Run JS linting
-      run: |
-        if [[ "${{ steps.changed-files.outputs.any_changed }}" == 'true' && "${{ github.event_name }}" == "pull_request" ]]; then
-          npx eslint ${{ steps.changed-files.outputs.all_changed_files }}
-        elif [[ "${{ github.event_name }}" == "push" ]]; then
-          npm run lint:js
-        fi
+      run: npm run lint:js
