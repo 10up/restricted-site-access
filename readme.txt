@@ -198,7 +198,7 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 
 == Changelog ==
 
-= 7.4.0 - TBD =
+= 7.4.0 - 2023-04-18 =
 * **Added:** Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
 * **Added:** Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
 * **Changed:** [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul, [@Sidsector9](https://github.com/Sidsector9)) via [#244](https://github.com/10up/restricted-site-access/pull/244)).
