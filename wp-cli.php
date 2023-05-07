@@ -215,7 +215,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			case 'redirect':
 				$success_msg = sprintf(
 					/* translators: %s: Context: "Site" or "Network". %s: Redirect URL. */
-					__( '%%s redirecting visitors to "%s"', 'restricted-site-access' ),
+					__( '%s redirecting visitors to "%s"', 'restricted-site-access' ),
 					$updated_options['redirect_url']
 				);
 				break;
@@ -226,7 +226,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			case 'page':
 				$success_msg = sprintf(
 					/* translators: %s: "Site" or "Network". %s: Page title. */
-					__( '%%s showing visitors page "%s"', 'restricted-site-access' ),
+					__( '%s showing visitors page "%s"', 'restricted-site-access' ),
 					get_the_title( $page )
 				);
 				break;
