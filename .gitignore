@@ -7,3 +7,6 @@ assets/js/build
 .wp-env.override.json
 .idea
 
+tests/cypress/screenshots
+tests/cypress/videos
+tests/cypress/reports
