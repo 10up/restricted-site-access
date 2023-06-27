@@ -17,7 +17,8 @@
   * [How can I programmatically define whitelisted IPs?](#how-can-i-programmatically-define-whitelisted-ips)
   * [Is there a constant to control my site restriction?](#is-there-a-constant-i-can-set-to-ensure-my-site-is-or-is-not-restricted)
   * [Can I provide access to my site based on custom HTTP headers?](#can-i-provide-access-to-my-site-based-on-custom-http-headers)
-  * []
+  * [What does 'Discourage search engines from indexing this site' do?](#what-does-discourage-search-engines-from-indexing-this-site-do)
+  * [What does 'Restrict site access to visitors who are logged in or allowed by IP address' do?](#what-does-restrict-site-access-to-visitors-who-are-logged-in-or-allowed-by-ip-address-do)
 * [Support](#support-level)
 * [Changelog](#changelog)
 * [Contributing](#contributing)
