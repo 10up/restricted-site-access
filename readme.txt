@@ -190,6 +190,14 @@ Make sure you add it before the `/* That's all, stop editing! Happy blogging. */
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
+= What does 'Discourage search engines from indexing this site' do? =
+
+When the 'Discourage search engines from indexing this site' option is enabled, it prevents search engines from indexing the site while still permitting access to regular visitors.
+
+= What does 'Restrict site access to visitors who are logged in or allowed by IP address' do? =
+
+When this option is activated, it serves as a barrier to all visitors except those who are authenticated (logged in) or whose IP addresses are included in the 'Unrestricted IP addresses' setting. This restriction applies universally, even to automated crawlers such as search engines.
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
