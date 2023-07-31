@@ -1813,7 +1813,7 @@ class Restricted_Site_Access {
 
 	/**
 	 * Add IPs programmatically.
-	 * 
+	 *
 	 * This method will soon be deprecated. Use append_ips() instead.
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
@@ -1858,13 +1858,13 @@ class Restricted_Site_Access {
 	 *
 	 * Example:
 	 * Restricted_Site_Access::append_ips(
-	 *		array(
-	 *			'192.140.1.5',
-	 *			'72.168.1.30',
-	 *			'143.168.1.48' => 'John',
-	 *			'72.168.1.50',
-	 *			'133.168.1.88' => 'Emma',
-	 *		)
+	 *      array(
+	 *          '192.140.1.5',
+	 *          '72.168.1.30',
+	 *          '143.168.1.48' => 'John',
+	 *          '72.168.1.50',
+	 *          '133.168.1.88' => 'Emma',
+	 *      )
 	 * );
 	 *
 	 * @param array $ip_label_pair Array of IP-Label pair.
@@ -1890,7 +1890,7 @@ class Restricted_Site_Access {
 
 				if ( $found_index && $comments[ $found_index ] !== $label ) {
 					$comments[ $found_index ] = empty( $label ) ? '' : sanitize_text_field( $label );
-				} else if ( false === $found_index ) {
+				} elseif ( false === $found_index ) {
 					$allowed_ips[] = $ip_address;
 					$comments[]    = empty( $label ) ? '' : sanitize_text_field( $label );
 				}
