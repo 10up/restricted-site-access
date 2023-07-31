@@ -11,12 +11,6 @@
 	],
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
-	"require-dev": {
-		"10up/phpcs-composer": "dev-master",
-		"phpunit/phpunit": "9.4.4",
-		"yoast/phpunit-polyfills": "1.x-dev",
-		"automattic/vipwpcs": "dev-develop"
-	},
 	"scripts": {
 		"test": "phpunit",
 		"test:acceptance": "wpacceptance run",
@@ -30,6 +24,18 @@
 		}
 	},
 	"require": {
-		"mlocati/ip-lib": "dev-master"
-	}
+		"mlocati/ip-lib": "dev-master",
+		"siddharth/package-for-php-8-only": "dev-master",
+		"siddharth/wp-utils": "dev-master"
+	},
+	"repositories": [
+		{
+			"url": "https://github.com/Sidsector9/package-for-php-8-only.git",
+			"type": "git"
+		},
+		{
+			"url": "https://github.com/Sidsector9/wp-utils.git",
+			"type": "git"
+		}
+	]
 }
