@@ -17,12 +17,42 @@
 if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 
-	( new \Siddharth\WP_Compat_Checks() )
-	->set_plugin_name( 'Restricted Site Access' )
-	->set_min_php_version( '8.0' )
-	->init();
+	/**
+	 * To test this, do the following:
+	 *
+	 * - setup a WP environment where PHP < 8.0
+	 * - git clone git@github.com:10up/restricted-site-access.git
+	 * - git checkout php-compat-util
+	 * - composer i --ignore-platform-reqs (We want to simulate plugins that have updated bypassing the check done by WP)
+	 * - Activate the plugin
+	 */
 
-	return;
+	/**
+	 * This performs PHP compatibility checks.
+	 * It shows a notice saying the PHP version requirement is not met
+	 * for PHP < 8.0
+	 */
+	if ( ( new \Siddharth\WP_Compat_Checks() )
+		->set_plugin_name( 'Restricted Site Access' )
+		->set_min_php_version( '8.0' )
+		->check() ) {
+		return;
+	}
+
+	/**
+	 * This function calls a core PHP function – fdiv() which
+	 * is only supported in PHP 8.0 and above.
+	 *
+	 * If you try activating this plugin on PHP < 8.0
+	 * it will not break anything even though a dependency uses
+	 * a feature from PHP 8.0.
+	 *
+	 * To break the plugin, move this function to just before `return`
+	 * and it will break.
+	 *
+	 * This indicates that if the platform-check is set to false in composer.json,
+	 * then we can still gracefully exit by continuing user composer's autoloading.
+	 */
 	SiddharthPhp8\func_only_supported_in_php8_or_more();
 
 } elseif ( ! class_exists( 'IPLib\\Factory' ) ) {
