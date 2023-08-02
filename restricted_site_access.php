@@ -16,6 +16,15 @@
 // Try and include our autoloader.
 if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
+
+	( new \Siddharth\WP_Compat_Checks() )
+	->set_plugin_name( 'Restricted Site Access' )
+	->set_min_php_version( '8.0' )
+	->init();
+
+	return;
+	SiddharthPhp8\func_only_supported_in_php8_or_more();
+
 } elseif ( ! class_exists( 'IPLib\\Factory' ) ) {
 	add_action(
 		'admin_notices',

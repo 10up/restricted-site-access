@@ -84,7 +84,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sidsector9/package-for-php-8-only.git",
-                "reference": "7f2593ca218ccff280c968dfc0712f710945be2e"
+                "reference": "e9502a9842bc33e7493ed5e6768c4ef33e26d69f"
             },
             "require": {
                 "php": ">=8.0"
@@ -93,7 +93,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Siddharth\\PackageForPhp8Only\\": "src/"
+                    "Siddharth\\": "src/"
                 }
             },
             "time": "2023-08-02T15:12:04+00:00"
