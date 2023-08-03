@@ -15,7 +15,7 @@
 		"10up/phpcs-composer": "dev-master",
 		"phpunit/phpunit": "9.4.4",
 		"yoast/phpunit-polyfills": "1.x-dev",
-		"automattic/vipwpcs": "dev-develop"
+		"automattic/vipwpcs": "^2.3"
 	},
 	"scripts": {
 		"test": "phpunit",
@@ -30,6 +30,13 @@
 		}
 	},
 	"require": {
-		"mlocati/ip-lib": "dev-master"
-	}
+		"mlocati/ip-lib": "dev-master",
+		"siddharth/wp-compat-checker": "dev-master"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/Sidsector9/wp-compat-checker.git"
+		}
+	]
 }
