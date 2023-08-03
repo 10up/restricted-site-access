@@ -27,11 +27,13 @@
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
+		},
+		"platform-check": false
 	},
 	"require": {
 		"mlocati/ip-lib": "dev-master",
-		"siddharth/wp-compat-checker": "dev-master"
+		"siddharth/wp-compat-checker": "dev-master",
+		"php": ">=7.4"
 	},
 	"repositories": [
 		{
