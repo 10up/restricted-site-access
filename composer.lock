@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65d45854ca09be8894a2e7e656d191d0",
+    "content-hash": "0dd4e7ba0a6791c2cd6062c426a6bff3",
     "packages": [
         {
             "name": "mlocati/ip-lib",
@@ -2816,7 +2816,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.4"
+    },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }

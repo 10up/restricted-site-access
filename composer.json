@@ -14,8 +14,7 @@
 	"require-dev": {
 		"10up/phpcs-composer": "dev-master",
 		"phpunit/phpunit": "9.4.4",
-		"yoast/phpunit-polyfills": "1.x-dev",
-		"automattic/vipwpcs": "^2.3"
+		"yoast/phpunit-polyfills": "1.x-dev"
 	},
 	"scripts": {
 		"test": "phpunit",
