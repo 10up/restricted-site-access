@@ -14,8 +14,7 @@
 	"require-dev": {
 		"10up/phpcs-composer": "dev-master",
 		"phpunit/phpunit": "9.4.4",
-		"yoast/phpunit-polyfills": "1.x-dev",
-		"automattic/vipwpcs": "dev-develop"
+		"yoast/phpunit-polyfills": "1.x-dev"
 	},
 	"scripts": {
 		"test": "phpunit",
@@ -27,9 +26,18 @@
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
-		}
+		},
+		"platform-check": false
 	},
 	"require": {
-		"mlocati/ip-lib": "dev-master"
-	}
+		"mlocati/ip-lib": "dev-master",
+		"siddharth/wp-compat-checker": "dev-master",
+		"php": ">=7.4"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/Sidsector9/wp-compat-checker.git"
+		}
+	]
 }
