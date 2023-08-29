@@ -1821,7 +1821,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add IPs programmatically
+	 * Add IPs programmatically.
+	 *
+	 * This method will soon be deprecated. Use append_ips() instead.
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1855,6 +1857,62 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
+	}
+
+	/**
+	 * Add IPs programmatically.
+	 *
+	 * This method is an improvement over add_ips() and
+	 * aligns with the GUI.
+	 *
+	 * Example:
+	 * Restricted_Site_Access::append_ips(
+	 *      array(
+	 *          '192.140.1.5',
+	 *          '72.168.1.30',
+	 *          '143.168.1.48' => 'John',
+	 *          '72.168.1.50',
+	 *          '133.168.1.88' => 'Emma',
+	 *      )
+	 * );
+	 *
+	 * @param array $ip_label_pair Array of IP-Label pair.
+	 */
+	public static function append_ips( $ip_label_pair = array() ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+
+		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
+		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+
+		foreach ( $ip_label_pair as $ip_address => $label ) {
+			if ( is_int( $ip_address ) && self::is_ip( $label ) && ! in_array( $label, $allowed_ips, true ) ) {
+				$allowed_ips[] = $label;
+				$comments[]    = '';
+			} elseif ( self::is_ip( $ip_address ) ) {
+				$label       = sanitize_text_field( $label );
+				$found_index = array_search( $ip_address, $allowed_ips, true );
+
+				if ( $found_index && $comments[ $found_index ] !== $label ) {
+					$comments[ $found_index ] = empty( $label ) ? '' : sanitize_text_field( $label );
+				} elseif ( false === $found_index ) {
+					$allowed_ips[] = $ip_address;
+					$comments[]    = empty( $label ) ? '' : sanitize_text_field( $label );
+				}
+			}
+		}
+
+		if ( self::$rsa_options['allowed'] === $allowed_ips && self::$rsa_options['comment'] === $comments ) {
+			return;
+		}
+
+		self::$rsa_options['allowed'] = $allowed_ips;
+		self::$rsa_options['comment'] = $comments;
+		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 	}
 
 	/**
