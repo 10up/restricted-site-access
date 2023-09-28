@@ -173,7 +173,7 @@ Restricted_Site_Access::set_ips( array( 'labelfoo' => '192.168.0.1', 'labelbar' 
 
 Add IPs, if they're not already added.
 ```php
-Restricted_Site_Access::add_ips( array( 'five' => '192.168.1.5', 'six' => '192.168.1.6') );
+Restricted_Site_Access::append_ips( array( '192.168.1.5' => 'five', '192.168.1.6' => 'six' ) );
 ```
 
 Remove IPs, if they are in the list.
