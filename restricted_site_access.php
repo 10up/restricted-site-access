@@ -17,7 +17,7 @@
 if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
 
-	$compat_checker = new \WP_Compat_Checker\WP_Compat_Checker();
+	$compat_checker = new \RSA_Validator\Validator();
 	$compat_checker
 		->set_plugin_name( 'Restricted Site Access' )
 		->set_php_min_required_version( '7.4' );

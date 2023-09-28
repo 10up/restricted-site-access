@@ -20,7 +20,15 @@
 		"test": "phpunit",
 		"test:acceptance": "wpacceptance run",
 		"lint": "phpcs --extensions=php -s .",
-		"lint-fix": "phpcbf --extensions=php ."
+		"lint-fix": "phpcbf --extensions=php .",
+		"post-install-cmd": [
+			"./vendor/siddharth/wp-compat-validation-tools/replace-namespace.sh RSA_Validator",
+			"composer dump-autoload"
+		],
+		"post-update-cmd": [
+			"./vendor/siddharth/wp-compat-validation-tools/replace-namespace.sh RSA_Validator",
+			"composer dump-autoload"
+		]
 	},
 	"minimum-stability": "dev",
 	"config": {
@@ -30,14 +38,12 @@
 		"platform-check": false
 	},
 	"require": {
-		"mlocati/ip-lib": "dev-master",
-		"siddharth/wp-compat-checker": "dev-master",
-		"php": ">=7.4"
+		"siddharth/wp-compat-validation-tools": "dev-trunk"
 	},
 	"repositories": [
 		{
 			"type": "git",
-			"url": "https://github.com/Sidsector9/wp-compat-checker.git"
+			"url": "https://github.com/Sidsector9/wp-compat-validation-tools.git"
 		}
 	]
 }
