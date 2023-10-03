@@ -4,23 +4,36 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e170f8f5a3f72c9bae611432ce0b2ad",
+    "content-hash": "5e47c0d8fab672c136d24352b55e88b1",
     "packages": [
         {
-            "name": "siddharth/wp-compat-validation-tools",
+            "name": "10up/wp-compat-validation-tool",
             "version": "dev-trunk",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Sidsector9/wp-compat-validation-tools.git",
-                "reference": "79d89cb851b0b6ebeea1c0f9814bdb2ff8951d03"
+                "url": "https://github.com/10up/wp-compat-validation-tool.git",
+                "reference": "b2279a76d962319f0b48bc534af0d0b5a22d23ab"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "WP_Compat_Validation_Tools\\": "src/"
+                    "WP_Compat_Validation_Tool\\": "src/"
                 }
             },
-            "time": "2023-09-03T07:19:38+00:00"
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "10up",
+                    "email": "opensource@10up.com",
+                    "homepage": "https://10up.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Perform PHP and WP version compatibility checks in your plugin.",
+            "homepage": "https://github.com/10up/wp-compat-validation-tool",
+            "time": "2023-10-03T04:05:28+00:00"
         }
     ],
     "packages-dev": [
@@ -1023,12 +1036,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "6a3a87ac2bbe33b25042753df8195ba4aa534c76"
+                "reference": "a296faea1fc5986d39243fde2abd9504f05079ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/6a3a87ac2bbe33b25042753df8195ba4aa534c76",
-                "reference": "6a3a87ac2bbe33b25042753df8195ba4aa534c76",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/a296faea1fc5986d39243fde2abd9504f05079ca",
+                "reference": "a296faea1fc5986d39243fde2abd9504f05079ca",
                 "shasum": ""
             },
             "require": {
@@ -1085,7 +1098,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.29"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2"
             },
             "funding": [
                 {
@@ -1093,7 +1106,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-19T04:57:46+00:00"
+            "time": "2023-09-29T10:36:14+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2741,7 +2754,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "siddharth/wp-compat-validation-tools": 20,
+        "10up/wp-compat-validation-tool": 20,
         "10up/phpcs-composer": 20,
         "yoast/phpunit-polyfills": 20
     },
@@ -2749,5 +2762,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

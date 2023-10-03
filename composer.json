@@ -22,11 +22,11 @@
 		"lint": "phpcs --extensions=php -s .",
 		"lint-fix": "phpcbf --extensions=php .",
 		"post-install-cmd": [
-			"./vendor/siddharth/wp-compat-validation-tools/replace-namespace.sh RSA_Validator",
+			"./vendor/10up/wp-compat-validation-tool/replace-namespace.sh RSA_Validator",
 			"composer dump-autoload"
 		],
 		"post-update-cmd": [
-			"./vendor/siddharth/wp-compat-validation-tools/replace-namespace.sh RSA_Validator",
+			"./vendor/10up/wp-compat-validation-tool/replace-namespace.sh RSA_Validator",
 			"composer dump-autoload"
 		]
 	},
@@ -38,12 +38,12 @@
 		"platform-check": false
 	},
 	"require": {
-		"siddharth/wp-compat-validation-tools": "dev-trunk"
+		"10up/wp-compat-validation-tool": "dev-trunk"
 	},
 	"repositories": [
 		{
 			"type": "git",
-			"url": "https://github.com/Sidsector9/wp-compat-validation-tools.git"
+			"url": "https://github.com/10up/wp-compat-validation-tool.git"
 		}
 	]
 }
