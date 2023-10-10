@@ -22,12 +22,10 @@
 		"lint": "phpcs --extensions=php -s .",
 		"lint-fix": "phpcbf --extensions=php .",
 		"post-install-cmd": [
-			"./vendor/10up/wp-compat-validation-tool/replace-namespace.sh RSA_Validator",
-			"composer dump-autoload"
+			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator"
 		],
 		"post-update-cmd": [
-			"./vendor/10up/wp-compat-validation-tool/replace-namespace.sh RSA_Validator",
-			"composer dump-autoload"
+			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator"
 		]
 	},
 	"minimum-stability": "dev",
@@ -45,5 +43,10 @@
 			"type": "git",
 			"url": "https://github.com/10up/wp-compat-validation-tool.git"
 		}
-	]
+	],
+	"extra": {
+		"installer-paths": {
+			"./{$name}/": ["10up/wp-compat-validation-tool"]
+		}
+	}
 }
