@@ -4,19 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7fb2afd477f26267dbe5e7a2615920c",
+    "content-hash": "d51cbd68932f91856794081a673b3d22",
     "packages": [
         {
             "name": "10up/wp-compat-validation-tool",
-            "version": "dev-trunk",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp-compat-validation-tool.git",
-                "reference": "4ce23b31bb65a0ce23190139d0099118203948cb"
+                "reference": "081a2f04fd4bb147d031462080c119eff2d884a7"
             },
             "require": {
                 "composer/installers": "^2.2"
             },
+            "default-branch": true,
             "type": "wordpress-plugin",
             "extra": {
                 "installer-name": "10up-lib/wp-compat-validation-tool"
@@ -39,7 +40,7 @@
             ],
             "description": "Perform PHP and WP version compatibility checks in your plugin.",
             "homepage": "https://github.com/10up/wp-compat-validation-tool",
-            "time": "2023-10-09T06:28:24+00:00"
+            "time": "2023-10-11T13:31:00+00:00"
         },
         {
             "name": "composer/installers",
@@ -2984,7 +2985,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.4"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
 }

@@ -36,7 +36,7 @@
 		"platform-check": false
 	},
 	"require": {
-		"10up/wp-compat-validation-tool": "dev-trunk",
+		"10up/wp-compat-validation-tool": "dev-develop",
 		"mlocati/ip-lib": "dev-master",
 		"php": ">=7.4"
 	},
