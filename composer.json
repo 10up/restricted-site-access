@@ -31,7 +31,8 @@
 	"minimum-stability": "dev",
 	"config": {
 		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"composer/installers": true
 		},
 		"platform-check": false
 	},
