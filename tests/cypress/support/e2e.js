@@ -37,9 +37,3 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   return true
 })
 
-// Preserve WP cookies.
-beforeEach(() => {
-  Cypress.Cookies.defaults({
-    preserve: /^wordpress.*?/,
-  });
-});
