@@ -321,6 +321,7 @@ class Restricted_Site_Access {
 		} else {
 			$options = get_option( 'rsa_options' );
 		}
+		$options = is_array( $options ) ? $options : [];
 
 		// Fill in defaults where values aren't set.
 		foreach ( self::$fields as $field_name => $field_details ) {
