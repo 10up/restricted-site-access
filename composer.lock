@@ -4,20 +4,19 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d51cbd68932f91856794081a673b3d22",
+    "content-hash": "1c8b0edbac56d1b1b7be0c34d8e31eff",
     "packages": [
         {
             "name": "10up/wp-compat-validation-tool",
-            "version": "dev-develop",
+            "version": "dev-trunk",
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp-compat-validation-tool.git",
-                "reference": "081a2f04fd4bb147d031462080c119eff2d884a7"
+                "reference": "4ce23b31bb65a0ce23190139d0099118203948cb"
             },
             "require": {
                 "composer/installers": "^2.2"
             },
-            "default-branch": true,
             "type": "wordpress-plugin",
             "extra": {
                 "installer-name": "10up-lib/wp-compat-validation-tool"
@@ -40,7 +39,7 @@
             ],
             "description": "Perform PHP and WP version compatibility checks in your plugin.",
             "homepage": "https://github.com/10up/wp-compat-validation-tool",
-            "time": "2023-10-11T13:31:00+00:00"
+            "time": "2023-10-09T06:28:24+00:00"
         },
         {
             "name": "composer/installers",
@@ -194,12 +193,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mlocati/ip-lib.git",
-                "reference": "eb3656df7e954babbeb7dbffa48210812139a740"
+                "reference": "a2c0e36416a814ca164d873da77b19f6e7749aef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mlocati/ip-lib/zipball/eb3656df7e954babbeb7dbffa48210812139a740",
-                "reference": "eb3656df7e954babbeb7dbffa48210812139a740",
+                "url": "https://api.github.com/repos/mlocati/ip-lib/zipball/a2c0e36416a814ca164d873da77b19f6e7749aef",
+                "reference": "a2c0e36416a814ca164d873da77b19f6e7749aef",
                 "shasum": ""
             },
             "require": {
@@ -258,7 +257,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2023-09-11T20:23:39+00:00"
+            "time": "2023-10-16T17:11:38+00:00"
         }
     ],
     "packages-dev": [
@@ -1020,12 +1019,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "7b217217725dc991a0ae7b995041cee1d5019561"
+                "reference": "c86c8d449b863bdaed15861a32dc4c50f8e3a832"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/7b217217725dc991a0ae7b995041cee1d5019561",
-                "reference": "7b217217725dc991a0ae7b995041cee1d5019561",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/c86c8d449b863bdaed15861a32dc4c50f8e3a832",
+                "reference": "c86c8d449b863bdaed15861a32dc4c50f8e3a832",
                 "shasum": ""
             },
             "require": {
@@ -1076,7 +1075,7 @@
                 "issues": "https://github.com/phpDocumentor/ReflectionDocBlock/issues",
                 "source": "https://github.com/phpDocumentor/ReflectionDocBlock/tree/master"
             },
-            "time": "2023-03-12T10:50:44+00:00"
+            "time": "2023-10-13T06:34:03+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -1084,12 +1083,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "3219c6ee25c9ea71e3d9bbaf39c67c9ebd499419"
+                "reference": "181f43ae2f4afbbdd9426dc0fd8db0444439a033"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/3219c6ee25c9ea71e3d9bbaf39c67c9ebd499419",
-                "reference": "3219c6ee25c9ea71e3d9bbaf39c67c9ebd499419",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/181f43ae2f4afbbdd9426dc0fd8db0444439a033",
+                "reference": "181f43ae2f4afbbdd9426dc0fd8db0444439a033",
                 "shasum": ""
             },
             "require": {
@@ -1133,9 +1132,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.7.3"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.x"
             },
-            "time": "2023-08-12T11:01:26+00:00"
+            "time": "2023-10-13T06:37:27+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -1260,12 +1259,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "0b6cb84a359426d34e439ce6d1173b41e07cb672"
+                "reference": "a941554183490e17580945faf64d46bc4faf97e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/0b6cb84a359426d34e439ce6d1173b41e07cb672",
-                "reference": "0b6cb84a359426d34e439ce6d1173b41e07cb672",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/a941554183490e17580945faf64d46bc4faf97e2",
+                "reference": "a941554183490e17580945faf64d46bc4faf97e2",
                 "shasum": ""
             },
             "require": {
@@ -1330,7 +1329,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-06T09:53:04+00:00"
+            "time": "2023-10-20T08:36:13+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2989,5 +2988,5 @@
         "php": ">=7.4"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.6.0"
 }
