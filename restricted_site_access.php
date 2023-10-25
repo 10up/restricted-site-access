@@ -314,12 +314,10 @@ class Restricted_Site_Access {
 	 * @param boolean $network Whether this is a network install. Default false.
 	 */
 	public static function get_options( $network = false ) {
-		$options = array();
-
 		if ( $network ) {
-			$options = get_site_option( 'rsa_options' );
+			$options = get_site_option( 'rsa_options', array() );
 		} else {
-			$options = get_option( 'rsa_options' );
+			$options = get_option( 'rsa_options', array() );
 		}
 
 		// Fill in defaults where values aren't set.
