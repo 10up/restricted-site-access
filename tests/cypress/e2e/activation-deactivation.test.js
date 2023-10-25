@@ -3,6 +3,9 @@ describe( 'Activation/Deactivation', () => {
 		cy.request( {
 			url: '/wp-json/rsa/v1/seed/activation-deactivation'
 		} );
+	} );
+
+	beforeEach( () => {
 		cy.login();
 	} );
 
