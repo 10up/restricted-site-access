@@ -4,7 +4,33 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
-## [7.4.0] - TBD
+## [7.4.1] - TBD
+### Added
+- Github actions summary added for Cypress reporting (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
+- Restricted_Site_Access::append_ips() method to add IP addresses programatically (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#267](https://github.com/10up/restricted-site-access/pull/267)).
+- Repository Automator GitHub Action (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#273](https://github.com/10up/restricted-site-access/pull/273)).
+
+### Changed
+- Updates the Dependency Review GitHub Action to check for GPL-compatible licenses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#261](https://github.com/10up/restricted-site-access/pull/261)).
+- Documentation to clarify what the restricted site access & discourage search engine options do (props [@lkraav](https://github.com/lkraav), [@jeffpaul](https://github.com/jeffpaul), [@helen](https://github.com/helen), [@dinhtungdu](https://github.com/dinhtungdu), [@bmarshall511](https://github.com/bmarshall511), [@Sidsector9](https://github.com/Sidsector9) via [#262](https://github.com/10up/restricted-site-access/pull/262)).
+- Bumped WordPress "tested up to" version from 6.2 to 6.3 (props [@kirtangajjar](https://github.com/kirtangajjar), [@Sidsector9](https://github.com/Sidsector9) via [#271](https://github.com/10up/restricted-site-access/pull/271)).
+
+### Fixed
+- Issue with autovivification (props [@mae829](https://github.com/mae829), [@Sidsector9](https://github.com/Sidsector9) via [#281](https://github.com/10up/restricted-site-access/pull/281), [@turtlepod](https://github.com/turtlepod) via [#281](https://github.com/10up/restricted-site-access/pull/281)).
+
+### Security
+- Bumps `word-wrap` from `1.2.3` to `1.2.4` (props [@Sidsector9](https://github.com/Sidsector9) via [#266](https://github.com/10up/restricted-site-access/pull/266)).
+- Bumps `semver` from `5.7.1` to `5.7.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#264](https://github.com/10up/restricted-site-access/pull/264)).
+- Bumps `tough-cookie` from `4.1.2` to `4.1.3` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
+- Bumps `@cypress/request` from `2.88.10` to `2.88.12` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
+- Bumps `postcss` from `8.4.18` to `8.4.31` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
+- Bumps `@babel/traverse` from `7.20.0` to `7.23.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
+- Add PHP environment compatibility checker (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9) via [#268](https://github.com/10up/restricted-site-access/pull/268)).
+- Bump `Cypress` version from `10.3.0` to `13.2.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
+- Bump `@10up/cypress-wp-utils` version to `0.2.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
+- Bump Bump `@wordpress/env` version from `5.4.0` to `8.7.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
+
+## [7.4.0] - 2023-04-18
 ### Added
 - Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
 - Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
@@ -298,6 +324,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.4.1]: https://github.com/10up/restricted-site-access/compare/7.4.0...7.4.1
 [7.4.0]: https://github.com/10up/restricted-site-access/compare/7.3.5...7.4.0
 [7.3.5]: https://github.com/10up/restricted-site-access/compare/7.3.4...7.3.5
 [7.3.4]: https://github.com/10up/restricted-site-access/compare/7.3.3...7.3.4
