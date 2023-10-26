@@ -14,18 +14,26 @@
  */
 
 // Try and include our autoloader.
+if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php' ) ) {
+	return;
+}
+
+require_once '10up-lib/wp-compat-validation-tool/src/Validator.php';
+
+$compat_checker = new \RSA_Validator\Validator();
+$compat_checker
+	->set_plugin_name( 'Restricted Site Access' )
+	->set_php_min_required_version( '7.4' );
+
+if ( ! $compat_checker->is_plugin_compatible() ) {
+	return;
+}
+
 if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
+}
 
-	$compat_checker = new \WP_Compat_Checker\WP_Compat_Checker();
-	$compat_checker
-		->set_plugin_name( 'Restricted Site Access' )
-		->set_php_min_required_version( '7.4' );
-
-	if ( ! $compat_checker->is_plugin_compatible() ) {
-		return;
-	}
-} elseif ( ! class_exists( 'IPLib\\Factory' ) ) {
+if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	add_action(
 		'admin_notices',
 		function() {

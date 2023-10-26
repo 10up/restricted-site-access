@@ -6,6 +6,7 @@ screenshots
 assets/js/build
 .wp-env.override.json
 .idea
+10up-lib
 
 tests/cypress/screenshots
 tests/cypress/videos

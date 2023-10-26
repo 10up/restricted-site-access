@@ -20,24 +20,36 @@
 		"test": "phpunit",
 		"test:acceptance": "wpacceptance run",
 		"lint": "phpcs --extensions=php -s .",
-		"lint-fix": "phpcbf --extensions=php ."
+		"lint-fix": "phpcbf --extensions=php .",
+		"post-install-cmd": [
+			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator"
+		],
+		"post-update-cmd": [
+			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator"
+		]
 	},
 	"minimum-stability": "dev",
 	"config": {
 		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"composer/installers": true
 		},
 		"platform-check": false
 	},
 	"require": {
+		"10up/wp-compat-validation-tool": "dev-trunk",
 		"mlocati/ip-lib": "dev-master",
-		"siddharth/wp-compat-checker": "dev-master",
 		"php": ">=7.4"
 	},
 	"repositories": [
 		{
 			"type": "git",
-			"url": "https://github.com/Sidsector9/wp-compat-checker.git"
+			"url": "https://github.com/10up/wp-compat-validation-tool.git"
 		}
-	]
+	],
+	"extra": {
+		"installer-paths": {
+			"./{$name}/": ["10up/wp-compat-validation-tool"]
+		}
+	}
 }
