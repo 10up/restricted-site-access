@@ -4,31 +4,33 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
-## [7.4.1] - TBD
+## [7.4.1] - 2023-10-30
 ### Added
-- Github actions summary added for Cypress reporting (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
-- Restricted_Site_Access::append_ips() method to add IP addresses programatically (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#267](https://github.com/10up/restricted-site-access/pull/267)).
+- GitHub Action summary report for Cypress end-to-end tests (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
+- `Restricted_Site_Access::append_ips()` method to add IP addresses programatically (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#267](https://github.com/10up/restricted-site-access/pull/267)).
 - Repository Automator GitHub Action (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#273](https://github.com/10up/restricted-site-access/pull/273)).
 
 ### Changed
-- Updates the Dependency Review GitHub Action to check for GPL-compatible licenses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#261](https://github.com/10up/restricted-site-access/pull/261)).
+- Bumped WordPress "tested up to" version 6.3 (props [@kirtangajjar](https://github.com/kirtangajjar), [@Sidsector9](https://github.com/Sidsector9) via [#271](https://github.com/10up/restricted-site-access/pull/271)).
+- WordPress compatibility validation library namespace (props [@Sidsector9](https://github.com/Sidsector9), [@dkotter](https://github.com/dkotter) via [#278](https://github.com/10up/restricted-site-access/pull/278)).
 - Documentation to clarify what the restricted site access & discourage search engine options do (props [@lkraav](https://github.com/lkraav), [@jeffpaul](https://github.com/jeffpaul), [@helen](https://github.com/helen), [@dinhtungdu](https://github.com/dinhtungdu), [@bmarshall511](https://github.com/bmarshall511), [@Sidsector9](https://github.com/Sidsector9) via [#262](https://github.com/10up/restricted-site-access/pull/262)).
-- Bumped WordPress "tested up to" version from 6.2 to 6.3 (props [@kirtangajjar](https://github.com/kirtangajjar), [@Sidsector9](https://github.com/Sidsector9) via [#271](https://github.com/10up/restricted-site-access/pull/271)).
+- Updates the Dependency Review GitHub Action to check for GPL-compatible licenses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#261](https://github.com/10up/restricted-site-access/pull/261)).
 
 ### Fixed
 - Issue with autovivification (props [@mae829](https://github.com/mae829), [@Sidsector9](https://github.com/Sidsector9) via [#281](https://github.com/10up/restricted-site-access/pull/281), [@turtlepod](https://github.com/turtlepod) via [#281](https://github.com/10up/restricted-site-access/pull/281)).
 
 ### Security
-- Bumps `word-wrap` from `1.2.3` to `1.2.4` (props [@Sidsector9](https://github.com/Sidsector9) via [#266](https://github.com/10up/restricted-site-access/pull/266)).
-- Bumps `semver` from `5.7.1` to `5.7.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#264](https://github.com/10up/restricted-site-access/pull/264)).
-- Bumps `tough-cookie` from `4.1.2` to `4.1.3` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
-- Bumps `@cypress/request` from `2.88.10` to `2.88.12` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
-- Bumps `postcss` from `8.4.18` to `8.4.31` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
-- Bumps `@babel/traverse` from `7.20.0` to `7.23.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
 - Add PHP environment compatibility checker (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9) via [#268](https://github.com/10up/restricted-site-access/pull/268)).
+- Bump `word-wrap` from `1.2.3` to `1.2.4` (props [@Sidsector9](https://github.com/Sidsector9) via [#266](https://github.com/10up/restricted-site-access/pull/266)).
+- Bump `semver` from `5.7.1` to `5.7.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#264](https://github.com/10up/restricted-site-access/pull/264)).
+- Bump `tough-cookie` from `4.1.2` to `4.1.3` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
+- Bump `@cypress/request` from `2.88.10` to `2.88.12` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
+- Bump `postcss` from `8.4.18` to `8.4.31` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
+- Bump `@babel/traverse` from `7.20.0` to `7.23.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
 - Bump `Cypress` version from `10.3.0` to `13.2.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
 - Bump `@10up/cypress-wp-utils` version to `0.2.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
-- Bump Bump `@wordpress/env` version from `5.4.0` to `8.7.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
+- Bump `@wordpress/env` version from `5.4.0` to `8.7.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
+- Bump `@babel/traverse` from 7.20.0 to 7.23.2 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#282](https://github.com/10up/restricted-site-access/pull/282)).
 
 ## [7.4.0] - 2023-04-18
 ### Added
@@ -42,7 +44,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Fixed
 - Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9) via [#236](https://github.com/10up/restricted-site-access/pull/236)).
-- Issue that caused redirect loop (props [@mikegibbons4](https://wordpress.org/support/users/mikegibbons4), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic), [@peterwilsoncc](https://github.com/peterwilsoncc)) via [#221](https://github.com/10up/restricted-site-access/issues/221).
+- Issue that caused redirect loop (props [@mikegibbons4](https://profiles.wordpress.org/mikegibbons4/), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic), [@peterwilsoncc](https://github.com/peterwilsoncc)) via [#221](https://github.com/10up/restricted-site-access/issues/221).
 
 ### Security
 - Run E2E tests on the final ZIP build (props [@iamdharmesh](https://github.com/iamdharmesh), [@jayedul](https://github.com/jayedul) via [#249](https://github.com/10up/restricted-site-access/pull/249)).
