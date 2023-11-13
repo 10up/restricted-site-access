@@ -206,7 +206,7 @@ When this option is activated, it serves as a barrier to all visitors except tho
 
 == Changelog ==
 
-= 7.4.1 - 2023-10-30 =
+= 7.4.1 - 2023-11-14 =
 * **Added:** GitHub Action summary report for Cypress end-to-end tests (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
 * **Added:** `Restricted_Site_Access::append_ips()` method to add IP addresses programatically (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#267](https://github.com/10up/restricted-site-access/pull/267)).
 * **Added:** Repository Automator GitHub Action (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#273](https://github.com/10up/restricted-site-access/pull/273)).
