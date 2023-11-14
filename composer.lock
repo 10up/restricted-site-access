@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp-compat-validation-tool.git",
-                "reference": "bb0d2a3f0e6c9e3df5f95c366abcaeaf2e1a05d3"
+                "reference": "19a8c7c1d39d3a4c896aeeac8d42edd20b8d2317"
             },
             "require": {
                 "composer/installers": "^2.2"
@@ -39,7 +39,7 @@
             ],
             "description": "Perform PHP and WP version compatibility checks in your plugin.",
             "homepage": "https://github.com/10up/wp-compat-validation-tool",
-            "time": "2023-10-25T13:12:17+00:00"
+            "time": "2023-11-09T18:48:23+00:00"
         },
         {
             "name": "composer/installers",
@@ -556,12 +556,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "f6f48cfecf52ab791fe18cc1b11d6345512dc4b8"
+                "reference": "202aaf6b7c2e1e0a622b0298e9f3f537e4d84018"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/f6f48cfecf52ab791fe18cc1b11d6345512dc4b8",
-                "reference": "f6f48cfecf52ab791fe18cc1b11d6345512dc4b8",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/202aaf6b7c2e1e0a622b0298e9f3f537e4d84018",
+                "reference": "202aaf6b7c2e1e0a622b0298e9f3f537e4d84018",
                 "shasum": ""
             },
             "require": {
@@ -609,7 +609,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-07-30T10:01:33+00:00"
+            "time": "2023-11-01T08:01:43+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -617,12 +617,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "54103d838734be0499172026525e38cbf6af2711"
+                "reference": "e453389866395e57146efe12077458c2d906687d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/54103d838734be0499172026525e38cbf6af2711",
-                "reference": "54103d838734be0499172026525e38cbf6af2711",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/e453389866395e57146efe12077458c2d906687d",
+                "reference": "e453389866395e57146efe12077458c2d906687d",
                 "shasum": ""
             },
             "require": {
@@ -665,7 +665,7 @@
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
                 "source": "https://github.com/nikic/PHP-Parser/tree/4.x"
             },
-            "time": "2023-10-03T21:00:18+00:00"
+            "time": "2023-11-12T15:49:53+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1259,12 +1259,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "a941554183490e17580945faf64d46bc4faf97e2"
+                "reference": "00bc23209e885ae1aab33c9a2303b0eb8ebd5c28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/a941554183490e17580945faf64d46bc4faf97e2",
-                "reference": "a941554183490e17580945faf64d46bc4faf97e2",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/00bc23209e885ae1aab33c9a2303b0eb8ebd5c28",
+                "reference": "00bc23209e885ae1aab33c9a2303b0eb8ebd5c28",
                 "shasum": ""
             },
             "require": {
@@ -1329,7 +1329,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-20T08:36:13+00:00"
+            "time": "2023-11-09T06:48:38+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
