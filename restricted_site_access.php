@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.4.0
+ * Version:           7.4.1
  * Requires at least: 5.7
  * Requires PHP:      7.4
  * Author:            10up
@@ -14,9 +14,26 @@
  */
 
 // Try and include our autoloader.
+if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php' ) ) {
+	return;
+}
+
+require_once '10up-lib/wp-compat-validation-tool/src/Validator.php';
+
+$compat_checker = new \RSA_Validator\Validator();
+$compat_checker
+	->set_plugin_name( 'Restricted Site Access' )
+	->set_php_min_required_version( '7.4' );
+
+if ( ! $compat_checker->is_plugin_compatible() ) {
+	return;
+}
+
 if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	require_once __DIR__ . '/vendor/autoload.php';
-} elseif ( ! class_exists( 'IPLib\\Factory' ) ) {
+}
+
+if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	add_action(
 		'admin_notices',
 		function() {
@@ -40,7 +57,7 @@ if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.4.0' );
+define( 'RSA_VERSION', '7.4.1' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -305,12 +322,10 @@ class Restricted_Site_Access {
 	 * @param boolean $network Whether this is a network install. Default false.
 	 */
 	public static function get_options( $network = false ) {
-		$options = array();
-
 		if ( $network ) {
-			$options = get_site_option( 'rsa_options' );
+			$options = get_site_option( 'rsa_options', array() );
 		} else {
-			$options = get_option( 'rsa_options' );
+			$options = get_option( 'rsa_options', array() );
 		}
 
 		// Fill in defaults where values aren't set.
@@ -1812,7 +1827,9 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Add IPs programmatically
+	 * Add IPs programmatically.
+	 *
+	 * This method will soon be deprecated. Use append_ips() instead.
 	 *
 	 * The $ip_list can either contain a single IP via string, IP addresses in an array, e.g.
 	 * '192.168.0.1'
@@ -1846,6 +1863,62 @@ class Restricted_Site_Access {
 			self::$rsa_options['comment'] = $comments;
 			update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 		}
+	}
+
+	/**
+	 * Add IPs programmatically.
+	 *
+	 * This method is an improvement over add_ips() and
+	 * aligns with the GUI.
+	 *
+	 * Example:
+	 * Restricted_Site_Access::append_ips(
+	 *      array(
+	 *          '192.140.1.5',
+	 *          '72.168.1.30',
+	 *          '143.168.1.48' => 'John',
+	 *          '72.168.1.50',
+	 *          '133.168.1.88' => 'Emma',
+	 *      )
+	 * );
+	 *
+	 * @param array $ip_label_pair Array of IP-Label pair.
+	 */
+	public static function append_ips( $ip_label_pair = array() ) {
+		if ( is_null( self::$rsa_options ) ) {
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+			self::$rsa_options = self::get_options();
+		}
+
+		$allowed_ips = isset( self::$rsa_options['allowed'] ) ? (array) self::$rsa_options['allowed'] : array();
+		$comments    = isset( self::$rsa_options['comment'] ) ? (array) self::$rsa_options['comment'] : array();
+
+		foreach ( $ip_label_pair as $ip_address => $label ) {
+			if ( is_int( $ip_address ) && self::is_ip( $label ) && ! in_array( $label, $allowed_ips, true ) ) {
+				$allowed_ips[] = $label;
+				$comments[]    = '';
+			} elseif ( self::is_ip( $ip_address ) ) {
+				$label       = sanitize_text_field( $label );
+				$found_index = array_search( $ip_address, $allowed_ips, true );
+
+				if ( $found_index && $comments[ $found_index ] !== $label ) {
+					$comments[ $found_index ] = empty( $label ) ? '' : sanitize_text_field( $label );
+				} elseif ( false === $found_index ) {
+					$allowed_ips[] = $ip_address;
+					$comments[]    = empty( $label ) ? '' : sanitize_text_field( $label );
+				}
+			}
+		}
+
+		if ( self::$rsa_options['allowed'] === $allowed_ips && self::$rsa_options['comment'] === $comments ) {
+			return;
+		}
+
+		self::$rsa_options['allowed'] = $allowed_ips;
+		self::$rsa_options['comment'] = $comments;
+		update_option( 'rsa_options', self::sanitize_options( self::$rsa_options ) );
 	}
 
 	/**

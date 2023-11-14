@@ -32,6 +32,7 @@ class Restricted_Site_Access_Tests_Bootstrap {
 
 		// Give access to tests_add_filter() function.
 		require_once $_tests_dir . '/includes/functions.php';
+		require_once WP_PLUGIN_DIR . '/10up-lib/wp-compat-validation-tool/src/Validator.php';
 
 		/**
 		 * Manually load the plugin being tested.
