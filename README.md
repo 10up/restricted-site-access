@@ -78,7 +78,7 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
-In 7.3.2, two new filters have been added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. By default, these filters will not change existing behavior. It is recommended to review these filters and utilize them appropriately for your site to secure things further.
+In 7.3.2, two new filters have been added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. For any sites that were using Restricted Site Access prior to version 7.5.0, a handful of HTTP headers are trusted by default. It is recommended to review these filters and utilize them appropriately for your site to secure things further.
 
 If your site is not running behind a proxy, we recommend doing the following:
 
