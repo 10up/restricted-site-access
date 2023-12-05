@@ -1575,6 +1575,26 @@ class Restricted_Site_Access {
 	 * @param boolean $network_active Whether the plugin network active.
 	 */
 	public static function activation( $network_active ) {
+		// For new or non-configured installs, store the RSA version.
+		// This is used later to determine what default HTTP headers we trust.
+		if ( $network_active ) {
+			$sites = get_sites();
+
+			foreach ( $sites as $site ) {
+				switch_to_blog( $site->blog_id );
+
+				if ( ! get_option( 'rsa_activation_version', false ) && ! get_option( 'rsa_options', false ) ) {
+					update_option( 'rsa_activation_version', RSA_VERSION );
+				}
+
+				restore_current_blog();
+			}
+		} else {
+			if ( ! get_option( 'rsa_activation_version', false ) && ! get_option( 'rsa_options', false ) ) {
+				update_option( 'rsa_activation_version', RSA_VERSION );
+			}
+		}
+
 		if ( ! $network_active ) {
 			update_option( 'blog_public', 2 );
 		}
@@ -1735,16 +1755,22 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
-		$ip                  = '';
-		$old_trusted_headers = array(
-			'HTTP_CF_CONNECTING_IP',
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-		);
+		$ip = '';
+
+		// For any active version prior to 7.5.0, we use the default trusted headers.
+		if ( version_compare( get_option( 'rsa_activation_version', '0.0.0' ), '7.5.0', '<' ) ) {
+			$trusted_headers = array(
+				'HTTP_CF_CONNECTING_IP',
+				'HTTP_CLIENT_IP',
+				'HTTP_X_FORWARDED_FOR',
+				'HTTP_X_FORWARDED',
+				'HTTP_X_CLUSTER_CLIENT_IP',
+				'HTTP_FORWARDED_FOR',
+				'HTTP_FORWARDED',
+			);
+		} else {
+			$trusted_headers = array();
+		}
 
 		/**
 		 * Filter hook to set array of trusted IP address headers.
@@ -1763,9 +1789,9 @@ class Restricted_Site_Access {
 		 * trust so these headers will only be used if a request came from
 		 * the proxy.
 		 *
-		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
+		 * @param string[] $trusted_headers Array of trusted IP Address headers.
 		 */
-		$trusted_headers = apply_filters( 'rsa_trusted_headers', array() );
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
 
 		// Add the REMOTE_ADDR value to the end of the array.
 		$trusted_headers[] = 'REMOTE_ADDR';
@@ -2115,6 +2141,7 @@ function restricted_site_access_uninstall() {
 				update_option( 'blog_public', 1 );
 			}
 			delete_option( 'rsa_options' );
+			delete_option( 'rsa_activation_version' );
 
 			restore_current_blog();
 		}
@@ -2123,6 +2150,7 @@ function restricted_site_access_uninstall() {
 			update_option( 'blog_public', 1 );
 		}
 		delete_option( 'rsa_options' );
+		delete_option( 'rsa_activation_version' );
 	}
 }
 
