@@ -1735,8 +1735,8 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
-		$ip              = '';
-		$trusted_headers = array(
+		$ip                  = '';
+		$old_trusted_headers = array(
 			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
@@ -1749,30 +1749,23 @@ class Restricted_Site_Access {
 		/**
 		 * Filter hook to set array of trusted IP address headers.
 		 *
-		 * Most CDN providers will set the IP address of the client in a number
-		 * of headers. This allows the plugin to detect the IP address of the client
-		 * even if it is behind a proxy.
+		 * By default we only trust the REMOTE_ADDR header, as other
+		 * headers can easily be spoofed.
 		 *
-		 * Use this hook to modify the permitted proxy headers. For sites without a
-		 * CDN (or local proxy) it is recommended to add a filter to this hook to
-		 * return an empty array.
+		 * If your site is behind a proxy, typically the REMOTE_ADDR header
+		 * will contain the IP address of the proxy and not the client. To
+		 * deal with this situation, you'll need to use this filter
+		 * to set any other headers you want to trust.
 		 *
-		 * add_filter( 'rsa_trusted_headers', '__return_empty_array' );
-		 *
-		 * By default, the following headers are trusted:
-		 * - HTTP_CF_CONNECTING_IP
-		 * - HTTP_CLIENT_IP
-		 * - HTTP_X_FORWARDED_FOR
-		 * - HTTP_X_FORWARDED
-		 * - HTTP_X_CLUSTER_CLIENT_IP
-		 * - HTTP_FORWARDED_FOR
-		 * - HTTP_FORWARDED
-		 *
-		 * To allow for CDNs, these headers take priority over the REMOTE_ADDR value.
+		 * Note that by doing this you will open your site up to IP spoofing
+		 * attacks so proceed with caution. If possible, you should also use
+		 * the rsa_trusted_proxies filter to set the proxy IP addresses you
+		 * trust so these headers will only be used if a request came from
+		 * the proxy.
 		 *
 		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
 		 */
-		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
+		$trusted_headers = apply_filters( 'rsa_trusted_headers', array() );
 
 		// Add the REMOTE_ADDR value to the end of the array.
 		$trusted_headers[] = 'REMOTE_ADDR';
