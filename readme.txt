@@ -64,17 +64,15 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
-In 7.3.2, two new filters have been added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. For any sites that were using Restricted Site Access prior to version 7.5.0, a handful of HTTP headers are trusted by default. It is recommended to review these filters and utilize them appropriately for your site to secure things further.
-
-If your site is not running behind a proxy, we recommend doing the following:
+In 7.3.2, two new filters were added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. For any sites that were using Restricted Site Access prior to version 7.5.0, a handful of HTTP headers are trusted by default. To change this, utilize the `rsa_trusted_headers` filter to modify the HTTP headers you want to trust. If your site is not running behind a proxy, we recommend doing the following:
 
 `
 add_filter( 'rsa_trusted_headers', '__return_empty_array' );
 `
 
-This will then only use the `REMOTE_ADDR` HTTP header to determine the IP address of the visitor. This header can't be spoofed, so this will increase security.
+This will then only use the `REMOTE_ADDR` HTTP header to determine the IP address of the visitor. This header can't be spoofed, so this will increase security. Note that this is now the default for all new installs since version 7.5.0.
 
-If your site is running behind a proxy (like a CDN), you can't rely on the `REMOTE_ADDR` HTTP header, as this will contain the IP address of the proxy, not the user. If your proxy uses static IP addresses, we recommend using the `rsa_trusted_proxies` filter to set those trusted IP addresses:
+If your site is running behind a proxy (like a CDN), you usually can't rely on the `REMOTE_ADDR` HTTP header, as this will contain the IP address of the proxy, not the user. If your proxy uses static IP addresses, we recommend using the `rsa_trusted_proxies` filter to set those trusted IP addresses:
 
 `
 add_filter( 'rsa_trusted_proxies', 'my_rsa_trusted_proxies' );
