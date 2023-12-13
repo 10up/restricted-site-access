@@ -209,6 +209,7 @@ When this option is activated, it serves as a barrier to all visitors except tho
 
 * **Fixed:** Update code snippet in the readme (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#291](https://github.com/10up/restricted-site-access/pull/291)).
 * **Security:** For new installs, ensure we only trust the `REMOTE_ADDR` HTTP header by default. Existing installs will still utilize the old list of approved headers but can modify this (and are recommended to) by using the `rsa_trusted_headers` filter (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dustinrue](https://github.com/dustinrue), [@mikhail-net](https://github.com/mikhail-net), [Darius Sveikauskas](https://patchstack.com/) via [#290](https://github.com/10up/restricted-site-access/pull/290)).
+* **Security:** Bump `axios` from 0.25.0 to 1.6.2 and `@wordpress/scripts` from 23.7.2 to 26.19.0 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#293](https://github.com/10up/restricted-site-access/pull/293)).
 
 = 7.4.1 - 2023-11-14 =
 * **Added:** GitHub Action summary report for Cypress end-to-end tests (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
