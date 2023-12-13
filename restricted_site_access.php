@@ -1575,6 +1575,26 @@ class Restricted_Site_Access {
 	 * @param boolean $network_active Whether the plugin network active.
 	 */
 	public static function activation( $network_active ) {
+		// For new or non-configured installs, store the RSA version.
+		// This is used later to determine what default HTTP headers we trust.
+		if ( $network_active ) {
+			$sites = get_sites();
+
+			foreach ( $sites as $site ) {
+				switch_to_blog( $site->blog_id );
+
+				if ( ! get_option( 'rsa_activation_version', false ) && ! get_option( 'rsa_options', false ) ) {
+					update_option( 'rsa_activation_version', RSA_VERSION );
+				}
+
+				restore_current_blog();
+			}
+		} else {
+			if ( ! get_option( 'rsa_activation_version', false ) && ! get_option( 'rsa_options', false ) ) {
+				update_option( 'rsa_activation_version', RSA_VERSION );
+			}
+		}
+
 		if ( ! $network_active ) {
 			update_option( 'blog_public', 2 );
 		}
@@ -1735,42 +1755,41 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
-		$ip              = '';
-		$trusted_headers = array(
-			'HTTP_CF_CONNECTING_IP',
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-		);
+		$ip = '';
+
+		// For any active version prior to 7.5.0, we use the default trusted headers.
+		if ( version_compare( get_option( 'rsa_activation_version', '0.0.0' ), '7.5.0', '<' ) ) {
+			$trusted_headers = array(
+				'HTTP_CF_CONNECTING_IP',
+				'HTTP_CLIENT_IP',
+				'HTTP_X_FORWARDED_FOR',
+				'HTTP_X_FORWARDED',
+				'HTTP_X_CLUSTER_CLIENT_IP',
+				'HTTP_FORWARDED_FOR',
+				'HTTP_FORWARDED',
+			);
+		} else {
+			$trusted_headers = array();
+		}
 
 		/**
 		 * Filter hook to set array of trusted IP address headers.
 		 *
-		 * Most CDN providers will set the IP address of the client in a number
-		 * of headers. This allows the plugin to detect the IP address of the client
-		 * even if it is behind a proxy.
+		 * By default we only trust the REMOTE_ADDR header, as other
+		 * headers can easily be spoofed.
 		 *
-		 * Use this hook to modify the permitted proxy headers. For sites without a
-		 * CDN (or local proxy) it is recommended to add a filter to this hook to
-		 * return an empty array.
+		 * If your site is behind a proxy, typically the REMOTE_ADDR header
+		 * will contain the IP address of the proxy and not the client. To
+		 * deal with this situation, you'll need to use this filter
+		 * to set any other headers you want to trust.
 		 *
-		 * add_filter( 'rsa_trusted_headers', '__return_empty_array' );
+		 * Note that by doing this you will open your site up to IP spoofing
+		 * attacks so proceed with caution. If possible, you should also use
+		 * the rsa_trusted_proxies filter to set the proxy IP addresses you
+		 * trust so these headers will only be used if a request came from
+		 * the proxy.
 		 *
-		 * By default, the following headers are trusted:
-		 * - HTTP_CF_CONNECTING_IP
-		 * - HTTP_CLIENT_IP
-		 * - HTTP_X_FORWARDED_FOR
-		 * - HTTP_X_FORWARDED
-		 * - HTTP_X_CLUSTER_CLIENT_IP
-		 * - HTTP_FORWARDED_FOR
-		 * - HTTP_FORWARDED
-		 *
-		 * To allow for CDNs, these headers take priority over the REMOTE_ADDR value.
-		 *
-		 * @param string[] $trusted_proxies Array of trusted IP Address headers.
+		 * @param string[] $trusted_headers Array of trusted IP Address headers.
 		 */
 		$trusted_headers = apply_filters( 'rsa_trusted_headers', $trusted_headers );
 
@@ -2122,6 +2141,7 @@ function restricted_site_access_uninstall() {
 				update_option( 'blog_public', 1 );
 			}
 			delete_option( 'rsa_options' );
+			delete_option( 'rsa_activation_version' );
 
 			restore_current_blog();
 		}
@@ -2130,6 +2150,7 @@ function restricted_site_access_uninstall() {
 			update_option( 'blog_public', 1 );
 		}
 		delete_option( 'rsa_options' );
+		delete_option( 'rsa_activation_version' );
 	}
 }
 
