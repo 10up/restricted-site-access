@@ -5,6 +5,16 @@
  * @package RSA Seeder
  */
 
+// Allow the HTTP_X_FORWARDED in tests.
+add_filter(
+	'rsa_trusted_headers',
+	function() {
+		return array(
+			'HTTP_X_FORWARDED',
+		);
+	}
+);
+
 add_filter( 'restricted_site_access_is_restricted', 'my_rsa_feed_override', 10, 2 );
 
 function my_rsa_feed_override( $is_restricted, $wp ) {

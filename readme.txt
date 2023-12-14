@@ -4,7 +4,7 @@ Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restricted, restrict, privacy, limited, permissions, security, block
 Requires at least: 5.7
 Tested up to:      6.4
-Stable tag:        7.4.1
+Stable tag:        7.5.0
 Requires PHP:      7.4
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
@@ -64,17 +64,15 @@ Visitors that are not logged in or allowed by IP address will not be able to bro
 
 Restricted Site Access is not meant to be a top secret data safe, but simply a reliable and convenient way to handle unwanted visitors.
 
-In 7.3.2, two new filters have been added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. For any sites that were using Restricted Site Access prior to version 7.5.0, a handful of HTTP headers are trusted by default. It is recommended to review these filters and utilize them appropriately for your site to secure things further.
-
-If your site is not running behind a proxy, we recommend doing the following:
+In 7.3.2, two new filters were added that can be utilized to help prevent IP spoofing attacks. The first filter allows you to set up a list of approved proxy IP addresses and the second allows you to set up a list of approved HTTP headers. For any sites that were using Restricted Site Access prior to version 7.5.0, a handful of HTTP headers are trusted by default. To change this, utilize the `rsa_trusted_headers` filter to modify the HTTP headers you want to trust. If your site is not running behind a proxy, we recommend doing the following:
 
 `
 add_filter( 'rsa_trusted_headers', '__return_empty_array' );
 `
 
-This will then only use the `REMOTE_ADDR` HTTP header to determine the IP address of the visitor. This header can't be spoofed, so this will increase security.
+This will then only use the `REMOTE_ADDR` HTTP header to determine the IP address of the visitor. This header can't be spoofed, so this will increase security. Note that this is now the default for all new installs since version 7.5.0.
 
-If your site is running behind a proxy (like a CDN), you can't rely on the `REMOTE_ADDR` HTTP header, as this will contain the IP address of the proxy, not the user. If your proxy uses static IP addresses, we recommend using the `rsa_trusted_proxies` filter to set those trusted IP addresses:
+If your site is running behind a proxy (like a CDN), you usually can't rely on the `REMOTE_ADDR` HTTP header, as this will contain the IP address of the proxy, not the user. If your proxy uses static IP addresses, we recommend using the `rsa_trusted_proxies` filter to set those trusted IP addresses:
 
 `
 add_filter( 'rsa_trusted_proxies', 'my_rsa_trusted_proxies' );
@@ -205,6 +203,13 @@ When this option is activated, it serves as a barrier to all visitors except tho
 1. Plenty of inline help! Looks and behaves like native WordPress help.
 
 == Changelog ==
+
+= 7.5.0 - 2023-12-14 =
+**Note:** this release changes the default behavior for new installs in regards to IP detection. This shouldn't impact existing installs but there are two filters that can be used to change this behavior. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
+
+* **Fixed:** Update code snippet in the readme (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#291](https://github.com/10up/restricted-site-access/pull/291)).
+* **Security:** For new installs, ensure we only trust the `REMOTE_ADDR` HTTP header by default. Existing installs will still utilize the old list of approved headers but can modify this (and are recommended to) by using the `rsa_trusted_headers` filter (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dustinrue](https://github.com/dustinrue), [@mikhail-net](https://github.com/mikhail-net), [Darius Sveikauskas](https://patchstack.com/) via [#290](https://github.com/10up/restricted-site-access/pull/290)).
+* **Security:** Bump `axios` from 0.25.0 to 1.6.2 and `@wordpress/scripts` from 23.7.2 to 26.19.0 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#293](https://github.com/10up/restricted-site-access/pull/293)).
 
 = 7.4.1 - 2023-11-14 =
 * **Added:** GitHub Action summary report for Cypress end-to-end tests (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
@@ -431,6 +436,9 @@ __Note: There is currently an edge case bug affecting IP whitelisting. This bug 
 * **Added:** Initial public release.
 
 == Upgrade Notice ==
+
+= 7.5.0 =
+This release changes the default behavior for new installs in regards to IP detection. This shouldn't impact existing installs but there are two filters that can be used to change this behavior. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
 
 = 7.4.0 =
 Changes the [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable`.
