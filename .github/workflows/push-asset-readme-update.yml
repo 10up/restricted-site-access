@@ -1,14 +1,24 @@
 name: Plugin asset/readme update
+
 on:
   push:
     branches:
     - trunk
+
 jobs:
   trunk:
     name: Push to trunk
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build
+      run: |
+        npm install
+        npm run build
+        composer i --no-dev
+
     - name: WordPress.org plugin asset/readme update
       uses: 10up/action-wordpress-plugin-asset-update@stable
       env:
