@@ -22,20 +22,20 @@
 				"activate": true
 			}
 		},
-    {
-      "step": "setSiteOptions",
-      "options": {
-        "rsa_options": {
-          "approach": 3,
-          "allowed": [
-            "127.0.0.1"
-          ],
-          "comment": [
-            "Example of an allowed IP address"
-          ]
-        },
-        "rsa_activation_version": "7.5.0"
-      }
-    }
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"rsa_options": {
+					"approach": 3,
+					"allowed": [
+						"127.0.0.1"
+					],
+					"comment": [
+						"Example of an allowed IP address"
+					]
+				},
+				"rsa_activation_version": "7.5.0"
+			}
+		}
 	]
 }
