@@ -1,0 +1,41 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"landingPage": "\/wp-admin\/options-reading.php",
+	"preferredVersions": {
+		"php": "7.4",
+		"wp": "latest"
+	},
+	"phpExtensionBundles": ["kitchen-sink"],
+	"steps": [
+		{
+			"step": "login",
+			"username": "admin",
+			"password": "password"
+		},
+		{
+			"step": "installPlugin",
+			"pluginZipFile": {
+				"resource": "wordpress.org\/plugins",
+				"slug": "restricted-site-access"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"rsa_options": {
+					"approach": 3,
+					"allowed": [
+						"127.0.0.1"
+					],
+					"comment": [
+						"Example of an allowed IP address"
+					]
+				},
+				"rsa_activation_version": "7.5.0"
+			}
+		}
+	]
+}
