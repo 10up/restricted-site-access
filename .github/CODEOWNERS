@@ -1,5 +1,5 @@
-# These owners will be the default owners for everything in the repo. Unless a later match takes precedence, @Sidsector9, as primary maintainer will be requested for review when someone opens a Pull Request.
-*                   @Sidsector9
+# These owners will be the default owners for everything in the repo. Unless a later match takes precedence, @jeffpaul and @dkotter, as primary maintainers will be requested for review when someone opens a Pull Request.
+*                   @jeffpaul @dkotter
 
 # GitHub and WordPress.org specifics
 /.github/           @jeffpaul
