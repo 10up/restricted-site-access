@@ -12,18 +12,15 @@
   },
   "devDependencies": {
     "@10up/cypress-wp-utils": "^0.2.0",
-    "@wordpress/dependency-extraction-webpack-plugin": "^4.0.0",
-    "@wordpress/env": "^8.10.0",
-    "@wordpress/eslint-plugin": "^10.0.2",
-    "@wordpress/scripts": "^26.19.0",
+    "@wordpress/dependency-extraction-webpack-plugin": "^5.1.0",
+    "@wordpress/env": "^9.2.0",
+    "@wordpress/scripts": "^27.1.0",
     "cypress": "^13.2.0",
     "cypress-file-upload": "^5.0.8",
-    "eslint": "^8.8.0",
-    "mochawesome-json-to-md": "^0.7.2",
-    "prettier": "^2.8.7"
+    "mochawesome-json-to-md": "^0.7.2"
   },
   "scripts": {
-    "lint:js": "npx eslint assets/js/src",
+    "lint:js": "wp-scripts lint-js assets/js/src",
     "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
     "cypress:run": "cypress run --config-file tests/cypress/config.js",
     "env": "wp-env",
