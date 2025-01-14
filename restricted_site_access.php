@@ -4,7 +4,7 @@
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
  * Version:           7.5.1
- * Requires at least: 6.4
+ * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            10up
  * Author URI:        https://10up.com
@@ -1301,14 +1301,14 @@ class Restricted_Site_Access {
 			}
 			?>
 			<div class="rsa_unrestricted_ip_row">
-				<input type="text" name="rsa_options[allowed][]" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" size="20" />
-				<input type="text" name="rsa_options[comment][]" class="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" size="20" />
+				<input type="text" name="rsa_options[allowed][]" class="ip code" placeholder="<?php esc_attr_e( 'IP Address or Range', 'restricted-site-access' ); ?>" size="20" />
+				<input type="text" name="rsa_options[comment][]" class="newipcomment" placeholder="<?php esc_attr_e( 'Identify this entry', 'restricted-site-access' ); ?>" size="20" />
 				<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
 			</div>
 			</div>
 			<div id="rsa_add_new_ip_fields">
 				<p class="description"><label><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
-				<input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add new IP' ); ?>" style="margin-top: 5px;" />
+				<input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add new IP', 'restricted-site-access' ); ?>" style="margin-top: 5px;" />
 				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>

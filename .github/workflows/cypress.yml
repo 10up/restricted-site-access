@@ -37,7 +37,7 @@ jobs:
             echo "RSA_FILES_CHANGED=yes" >> $GITHUB_OUTPUT
           fi
 
-  build: 
+  build:
     uses: 10up/restricted-site-access/.github/workflows/build-release-zip.yml@develop
   cypress:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
         core:
           - {name: 'WP latest', version: 'latest'}
           - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
-          - {name: 'WP minimum', version: 'WordPress/WordPress#6.4'}
+          - {name: 'WP minimum', version: 'WordPress/WordPress#6.5'}
 
     steps:
     - name: Checkout
@@ -85,7 +85,7 @@ jobs:
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
     - name: Install dependencies
       run: npm install
-    - name: Set the core version and plugins config 
+    - name: Set the core version and plugins config
       run: ./tests/bin/set-wp-config.js --core=${{ matrix.core.version }} --plugins=./${{ github.event.repository.name }},./tests/rsa-seeder
     - name: Set up WP environment
       run: npm run env:start

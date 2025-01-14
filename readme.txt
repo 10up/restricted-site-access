@@ -2,7 +2,7 @@
 Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomnom99
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restrict, limited, permissions, security
-Tested up to:      6.6
+Tested up to:      6.7
 Stable tag:        7.5.1
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
@@ -260,7 +260,7 @@ When this option is activated, it serves as a barrier to all visitors except tho
 * **Security:** Bump `@sideway/formula` from 3.0.0 to 3.0.1 (props [@Sidsector9](https://github.com/Sidsector9) via [#246](https://github.com/10up/restricted-site-access/pull/246)).
 * **Security:** Bump `webpack` from `5.74.0` to `5.76.1` (props [@Sidsector9](https://github.com/Sidsector9) via [#248](https://github.com/10up/restricted-site-access/pull/248)).
 
-[View historical changelog details here](https://github.com/10up/retricted-site-access/blob/develop/CHANGELOG.md).
+[View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
 
