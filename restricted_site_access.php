@@ -19,6 +19,7 @@ if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator
 }
 
 require_once '10up-lib/wp-compat-validation-tool/src/Validator.php';
+require_once 'includes/public-post-preview-compat.php';
 
 $compat_checker = new \RSA_Validator\Validator();
 $compat_checker
