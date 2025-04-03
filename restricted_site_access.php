@@ -112,7 +112,6 @@ class Restricted_Site_Access {
 		if ( null === $instance ) {
 			$instance = new self();
 			self::add_actions();
-			self::populate_fields_array();
 		}
 
 		return $instance;
@@ -135,6 +134,7 @@ class Restricted_Site_Access {
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
 		add_action( 'init', array( __CLASS__, 'generate_nonce' ) );
+		add_action( 'init', array( __CLASS__, 'populate_fields' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
@@ -158,6 +158,13 @@ class Restricted_Site_Access {
 	 */
 	public static function generate_nonce() {
 		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
+	}
+
+	/**
+	 * Populates the fields array with the field information.
+	 */
+	public static function populate_fields() {
+		self::populate_fields_array();
 	}
 
 	/**
