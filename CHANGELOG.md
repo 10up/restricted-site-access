@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.5.3] - 2025-05-19
+**Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**
+
+### Changed
+- Bump WordPress "tested up to" version 6.8 (props [@kmgalanakis](https://github.com/kmgalanakis), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#349](https://github.com/10up/restricted-site-access/pull/349), [#352](https://github.com/10up/restricted-site-access/pull/352)).
+- Bump WordPress minimum from 6.5 to 6.6 (props [@jeffpaul](https://github.com/jeffpaul) via [#351](https://github.com/10up/restricted-site-access/pull/351), [#352](https://github.com/10up/restricted-site-access/pull/352)).
+
+### Fixed
+- PHP Notice that the function `_load_textdomain_just_in_time` was called incorrectly (props [@kmgalanakis](https://github.com/kmgalanakis), [@dkotter](https://github.com/dkotter) via [#350](https://github.com/10up/restricted-site-access/pull/350)).
+
+### Security
+- Bump `axios` from 1.7.4 to 1.8.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#346](https://github.com/10up/restricted-site-access/pull/346)).
+
+### Developer
+- Update the number of tags in our readme (props [@jeffpaul](https://github.com/jeffpaul) via [#353](https://github.com/10up/restricted-site-access/pull/353)).
+- Update all third-party actions our workflows rely on to use versions based on specific commit hashes (props [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#347](https://github.com/10up/restricted-site-access/pull/347)).
+
 ## [7.5.2] - 2025-02-05
 **Note that this version bumps the WordPress minimum supported version from 6.4 to 6.5.**
 
@@ -385,6 +402,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.5.3]: https://github.com/10up/restricted-site-access/compare/7.5.2...7.5.3
 [7.5.2]: https://github.com/10up/restricted-site-access/compare/7.5.1...7.5.2
 [7.5.1]: https://github.com/10up/restricted-site-access/compare/7.5.0...7.5.1
 [7.5.0]: https://github.com/10up/restricted-site-access/compare/7.4.1...7.5.0
