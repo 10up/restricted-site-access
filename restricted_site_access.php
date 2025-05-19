@@ -3,8 +3,8 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.5.2
- * Requires at least: 6.5
+ * Version:           7.5.3
+ * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            10up
  * Author URI:        https://10up.com
@@ -57,7 +57,7 @@ if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.5.2' );
+define( 'RSA_VERSION', '7.5.3' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -112,7 +112,6 @@ class Restricted_Site_Access {
 		if ( null === $instance ) {
 			$instance = new self();
 			self::add_actions();
-			self::populate_fields_array();
 		}
 
 		return $instance;
@@ -135,6 +134,7 @@ class Restricted_Site_Access {
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
 		add_action( 'init', array( __CLASS__, 'generate_nonce' ) );
+		add_action( 'init', array( __CLASS__, 'populate_fields' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
@@ -158,6 +158,13 @@ class Restricted_Site_Access {
 	 */
 	public static function generate_nonce() {
 		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
+	}
+
+	/**
+	 * Populates the fields array with the field information.
+	 */
+	public static function populate_fields() {
+		self::populate_fields_array();
 	}
 
 	/**

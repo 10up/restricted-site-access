@@ -2,9 +2,8 @@
 Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomnom99
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restrict, limited, permissions, security
-Requires at least: 6.6
 Tested up to:      6.8
-Stable tag:        7.5.2
+Stable tag:        7.5.3
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -203,6 +202,15 @@ When this option is activated, it serves as a barrier to all visitors except tho
 
 == Changelog ==
 
+= 7.5.3 - 2025-05-19 =
+
+**Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**
+
+* **Changed:** Bump WordPress "tested up to" version 6.8 (props [@kmgalanakis](https://github.com/kmgalanakis), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#349](https://github.com/10up/restricted-site-access/pull/349), [#352](https://github.com/10up/restricted-site-access/pull/352)).
+* **Changed:** Bump WordPress minimum from 6.5 to 6.6 (props [@jeffpaul](https://github.com/jeffpaul) via [#351](https://github.com/10up/restricted-site-access/pull/351), [#352](https://github.com/10up/restricted-site-access/pull/352)).
+* **Fixed:** PHP Notice that the function `_load_textdomain_just_in_time` was called incorrectly (props [@kmgalanakis](https://github.com/kmgalanakis), [@dkotter](https://github.com/dkotter) via [#350](https://github.com/10up/restricted-site-access/pull/350)).
+* **Security:** Bump `axios` from 1.7.4 to 1.8.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#346](https://github.com/10up/restricted-site-access/pull/346)).
+
 = 7.5.2 - 2025-02-05 =
 
 **Note that this version bumps the WordPress minimum supported version from 6.4 to 6.5.**
@@ -277,6 +285,9 @@ When this option is activated, it serves as a barrier to all visitors except tho
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 7.5.3 =
+**Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**
 
 = 7.5.2 =
 This version bumps the WordPress minimum supported version from 6.4 to 6.5.

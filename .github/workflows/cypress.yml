@@ -14,15 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has_changed: ${{ steps.files-changed.outputs.RSA_FILES_CHANGED }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
       - name: Get updated JS files
         id: changed-files
-        uses: tj-actions/changed-files@v41
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
             files: |
               **/*.php
@@ -39,6 +40,7 @@ jobs:
 
   build:
     uses: 10up/restricted-site-access/.github/workflows/build-release-zip.yml@develop
+
   cypress:
     runs-on: ubuntu-latest
     needs: [check-diffs, build]
@@ -48,14 +50,14 @@ jobs:
         core:
           - {name: 'WP latest', version: 'latest'}
           - {name: 'WP trunk', version: 'WordPress/WordPress#master'}
-          - {name: 'WP minimum', version: 'WordPress/WordPress#6.5'}
+          - {name: 'WP minimum', version: 'WordPress/WordPress#6.6'}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Set PHP version
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # v2.32.0
       with:
         php-version: '7.4'
         coverage: none
@@ -65,16 +67,18 @@ jobs:
       run: composer i
 
     - name: Download build zip
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@b14cf4c92620c250e1c074ab0a5800e37df86765 # v4.2.0
       with:
         name: ${{ github.event.repository.name }}
         path: ${{ github.event.repository.name }}
+
     - name: Display structure of downloaded files
       run: ls -R
       working-directory: ${{ github.event.repository.name }}
+
     - name: Cache node_modules
       id: cache-node-modules
-      uses: actions/cache@v3
+      uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
       env:
         cache-name: cache-node-modules
       with:
@@ -83,10 +87,13 @@ jobs:
           ~/.cache
           ~/.npm
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
     - name: Install dependencies
       run: npm install
+
     - name: Set the core version and plugins config
       run: ./tests/bin/set-wp-config.js --core=${{ matrix.core.version }} --plugins=./${{ github.event.repository.name }},./tests/rsa-seeder
+
     - name: Set up WP environment
       run: npm run env:start
 
@@ -100,8 +107,9 @@ jobs:
           npx mochawesome-json-to-md -p ./tests/cypress/reports/mochawesome.json -o ./tests/cypress/reports/mochawesome.md
           npx mochawesome-report-generator tests/cypress/reports/mochawesome.json -o tests/cypress/reports/
           cat ./tests/cypress/reports/mochawesome.md >> $GITHUB_STEP_SUMMARY
+
     - name: Make artifacts available
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
       if: failure()
       with:
         name: cypress-artifact
