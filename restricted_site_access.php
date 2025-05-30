@@ -151,6 +151,8 @@ class Restricted_Site_Access {
 
 		// Prevent WordPress from auto-resolving 404 URLs.
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
+
+		add_filter( 'wp_headers', array( __CLASS__, 'maybe_add_no_cache_headers' ) );
 	}
 
 	/**
@@ -500,6 +502,32 @@ class Restricted_Site_Access {
 				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
+	}
+
+	/**
+	 * Add nocache headers to the response if required.
+	 *
+	 * Add the nocache headers to the response if there is an IP allow list
+	 * configured. This is to prevent the caching of restricted pages on
+	 * by caching plugins, CDNs or similar services.
+	 *
+	 * Runs on the `wp_headers` filter.
+	 *
+	 * @param array $headers The headers to be sent.
+	 * @return array The headers to be sent, possibly with no-cache headers added.
+	 */
+	public static function maybe_add_no_cache_headers( $headers ) {
+		$options_ips = (array) self::get_options()['allowed'];
+		$config_ips  = (array) self::get_config_ips();
+
+		$allowed_ips = array_merge( $options_ips, $config_ips );
+
+		if ( ! empty( $allowed_ips ) ) {
+			// Add no cache headers if there is an IP allow list.
+			$headers = array_merge( $headers, wp_get_nocache_headers() );
+		}
+
+		return $headers;
 	}
 
 	/**
