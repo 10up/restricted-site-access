@@ -508,7 +508,7 @@ class Restricted_Site_Access {
 	 * Add nocache headers to the response if required.
 	 *
 	 * Add the nocache headers to the response if there is an IP allow list
-	 * configured. This is to prevent the caching of restricted pages on
+	 * configured. This is to prevent the caching of restricted pages
 	 * by caching plugins, CDNs or similar services.
 	 *
 	 * Runs on the `wp_headers` filter.
