@@ -1094,9 +1094,9 @@ class Restricted_Site_Access {
 					<?php
 						echo wp_kses_post(
 							sprintf(
-								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#faq */
+								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F */
 								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
-								__( 'https://wordpress.org/plugins/restricted-site-access/#faq', 'restricted-site-access' )
+								__( 'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F', 'restricted-site-access' )
 							)
 						);
 					?>
