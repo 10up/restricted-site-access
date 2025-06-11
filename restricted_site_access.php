@@ -1058,11 +1058,39 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Check if the page caching is on, and notify the admin
+	 * Whether to show the page cache notifications.
+	 *
+	 * Detects whether page caching is enabled via the WP_CACHE constant to
+	 * determine if the page cache notices should be shown.
+	 *
+	 * To modify the behavior based on other factors, use the
+	 * `restricted_site_access_show_page_cache_notice` filter.
+	 *
+	 * @since x.x.x
+	 */
+	public static function show_page_cache_notification() {
+		// If WP_CACHE is on, show the notification.
+		$show_notification = defined( 'WP_CACHE' ) && true === WP_CACHE;
+
+		/**
+		 * Filter whether to show the page cache notifications.
+		 *
+		 * Allows for changing the setting for situations in which the WP_CACHE
+		 * constant is unsuitable for determining whether page caching is enabled.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param bool $show_notification Whether to show the page cache notice.
+		 *                                True if caching is detected, false otherwise.
+		 */
+		return apply_filters( 'restricted_site_access_show_page_cache_notice', $show_notification );
+	}
+
+	/**
+	 * Display a warning notice if page caching is enabled.
 	 */
 	public static function page_cache_notice() {
-		// If WP_CACHE is on we show notification.
-		$show_notification = apply_filters( 'restricted_site_access_show_page_cache_notice', defined( 'WP_CACHE' ) && true === WP_CACHE );
+		$show_notification = self::show_page_cache_notification();
 
 		if ( $show_notification ) {
 
