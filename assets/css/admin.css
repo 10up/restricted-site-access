@@ -11,6 +11,10 @@ input#rsa-user-message {
 	position: relative;
 }
 
+.rsa-ip-addresses-caching-notice {
+	margin-bottom: 1em;
+}
+
 .rsa-inline-page-cache-warning {
 	color: #d63638;
 }
