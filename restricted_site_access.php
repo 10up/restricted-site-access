@@ -1336,6 +1336,23 @@ class Restricted_Site_Access {
 	public static function settings_field_allowed() {
 		?>
 		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
+			<div class="rsa-ip-addresses-caching-notice">
+				<?php if ( self::show_page_cache_notification() ) : ?>
+					<p class="rsa-inline-page-cache-warning">
+						<strong>
+							<?php esc_html_e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected.', 'restricted-site-access' ); ?>
+						</strong>
+					</p>
+				<?php endif; ?>
+
+				<p>
+					<?php esc_html_e( 'RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.', 'restricted-site-access' ); ?>
+				</p>
+
+				<p>
+					<?php esc_html_e( 'Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions – including external solutions we might not detect – can ignore the no-caching headers set by WordPress and show cached content to unauthorized users.', 'restricted-site-access' ); ?>
+				</p>
+			</div>
 			<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
 				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
 				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
