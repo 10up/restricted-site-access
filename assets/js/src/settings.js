@@ -113,6 +113,24 @@ import 'jquery-effects-shake';
 			}
 		);
 
+		$( '.rsa-learn-more-link' ).on(
+			'click',
+			function( event ) {
+				event.preventDefault();
+				$( '.rsa-learn-more-content' ).removeClass( 'hide-if-js' );
+				$( this ).addClass( 'hide-if-js' ).removeClass( 'hide-if-no-js' );
+			}
+		);
+
+		$( '.rsa-learn-more-less-link' ).on(
+			'click',
+			function( event ) {
+				event.preventDefault();
+				$( '.rsa-learn-more-content' ).addClass( 'hide-if-js' );
+				$( '.rsa-learn-more-link' ).removeClass( 'hide-if-js' ).addClass( 'hide-if-no-js' );
+			}
+		);
+
 		Cache.add_btn.on( 'click', function() {
 			const newIp = Cache.empty_ip
 				.clone()
