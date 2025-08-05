@@ -708,23 +708,23 @@ add_action(
 			'rsa/v1',
 			'seed/admin-bar-hiding/create-user',
 			array(
-				'methods'  => 'POST',
-				'callback' => function( $request ) {
-					$params = $request->get_params();
+				'methods'             => 'POST',
+				'callback'            => function( $request ) {
+					$params   = $request->get_params();
 					$username = sanitize_user( $params['username'] ?? 'test_user' );
-					$email = sanitize_email( $params['email'] ?? 'test@example.com' );
-					$role = sanitize_key( $params['role'] ?? 'subscriber' );
+					$email    = sanitize_email( $params['email'] ?? 'test@example.com' );
+					$role     = sanitize_key( $params['role'] ?? 'subscriber' );
 					$password = $params['password'] ?? 'password123';
 
 					// Check if user already exists.
 					$existing_user = get_user_by( 'login', $username );
 					if ( $existing_user ) {
 						return array(
-							'success' => true,
-							'user_id' => $existing_user->ID,
+							'success'  => true,
+							'user_id'  => $existing_user->ID,
 							'username' => $username,
-							'role' => $role,
-							'message' => 'User already exists',
+							'role'     => $role,
+							'message'  => 'User already exists',
 						);
 					}
 
@@ -733,7 +733,7 @@ add_action(
 					if ( is_wp_error( $user_id ) ) {
 						return array(
 							'success' => false,
-							'error' => $user_id->get_error_message(),
+							'error'   => $user_id->get_error_message(),
 						);
 					}
 
@@ -742,12 +742,12 @@ add_action(
 					$user->set_role( $role );
 
 					return array(
-						'success' => true,
-						'user_id' => $user_id,
+						'success'  => true,
+						'user_id'  => $user_id,
 						'username' => $username,
-						'role' => $role,
-						'email' => $email,
-						'message' => 'User created successfully',
+						'role'     => $role,
+						'email'    => $email,
+						'message'  => 'User created successfully',
 					);
 				},
 				'permission_callback' => '__return_true',
@@ -758,9 +758,9 @@ add_action(
 			'rsa/v1',
 			'seed/admin-bar-hiding/configure-settings',
 			array(
-				'methods'  => 'POST',
-				'callback' => function( $request ) {
-					$params = $request->get_params();
+				'methods'             => 'POST',
+				'callback'            => function( $request ) {
+					$params        = $request->get_params();
 					$roles_to_hide = $params['roles_to_hide'] ?? array();
 
 					// Get current RSA options.
@@ -773,9 +773,9 @@ add_action(
 					update_option( 'rsa_options', $rsa_options );
 
 					return array(
-						'success' => true,
+						'success'       => true,
 						'roles_to_hide' => $roles_to_hide,
-						'message' => 'Admin bar hiding settings configured successfully',
+						'message'       => 'Admin bar hiding settings configured successfully',
 					);
 				},
 				'permission_callback' => '__return_true',
@@ -786,8 +786,8 @@ add_action(
 			'rsa/v1',
 			'seed/admin-bar-hiding/reset-settings',
 			array(
-				'methods'  => 'GET',
-				'callback' => function() {
+				'methods'             => 'GET',
+				'callback'            => function() {
 					// Get current RSA options.
 					$rsa_options = get_option( 'rsa_options', array() );
 
