@@ -703,7 +703,7 @@ add_action(
 			)
 		);
 
-		// Admin Bar Hiding REST Endpoints
+		// Admin Bar Hiding REST Endpoints.
 		register_rest_route(
 			'rsa/v1',
 			'seed/admin-bar-hiding/create-user',
@@ -716,7 +716,7 @@ add_action(
 					$role = sanitize_key( $params['role'] ?? 'subscriber' );
 					$password = $params['password'] ?? 'password123';
 
-					// Check if user already exists
+					// Check if user already exists.
 					$existing_user = get_user_by( 'login', $username );
 					if ( $existing_user ) {
 						return array(
@@ -728,7 +728,7 @@ add_action(
 						);
 					}
 
-					// Create user
+					// Create user.
 					$user_id = wp_create_user( $username, $password, $email );
 					if ( is_wp_error( $user_id ) ) {
 						return array(
@@ -737,7 +737,7 @@ add_action(
 						);
 					}
 
-					// Set user role
+					// Set user role.
 					$user = get_user_by( 'id', $user_id );
 					$user->set_role( $role );
 
@@ -763,13 +763,13 @@ add_action(
 					$params = $request->get_params();
 					$roles_to_hide = $params['roles_to_hide'] ?? array();
 
-					// Get current RSA options
+					// Get current RSA options.
 					$rsa_options = get_option( 'rsa_options', array() );
 
-					// Update admin bar hiding settings
+					// Update admin bar hiding settings.
 					$rsa_options['hide_admin_bar_roles'] = $roles_to_hide;
 
-					// Save options
+					// Save options.
 					update_option( 'rsa_options', $rsa_options );
 
 					return array(
@@ -788,13 +788,13 @@ add_action(
 			array(
 				'methods'  => 'GET',
 				'callback' => function() {
-					// Get current RSA options
+					// Get current RSA options.
 					$rsa_options = get_option( 'rsa_options', array() );
 
-					// Reset admin bar hiding settings
+					// Reset admin bar hiding settings.
 					$rsa_options['hide_admin_bar_roles'] = array();
 
-					// Save options
+					// Save options.
 					update_option( 'rsa_options', $rsa_options );
 
 					return array(
