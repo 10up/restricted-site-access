@@ -93,6 +93,13 @@ class Restricted_Site_Access {
 	private static $fields;
 
 	/**
+	 * Settings fields that should always be visible.
+	 *
+	 * @var array $always_visible_fields The plugin settings fields that should always be visible.
+	 */
+	private static $always_visible_fields;
+
+	/**
 	 * The redirection nonce.
 	 *
 	 * @var string
@@ -149,6 +156,9 @@ class Restricted_Site_Access {
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
 
+		// Hide admin bar for selected user roles.
+		add_filter( 'show_admin_bar', array( __CLASS__, 'hide_admin_bar_for_roles' ), 10, 1 );
+
 		// Prevent WordPress from auto-resolving 404 URLs.
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
 	}
@@ -203,6 +213,43 @@ class Restricted_Site_Access {
 		}
 
 		return $original_value;
+	}
+
+	/**
+	 * Hide admin bar for selected user roles.
+	 *
+	 * @param bool $show_admin_bar Whether the admin bar should be shown.
+	 * @return bool Whether the admin bar should be shown.
+	 */
+	public static function hide_admin_bar_for_roles( $show_admin_bar ) {
+		// Only hide admin bar on frontend, not in admin.
+		if ( is_admin() ) {
+			return $show_admin_bar;
+		}
+
+		// Only hide for logged-in users.
+		if ( ! is_user_logged_in() ) {
+			return $show_admin_bar;
+		}
+
+		// Get current user's roles.
+		$user = wp_get_current_user();
+		if ( ! $user || empty( $user->roles ) ) {
+			return $show_admin_bar;
+		}
+
+		// Get RSA options to check which roles should have admin bar hidden.
+		$rsa_options          = self::get_options();
+		$hide_admin_bar_roles = isset( $rsa_options['hide_admin_bar_roles'] ) ? (array) $rsa_options['hide_admin_bar_roles'] : array();
+
+		// Check if current user has any role that should hide admin bar.
+		foreach ( $user->roles as $role ) {
+			if ( in_array( $role, $hide_admin_bar_roles, true ) ) {
+				return false;
+			}
+		}
+
+		return $show_admin_bar;
 	}
 
 	/**
@@ -310,6 +357,14 @@ class Restricted_Site_Access {
 				'field'   => 'settings_field_allowed',
 			),
 		);
+
+		self::$always_visible_fields = array(
+			'hide_admin_bar_roles' => array(
+				'default' => array(),
+				'label'   => esc_html__( 'Hide admin bar for user roles on frontend', 'restricted-site-access' ),
+				'field'   => 'settings_field_hide_admin_bar_roles',
+			),
+		);
 	}
 
 	/**
@@ -335,8 +390,11 @@ class Restricted_Site_Access {
 			$options = get_option( 'rsa_options', array() );
 		}
 
+		// Merge fields that should always be visible with the rest of the fields.
+		$all_fields = array_merge( self::$fields, self::$always_visible_fields );
+
 		// Fill in defaults where values aren't set.
-		foreach ( self::$fields as $field_name => $field_details ) {
+		foreach ( $all_fields as $field_name => $field_details ) {
 			if ( ! isset( $options[ $field_name ] ) ) {
 				$options[ $field_name ] = $field_details['default'];
 			}
@@ -731,6 +789,19 @@ class Restricted_Site_Access {
 			}
 		}
 
+		// Add settings fields that should always be visible.
+		add_settings_section( 'restricted-site-access-always-visible', '', '__return_empty_string', self::$settings_page );
+		foreach ( self::$always_visible_fields as $field_name => $field_data ) {
+			add_settings_field(
+				$field_name,
+				$field_data['label'],
+				array( __CLASS__, $field_data['field'] ),
+				self::$settings_page,
+				'restricted-site-access-always-visible',
+				array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
+			);
+		}
+
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
 		// This is for Network Site Settings.
@@ -844,7 +915,16 @@ class Restricted_Site_Access {
 					</td>
 				</tr>
 			</table>
-
+			<table id="restricted-site-access-always-visible" class="form-table">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Hide admin bar for user roles on frontend', 'restricted-site-access' ); ?></th>
+					<td>
+						<?php
+						self::settings_field_hide_admin_bar_roles();
+						?>
+					</td>
+				</tr>
+			</table>
 		<?php
 	}
 
@@ -1123,6 +1203,12 @@ class Restricted_Site_Access {
 			__( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.', 'restricted-site-access' )
 		);
 
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Hide admin bar for user roles on frontend', 'help topic', 'restricted-site-access' ),
+			__( 'Select user roles for which the WordPress admin bar should be hidden on the frontend. This is useful for providing a cleaner experience for certain user types.', 'restricted-site-access' )
+		);
+
 		$screen->add_help_tab(
 			array(
 				'id'      => 'restricted-site-access',
@@ -1241,6 +1327,19 @@ class Restricted_Site_Access {
 
 		$new_input['allowed'] = array_keys( $ips_comments );
 		$new_input['comment'] = array_values( $ips_comments );
+
+		// Sanitize hide admin bar roles.
+		$new_input['hide_admin_bar_roles'] = array();
+		if ( ! empty( $input['hide_admin_bar_roles'] ) && is_array( $input['hide_admin_bar_roles'] ) ) {
+
+			$wp_roles   = wp_roles();
+			$role_names = array_keys( $wp_roles->roles );
+			foreach ( $input['hide_admin_bar_roles'] as $role ) {
+				if ( in_array( $role, $role_names, true ) ) {
+					$new_input['hide_admin_bar_roles'][] = sanitize_key( $role );
+				}
+			}
+		}
 
 		return $new_input;
 	}
@@ -1462,6 +1561,40 @@ class Restricted_Site_Access {
 			esc_html__( 'No published pages found.', 'restricted-site-access' ),
 			esc_attr( $args['id'] )
 		);
+	}
+
+	/**
+	 * Field for choosing user roles to hide admin bar.
+	 */
+	public static function settings_field_hide_admin_bar_roles() {
+		if ( ! isset( self::$rsa_options['hide_admin_bar_roles'] ) ) {
+			// @codeCoverageIgnoreStart
+			self::$rsa_options['hide_admin_bar_roles'] = array();
+			// @codeCoverageIgnoreEnd
+		}
+
+		$wp_roles       = wp_roles();
+		$selected_roles = (array) self::$rsa_options['hide_admin_bar_roles'];
+
+		?>
+		<fieldset>
+			<legend class="screen-reader-text">
+				<span><?php esc_html_e( 'Hide admin bar for user roles on frontend', 'restricted-site-access' ); ?></span>
+			</legend>
+			<?php foreach ( $wp_roles->roles as $role_name => $role_info ) : ?>
+				<label>
+					<input type="checkbox"
+						name="rsa_options[hide_admin_bar_roles][]"
+						value="<?php echo esc_attr( $role_name ); ?>"
+						<?php checked( in_array( $role_name, $selected_roles, true ) ); ?> />
+					<?php echo esc_html( $role_info['name'] ); ?>
+				</label><br />
+			<?php endforeach; ?>
+		</fieldset>
+		<p class="description">
+			<?php esc_html_e( 'Select user roles for which the admin bar should be hidden on the frontend.', 'restricted-site-access' ); ?>
+		</p>
+		<?php
 	}
 
 	/**
