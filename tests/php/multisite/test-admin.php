@@ -36,13 +36,16 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 
 		$options = $rsa::get_options( true );
 
-		$options['approach']      = 2;
-		$options['message']       = '';
-		$options['head_code']     = 0;
-		$options['redirect_url']  = 'https://10up.com';
-		$options['redirect_path'] = 1;
-		$options['allowed']       = array(
+		$options['approach']             = 2;
+		$options['message']              = '';
+		$options['head_code']            = 0;
+		$options['redirect_url']         = 'https://10up.com';
+		$options['redirect_path']        = 1;
+		$options['allowed']              = array(
 			'127.0.0.1',
+		);
+		$options['hide_admin_bar_roles'] = array(
+			'subscriber',
 		);
 
 		update_site_option( 'rsa_options', $options );
@@ -82,6 +85,8 @@ class Restricted_Site_Access_Test_Multisite_Admin extends WP_UnitTestCase {
 
 		$this->assertContains( 'type="text" name="rsa_options[allowed][]" value="127.0.0.1" class="ip code" readonly="true"', $html );
 		$this->assertContains( 'id="rsa_myip" value="Add My Current IP Address" style="margin-top: 5px;" data-myip="127.0.0.1" />', $html );
+
+		$this->assertContains( 'name="rsa_options[hide_admin_bar_roles][]" value="subscriber" checked=\'checked\'', $html );
 
 		// Now check for an empty site option.
 		delete_site_option( 'blog_public' );

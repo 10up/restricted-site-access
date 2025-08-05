@@ -94,12 +94,15 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 		$_POST['rsa_mode']    = ' enforce';
 		$_POST['blog_public'] = 2;
 		$_POST['rsa_options'] = array(
-			'approach'     => 99,
-			'message'      => 'Hello world<script>',
-			'head_code'    => 404,
-			'redirect_url' => 'https://10up.com',
-			'allowed'      => array(
+			'approach'             => 99,
+			'message'              => 'Hello world<script>',
+			'head_code'            => 404,
+			'redirect_url'         => 'https://10up.com',
+			'allowed'              => array(
 				'127.0.0.1',
+			),
+			'hide_admin_bar_roles' => array(
+				'subscriber',
 			),
 		);
 
@@ -118,7 +121,7 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 		$this->assertSame( 'https://10up.com', $options['redirect_url'] );
 		$this->assertSame( 0, $options['page'] );
 		$this->assertContains( '127.0.0.1', $options['allowed'] );
-
+		$this->assertContains( 'subscriber', $options['hide_admin_bar_roles'] );
 	}
 
 	public function test_set_defaults() {
@@ -153,6 +156,7 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 			$this->assertSame( '', $options['redirect_url'] );
 			$this->assertSame( 0, $options['page'] );
 			$this->assertEmpty( $options['allowed'] );
+			$this->assertEmpty( $options['hide_admin_bar_roles'] );
 
 			restore_current_blog();
 		}
