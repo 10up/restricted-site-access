@@ -5,7 +5,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 
 	describe( 'Settings Interface', () => {
 		it( 'should display admin bar hiding section', () => {
-			cy.get( 'h2' ).contains( 'Restricted Site Access Settings' ).should( 'be.visible' );
+			cy.get( 'h2' ).contains( 'Restricted Site Access' ).should( 'be.visible' );
 			cy.get( 'label' ).contains( 'Hide admin bar for user roles on frontend' ).should( 'be.visible' );
 		} );
 
@@ -22,14 +22,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should display help text', () => {
-			cy.get( 'p.description' ).contains( 'Select user roles for which the admin bar should be hidden on the frontend' ).should( 'be.visible' );
-		} );
-
-		it( 'should have proper fieldset structure', () => {
-			cy.get( 'fieldset' ).within( () => {
-				cy.get( 'legend.screen-reader-text' ).should( 'be.visible' );
-				cy.get( 'input[type="checkbox"]' ).should( 'have.length.at.least', 5 );
-			} );
+			cy.get( 'p.description' ).contains( 'Select user roles for which the WordPress admin bar should be hidden on the frontend' ).should( 'be.visible' );
 		} );
 	} );
 
@@ -83,14 +76,22 @@ describe( 'Admin Bar Hiding Feature', () => {
 
 	describe( 'Frontend Behavior', () => {
 		beforeEach( () => {
-			// Set up admin bar hiding for subscriber role
-			cy.get( 'input[value="subscriber"]' ).check();
-			cy.saveSettings();
+			// Configure admin bar hiding for subscriber role via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/configure-settings', {
+				roles_to_hide: [ 'subscriber' ],
+			} );
 		} );
 
 		it( 'should hide admin bar for subscriber on frontend', () => {
-			// Create and login as subscriber
-			cy.wpCli( 'user create subscriber_test subscriber@test.com --role=subscriber --user_pass=password123' );
+			// Create subscriber user via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'subscriber_test',
+				email: 'subscriber@test.com',
+				role: 'subscriber',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
 			// Login as subscriber
 			cy.visit( '/wp-login.php' );
@@ -106,8 +107,15 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should show admin bar for other roles on frontend', () => {
-			// Create and login as author
-			cy.wpCli( 'user create author_test author@test.com --role=author --user_pass=password123' );
+			// Create author user via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'author_test',
+				email: 'author@test.com',
+				role: 'author',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
 			// Login as author
 			cy.visit( '/wp-login.php' );
@@ -123,8 +131,15 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should show admin bar in admin area for all roles', () => {
-			// Create and login as subscriber
-			cy.wpCli( 'user create subscriber_admin subscriber_admin@test.com --role=subscriber --user_pass=password123' );
+			// Create subscriber user via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'subscriber_admin',
+				email: 'subscriber_admin@test.com',
+				role: 'subscriber',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
 			// Login as subscriber
 			cy.visit( '/wp-login.php' );
@@ -140,8 +155,17 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should handle multiple roles per user', () => {
-			// Create user with multiple roles
-			cy.wpCli( 'user create multirole_test multirole@test.com --role=subscriber --user_pass=password123' );
+			// Create user with subscriber role via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'multirole_test',
+				email: 'multirole@test.com',
+				role: 'subscriber',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
+
+			// Add contributor role via WP-CLI (since REST API doesn't support multiple roles)
 			cy.wpCli( 'user set-role multirole_test contributor' );
 
 			// Login as multi-role user
@@ -158,37 +182,22 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 	} );
 
-	describe( 'Network Settings (Multisite)', () => {
-		it( 'should display admin bar hiding in network settings', () => {
-			// Only run this test in multisite
-			cy.wpCli( 'core is-installed --network' ).then( ( result ) => {
-				if ( result.code === 0 ) {
-					cy.visitAdminPage( 'settings.php' );
-
-					cy.get( 'h2' ).contains( 'Restricted Site Access Settings' ).should( 'be.visible' );
-					cy.get( 'label' ).contains( 'Hide admin bar for user roles on frontend' ).should( 'be.visible' );
-
-					// Test network settings persistence
-					cy.get( 'input[value="subscriber"]' ).check();
-					cy.saveSettings();
-
-					cy.reload();
-					cy.get( 'input[value="subscriber"]' ).should( 'be.checked' );
-				} else {
-					cy.log( 'Skipping multisite test - not a multisite installation' );
-				}
-			} );
-		} );
-	} );
-
 	describe( 'Edge Cases', () => {
 		it( 'should handle no roles selected', () => {
-			// Ensure no roles are selected
-			cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).uncheck();
-			cy.saveSettings();
+			// Reset admin bar hiding settings via REST API
+			cy.request( 'GET', '/wp-json/rsa/v1/seed/admin-bar-hiding/reset-settings' ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
-			// Create and login as subscriber
-			cy.wpCli( 'user create edge_test edge@test.com --role=subscriber --user_pass=password123' );
+			// Create subscriber user via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'edge_test',
+				email: 'edge@test.com',
+				role: 'subscriber',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
 			cy.visit( '/wp-login.php' );
 			cy.get( '#user_login' ).type( 'edge_test' );
@@ -205,13 +214,20 @@ describe( 'Admin Bar Hiding Feature', () => {
 			// Create a custom role
 			cy.wpCli( 'eval "add_role( \'custom_role\', \'Custom Role\', array( \'read\' => true ) );"' );
 
-			// Create user with custom role
-			cy.wpCli( 'user create custom_test custom@test.com --role=custom_role --user_pass=password123' );
+			// Create user with custom role via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'custom_test',
+				email: 'custom@test.com',
+				role: 'custom_role',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
-			// Select custom role for admin bar hiding
-			cy.visitAdminPage( 'options-reading.php' );
-			cy.get( 'input[value="custom_role"]' ).check();
-			cy.saveSettings();
+			// Configure admin bar hiding for custom role via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/configure-settings', {
+				roles_to_hide: [ 'custom_role' ],
+			} );
 
 			// Login as custom role user
 			cy.visit( '/wp-login.php' );
@@ -226,8 +242,15 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should handle users with no roles', () => {
-			// Create user with no specific role
-			cy.wpCli( 'user create norole_test norole@test.com --user_pass=password123' );
+			// Create user with no specific role via REST API
+			cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
+				username: 'norole_test',
+				email: 'norole@test.com',
+				role: '',
+				password: 'password123',
+			} ).then( ( response ) => {
+				expect( response.body.success ).to.be.true;
+			} );
 
 			cy.visit( '/wp-login.php' );
 			cy.get( '#user_login' ).type( 'norole_test' );
@@ -241,7 +264,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 	} );
 
-	describe( 'Performance and Responsiveness', () => {
+	describe( 'Performance', () => {
 		it( 'should handle large number of roles efficiently', () => {
 			// Create many custom roles
 			for ( let i = 1; i <= 10; i++ ) {

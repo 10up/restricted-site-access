@@ -163,7 +163,7 @@ describe( 'Plugin admin settings are properly rendered.', () => {
 	it( 'Admin bar hiding help text should be visible', () => {
 		cy
 			.get( 'p.description' )
-			.contains( 'Select user roles for which the admin bar should be hidden on the frontend' )
+			.contains( 'Select user roles for which the WordPress admin bar should be hidden on the frontend' )
 			.should( 'be.visible' );
 	} );
 } );

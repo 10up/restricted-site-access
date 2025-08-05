@@ -1589,7 +1589,7 @@ class Restricted_Site_Access {
 			<?php endforeach; ?>
 		</fieldset>
 		<p class="description">
-			<?php esc_html_e( 'Select user roles for which the admin bar should be hidden on the frontend.', 'restricted-site-access' ); ?>
+			<?php esc_html_e( 'Select user roles for which the WordPress admin bar should be hidden on the frontend.', 'restricted-site-access' ); ?>
 		</p>
 		<?php
 	}
