@@ -26,6 +26,7 @@ module.exports = defineConfig({
       "tests/cypress/e2e/add-invalid-addresses.test.js",
       "tests/cypress/e2e/restrict-users.test.js",
       "tests/cypress/e2e/allow-unrestricted-users.test.js",
+      "tests/cypress/e2e/admin-bar-hiding.test.js",
     ],
     supportFile: 'tests/cypress/support/e2e.js'
   },
