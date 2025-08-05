@@ -1583,10 +1583,7 @@ class Restricted_Site_Access {
 			</legend>
 			<?php foreach ( $wp_roles->roles as $role_name => $role_info ) : ?>
 				<label>
-					<input type="checkbox"
-						name="rsa_options[hide_admin_bar_roles][]"
-						value="<?php echo esc_attr( $role_name ); ?>"
-						<?php checked( in_array( $role_name, $selected_roles, true ) ); ?> />
+					<input type="checkbox" name="rsa_options[hide_admin_bar_roles][]" value="<?php echo esc_attr( $role_name ); ?>" <?php checked( in_array( $role_name, $selected_roles, true ) ); ?> />
 					<?php echo esc_html( $role_info['name'] ); ?>
 				</label><br />
 			<?php endforeach; ?>

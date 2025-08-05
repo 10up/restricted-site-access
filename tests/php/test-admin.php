@@ -295,43 +295,43 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_hide_admin_bar_for_roles() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Test with no user logged in - should return original value
+		// Test with no user logged in - should return original value.
 		$this->assertTrue( $rsa::hide_admin_bar_for_roles( true ) );
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( false ) );
 
-		// Create a test user with subscriber role
+		// Create a test user with subscriber role.
 		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
-		// Test with no roles configured to hide admin bar
-		$options = $rsa::get_options( false );
+		// Test with no roles configured to hide admin bar.
+		$options                         = $rsa::get_options( false );
 		$options['hide_admin_bar_roles'] = array();
 		update_option( 'rsa_options', $options );
 
 		$this->assertTrue( $rsa::hide_admin_bar_for_roles( true ) );
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( false ) );
 
-		// Test with subscriber role configured to hide admin bar
+		// Test with subscriber role configured to hide admin bar.
 		$options['hide_admin_bar_roles'] = array( 'subscriber' );
 		update_option( 'rsa_options', $options );
 
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( true ) );
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( false ) );
 
-		// Test with multiple roles, including subscriber
+		// Test with multiple roles, including subscriber.
 		$options['hide_admin_bar_roles'] = array( 'subscriber', 'contributor' );
 		update_option( 'rsa_options', $options );
 
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( true ) );
 
-		// Test with different role (should not hide)
+		// Test with different role (should not hide).
 		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
 		wp_set_current_user( $user_id );
 
 		$this->assertTrue( $rsa::hide_admin_bar_for_roles( true ) );
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( false ) );
 
-		// Test in admin area (should not hide)
+		// Test in admin area (should not hide).
 		set_current_screen( 'edit' );
 		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
@@ -342,7 +342,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$this->assertTrue( $rsa::hide_admin_bar_for_roles( true ) );
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( false ) );
 
-		// Reset screen
+		// Reset screen.
 		set_current_screen( 'front' );
 	}
 
@@ -352,8 +352,8 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_settings_field_hide_admin_bar_roles() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Set up options with some roles selected
-		$options = $rsa::get_options( false );
+		// Set up options with some roles selected.
+		$options                         = $rsa::get_options( false );
 		$options['hide_admin_bar_roles'] = array( 'subscriber', 'contributor' );
 		update_option( 'rsa_options', $options );
 
@@ -363,7 +363,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::settings_field_hide_admin_bar_roles();
 		$html = ob_get_clean();
 
-		// Check that the field contains expected elements
+		// Check that the field contains expected elements.
 		$this->assertStringContainsString( 'name="rsa_options[hide_admin_bar_roles][]" value="subscriber" checked=\'checked\'', $html );
 		$this->assertStringContainsString( 'name="rsa_options[hide_admin_bar_roles][]" value="contributor" checked=\'checked\'', $html );
 		$this->assertStringContainsString( 'Hide admin bar for user roles on frontend', $html );
@@ -381,7 +381,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$settings_page = 'reading';
 
-		// Check that the new field is registered
+		// Check that the new field is registered.
 		$this->assertArrayHasKey( $settings_page, $wp_settings_fields );
 		$this->assertArrayHasKey( 'restricted-site-access-always-visible', $wp_settings_fields[ $settings_page ] );
 		$this->assertArrayHasKey( 'hide_admin_bar_roles', $wp_settings_fields[ $settings_page ]['restricted-site-access-always-visible'] );
@@ -393,7 +393,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_admin_bar_hiding_filter_registration() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Check that the filter is registered
+		// Check that the filter is registered.
 		$this->assertSame( 10, has_filter( 'show_admin_bar', array( 'Restricted_Site_Access', 'hide_admin_bar_for_roles' ) ) );
 	}
 
@@ -403,32 +403,32 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 	public function test_hide_admin_bar_for_roles_multiple_roles() {
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Create a user with multiple roles
+		// Create a user with multiple roles.
 		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
-		$user = get_user_by( 'id', $user_id );
+		$user    = get_user_by( 'id', $user_id );
 		$user->add_role( 'contributor' );
 		wp_set_current_user( $user_id );
 
-		// Configure to hide admin bar for subscriber role
-		$options = $rsa::get_options( false );
+		// Configure to hide admin bar for subscriber role.
+		$options                         = $rsa::get_options( false );
 		$options['hide_admin_bar_roles'] = array( 'subscriber' );
 		update_option( 'rsa_options', $options );
 
-		// Should hide admin bar because user has subscriber role
+		// Should hide admin bar because user has subscriber role.
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( true ) );
 
-		// Configure to hide admin bar for contributor role
+		// Configure to hide admin bar for contributor role.
 		$options['hide_admin_bar_roles'] = array( 'contributor' );
 		update_option( 'rsa_options', $options );
 
-		// Should hide admin bar because user has contributor role
+		// Should hide admin bar because user has contributor role.
 		$this->assertFalse( $rsa::hide_admin_bar_for_roles( true ) );
 
-		// Configure to hide admin bar for author role (user doesn't have this role)
+		// Configure to hide admin bar for author role (user doesn't have this role).
 		$options['hide_admin_bar_roles'] = array( 'author' );
 		update_option( 'rsa_options', $options );
 
-		// Should not hide admin bar because user doesn't have author role
+		// Should not hide admin bar because user doesn't have author role.
 		$this->assertTrue( $rsa::hide_admin_bar_for_roles( true ) );
 	}
 
@@ -442,8 +442,8 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Set up network options
-		$network_options = $rsa::get_options( true );
+		// Set up network options.
+		$network_options                         = $rsa::get_options( true );
 		$network_options['hide_admin_bar_roles'] = array( 'subscriber' );
 		update_site_option( 'rsa_options', $network_options );
 
@@ -453,7 +453,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa::settings_field_hide_admin_bar_roles();
 		$html = ob_get_clean();
 
-		// Check that the field contains expected elements
+		// Check that the field contains expected elements.
 		$this->assertStringContainsString( 'name="rsa_options[hide_admin_bar_roles][]"', $html );
 		$this->assertStringContainsString( 'value="subscriber"', $html );
 		$this->assertStringContainsString( 'checked=\'checked\'', $html );
