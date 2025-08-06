@@ -107,6 +107,7 @@ Cypress.Commands.add( 'resetAdminBarHiding', () => {
 
 Cypress.Commands.add( 'hideAdminBarSubscriber', () => {
 	cy.visitAdminPage( 'options-reading.php' );
+	cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).uncheck();
 	cy.get( 'input[value="subscriber"]' ).check();
 	cy.saveSettings();
 } );
