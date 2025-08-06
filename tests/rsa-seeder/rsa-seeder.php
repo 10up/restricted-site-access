@@ -46,9 +46,9 @@ function my_rsa_feed_override( $is_restricted, $wp ) {
 		'wp-json/rsa/v1/seed/restrict-users/case-26-to-28',
 		'wp-json/rsa/v1/seed/restrict-users/case-29-to-31',
 		'wp-json/rsa/v1/seed/restrict-users/case-32-to-34',
-		'wp-json/rsa/v1/seed/admin-bar-hiding/create-user',
-		'wp-json/rsa/v1/seed/admin-bar-hiding/configure-settings',
-		'wp-json/rsa/v1/seed/admin-bar-hiding/reset-settings',
+		'wp-json/rsa/v1/seed/hide-admin-bar/update-user-role',
+		'wp-json/rsa/v1/seed/hide-admin-bar/create-user-role',
+		'wp-json/rsa/v1/seed/hide-admin-bar/remove-user-role',
 	);
 
 	if ( in_array( $wp->request, $unrestrcited_routes, true ) ) {
