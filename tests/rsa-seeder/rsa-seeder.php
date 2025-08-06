@@ -75,6 +75,8 @@ add_action(
 			'comment'       => array(),
 		);
 
+		$user_id = 1;
+
 		register_rest_route(
 			'rsa/v1',
 			'seed/activation-deactivation',
@@ -697,6 +699,26 @@ add_action(
 					update_site_option( 'rsa_mode', $mock_rsa_mode );
 					update_site_option( 'blog_public', $mock_blog_public );
 					update_site_option( 'rsa_options', $mock_rsa_options );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/hide-admin-bar/update-user-role',
+			array(
+				'methods'  => 'GET',
+				'callback' => function( $request ) use ( $user_id ) {
+					$role = $request->get_param( 'role' );
+
+					wp_update_user(
+						array(
+							'ID'   => $user_id,
+							'role' => $role
+						)
+					);
 
 					return true;
 				},

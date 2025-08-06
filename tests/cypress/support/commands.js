@@ -113,5 +113,11 @@ Cypress.Commands.add( 'hideAdminBarSubscriber', () => {
 } );
 
 Cypress.Commands.add( 'updateRole', ( role = 'administrator' ) => {
-	cy.exec( `wp user update admin --role=${ role } --skip-plugins --skip-themes`, { failOnNonZeroExit: false } );
+	cy.request( {
+		url: '/wp-json/rsa/v1/seed/hide-admin-bar/update-user-role',
+		method: 'GET',
+		body: {
+			role,
+		},
+	} );
 } );

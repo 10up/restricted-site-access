@@ -21,8 +21,8 @@
   },
   "scripts": {
     "lint:js": "wp-scripts lint-js assets/js/src",
-    "cypress:open": "set NODE_TLS_REJECT_UNAUTHORIZED=0 && cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
-    "cypress:run": "set NODE_TLS_REJECT_UNAUTHORIZED=0 && cypress run --config-file tests/cypress/config.js",
+    "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
+    "cypress:run": "cypress run --config-file tests/cypress/config.js",
     "env": "wp-env",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
