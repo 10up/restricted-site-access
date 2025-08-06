@@ -716,7 +716,7 @@ add_action(
 					wp_update_user(
 						array(
 							'ID'   => $user_id,
-							'role' => $role
+							'role' => $role,
 						)
 					);
 
