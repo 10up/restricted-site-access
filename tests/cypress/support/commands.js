@@ -105,19 +105,38 @@ Cypress.Commands.add( 'resetAdminBarHiding', () => {
 	cy.saveSettings();
 } );
 
-Cypress.Commands.add( 'hideAdminBarSubscriber', () => {
+Cypress.Commands.add( 'hideAdminBarUserRole', ( role = 'subscriber' ) => {
 	cy.visitAdminPage( 'options-reading.php' );
 	cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).uncheck();
-	cy.get( 'input[value="subscriber"]' ).check();
+	cy.get( `input[value="${ role }"]` ).check();
 	cy.saveSettings();
 } );
 
-Cypress.Commands.add( 'updateRole', ( role = 'administrator' ) => {
+Cypress.Commands.add( 'updateUserRole', ( role = 'administrator' ) => {
 	cy.request( {
 		url: '/wp-json/rsa/v1/seed/hide-admin-bar/update-user-role',
 		method: 'GET',
 		body: {
 			role,
 		},
+	} );
+} );
+
+Cypress.Commands.add( 'createCustomUserRole', ( role = 'custom_role', roleDisplayName = 'Custom Role', capabilities = { read: true } ) => {
+	cy.request( {
+		url: '/wp-json/rsa/v1/seed/hide-admin-bar/create-user-role',
+		method: 'GET',
+		body: {
+			role,
+			roleDisplayName,
+			capabilities,
+		},
+	} );
+} );
+
+Cypress.Commands.add( 'removeUserRole', () => {
+	cy.request( {
+		url: '/wp-json/rsa/v1/seed/hide-admin-bar/remove-user-role',
+		method: 'GET',
 	} );
 } );

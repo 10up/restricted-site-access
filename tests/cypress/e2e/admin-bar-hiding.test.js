@@ -76,16 +76,16 @@ describe( 'Admin Bar Hiding Feature', () => {
 
 	describe( 'Frontend Behavior', () => {
 		beforeEach( () => {
-			cy.hideAdminBarSubscriber();
+			cy.hideAdminBarUserRole( 'subscriber' );
 		} );
 
 		afterEach( () => {
-			cy.updateRole( 'administrator' );
+			cy.updateUserRole( 'administrator' );
 		} );
 
 		it( 'should hide admin bar for subscriber on frontend', () => {
-			// Create and login as subscriber
-			cy.updateRole( 'subscriber' );
+			// Update role to subscriber
+			cy.updateUserRole( 'subscriber' );
 
 			// Visit frontend
 			cy.visit( '/' );
@@ -95,8 +95,8 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should show admin bar for other roles on frontend', () => {
-			// Login as author
-			cy.updateRole( 'author' );
+			// Update role to author
+			cy.updateUserRole( 'author' );
 
 			// Visit frontend
 			cy.visit( '/' );
@@ -106,8 +106,8 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 
 		it( 'should show admin bar in admin area for all roles', () => {
-			// Create subscriber user
-			cy.updateRole( 'subscriber' );
+			// Update role to subscriber
+			cy.updateUserRole( 'subscriber' );
 
 			// Visit admin area
 			cy.visit( '/wp-admin/' );
@@ -117,87 +117,56 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 	} );
 
-	// describe( 'Edge Cases', () => {
-	// 	it( 'should handle no roles selected', () => {
-	// 		// Reset admin bar hiding settings via REST API
-	// 		cy.request( 'GET', '/wp-json/rsa/v1/seed/admin-bar-hiding/reset-settings' ).then( ( response ) => {
-	// 			expect( response.body.success ).to.be.true;
-	// 		} );
+	describe( 'Edge Cases', () => {
+		afterEach( () => {
+			cy.updateUserRole( 'administrator' );
+		} );
 
-	// 		// Create subscriber user via REST API
-	// 		cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
-	// 			username: 'edge_test',
-	// 			email: 'edge@test.com',
-	// 			role: 'subscriber',
-	// 			password: 'password123',
-	// 		} ).then( ( response ) => {
-	// 			expect( response.body.success ).to.be.true;
-	// 		} );
+		it( 'should handle no roles selected', () => {
+			// Reset admin bar hiding settings via REST API
+			cy.resetAdminBarHiding();
 
-	// 		cy.visit( '/wp-login.php' );
-	// 		cy.get( '#user_login' ).type( 'edge_test' );
-	// 		cy.get( '#user_pass' ).type( 'password123' );
-	// 		cy.get( '#wp-submit' ).click();
+			// Update role to subscriber
+			cy.updateUserRole( 'subscriber' );
 
-	// 		cy.visit( '/' );
+			// Visit frontend
+			cy.visit( '/' );
 
-	// 		// Admin bar should be visible when no roles are selected
-	// 		cy.get( '#wpadminbar' ).should( 'be.visible' );
-	// 	} );
+			// Admin bar should be visible when no roles are selected
+			cy.get( '#wpadminbar' ).should( 'be.visible' );
+		} );
 
-	// 	it( 'should handle custom user roles', () => {
-	// 		// Create a custom role
-	// 		cy.wpCli( 'eval "add_role( \'custom_role\', \'Custom Role\', array( \'read\' => true ) );"' );
+		it( 'should handle custom user roles', () => {
+			// Create a custom role
+			cy.createCustomUserRole();
 
-	// 		// Create user with custom role via REST API
-	// 		cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
-	// 			username: 'custom_test',
-	// 			email: 'custom@test.com',
-	// 			role: 'custom_role',
-	// 			password: 'password123',
-	// 		} ).then( ( response ) => {
-	// 			expect( response.body.success ).to.be.true;
-	// 		} );
+			// Update role to custom role
+			cy.updateUserRole( 'custom_role' );
 
-	// 		// Configure admin bar hiding for custom role via REST API
-	// 		cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/configure-settings', {
-	// 			roles_to_hide: [ 'custom_role' ],
-	// 		} );
+			// Hide admin bar for custom role
+			cy.hideAdminBarUserRole( 'custom_role' );
 
-	// 		// Login as custom role user
-	// 		cy.visit( '/wp-login.php' );
-	// 		cy.get( '#user_login' ).type( 'custom_test' );
-	// 		cy.get( '#user_pass' ).type( 'password123' );
-	// 		cy.get( '#wp-submit' ).click();
+			// Visit frontend
+			cy.visit( '/' );
 
-	// 		cy.visit( '/' );
+			// Admin bar should be hidden for custom role
+			cy.get( '#wpadminbar' ).should( 'not.exist' );
+		} );
 
-	// 		// Admin bar should be hidden for custom role
-	// 		cy.get( '#wpadminbar' ).should( 'not.exist' );
-	// 	} );
+		it( 'should handle users with no roles', () => {
+			// Reset admin bar hiding settings
+			cy.resetAdminBarHiding();
 
-	// 	it( 'should handle users with no roles', () => {
-	// 		// Create user with no specific role via REST API
-	// 		cy.request( 'POST', '/wp-json/rsa/v1/seed/admin-bar-hiding/create-user', {
-	// 			username: 'norole_test',
-	// 			email: 'norole@test.com',
-	// 			role: '',
-	// 			password: 'password123',
-	// 		} ).then( ( response ) => {
-	// 			expect( response.body.success ).to.be.true;
-	// 		} );
+			// Remove user role
+			cy.removeUserRole();
 
-	// 		cy.visit( '/wp-login.php' );
-	// 		cy.get( '#user_login' ).type( 'norole_test' );
-	// 		cy.get( '#user_pass' ).type( 'password123' );
-	// 		cy.get( '#wp-submit' ).click();
+			// Visit frontend
+			cy.visit( '/' );
 
-	// 		cy.visit( '/' );
-
-	// 		// Admin bar should be visible for users with no roles
-	// 		cy.get( '#wpadminbar' ).should( 'be.visible' );
-	// 	} );
-	// } );
+			// Admin bar should be visible for users with no roles
+			cy.get( '#wpadminbar' ).should( 'be.visible' );
+		} );
+	} );
 
 	// describe( 'Performance', () => {
 	// 	it( 'should handle large number of roles efficiently', () => {

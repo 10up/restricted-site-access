@@ -724,5 +724,35 @@ add_action(
 				},
 			)
 		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/hide-admin-bar/create-user-role',
+			array(
+				'methods'  => 'GET',
+				'callback' => function( $request ) {
+					$role              = $request->get_param( 'role' );
+					$role_display_name = $request->get_param( 'roleDisplayName' );
+					$capabilities      = $request->get_param( 'capabilities' );
+
+					add_role( $role, $role_display_name, $capabilities );
+
+					return true;
+				},
+			)
+		);
+
+		register_rest_route(
+			'rsa/v1',
+			'seed/hide-admin-bar/remove-user-role',
+			array(
+				'methods'  => 'GET',
+				'callback' => function() use ( $user_id ) {
+					delete_user_meta( $user_id, 'wp_capabilities' );
+
+					return true;
+				},
+			)
+		);
 	}
 );
