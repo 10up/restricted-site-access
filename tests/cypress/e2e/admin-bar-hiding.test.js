@@ -29,11 +29,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 	describe( 'Settings Persistence', () => {
 		it( 'should save selected roles', () => {
 			// Select subscriber and contributor roles
-			cy.get( 'input[value="subscriber"]' ).check();
-			cy.get( 'input[value="contributor"]' ).check();
-
-			// Save settings
-			cy.saveSettings();
+			cy.hideAdminBarUserRole( [ 'subscriber', 'contributor' ] );
 
 			// Reload page and verify selections are saved
 			cy.reload();
@@ -44,9 +40,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 
 		it( 'should clear unselected roles', () => {
 			// First, select some roles
-			cy.get( 'input[value="subscriber"]' ).check();
-			cy.get( 'input[value="contributor"]' ).check();
-			cy.saveSettings();
+			cy.hideAdminBarUserRole( [ 'subscriber', 'contributor' ] );
 
 			// Then unselect them
 			cy.get( 'input[value="subscriber"]' ).uncheck();
@@ -61,10 +55,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 
 		it( 'should handle multiple role selections', () => {
 			// Select multiple roles
-			cy.get( 'input[value="subscriber"]' ).check();
-			cy.get( 'input[value="contributor"]' ).check();
-			cy.get( 'input[value="author"]' ).check();
-			cy.saveSettings();
+			cy.hideAdminBarUserRole( [ 'subscriber', 'contributor', 'author' ] );
 
 			// Verify all are selected
 			cy.reload();
@@ -76,7 +67,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 
 	describe( 'Frontend Behavior', () => {
 		beforeEach( () => {
-			cy.hideAdminBarUserRole( 'subscriber' );
+			cy.hideAdminBarUserRole( [ 'subscriber' ] );
 		} );
 
 		afterEach( () => {
@@ -144,7 +135,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 			cy.updateUserRole( 'custom_role' );
 
 			// Hide admin bar for custom role
-			cy.hideAdminBarUserRole( 'custom_role' );
+			cy.hideAdminBarUserRole( [ 'custom_role' ] );
 
 			// Visit frontend
 			cy.visit( '/' );
@@ -168,27 +159,23 @@ describe( 'Admin Bar Hiding Feature', () => {
 		} );
 	} );
 
-	// describe( 'Performance', () => {
-	// 	it( 'should handle large number of roles efficiently', () => {
-	// 		// Create many custom roles
-	// 		for ( let i = 1; i <= 10; i++ ) {
-	// 			cy.wpCli( `eval "add_role( 'custom_role_${ i }', 'Custom Role ${ i }', array( 'read' => true ) );"` );
-	// 		}
+	describe( 'Performance', () => {
+		it( 'should handle large number of roles efficiently', () => {
+			// Create many custom roles
+			for ( let i = 1; i <= 10; i++ ) {
+				// Create a custom role
+				cy.createCustomUserRole( `custom_role_${ i }`, `Custom Role ${ i }`, { read: true } );
+			}
 
-	// 		// Reload settings page
-	// 		cy.visitAdminPage( 'options-reading.php' );
+			// Should still load quickly
+			cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).should( 'have.length.at.least', 15 );
 
-	// 		// Should still load quickly
-	// 		cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).should( 'have.length.at.least', 15 );
+			// Should be able to select roles
+			cy.hideAdminBarUserRole( [ 'custom_role_1', 'custom_role_5' ] );
 
-	// 		// Should be able to select roles
-	// 		cy.get( 'input[value="custom_role_1"]' ).check();
-	// 		cy.get( 'input[value="custom_role_5"]' ).check();
-	// 		cy.saveSettings();
-
-	// 		cy.reload();
-	// 		cy.get( 'input[value="custom_role_1"]' ).should( 'be.checked' );
-	// 		cy.get( 'input[value="custom_role_5"]' ).should( 'be.checked' );
-	// 	} );
-	// } );
+			cy.reload();
+			cy.get( 'input[value="custom_role_1"]' ).should( 'be.checked' );
+			cy.get( 'input[value="custom_role_5"]' ).should( 'be.checked' );
+		} );
+	} );
 } );
