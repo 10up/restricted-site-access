@@ -769,7 +769,7 @@ class Restricted_Site_Access {
 
 		// settings for restricted site access.
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
-		add_settings_section( 'restricted-site-access', __( 'Restricted Site Access', 'restricted-site-access' ), '__return_empty_string', self::$settings_page );
+		add_settings_section( 'restricted-site-access', __( 'Restricted Site Access', 'restricted-site-access' ), array( __CLASS__, 'settings_section_restricted_site_access' ), self::$settings_page );
 
 		// Limit when additional settings fields show up.
 		if (
@@ -789,16 +789,27 @@ class Restricted_Site_Access {
 			}
 		}
 
+		// Default classes for always visible fields.
+		$always_visible_field_default_classes = array( 'rsa-setting' );
+		if ( self::is_enforced() ) {
+			$always_visible_field_default_classes[] = 'option-site-visibility';
+		}
+
 		// Add settings fields that should always be visible.
 		add_settings_section( 'restricted-site-access-always-visible', '', '__return_empty_string', self::$settings_page );
 		foreach ( self::$always_visible_fields as $field_name => $field_data ) {
+
+			// Add field to the section, along with the default classes.
+			$always_visible_field_classes   = $always_visible_field_default_classes;
+			$always_visible_field_classes[] = 'rsa-setting_' . $field_data['field'];
+
 			add_settings_field(
 				$field_name,
 				$field_data['label'],
 				array( __CLASS__, $field_data['field'] ),
 				self::$settings_page,
 				'restricted-site-access-always-visible',
-				array( 'class' => 'rsa-setting rsa-setting_' . esc_attr( $field_data['field'] ) )
+				array( 'class' => esc_attr( implode( ' ', $always_visible_field_classes ) ) )
 			);
 		}
 
@@ -811,6 +822,26 @@ class Restricted_Site_Access {
 		}
 
 		add_action( 'admin_notices', array( __CLASS__, 'page_cache_notice' ) );
+	}
+
+	/**
+	 * Show a notice if the settings are enforced.
+	 */
+	public static function settings_section_restricted_site_access() {
+		if ( ! self::is_enforced() ) {
+			return;
+		}
+
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$message = __( 'Restricted Site Access settings are currently enforced across all sites on the network.', 'restricted-site-access' );
+		} else {
+			$message = __( 'Restricted Site Access settings are currently enforced by code configuration.', 'restricted-site-access' );
+		}
+		?>
+		<div class="notice notice-warning inline">
+			<p><strong><?php echo esc_html( $message ); ?></strong></p>
+		</div>
+		<?php
 	}
 
 	/**
