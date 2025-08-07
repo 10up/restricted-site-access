@@ -1,4 +1,10 @@
 describe( 'Admin Bar Hiding Feature', () => {
+	before( () => {
+		cy.visitAdminPage( 'network/settings.php' );
+		cy.get( '#rsa-mode-default' ).check();
+		cy.saveSettings();
+	} );
+
 	beforeEach( () => {
 		cy.visitAdminPage( 'options-reading.php' );
 	} );
