@@ -239,7 +239,12 @@ class Restricted_Site_Access {
 		}
 
 		// Get RSA options to check which roles should have admin bar hidden.
-		$rsa_options          = self::get_options();
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$rsa_options = self::get_options( true );
+		} else {
+			$rsa_options = self::get_options();
+		}
+
 		$hide_admin_bar_roles = isset( $rsa_options['hide_admin_bar_roles'] ) ? (array) $rsa_options['hide_admin_bar_roles'] : array();
 
 		// Check if current user has any role that should hide admin bar.
@@ -1598,10 +1603,8 @@ class Restricted_Site_Access {
 	 * Field for choosing user roles to hide admin bar.
 	 */
 	public static function settings_field_hide_admin_bar_roles() {
-		if ( RSA_IS_NETWORK ) {
-			if ( 'enforce' === self::get_network_mode() ) {
-				self::$rsa_options = self::get_options( true );
-			}
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			self::$rsa_options = self::get_options( true );
 		} elseif ( ! isset( self::$rsa_options['hide_admin_bar_roles'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['hide_admin_bar_roles'] = array();
