@@ -1598,7 +1598,11 @@ class Restricted_Site_Access {
 	 * Field for choosing user roles to hide admin bar.
 	 */
 	public static function settings_field_hide_admin_bar_roles() {
-		if ( ! isset( self::$rsa_options['hide_admin_bar_roles'] ) ) {
+		if ( RSA_IS_NETWORK ) {
+			if ( 'enforce' === self::get_network_mode() ) {
+				self::$rsa_options = self::get_options( true );
+			}
+		} elseif ( ! isset( self::$rsa_options['hide_admin_bar_roles'] ) ) {
 			// @codeCoverageIgnoreStart
 			self::$rsa_options['hide_admin_bar_roles'] = array();
 			// @codeCoverageIgnoreEnd
