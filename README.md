@@ -227,6 +227,18 @@ When the 'Discourage search engines from indexing this site' option is enabled, 
 
 When this option is activated, it serves as a barrier to all visitors except those who are authenticated (logged in) or whose IP addresses are included in the 'Unrestricted IP addresses' setting. This restriction applies universally, even to automated crawlers such as search engines.
 
+### How can I programmatically define default mode for the network?
+
+In your `wp-config.php` file, you can define the following:
+
+```php
+define( 'RSA_NETWORK_MODE', 'enforce' );
+```
+
+There are only two values supported for this constant at the moment: **enforce** or **default**.
+
+If it is set to be non-allowed value, then it will assume as **default**.
+
 ## Support Level
 
 **Stable:** 10up is not planning to develop any new features for this, but will still respond to bug reports and security concerns. We welcome PRs, but any that include new features should be small and easy to integrate and should not include breaking changes. We otherwise intend to keep this tested up to the most recent version of WordPress.
