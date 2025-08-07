@@ -316,6 +316,14 @@ class Restricted_Site_Access {
 	 * Get current plugin network mode
 	 */
 	private static function get_network_mode() {
+		/**
+		 * Get the network mode from the RSA_NETWORK_MODE constant.
+		 * Only allow 'enforce' or 'default'.
+		 */
+		if ( defined( 'RSA_NETWORK_MODE' ) && in_array( RSA_NETWORK_MODE, array( 'enforce', 'default' ), true ) ) {
+			return RSA_NETWORK_MODE;
+		}
+
 		if ( RSA_IS_NETWORK ) {
 			return get_site_option( 'rsa_mode', 'default' );
 		}
