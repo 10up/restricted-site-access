@@ -2,6 +2,8 @@
 
 class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase {
 
+	use PrivateAccess;
+
 	public function test_multisite_restrict_access_not_restricted() {
 
 		$rsa = Restricted_Site_Access::get_instance();
@@ -157,4 +159,29 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 		$this->assertContains( 'You shall not pass this multisite!', $results['die_message'] );
 	}
 
+	/**
+	 * Test the network mode constant.
+	 */
+	public function test_multisite_network_mode_constant() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		define( 'RSA_NETWORK_MODE', 'enforce' );
+
+		$network_mode = $this->call_private_method(
+			$rsa,
+			'get_network_mode'
+		);
+
+		$this->assertSame( 'enforce', $network_mode );
+
+		define( 'RSA_NETWORK_MODE', 'not-allowed-value' );
+
+		$network_mode = $this->call_private_method(
+			$rsa,
+			'get_network_mode'
+		);
+
+		$this->assertSame( 'default', $network_mode );
+	}
 }

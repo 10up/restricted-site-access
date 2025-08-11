@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.5.2
+ * Version:           7.5.3
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            10up
@@ -58,7 +58,7 @@ if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.5.2' );
+define( 'RSA_VERSION', '7.5.3' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -314,9 +314,35 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Get the network mode from the RSA_NETWORK_MODE constant.
+	 *
+	 * @return string
+	 */
+	private static function get_config_network_mode() {
+		/**
+		 * Get the network mode from the RSA_NETWORK_MODE constant.
+		 * Only allow 'enforce' or 'default'.
+		 */
+		if ( defined( 'RSA_NETWORK_MODE' ) && in_array( RSA_NETWORK_MODE, array( 'enforce', 'default' ), true ) ) {
+			return RSA_NETWORK_MODE;
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get current plugin network mode
 	 */
 	private static function get_network_mode() {
+		/**
+		 * Get the network mode from the RSA_NETWORK_MODE constant.
+		 * Only allow 'enforce' or 'default'.
+		 */
+		$config_network_mode = self::get_config_network_mode();
+		if ( ! empty( $config_network_mode ) ) {
+			return $config_network_mode;
+		}
+
 		if ( RSA_IS_NETWORK ) {
 			return get_site_option( 'rsa_mode', 'default' );
 		}
@@ -747,11 +773,13 @@ class Restricted_Site_Access {
 	 * Show RSA Settings in Network Settings
 	 */
 	public static function show_network_settings() {
-		$mode = self::get_network_mode();
+		$mode                = self::get_network_mode();
+		$config_network_mode = self::get_config_network_mode();
+		$mode_css_class      = empty( $config_network_mode ) ? '' : 'rsa-config-network-mode-enabled';
 		?>
 			<h2><?php esc_html_e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
 			<table id="restricted-site-access-mode" class="form-table">
-				<tr>
+				<tr class="<?php echo esc_attr( $mode_css_class ); ?>">
 					<th scope="row"><?php esc_html_e( 'Mode', 'restricted-site-access' ); ?></th>
 					<td>
 						<fieldset>
@@ -761,6 +789,15 @@ class Restricted_Site_Access {
 						</fieldset>
 					</td>
 				</tr>
+				<?php if ( ! empty( $config_network_mode ) ) { ?>
+					<tr class="rsa-network-enforced-warning">
+						<td colspan="2">
+							<div class="notice notice-warning inline">
+								<p><strong><?php echo esc_html__( 'The mode is currently enforced by code configuration.', 'restricted-site-access' ); ?></strong></p>
+							</div>
+						</td>
+					</tr>
+				<?php } ?>
 				<tr class="option-site-visibility">
 					<th scope="row"><?php esc_html_e( 'Site Visibility', 'restricted-site-access' ); ?></th>
 					<?php
@@ -1133,7 +1170,8 @@ class Restricted_Site_Access {
 		);
 		?>
 <style>
-.rsa-enforced .option-site-visibility {
+.rsa-enforced .option-site-visibility,
+.rsa-config-network-mode-enabled {
 	opacity: 0.5;
 	pointer-events: none;
 }
