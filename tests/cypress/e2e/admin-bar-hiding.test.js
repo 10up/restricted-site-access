@@ -12,7 +12,7 @@ describe( 'Admin Bar Hiding Feature', () => {
 	describe( 'Settings Interface', () => {
 		it( 'should display admin bar hiding section', () => {
 			cy.get( 'h2' ).contains( 'Restricted Site Access' ).should( 'be.visible' );
-			cy.get( 'th' ).contains( 'Hide admin bar for user roles on frontend' ).should( 'be.visible' );
+			cy.get( 'th' ).contains( 'Hide admin bar for roles' ).should( 'be.visible' );
 		} );
 
 		it( 'should display all user roles as checkboxes', () => {

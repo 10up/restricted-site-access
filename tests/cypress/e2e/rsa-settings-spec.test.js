@@ -149,7 +149,7 @@ describe( 'Plugin admin settings are properly rendered.', () => {
 	it( 'Admin bar hiding section should be visible', () => {
 		cy
 			.get( 'label' )
-			.contains( 'Hide admin bar for user roles on frontend' )
+			.contains( 'Hide admin bar for roles' )
 			.should( 'be.visible' );
 	} );
 

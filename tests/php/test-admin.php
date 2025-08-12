@@ -366,7 +366,7 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		// Check that the field contains expected elements.
 		$this->assertStringContainsString( 'name="rsa_options[hide_admin_bar_roles][]" value="subscriber"  checked=\'checked\'', $html );
 		$this->assertStringContainsString( 'name="rsa_options[hide_admin_bar_roles][]" value="contributor"  checked=\'checked\'', $html );
-		$this->assertStringContainsString( 'Hide admin bar for user roles on frontend', $html );
+		$this->assertStringContainsString( 'Hide admin bar for roles', $html );
 		$this->assertStringContainsString( 'Select user roles for which the WordPress admin bar should be hidden on the frontend', $html );
 	}
 

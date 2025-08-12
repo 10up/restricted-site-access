@@ -366,7 +366,7 @@ class Restricted_Site_Access {
 		self::$always_visible_fields = array(
 			'hide_admin_bar_roles' => array(
 				'default' => array(),
-				'label'   => esc_html__( 'Hide admin bar for user roles on frontend', 'restricted-site-access' ),
+				'label'   => esc_html__( 'Hide admin bar for roles', 'restricted-site-access' ),
 				'field'   => 'settings_field_hide_admin_bar_roles',
 			),
 		);
@@ -990,7 +990,7 @@ class Restricted_Site_Access {
 			</table>
 			<table id="restricted-site-access-always-visible" class="form-table">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Hide admin bar for user roles on frontend', 'restricted-site-access' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Hide admin bar for roles', 'restricted-site-access' ); ?></th>
 					<td>
 						<?php
 						self::settings_field_hide_admin_bar_roles();
@@ -1278,7 +1278,7 @@ class Restricted_Site_Access {
 
 		$content[] = sprintf(
 			'<p><strong>%1$s</strong> - %2$s</p>',
-			_x( 'Hide admin bar for user roles on frontend', 'help topic', 'restricted-site-access' ),
+			_x( 'Hide admin bar for roles', 'help topic', 'restricted-site-access' ),
 			__( 'Select user roles for which the WordPress admin bar should be hidden on the frontend. This is useful for providing a cleaner experience for certain user types.', 'restricted-site-access' )
 		);
 
@@ -1655,7 +1655,7 @@ class Restricted_Site_Access {
 		?>
 		<fieldset>
 			<legend class="screen-reader-text">
-				<span><?php esc_html_e( 'Hide admin bar for user roles on frontend', 'restricted-site-access' ); ?></span>
+				<span><?php esc_html_e( 'Hide admin bar for roles', 'restricted-site-access' ); ?></span>
 			</legend>
 			<?php foreach ( $wp_roles->roles as $role_name => $role_info ) : ?>
 				<label>

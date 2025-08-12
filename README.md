@@ -236,7 +236,7 @@ The plugin includes a feature to hide the WordPress admin bar on the frontend fo
 
 1. Go to **Settings > Reading** in your WordPress admin
 2. Scroll down to the **Restricted Site Access** section
-3. Find the **Hide admin bar for user roles on frontend** setting
+3. Find the **Hide admin bar for roles** setting
 4. Check the boxes for the user roles you want to hide the admin bar for (e.g., Subscriber, Contributor)
 5. Click **Save Changes**
 
