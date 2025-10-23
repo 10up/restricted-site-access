@@ -10,3 +10,11 @@ input#rsa-user-message {
 .rsa-ip-addresses-field-wrapper {
 	position: relative;
 }
+
+.rsa-ip-addresses-caching-notice {
+	margin-bottom: 1em;
+}
+
+.rsa-inline-page-cache-warning {
+	color: #d63638;
+}

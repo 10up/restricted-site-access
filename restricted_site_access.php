@@ -151,6 +151,8 @@ class Restricted_Site_Access {
 
 		// Prevent WordPress from auto-resolving 404 URLs.
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
+
+		add_filter( 'wp_headers', array( __CLASS__, 'maybe_add_no_cache_headers' ) );
 	}
 
 	/**
@@ -526,6 +528,32 @@ class Restricted_Site_Access {
 				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
+	}
+
+	/**
+	 * Add nocache headers to the response if required.
+	 *
+	 * Add the nocache headers to the response if there is an IP allow list
+	 * configured. This is to prevent the caching of restricted pages
+	 * by caching plugins, CDNs or similar services.
+	 *
+	 * Runs on the `wp_headers` filter.
+	 *
+	 * @param array $headers The headers to be sent.
+	 * @return array The headers to be sent, possibly with no-cache headers added.
+	 */
+	public static function maybe_add_no_cache_headers( $headers ) {
+		$options_ips = (array) self::get_options()['allowed'];
+		$config_ips  = (array) self::get_config_ips();
+
+		$allowed_ips = array_merge( $options_ips, $config_ips );
+
+		if ( ! empty( $allowed_ips ) ) {
+			// Add no cache headers if there is an IP allow list.
+			$headers = array_merge( $headers, wp_get_nocache_headers() );
+		}
+
+		return $headers;
 	}
 
 	/**
@@ -1067,11 +1095,39 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Check if the page caching is on, and notify the admin
+	 * Whether to show the page cache notifications.
+	 *
+	 * Detects whether page caching is enabled via the WP_CACHE constant to
+	 * determine if the page cache notices should be shown.
+	 *
+	 * To modify the behavior based on other factors, use the
+	 * `restricted_site_access_show_page_cache_notice` filter.
+	 *
+	 * @since x.x.x
+	 */
+	public static function show_page_cache_notification() {
+		// If WP_CACHE is on, show the notification.
+		$show_notification = defined( 'WP_CACHE' ) && true === WP_CACHE;
+
+		/**
+		 * Filter whether to show the page cache notifications.
+		 *
+		 * Allows for changing the setting for situations in which the WP_CACHE
+		 * constant is unsuitable for determining whether page caching is enabled.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param bool $show_notification Whether to show the page cache notice.
+		 *                                True if caching is detected, false otherwise.
+		 */
+		return apply_filters( 'restricted_site_access_show_page_cache_notice', $show_notification );
+	}
+
+	/**
+	 * Display a warning notice if page caching is enabled.
 	 */
 	public static function page_cache_notice() {
-		// If WP_CACHE is on we show notification.
-		$show_notification = apply_filters( 'restricted_site_access_show_page_cache_notice', defined( 'WP_CACHE' ) && true === WP_CACHE );
+		$show_notification = self::show_page_cache_notification();
 
 		if ( $show_notification ) {
 
@@ -1103,9 +1159,9 @@ class Restricted_Site_Access {
 					<?php
 						echo wp_kses_post(
 							sprintf(
-								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#faq */
+								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F */
 								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
-								__( 'https://wordpress.org/plugins/restricted-site-access/#faq', 'restricted-site-access' )
+								__( 'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F', 'restricted-site-access' )
 							)
 						);
 					?>
@@ -1316,8 +1372,42 @@ class Restricted_Site_Access {
 	 * Fieldset for managing allowed IP addresses.
 	 */
 	public static function settings_field_allowed() {
+		$show_partial_cache_explanation = empty( self::get_ips() );
 		?>
 		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
+			<div class="rsa-ip-addresses-caching-notice">
+				<?php if ( self::show_page_cache_notification() ) : ?>
+					<p class="rsa-inline-page-cache-warning">
+						<strong>
+							<?php esc_html_e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected.', 'restricted-site-access' ); ?>
+						</strong>
+					</p>
+				<?php endif; ?>
+
+				<p>
+					<?php esc_html_e( 'RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.', 'restricted-site-access' ); ?><br />
+					<?php
+					if ( $show_partial_cache_explanation ) {
+						printf(
+							'<a href="#" class="rsa-learn-more-link hide-if-no-js">%s</a>',
+							__( '[Learn more]', 'restricted-site-access' )
+						);
+					}
+					?>
+				</p>
+
+				<p class="rsa-learn-more-content <?php echo $show_partial_cache_explanation ? 'hide-if-js' : ''; ?>">
+					<?php esc_html_e( 'Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions – including external solutions we might not detect – can ignore the no-caching headers set by WordPress and show cached content to unauthorized users.', 'restricted-site-access' ); ?><br />
+					<?php
+					if ( $show_partial_cache_explanation ) {
+						printf(
+							'<a href="#" class="rsa-learn-more-less-link hide-if-no-js">%s</a>',
+							__( '[Show less]', 'restricted-site-access' )
+						);
+					}
+					?>
+				</p>
+			</div>
 			<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
 				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
 				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
