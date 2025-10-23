@@ -1161,7 +1161,7 @@ class Restricted_Site_Access {
 							sprintf(
 								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F */
 								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
-								__( 'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F', 'restricted-site-access' )
+								'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F'
 							)
 						);
 					?>
@@ -1390,7 +1390,7 @@ class Restricted_Site_Access {
 					if ( $show_partial_cache_explanation ) {
 						printf(
 							'<a href="#" class="rsa-learn-more-link hide-if-no-js">%s</a>',
-							__( '[Learn more]', 'restricted-site-access' )
+							esc_html__( '[Learn more]', 'restricted-site-access' )
 						);
 					}
 					?>
@@ -1402,7 +1402,7 @@ class Restricted_Site_Access {
 					if ( $show_partial_cache_explanation ) {
 						printf(
 							'<a href="#" class="rsa-learn-more-less-link hide-if-no-js">%s</a>',
-							__( '[Show less]', 'restricted-site-access' )
+							esc_html__( '[Show less]', 'restricted-site-access' )
 						);
 					}
 					?>
