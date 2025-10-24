@@ -1277,7 +1277,7 @@ class Restricted_Site_Access {
 							sprintf(
 								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F */
 								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
-								__( 'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F', 'restricted-site-access' )
+								'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F'
 							)
 						);
 					?>
@@ -1507,7 +1507,6 @@ class Restricted_Site_Access {
 	 * Fieldset for managing allowed IP addresses.
 	 */
 	public static function settings_field_allowed() {
-		$show_partial_cache_explanation = empty( self::get_ips() );
 		?>
 		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
 			<div class="rsa-ip-addresses-caching-notice">
@@ -1522,24 +1521,20 @@ class Restricted_Site_Access {
 				<p>
 					<?php esc_html_e( 'RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.', 'restricted-site-access' ); ?><br />
 					<?php
-					if ( $show_partial_cache_explanation ) {
-						printf(
-							'<a href="#" class="rsa-learn-more-link hide-if-no-js">%s</a>',
-							__( '[Learn more]', 'restricted-site-access' )
-						);
-					}
+					printf(
+						'<a href="#" class="rsa-learn-more-link hide-if-no-js">%s</a>',
+						esc_html__( '[Learn more]', 'restricted-site-access' )
+					);
 					?>
 				</p>
 
-				<p class="rsa-learn-more-content <?php echo $show_partial_cache_explanation ? 'hide-if-js' : ''; ?>">
+				<p class="rsa-learn-more-content hide-if-js">
 					<?php esc_html_e( 'Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions – including external solutions we might not detect – can ignore the no-caching headers set by WordPress and show cached content to unauthorized users.', 'restricted-site-access' ); ?><br />
 					<?php
-					if ( $show_partial_cache_explanation ) {
-						printf(
-							'<a href="#" class="rsa-learn-more-less-link hide-if-no-js">%s</a>',
-							__( '[Show less]', 'restricted-site-access' )
-						);
-					}
+					printf(
+						'<a href="#" class="rsa-learn-more-less-link hide-if-no-js">%s</a>',
+						esc_html__( '[Show less]', 'restricted-site-access' )
+					);
 					?>
 				</p>
 			</div>
