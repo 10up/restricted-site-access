@@ -185,7 +185,7 @@ class Restricted_Site_Access {
 	 * Determine whether this is a REST API request based on the URL. As RSA redirects prior
 	 * to the `init` hook running, RSA needs to replace the API check in wp_authenticate_application_password().
 	 *
-	 * @since x.x.x
+	 * @since 7.4.0
 	 *
 	 * @param bool $original_value Original value passed by filter.
 	 * @return bool
@@ -1219,7 +1219,7 @@ class Restricted_Site_Access {
 	 * To modify the behavior based on other factors, use the
 	 * `restricted_site_access_show_page_cache_notice` filter.
 	 *
-	 * @since x.x.x
+	 * @since 7.6.0
 	 */
 	public static function show_page_cache_notification() {
 		// If WP_CACHE is on, show the notification.
@@ -1231,7 +1231,7 @@ class Restricted_Site_Access {
 		 * Allows for changing the setting for situations in which the WP_CACHE
 		 * constant is unsuitable for determining whether page caching is enabled.
 		 *
-		 * @since x.x.x
+		 * @since 7.6.0
 		 *
 		 * @param bool $show_notification Whether to show the page cache notice.
 		 *                                True if caching is detected, false otherwise.
