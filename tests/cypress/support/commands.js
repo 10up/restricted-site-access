@@ -75,7 +75,7 @@ Cypress.Commands.add( 'logout', () => {
 	cy
 		.get( '#wp-admin-bar-logout > a' )
 		.invoke( 'attr', 'href' )
-		.then( href => {
+		.then( ( href ) => {
 			cy.visit( href );
 		} );
 } );
@@ -84,17 +84,60 @@ Cypress.Commands.add( 'setPermalink', () => {
 	cy.visitAdminPage( 'options-permalink.php' );
 	cy
 		.get( 'form[action="options-permalink.php"] input[type="radio"]' )
-		.eq(4)
+		.eq( 4 )
 		.check();
 } );
 
 Cypress.Commands.add( 'resetState', () => {
 	cy.wpCli( `network meta set 1 blog_public 2` );
-	cy.wpCli( `network meta set 1 rsa_options '{"approach":1,"message":"Access to this site is restricted.","redirect_path":0,"head_code":302,"redirect_url":"","page":0,"allowed":[],"comment":[""]}' --format=json` );
+	cy.wpCli( `network meta set 1 rsa_options '{"approach":1,"message":"Access to this site is restricted.","redirect_path":0,"head_code":302,"redirect_url":"","page":0,"allowed":[],"comment":[""],"hide_admin_bar_roles":[]}' --format=json` );
 } );
 
 Cypress.Commands.add( 'addIp', ( ip = '', label = '' ) => {
 	cy.get( '#ip_list .rsa_unrestricted_ip_row .ip.code' ).last().type( ip );
 	cy.get( '#ip_list .rsa_unrestricted_ip_row .newipcomment' ).last().type( label );
 	cy.get( '#addip' ).click();
+} );
+
+Cypress.Commands.add( 'resetAdminBarHiding', () => {
+	cy.visitAdminPage( 'options-reading.php' );
+	cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).uncheck();
+	cy.saveSettings();
+} );
+
+Cypress.Commands.add( 'hideAdminBarUserRole', ( roles = [ 'subscriber' ] ) => {
+	cy.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' ).uncheck();
+	roles.forEach( ( role ) => {
+		cy.get( `input[value="${ role }"]` ).check();
+	} );
+	cy.saveSettings();
+} );
+
+Cypress.Commands.add( 'updateUserRole', ( role = 'administrator' ) => {
+	cy.request( {
+		url: '/wp-json/rsa/v1/seed/hide-admin-bar/update-user-role',
+		method: 'GET',
+		body: {
+			role,
+		},
+	} );
+} );
+
+Cypress.Commands.add( 'createCustomUserRole', ( role = 'custom_role', roleDisplayName = 'Custom Role', capabilities = { read: true } ) => {
+	cy.request( {
+		url: '/wp-json/rsa/v1/seed/hide-admin-bar/create-user-role',
+		method: 'GET',
+		body: {
+			role,
+			roleDisplayName,
+			capabilities,
+		},
+	} );
+} );
+
+Cypress.Commands.add( 'removeUserRole', () => {
+	cy.request( {
+		url: '/wp-json/rsa/v1/seed/hide-admin-bar/remove-user-role',
+		method: 'GET',
+	} );
 } );

@@ -18,6 +18,7 @@ Adds a number of new configuration options to the Reading settings panel as well
 * Quickly add your current IP to the unrestricted list
 * Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
 * Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
+* Hide the WordPress admin bar on the frontend for specific user roles - perfect for providing a cleaner experience for preview sites
 
 ## Installation
 
@@ -228,6 +229,31 @@ When the 'Discourage search engines from indexing this site' option is enabled, 
 ### What does 'Restrict site access to visitors who are logged in or allowed by IP address' do?
 
 When this option is activated, it serves as a barrier to all visitors except those who are authenticated (logged in) or whose IP addresses are included in the 'Unrestricted IP addresses' setting. This restriction applies universally, even to automated crawlers such as search engines.
+
+### How do I hide the admin bar for specific user roles?
+
+The plugin includes a feature to hide the WordPress admin bar on the frontend for specific user roles. This is particularly useful for providing a cleaner experience when previewing sites to low-access users.
+
+**To configure admin bar hiding:**
+
+1. Go to **Settings > Reading** in your WordPress admin
+2. Scroll down to the **Restricted Site Access** section
+3. Find the **Hide admin bar for roles** setting
+4. Check the boxes for the user roles you want to hide the admin bar for (e.g., Subscriber, Contributor)
+5. Click **Save Changes**
+
+**Features:**
+- **Role-based hiding**: Select specific user roles to hide the admin bar for
+- **Frontend only**: The admin bar is only hidden on the frontend, not in the admin area
+- **Network support**: Works with both single-site and multisite installations
+
+**Benefits:**
+- Improved user experience for preview sites
+- Better security by reducing admin access visibility
+- Customizable per user role
+- Non-intrusive to existing functionality
+
+This feature is perfect for sites that need to provide a clean, distraction-free experience for certain user types while maintaining full admin functionality for others.
 
 ### How can I programmatically define default mode for the network?
 

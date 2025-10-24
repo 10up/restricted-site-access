@@ -145,4 +145,25 @@ describe( 'Plugin admin settings are properly rendered.', () => {
 			.get( 'select[name="rsa_options[page]"]' )
 			.should( 'not.be.visible' );
 	} );
+
+	it( 'Admin bar hiding section should be visible', () => {
+		cy
+			.get( 'label' )
+			.contains( 'Hide admin bar for roles' )
+			.should( 'be.visible' );
+	} );
+
+	it( 'Admin bar hiding checkboxes should be visible', () => {
+		cy
+			.get( 'input[name="rsa_options[hide_admin_bar_roles][]"]' )
+			.should( 'be.visible' )
+			.and( 'have.length.at.least', 5 );
+	} );
+
+	it( 'Admin bar hiding help text should be visible', () => {
+		cy
+			.get( 'p.description' )
+			.contains( 'Select user roles for which the WordPress admin bar should be hidden on the frontend' )
+			.should( 'be.visible' );
+	} );
 } );

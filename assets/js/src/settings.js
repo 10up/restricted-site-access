@@ -62,7 +62,6 @@ import 'jquery-effects-shake';
 
 		if ( Cache.restrict_radio && ! Cache.restrict_radio.checked ) {
 			Cache.table.hide();
-			Cache.header.hide();
 		}
 
 		if ( Cache.redirect_choice && ! Cache.redirect_choice.checked ) {
@@ -104,10 +103,8 @@ import 'jquery-effects-shake';
 			'change',
 			function() {
 				if ( Cache.restrict_radio.checked ) {
-					Cache.header.show();
 					Cache.table.show();
 				} else {
-					Cache.header.hide();
 					Cache.table.hide();
 				}
 			}
