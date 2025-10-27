@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.5.3
+ * Version:           7.6.0
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            10up
@@ -57,7 +57,7 @@ if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.5.3' );
+define( 'RSA_VERSION', '7.6.0' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -91,6 +91,13 @@ class Restricted_Site_Access {
 	 * @var array $fields The plugin settings fields.
 	 */
 	private static $fields;
+
+	/**
+	 * Settings fields that should always be visible.
+	 *
+	 * @var array $always_visible_fields The plugin settings fields that should always be visible.
+	 */
+	private static $always_visible_fields;
 
 	/**
 	 * The redirection nonce.
@@ -149,8 +156,13 @@ class Restricted_Site_Access {
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
 
+		// Hide admin bar for selected user roles.
+		add_filter( 'show_admin_bar', array( __CLASS__, 'hide_admin_bar_for_roles' ), 10, 1 );
+
 		// Prevent WordPress from auto-resolving 404 URLs.
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
+
+		add_filter( 'wp_headers', array( __CLASS__, 'maybe_add_no_cache_headers' ) );
 	}
 
 	/**
@@ -173,7 +185,7 @@ class Restricted_Site_Access {
 	 * Determine whether this is a REST API request based on the URL. As RSA redirects prior
 	 * to the `init` hook running, RSA needs to replace the API check in wp_authenticate_application_password().
 	 *
-	 * @since x.x.x
+	 * @since 7.4.0
 	 *
 	 * @param bool $original_value Original value passed by filter.
 	 * @return bool
@@ -203,6 +215,48 @@ class Restricted_Site_Access {
 		}
 
 		return $original_value;
+	}
+
+	/**
+	 * Hide admin bar for selected user roles.
+	 *
+	 * @param bool $show_admin_bar Whether the admin bar should be shown.
+	 * @return bool Whether the admin bar should be shown.
+	 */
+	public static function hide_admin_bar_for_roles( $show_admin_bar ) {
+		// Only hide admin bar on frontend, not in admin.
+		if ( is_admin() ) {
+			return $show_admin_bar;
+		}
+
+		// Only hide for logged-in users.
+		if ( ! is_user_logged_in() ) {
+			return $show_admin_bar;
+		}
+
+		// Get current user's roles.
+		$user = wp_get_current_user();
+		if ( ! $user || empty( $user->roles ) ) {
+			return $show_admin_bar;
+		}
+
+		// Get RSA options to check which roles should have admin bar hidden.
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$rsa_options = self::get_options( true );
+		} else {
+			$rsa_options = self::get_options();
+		}
+
+		$hide_admin_bar_roles = isset( $rsa_options['hide_admin_bar_roles'] ) ? (array) $rsa_options['hide_admin_bar_roles'] : array();
+
+		// Check if current user has any role that should hide admin bar.
+		foreach ( $user->roles as $role ) {
+			if ( in_array( $role, $hide_admin_bar_roles, true ) ) {
+				return false;
+			}
+		}
+
+		return $show_admin_bar;
 	}
 
 	/**
@@ -310,12 +364,46 @@ class Restricted_Site_Access {
 				'field'   => 'settings_field_allowed',
 			),
 		);
+
+		self::$always_visible_fields = array(
+			'hide_admin_bar_roles' => array(
+				'default' => array(),
+				'label'   => esc_html__( 'Hide admin bar for roles', 'restricted-site-access' ),
+				'field'   => 'settings_field_hide_admin_bar_roles',
+			),
+		);
+	}
+
+	/**
+	 * Get the network mode from the RSA_NETWORK_MODE constant.
+	 *
+	 * @return string
+	 */
+	private static function get_config_network_mode() {
+		/**
+		 * Get the network mode from the RSA_NETWORK_MODE constant.
+		 * Only allow 'enforce' or 'default'.
+		 */
+		if ( defined( 'RSA_NETWORK_MODE' ) && in_array( RSA_NETWORK_MODE, array( 'enforce', 'default' ), true ) ) {
+			return RSA_NETWORK_MODE;
+		}
+
+		return '';
 	}
 
 	/**
 	 * Get current plugin network mode
 	 */
 	private static function get_network_mode() {
+		/**
+		 * Get the network mode from the RSA_NETWORK_MODE constant.
+		 * Only allow 'enforce' or 'default'.
+		 */
+		$config_network_mode = self::get_config_network_mode();
+		if ( ! empty( $config_network_mode ) ) {
+			return $config_network_mode;
+		}
+
 		if ( RSA_IS_NETWORK ) {
 			return get_site_option( 'rsa_mode', 'default' );
 		}
@@ -335,8 +423,11 @@ class Restricted_Site_Access {
 			$options = get_option( 'rsa_options', array() );
 		}
 
+		// Merge fields that should always be visible with the rest of the fields.
+		$all_fields = array_merge( self::$fields, self::$always_visible_fields );
+
 		// Fill in defaults where values aren't set.
-		foreach ( self::$fields as $field_name => $field_details ) {
+		foreach ( $all_fields as $field_name => $field_details ) {
 			if ( ! isset( $options[ $field_name ] ) ) {
 				$options[ $field_name ] = $field_details['default'];
 			}
@@ -500,6 +591,32 @@ class Restricted_Site_Access {
 				wp_die( wp_kses_post( $results['die_message'] ), esc_html( $results['die_title'] ), array( 'response' => esc_html( $results['die_code'] ) ) );
 			}
 		}
+	}
+
+	/**
+	 * Add nocache headers to the response if required.
+	 *
+	 * Add the nocache headers to the response if there is an IP allow list
+	 * configured. This is to prevent the caching of restricted pages
+	 * by caching plugins, CDNs or similar services.
+	 *
+	 * Runs on the `wp_headers` filter.
+	 *
+	 * @param array $headers The headers to be sent.
+	 * @return array The headers to be sent, possibly with no-cache headers added.
+	 */
+	public static function maybe_add_no_cache_headers( $headers ) {
+		$options_ips = (array) self::get_options()['allowed'];
+		$config_ips  = (array) self::get_config_ips();
+
+		$allowed_ips = array_merge( $options_ips, $config_ips );
+
+		if ( ! empty( $allowed_ips ) ) {
+			// Add no cache headers if there is an IP allow list.
+			$headers = array_merge( $headers, wp_get_nocache_headers() );
+		}
+
+		return $headers;
 	}
 
 	/**
@@ -711,7 +828,7 @@ class Restricted_Site_Access {
 
 		// settings for restricted site access.
 		register_setting( self::$settings_page, 'rsa_options', array( __CLASS__, 'sanitize_options' ) ); // array of fundamental options including ID and caching info.
-		add_settings_section( 'restricted-site-access', __( 'Restricted Site Access', 'restricted-site-access' ), '__return_empty_string', self::$settings_page );
+		add_settings_section( 'restricted-site-access', __( 'Restricted Site Access', 'restricted-site-access' ), array( __CLASS__, 'settings_section_restricted_site_access' ), self::$settings_page );
 
 		// Limit when additional settings fields show up.
 		if (
@@ -731,6 +848,30 @@ class Restricted_Site_Access {
 			}
 		}
 
+		// Default classes for always visible fields.
+		$always_visible_field_default_classes = array( 'rsa-setting' );
+		if ( self::is_enforced() ) {
+			$always_visible_field_default_classes[] = 'option-site-visibility';
+		}
+
+		// Add settings fields that should always be visible.
+		add_settings_section( 'restricted-site-access-always-visible', '', '__return_empty_string', self::$settings_page );
+		foreach ( self::$always_visible_fields as $field_name => $field_data ) {
+
+			// Add field to the section, along with the default classes.
+			$always_visible_field_classes   = $always_visible_field_default_classes;
+			$always_visible_field_classes[] = 'rsa-setting_' . $field_data['field'];
+
+			add_settings_field(
+				$field_name,
+				$field_data['label'],
+				array( __CLASS__, $field_data['field'] ),
+				self::$settings_page,
+				'restricted-site-access-always-visible',
+				array( 'class' => esc_attr( implode( ' ', $always_visible_field_classes ) ) )
+			);
+		}
+
 		add_filter( 'plugin_action_links_' . self::$basename, array( __CLASS__, 'plugin_action_links' ) );
 
 		// This is for Network Site Settings.
@@ -743,14 +884,36 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Show a notice if the settings are enforced.
+	 */
+	public static function settings_section_restricted_site_access() {
+		if ( ! self::is_enforced() ) {
+			return;
+		}
+
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			$message = __( 'Restricted Site Access settings are currently enforced across all sites on the network.', 'restricted-site-access' );
+		} else {
+			$message = __( 'Restricted Site Access settings are currently enforced by code configuration.', 'restricted-site-access' );
+		}
+		?>
+		<div class="notice notice-warning inline">
+			<p><strong><?php echo esc_html( $message ); ?></strong></p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Show RSA Settings in Network Settings
 	 */
 	public static function show_network_settings() {
-		$mode = self::get_network_mode();
+		$mode                = self::get_network_mode();
+		$config_network_mode = self::get_config_network_mode();
+		$mode_css_class      = empty( $config_network_mode ) ? '' : 'rsa-config-network-mode-enabled';
 		?>
 			<h2><?php esc_html_e( 'Restricted Site Access Settings', 'restricted-site-access' ); ?></h2>
 			<table id="restricted-site-access-mode" class="form-table">
-				<tr>
+				<tr class="<?php echo esc_attr( $mode_css_class ); ?>">
 					<th scope="row"><?php esc_html_e( 'Mode', 'restricted-site-access' ); ?></th>
 					<td>
 						<fieldset>
@@ -760,6 +923,15 @@ class Restricted_Site_Access {
 						</fieldset>
 					</td>
 				</tr>
+				<?php if ( ! empty( $config_network_mode ) ) { ?>
+					<tr class="rsa-network-enforced-warning">
+						<td colspan="2">
+							<div class="notice notice-warning inline">
+								<p><strong><?php echo esc_html__( 'The mode is currently enforced by code configuration.', 'restricted-site-access' ); ?></strong></p>
+							</div>
+						</td>
+					</tr>
+				<?php } ?>
 				<tr class="option-site-visibility">
 					<th scope="row"><?php esc_html_e( 'Site Visibility', 'restricted-site-access' ); ?></th>
 					<?php
@@ -844,7 +1016,16 @@ class Restricted_Site_Access {
 					</td>
 				</tr>
 			</table>
-
+			<table id="restricted-site-access-always-visible" class="form-table">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Hide admin bar for roles', 'restricted-site-access' ); ?></th>
+					<td>
+						<?php
+						self::settings_field_hide_admin_bar_roles();
+						?>
+					</td>
+				</tr>
+			</table>
 		<?php
 	}
 
@@ -1030,11 +1211,39 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Check if the page caching is on, and notify the admin
+	 * Whether to show the page cache notifications.
+	 *
+	 * Detects whether page caching is enabled via the WP_CACHE constant to
+	 * determine if the page cache notices should be shown.
+	 *
+	 * To modify the behavior based on other factors, use the
+	 * `restricted_site_access_show_page_cache_notice` filter.
+	 *
+	 * @since 7.6.0
+	 */
+	public static function show_page_cache_notification() {
+		// If WP_CACHE is on, show the notification.
+		$show_notification = defined( 'WP_CACHE' ) && true === WP_CACHE;
+
+		/**
+		 * Filter whether to show the page cache notifications.
+		 *
+		 * Allows for changing the setting for situations in which the WP_CACHE
+		 * constant is unsuitable for determining whether page caching is enabled.
+		 *
+		 * @since 7.6.0
+		 *
+		 * @param bool $show_notification Whether to show the page cache notice.
+		 *                                True if caching is detected, false otherwise.
+		 */
+		return apply_filters( 'restricted_site_access_show_page_cache_notice', $show_notification );
+	}
+
+	/**
+	 * Display a warning notice if page caching is enabled.
 	 */
 	public static function page_cache_notice() {
-		// If WP_CACHE is on we show notification.
-		$show_notification = apply_filters( 'restricted_site_access_show_page_cache_notice', defined( 'WP_CACHE' ) && true === WP_CACHE );
+		$show_notification = self::show_page_cache_notification();
 
 		if ( $show_notification ) {
 
@@ -1066,9 +1275,9 @@ class Restricted_Site_Access {
 					<?php
 						echo wp_kses_post(
 							sprintf(
-								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#faq */
+								/* translators: %s: https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F */
 								__( 'Page caching appears to be enabled. Restricted Site Access may not work as expected. <a href="%s">Learn more</a>.', 'restricted-site-access' ),
-								__( 'https://wordpress.org/plugins/restricted-site-access/#faq', 'restricted-site-access' )
+								'https://wordpress.org/plugins/restricted-site-access/#i%20received%20a%20warning%20about%20page%20caching.%20what%20does%20it%20mean%3F'
 							)
 						);
 					?>
@@ -1123,6 +1332,12 @@ class Restricted_Site_Access {
 			__( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect. A 301 redirect tells search engines that a page has moved permanently to the new location. 307 indicates a temporary redirect. 302 is an undefined redirect.', 'restricted-site-access' )
 		);
 
+		$content[] = sprintf(
+			'<p><strong>%1$s</strong> - %2$s</p>',
+			_x( 'Hide admin bar for roles', 'help topic', 'restricted-site-access' ),
+			__( 'Select user roles for which the WordPress admin bar should be hidden on the frontend. This is useful for providing a cleaner experience for certain user types.', 'restricted-site-access' )
+		);
+
 		$screen->add_help_tab(
 			array(
 				'id'      => 'restricted-site-access',
@@ -1132,7 +1347,8 @@ class Restricted_Site_Access {
 		);
 		?>
 <style>
-.rsa-enforced .option-site-visibility {
+.rsa-enforced .option-site-visibility,
+.rsa-config-network-mode-enabled {
 	opacity: 0.5;
 	pointer-events: none;
 }
@@ -1242,6 +1458,19 @@ class Restricted_Site_Access {
 		$new_input['allowed'] = array_keys( $ips_comments );
 		$new_input['comment'] = array_values( $ips_comments );
 
+		// Sanitize hide admin bar roles.
+		$new_input['hide_admin_bar_roles'] = array();
+		if ( ! empty( $input['hide_admin_bar_roles'] ) && is_array( $input['hide_admin_bar_roles'] ) ) {
+
+			$wp_roles   = wp_roles();
+			$role_names = array_keys( $wp_roles->roles );
+			foreach ( $input['hide_admin_bar_roles'] as $role ) {
+				if ( in_array( $role, $role_names, true ) ) {
+					$new_input['hide_admin_bar_roles'][] = sanitize_key( $role );
+				}
+			}
+		}
+
 		return $new_input;
 	}
 
@@ -1280,6 +1509,35 @@ class Restricted_Site_Access {
 	public static function settings_field_allowed() {
 		?>
 		<div class="hide-if-no-js rsa-ip-addresses-field-wrapper">
+			<div class="rsa-ip-addresses-caching-notice">
+				<?php if ( self::show_page_cache_notification() ) : ?>
+					<p class="rsa-inline-page-cache-warning">
+						<strong>
+							<?php esc_html_e( 'Page caching appears to be enabled. Restricted Site Access may not work as expected.', 'restricted-site-access' ); ?>
+						</strong>
+					</p>
+				<?php endif; ?>
+
+				<p>
+					<?php esc_html_e( 'RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.', 'restricted-site-access' ); ?><br />
+					<?php
+					printf(
+						'<a href="#" class="rsa-learn-more-link hide-if-no-js">%s</a>',
+						esc_html__( '[Learn more]', 'restricted-site-access' )
+					);
+					?>
+				</p>
+
+				<p class="rsa-learn-more-content hide-if-js">
+					<?php esc_html_e( 'Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions – including external solutions we might not detect – can ignore the no-caching headers set by WordPress and show cached content to unauthorized users.', 'restricted-site-access' ); ?><br />
+					<?php
+					printf(
+						'<a href="#" class="rsa-learn-more-less-link hide-if-no-js">%s</a>',
+						esc_html__( '[Show less]', 'restricted-site-access' )
+					);
+					?>
+				</p>
+			</div>
 			<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
 				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
 				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
@@ -1462,6 +1720,39 @@ class Restricted_Site_Access {
 			esc_html__( 'No published pages found.', 'restricted-site-access' ),
 			esc_attr( $args['id'] )
 		);
+	}
+
+	/**
+	 * Field for choosing user roles to hide admin bar.
+	 */
+	public static function settings_field_hide_admin_bar_roles() {
+		if ( RSA_IS_NETWORK && 'enforce' === self::get_network_mode() ) {
+			self::$rsa_options = self::get_options( true );
+		} elseif ( ! isset( self::$rsa_options['hide_admin_bar_roles'] ) ) {
+			// @codeCoverageIgnoreStart
+			self::$rsa_options['hide_admin_bar_roles'] = array();
+			// @codeCoverageIgnoreEnd
+		}
+
+		$wp_roles       = wp_roles();
+		$selected_roles = (array) self::$rsa_options['hide_admin_bar_roles'];
+
+		?>
+		<fieldset>
+			<legend class="screen-reader-text">
+				<span><?php esc_html_e( 'Hide admin bar for roles', 'restricted-site-access' ); ?></span>
+			</legend>
+			<?php foreach ( $wp_roles->roles as $role_name => $role_info ) : ?>
+				<label>
+					<input type="checkbox" name="rsa_options[hide_admin_bar_roles][]" value="<?php echo esc_attr( $role_name ); ?>" <?php checked( in_array( $role_name, $selected_roles, true ) ); ?> />
+					<?php echo esc_html( $role_info['name'] ); ?>
+				</label><br />
+			<?php endforeach; ?>
+		</fieldset>
+		<p class="description">
+			<?php esc_html_e( 'Select user roles for which the WordPress admin bar should be hidden on the frontend.', 'restricted-site-access' ); ?>
+		</p>
+		<?php
 	}
 
 	/**

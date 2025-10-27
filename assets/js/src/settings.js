@@ -62,7 +62,6 @@ import 'jquery-effects-shake';
 
 		if ( Cache.restrict_radio && ! Cache.restrict_radio.checked ) {
 			Cache.table.hide();
-			Cache.header.hide();
 		}
 
 		if ( Cache.redirect_choice && ! Cache.redirect_choice.checked ) {
@@ -104,12 +103,28 @@ import 'jquery-effects-shake';
 			'change',
 			function() {
 				if ( Cache.restrict_radio.checked ) {
-					Cache.header.show();
 					Cache.table.show();
 				} else {
-					Cache.header.hide();
 					Cache.table.hide();
 				}
+			}
+		);
+
+		$( '.rsa-learn-more-link' ).on(
+			'click',
+			function( event ) {
+				event.preventDefault();
+				$( '.rsa-learn-more-content' ).removeClass( 'hide-if-js' );
+				$( this ).addClass( 'hide-if-js' ).removeClass( 'hide-if-no-js' );
+			}
+		);
+
+		$( '.rsa-learn-more-less-link' ).on(
+			'click',
+			function( event ) {
+				event.preventDefault();
+				$( '.rsa-learn-more-content' ).addClass( 'hide-if-js' );
+				$( '.rsa-learn-more-link' ).removeClass( 'hide-if-js' ).addClass( 'hide-if-no-js' );
 			}
 		);
 

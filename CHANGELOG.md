@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.6.0] - 2025-10-27
+### Added
+- New setting allowing you to hide the WordPress admin bar on the frontend for specific user roles (props [@sanketio](https://github.com/sanketio), [@fabiankaegy](https://github.com/fabiankaegy), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#362](https://github.com/10up/restricted-site-access/pull/362)).
+- New `RSA_NETWORK_MODE` constant to define default setting for network mode for multisite (props [@sanketio](https://github.com/sanketio), [@claytoncollie](https://github.com/claytoncollie), [@dkotter](https://github.com/dkotter) via [#363](https://github.com/10up/restricted-site-access/pull/363)).
+- More details on how caching may impact the plugin (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
+
+### Fixed
+- Ensure IP addresses can be saved properly at the network level (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#367](https://github.com/10up/restricted-site-access/pull/367)).
+
+### Security
+- Prevent caching of page content when using an IP allow list (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@fabiankaegy](https://github.com/fabiankaegy), [@joemcgill](https://github.com/joemcgill), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
+- Bump `cross-spawn` from 7.0.3 to 7.0.6, `@wordpress/scripts` from 29.0.0 to 30.16.0 and `http-proxy-middleware` from 2.0.6 to 2.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#355](https://github.com/10up/restricted-site-access/pull/355)).
+- Bump `tar-fs` from 3.0.8 to 3.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#359](https://github.com/10up/restricted-site-access/pull/359)).
+- Bump `brace-expansion` from 1.1.11 to 1.1.12, `on-headers` from 1.0.2 to 1.1.0 and `compression` from 1.7.4 to 1.8.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#361](https://github.com/10up/restricted-site-access/pull/361)).
+
+### Developer
+- Update screenshots to reflect current state of plugin (props [@iamdharmesh](https://github.com/iamdharmesh), [@rickalee](https://github.com/rickalee), [@jeffpaul](https://github.com/jeffpaul) via [#358](https://github.com/10up/restricted-site-access/pull/358)).
+- Ensure all our GitHub Actions workflow files have proper permissions (props [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#360](https://github.com/10up/restricted-site-access/pull/360)).
+- Fix issue with attaching release assets during release deploy action (props [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#364](https://github.com/10up/restricted-site-access/pull/364)).
+
 ## [7.5.3] - 2025-05-19
 **Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**
 
@@ -402,6 +422,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.6.0]: https://github.com/10up/restricted-site-access/compare/7.5.3...7.6.0
 [7.5.3]: https://github.com/10up/restricted-site-access/compare/7.5.2...7.5.3
 [7.5.2]: https://github.com/10up/restricted-site-access/compare/7.5.1...7.5.2
 [7.5.1]: https://github.com/10up/restricted-site-access/compare/7.5.0...7.5.1

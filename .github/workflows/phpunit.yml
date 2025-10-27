@@ -1,4 +1,6 @@
 name: PHPUnit
+permissions:
+  contents: read
 
 on:
   push:

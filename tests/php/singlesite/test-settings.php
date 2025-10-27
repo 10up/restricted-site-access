@@ -34,13 +34,14 @@ class Restricted_Site_Access_Test_Singlesite_Settings extends WP_UnitTestCase {
 		$options = $rsa::get_options( false );
 
 		$defaults = array(
-			'approach'      => 1,
-			'message'       => _x( 'Access to this site is restricted.', 'default restriction message', 'restricted-site-access' ),
-			'redirect_url'  => '',
-			'redirect_path' => 0,
-			'head_code'     => 302,
-			'page'          => 0,
-			'allowed'       => array(),
+			'approach'             => 1,
+			'message'              => _x( 'Access to this site is restricted.', 'default restriction message', 'restricted-site-access' ),
+			'redirect_url'         => '',
+			'redirect_path'        => 0,
+			'head_code'            => 302,
+			'page'                 => 0,
+			'allowed'              => array(),
+			'hide_admin_bar_roles' => array(),
 		);
 
 		$this->assertSame( $defaults, $options );

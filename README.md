@@ -18,6 +18,7 @@ Adds a number of new configuration options to the Reading settings panel as well
 * Quickly add your current IP to the unrestricted list
 * Customize the redirect location, including an option to send them to the same requested path and set the HTTP status code for SEO friendliness
 * Define a simple message to show restricted visitors, or select a page to show them - great for "coming soon" teasers!
+* Hide the WordPress admin bar on the frontend for specific user roles - perfect for providing a cleaner experience for preview sites
 
 ## Installation
 
@@ -106,7 +107,9 @@ If your proxy does not use static IP addresses, you can still utilize the `rsa_t
 
 ### I received a warning about page caching. What does it mean?
 
-Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions - including external solutions we might not detect - can cause restricted pages to be publicly served regardless of your settings.
+As of version 7.6.0, RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.
+
+Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions – including external solutions we might not detect – can ignore the no-caching headers set by WordPress and show cached content to unauthorized users.
 
 ### Why can't logged-in users see all the sites on my multisite instance?
 
@@ -227,6 +230,43 @@ When the 'Discourage search engines from indexing this site' option is enabled, 
 
 When this option is activated, it serves as a barrier to all visitors except those who are authenticated (logged in) or whose IP addresses are included in the 'Unrestricted IP addresses' setting. This restriction applies universally, even to automated crawlers such as search engines.
 
+### How do I hide the admin bar for specific user roles?
+
+The plugin includes a feature to hide the WordPress admin bar on the frontend for specific user roles. This is particularly useful for providing a cleaner experience when previewing sites to low-access users.
+
+**To configure admin bar hiding:**
+
+1. Go to **Settings > Reading** in your WordPress admin
+2. Scroll down to the **Restricted Site Access** section
+3. Find the **Hide admin bar for roles** setting
+4. Check the boxes for the user roles you want to hide the admin bar for (e.g., Subscriber, Contributor)
+5. Click **Save Changes**
+
+**Features:**
+- **Role-based hiding**: Select specific user roles to hide the admin bar for
+- **Frontend only**: The admin bar is only hidden on the frontend, not in the admin area
+- **Network support**: Works with both single-site and multisite installations
+
+**Benefits:**
+- Improved user experience for preview sites
+- Better security by reducing admin access visibility
+- Customizable per user role
+- Non-intrusive to existing functionality
+
+This feature is perfect for sites that need to provide a clean, distraction-free experience for certain user types while maintaining full admin functionality for others.
+
+### How can I programmatically define default mode for the network?
+
+In your `wp-config.php` file, you can define the following:
+
+```php
+define( 'RSA_NETWORK_MODE', 'enforce' );
+```
+
+There are only two values supported for this constant at the moment: **enforce** or **default**.
+
+If it is set to be non-allowed value, then it will assume as **default**.
+
 ## Support Level
 
 **Stable:** 10up is not planning to develop any new features for this, but will still respond to bug reports and security concerns. We welcome PRs, but any that include new features should be small and easy to integrate and should not include breaking changes. We otherwise intend to keep this tested up to the most recent version of WordPress.
@@ -241,6 +281,4 @@ Please read [CODE_OF_CONDUCT.md](https://github.com/10up/restricted-site-access/
 
 ## Like what you see?
 
-<p align="center">
-<a href="http://10up.com/contact/"><img src="https://10up.com/uploads/2016/10/10up-Github-Banner.png" width="850"></a>
-</p>
+<a href="http://10up.com/contact/"><img src="https://github.com/10up/.github/blob/trunk/profile/10up-github-banner.jpg" width="850" alt="Work with the 10up WordPress Practice at Fueled"></a>
