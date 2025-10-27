@@ -3,7 +3,7 @@ Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomno
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restrict, limited, permissions, security
 Tested up to:      6.8
-Stable tag:        7.5.3
+Stable tag:        7.6.0
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -107,7 +107,7 @@ If your proxy does not use static IP addresses, you can still utilize the `rsa_t
 
 = I received a warning about page caching. What does it mean? =
 
-As of version x.x.x, RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.
+As of version 7.6.0, RSA attempts to prevent full page caching on sites with an IP address allow list. This is to prevent the page content from being stored at the caching level and displayed to unauthorized visitors.
 
 Page caching plugins often hook into WordPress to quickly serve the last cached output of a page before we can check to see if a visitor’s access should be restricted. Not all page caching plugins behave the same way, but several solutions – including external solutions we might not detect – can ignore the no-caching headers set by WordPress and show cached content to unauthorized users.
 
@@ -204,6 +204,16 @@ When this option is activated, it serves as a barrier to all visitors except tho
 
 == Changelog ==
 
+= 7.6.0 - 2025-10-27 =
+* **Added:** New setting allowing you to hide the WordPress admin bar on the frontend for specific user roles (props [@sanketio](https://github.com/sanketio), [@fabiankaegy](https://github.com/fabiankaegy), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#362](https://github.com/10up/restricted-site-access/pull/362)).
+* **Added:** New `RSA_NETWORK_MODE` constant to define default setting for network mode for multisite (props [@sanketio](https://github.com/sanketio), [@claytoncollie](https://github.com/claytoncollie), [@dkotter](https://github.com/dkotter) via [#363](https://github.com/10up/restricted-site-access/pull/363)).
+* **Added:** More details on how caching may impact the plugin (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
+* **Fixed:** Ensure IP addresses can be saved properly at the network level (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#367](https://github.com/10up/restricted-site-access/pull/367)).
+* **Security:** Prevent caching of page content when using an IP allow list (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@fabiankaegy](https://github.com/fabiankaegy), [@joemcgill](https://github.com/joemcgill), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
+* **Security:** Bump `cross-spawn` from 7.0.3 to 7.0.6, `@wordpress/scripts` from 29.0.0 to 30.16.0 and `http-proxy-middleware` from 2.0.6 to 2.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#355](https://github.com/10up/restricted-site-access/pull/355)).
+* **Security:** Bump `tar-fs` from 3.0.8 to 3.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#359](https://github.com/10up/restricted-site-access/pull/359)).
+* **Security:** Bump `brace-expansion` from 1.1.11 to 1.1.12, `on-headers` from 1.0.2 to 1.1.0 and `compression` from 1.7.4 to 1.8.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#361](https://github.com/10up/restricted-site-access/pull/361)).
+
 = 7.5.3 - 2025-05-19 =
 
 **Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**
@@ -247,42 +257,6 @@ When this option is activated, it serves as a barrier to all visitors except tho
 * **Fixed:** Update code snippet in the readme (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#291](https://github.com/10up/restricted-site-access/pull/291)).
 * **Security:** For new installs, ensure we only trust the `REMOTE_ADDR` HTTP header by default. Existing installs will still utilize the old list of approved headers but can modify this (and are recommended to) by using the `rsa_trusted_headers` filter (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dustinrue](https://github.com/dustinrue), [@mikhail-net](https://github.com/mikhail-net), [Darius Sveikauskas](https://patchstack.com/) via [#290](https://github.com/10up/restricted-site-access/pull/290)).
 * **Security:** Bump `axios` from 0.25.0 to 1.6.2 and `@wordpress/scripts` from 23.7.2 to 26.19.0 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#293](https://github.com/10up/restricted-site-access/pull/293)).
-
-= 7.4.1 - 2023-11-14 =
-* **Added:** GitHub Action summary report for Cypress end-to-end tests (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#258](https://github.com/10up/restricted-site-access/pull/258)).
-* **Added:** `Restricted_Site_Access::append_ips()` method to add IP addresses programatically (props [@Sidsector9](https://github.com/Sidsector9), [@faisal-alvi](https://github.com/faisal-alvi) via [#267](https://github.com/10up/restricted-site-access/pull/267)).
-* **Added:** Repository Automator GitHub Action (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#273](https://github.com/10up/restricted-site-access/pull/273)).
-* **Changed:** Bumped WordPress "tested up to" version 6.4 (props [@kirtangajjar](https://github.com/kirtangajjar), [@Sidsector9](https://github.com/Sidsector9), [@qasumitbagthariya](https://github.com/qasumitbagthariya), [@jeffpaul](https://github.com/jeffpaul) via [#271](https://github.com/10up/restricted-site-access/pull/271), [#288](https://github.com/10up/restricted-site-access/pull/288)).
-* **Changed:** WordPress compatibility validation library namespace (props [@Sidsector9](https://github.com/Sidsector9), [@dkotter](https://github.com/dkotter) via [#278](https://github.com/10up/restricted-site-access/pull/278)).
-* **Changed:** Documentation to clarify what the restricted site access & discourage search engine options do (props [@lkraav](https://github.com/lkraav), [@jeffpaul](https://github.com/jeffpaul), [@helen](https://github.com/helen), [@dinhtungdu](https://github.com/dinhtungdu), [@bmarshall511](https://github.com/bmarshall511), [@Sidsector9](https://github.com/Sidsector9) via [#262](https://github.com/10up/restricted-site-access/pull/262)).
-* **Changed:** Updates the Dependency Review GitHub Action to check for GPL-compatible licenses (props [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#261](https://github.com/10up/restricted-site-access/pull/261)).
-* **Fixed:** Issue with autovivification (props [@mae829](https://github.com/mae829), [@Sidsector9](https://github.com/Sidsector9) via [#281](https://github.com/10up/restricted-site-access/pull/281), [@turtlepod](https://github.com/turtlepod) via [#281](https://github.com/10up/restricted-site-access/pull/281)).
-* **Security:** Add PHP environment compatibility checker (props [@vikrampm1](https://github.com/vikrampm1), [@Sidsector9](https://github.com/Sidsector9) via [#268](https://github.com/10up/restricted-site-access/pull/268)).
-* **Security:** Bump `word-wrap` from `1.2.3` to `1.2.4` (props [@Sidsector9](https://github.com/Sidsector9) via [#266](https://github.com/10up/restricted-site-access/pull/266)).
-* **Security:** Bump `semver` from `5.7.1` to `5.7.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#264](https://github.com/10up/restricted-site-access/pull/264)).
-* **Security:** Bump `tough-cookie` from `4.1.2` to `4.1.3` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
-* **Security:** Bump `@cypress/request` from `2.88.10` to `2.88.12` (props [@Sidsector9](https://github.com/Sidsector9) via [#270](https://github.com/10up/restricted-site-access/pull/270)).
-* **Security:** Bump `postcss` from `8.4.18` to `8.4.31` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
-* **Security:** Bump `@babel/traverse` from `7.20.0` to `7.23.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#279](https://github.com/10up/restricted-site-access/pull/279)).
-* **Security:** Bump `Cypress` version from `10.3.0` to `13.2.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
-* **Security:** Bump `@10up/cypress-wp-utils` version to `0.2.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
-* **Security:** Bump `@wordpress/env` version from `5.4.0` to `8.7.0` (props [@iamdharmesh](https://github.com/iamdharmesh), [@Sidsector9](https://github.com/Sidsector9) via [#276](https://github.com/10up/restricted-site-access/pull/276)).
-* **Security:** Bump `@babel/traverse` from 7.20.0 to 7.23.2 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#282](https://github.com/10up/restricted-site-access/pull/282)).
-
-= 7.4.0 - 2023-04-18 =
-* **Added:** Support for application passwords (props [@kirtangajjar](https://github.com/kirtangajjar), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Sidsector9](https://github.com/Sidsector9) via [#247](https://github.com/10up/restricted-site-access/pull/247)).
-* **Added:** Support for custom header based allow-listing (props [@mikelking](https://github.com/mikelking), [@ravinderk](https://github.com/ravinderk), [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#242](https://github.com/10up/restricted-site-access/pull/242)).
-* **Changed:** [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul, [@Sidsector9](https://github.com/Sidsector9)) via [#244](https://github.com/10up/restricted-site-access/pull/244)).
-* **Changed:** Bump WordPress "tested up to" version 6.2 (props [@jayedul](https://github.com/jayedul), [@Sidsector9](https://github.com/Sidsector9) via [#251](https://github.com/10up/restricted-site-access/pull/251))
-* **Changed:** Improve Github actions workflow (props [@Sidsector9](https://github.com/Sidsector9), [@dkotter](https://github.com/dkotter) via [#227](https://github.com/10up/restricted-site-access/pull/227), [#253](https://github.com/10up/restricted-site-access/pull/253)).
-* **Fixed:** Plugin settings header UX (props [@barryceelen](https://github.com/barryceelen), [@Sidsector9](https://github.com/Sidsector9) via [#236](https://github.com/10up/restricted-site-access/pull/236)).
-* **Fixed:** Issue that caused redirect loop (props [@mikegibbons4](https://profiles.wordpress.org/mikegibbons4/), [@Sidsector9](https://github.com/Sidsector9), [@cadic](https://github.com/cadic), [@peterwilsoncc](https://github.com/peterwilsoncc)) via [#221](https://github.com/10up/restricted-site-access/issues/221).
-* **Security:** Run E2E tests on the final ZIP build (props [@iamdharmesh](https://github.com/iamdharmesh), [@jayedul](https://github.com/jayedul) via [#249](https://github.com/10up/restricted-site-access/pull/249)).
-* **Security:** Bump `json5` from `1.0.1` to `1.0.2` (props [@Sidsector9](https://github.com/Sidsector9) via [#241](https://github.com/10up/restricted-site-access/pull/241)).
-* **Security:** Bump `simple-git` from `3.15.0` to `3.16.0` (props [@Sidsector9](https://github.com/Sidsector9) via [#243](https://github.com/10up/restricted-site-access/pull/243)).
-* **Security:** Bump `http-cache-semantics` from 4.1.0 to 4.1.1 (props [@Sidsector9](https://github.com/Sidsector9) via [#245](https://github.com/10up/restricted-site-access/pull/245)).
-* **Security:** Bump `@sideway/formula` from 3.0.0 to 3.0.1 (props [@Sidsector9](https://github.com/Sidsector9) via [#246](https://github.com/10up/restricted-site-access/pull/246)).
-* **Security:** Bump `webpack` from `5.74.0` to `5.76.1` (props [@Sidsector9](https://github.com/Sidsector9) via [#248](https://github.com/10up/restricted-site-access/pull/248)).
 
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 

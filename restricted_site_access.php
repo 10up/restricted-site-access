@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.5.3
+ * Version:           7.6.0
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            10up
@@ -57,7 +57,7 @@ if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.5.3' );
+define( 'RSA_VERSION', '7.6.0' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -185,7 +185,7 @@ class Restricted_Site_Access {
 	 * Determine whether this is a REST API request based on the URL. As RSA redirects prior
 	 * to the `init` hook running, RSA needs to replace the API check in wp_authenticate_application_password().
 	 *
-	 * @since x.x.x
+	 * @since 7.4.0
 	 *
 	 * @param bool $original_value Original value passed by filter.
 	 * @return bool
@@ -1219,7 +1219,7 @@ class Restricted_Site_Access {
 	 * To modify the behavior based on other factors, use the
 	 * `restricted_site_access_show_page_cache_notice` filter.
 	 *
-	 * @since x.x.x
+	 * @since 7.6.0
 	 */
 	public static function show_page_cache_notification() {
 		// If WP_CACHE is on, show the notification.
@@ -1231,7 +1231,7 @@ class Restricted_Site_Access {
 		 * Allows for changing the setting for situations in which the WP_CACHE
 		 * constant is unsuitable for determining whether page caching is enabled.
 		 *
-		 * @since x.x.x
+		 * @since 7.6.0
 		 *
 		 * @param bool $show_notification Whether to show the page cache notice.
 		 *                                True if caching is detected, false otherwise.
