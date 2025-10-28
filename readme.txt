@@ -3,7 +3,7 @@ Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomno
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restrict, limited, permissions, security
 Tested up to:      6.8
-Stable tag:        7.6.0
+Stable tag:        7.6.1
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
