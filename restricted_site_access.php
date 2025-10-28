@@ -423,6 +423,11 @@ class Restricted_Site_Access {
 			$options = get_option( 'rsa_options', array() );
 		}
 
+		// Populate fields if they are not set.
+		if ( is_null( self::$fields ) || is_null( self::$always_visible_fields ) ) {
+			self::populate_fields_array();
+		}
+
 		// Merge fields that should always be visible with the rest of the fields.
 		$all_fields = array_merge( self::$fields, self::$always_visible_fields );
 
