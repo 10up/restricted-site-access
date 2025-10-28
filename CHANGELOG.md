@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
-## [7.6.1] - 2025-10-28
+## [7.6.1] - 2025-10-29
 ### Fixed
-- Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [@dkotter](https://github.com/dkotter) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
+- Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
 
 ## [7.6.0] - 2025-10-27
 ### Added
