@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.6.1] - 2025-10-28
+### Fixed
+- Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [@dkotter](https://github.com/dkotter) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
+
 ## [7.6.0] - 2025-10-27
 ### Added
 - New setting allowing you to hide the WordPress admin bar on the frontend for specific user roles (props [@sanketio](https://github.com/sanketio), [@fabiankaegy](https://github.com/fabiankaegy), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#362](https://github.com/10up/restricted-site-access/pull/362)).
@@ -422,6 +426,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.6.1]: https://github.com/10up/restricted-site-access/compare/7.6.0...7.6.1
 [7.6.0]: https://github.com/10up/restricted-site-access/compare/7.5.3...7.6.0
 [7.5.3]: https://github.com/10up/restricted-site-access/compare/7.5.2...7.5.3
 [7.5.2]: https://github.com/10up/restricted-site-access/compare/7.5.1...7.5.2
