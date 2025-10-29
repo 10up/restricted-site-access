@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.6.0
+ * Version:           7.6.1
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            10up
@@ -57,7 +57,7 @@ if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.6.0' );
+define( 'RSA_VERSION', '7.6.1' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -421,6 +421,11 @@ class Restricted_Site_Access {
 			$options = get_site_option( 'rsa_options', array() );
 		} else {
 			$options = get_option( 'rsa_options', array() );
+		}
+
+		// Populate fields if they are not set.
+		if ( is_null( self::$fields ) || is_null( self::$always_visible_fields ) ) {
+			self::populate_fields_array();
 		}
 
 		// Merge fields that should always be visible with the rest of the fields.
@@ -836,6 +841,11 @@ class Restricted_Site_Access {
 			( RSA_IS_NETWORK && 'enforce' !== self::get_network_mode() ) || // Show on single (network) site when not enforced at the network level.
 			! RSA_IS_NETWORK // Show on single non-network sites.
 		) {
+			// Populate fields if they are not set.
+			if ( is_null( self::$fields ) ) {
+				self::populate_fields_array();
+			}
+
 			foreach ( self::$fields as $field_name => $field_data ) {
 				add_settings_field(
 					$field_name,
@@ -856,6 +866,12 @@ class Restricted_Site_Access {
 
 		// Add settings fields that should always be visible.
 		add_settings_section( 'restricted-site-access-always-visible', '', '__return_empty_string', self::$settings_page );
+
+		// Populate fields if they are not set.
+		if ( is_null( self::$always_visible_fields ) ) {
+			self::populate_fields_array();
+		}
+
 		foreach ( self::$always_visible_fields as $field_name => $field_data ) {
 
 			// Add field to the section, along with the default classes.
