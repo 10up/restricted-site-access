@@ -267,6 +267,10 @@ There are only two values supported for this constant at the moment: **enforce**
 
 If it is set to be non-allowed value, then it will assume as **default**.
 
+### Where do I report security bugs found in this plugin?
+
+Please report security bugs found in the source code of the Restricted Site Access plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fb914-e9bc-4e32-82fd-9307fe324c19).  The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+
 ## Support Level
 
 **Stable:** 10up is not planning to develop any new features for this, but will still respond to bug reports and security concerns. We welcome PRs, but any that include new features should be small and easy to integrate and should not include breaking changes. We otherwise intend to keep this tested up to the most recent version of WordPress.
