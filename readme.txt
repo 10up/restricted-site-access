@@ -196,6 +196,10 @@ When the 'Discourage search engines from indexing this site' option is enabled, 
 
 When this option is activated, it serves as a barrier to all visitors except those who are authenticated (logged in) or whose IP addresses are included in the 'Unrestricted IP addresses' setting. This restriction applies universally, even to automated crawlers such as search engines.
 
+= Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Restricted Site Access plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fb914-e9bc-4e32-82fd-9307fe324c19).  The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+
 == Screenshots ==
 
 1. Screenshot of settings panel with simple Restricted Site Access option (send to login page).
