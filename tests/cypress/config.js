@@ -1,6 +1,13 @@
 const { defineConfig } = require('cypress');
-const { loadConfig } = require('@wordpress/env/lib/config');
-const getCacheDirectory = require('@wordpress/env/lib/config/get-cache-directory');
+const path = require( 'path' );
+
+// Resolve the package directory
+const wpEnvPackagePath = require.resolve( '@wordpress/env/package.json' );
+const wpEnvLibPath = path.join( path.dirname( wpEnvPackagePath ), 'lib' );
+
+// Directly require the files using their resolved paths
+const { loadConfig } = require( path.join( wpEnvLibPath, 'config', 'index.js' ) );
+const getCacheDirectory = require( path.join( wpEnvLibPath, 'config', 'get-cache-directory.js' ) );
 
 module.exports = defineConfig({
   fixturesFolder: 'tests/cypress/fixtures',
@@ -37,7 +44,7 @@ module.exports = defineConfig({
 
 /**
  * Set WP URL as baseUrl in Cypress config.
- * 
+ *
  * @param {Function} on    function that used to register listeners on various events.
  * @param {object} config  Cypress Config object.
  * @returns config Updated Cypress Config object.
