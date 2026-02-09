@@ -13,7 +13,7 @@
 	"license": "GPL-2.0-or-later",
 	"require-dev": {
 		"10up/phpcs-composer": "dev-master",
-		"phpunit/phpunit": "9.4.4",
+		"phpunit/phpunit": "9.6.33",
 		"yoast/phpunit-polyfills": "1.x-dev"
 	},
 	"scripts": {
