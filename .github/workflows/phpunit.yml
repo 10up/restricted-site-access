@@ -29,6 +29,9 @@ jobs:
         with:
             files: |
               **/*.php
+              composer.json
+              composer.lock
+              phpunit.xml
 
       - id: files-changed
         run: |
