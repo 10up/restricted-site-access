@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25745e064f54b27840e96eb7f8c41fda",
+    "content-hash": "6fd370623dfabe05dfe3cc2d1cafc786",
     "packages": [
         {
             "name": "10up/wp-compat-validation-tool",
@@ -2587,29 +2587,31 @@
         },
         {
             "name": "yoast/phpunit-polyfills",
-            "version": "1.x-dev",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yoast/PHPUnit-Polyfills.git",
-                "reference": "f1f7e15daf4f0e7225757ff902322df6d47c1385"
+                "reference": "134921bfca9b02d8f374c48381451da1d98402f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/f1f7e15daf4f0e7225757ff902322df6d47c1385",
-                "reference": "f1f7e15daf4f0e7225757ff902322df6d47c1385",
+                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/134921bfca9b02d8f374c48381451da1d98402f9",
+                "reference": "134921bfca9b02d8f374c48381451da1d98402f9",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4",
-                "phpunit/phpunit": "^4.8.36 || ^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
+                "php": ">=7.1",
+                "phpunit/phpunit": "^7.5 || ^8.0 || ^9.0 || ^11.0 || ^12.0"
             },
             "require-dev": {
-                "yoast/yoastcs": "^2.3.0"
+                "php-parallel-lint/php-console-highlighter": "^1.0.0",
+                "php-parallel-lint/php-parallel-lint": "^1.4.0",
+                "yoast/yoastcs": "^3.1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.x-dev"
+                    "dev-main": "4.x-dev"
                 }
             },
             "autoload": {
@@ -2641,9 +2643,10 @@
             ],
             "support": {
                 "issues": "https://github.com/Yoast/PHPUnit-Polyfills/issues",
+                "security": "https://github.com/Yoast/PHPUnit-Polyfills/security/policy",
                 "source": "https://github.com/Yoast/PHPUnit-Polyfills"
             },
-            "time": "2023-09-27T10:45:26+00:00"
+            "time": "2025-02-09T18:58:54+00:00"
         }
     ],
     "aliases": [],
@@ -2651,8 +2654,7 @@
     "stability-flags": {
         "10up/phpcs-composer": 20,
         "10up/wp-compat-validation-tool": 20,
-        "mlocati/ip-lib": 20,
-        "yoast/phpunit-polyfills": 20
+        "mlocati/ip-lib": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -2660,5 +2662,5 @@
         "php": ">=7.4"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
