@@ -23,7 +23,7 @@
     "lint:js": "wp-scripts lint-js assets/js/src",
     "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
     "cypress:run": "cypress run --config-file tests/cypress/config.js",
-    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/restricted-site-access vendor/bin/phpunit -c phpunit.xml",
+    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/restricted-site-access vendor/bin/phpunit -c phpunit.xml.dist",
     "env": "wp-env",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
