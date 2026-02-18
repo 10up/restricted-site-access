@@ -567,14 +567,14 @@ class Restricted_Site_Access {
 			if ( 2 === self::$rsa_options['approach'] ) {
 				$redirect_url_without_scheme = trailingslashit( preg_replace( '(^https?://)', '', $results['url'] ) );
 				$current_url_without_scheme  = trailingslashit( preg_replace( '(^https?://)', '', home_url( $request_uri ) ) );
-				$current_url_path            = trailingslashit( wp_parse_url( home_url( $request_uri ), PHP_URL_PATH ) );
+				$current_url_path            = trailingslashit( (string) ( wp_parse_url( home_url( $request_uri ), PHP_URL_PATH ) ?? '' ) );
 
 				if ( ( $current_url_path === $redirect_url_without_scheme ) || ( $redirect_url_without_scheme === $current_url_without_scheme ) ) {
 					return;
 				}
 
-				$redirection_url_host = trailingslashit( wp_parse_url( $results['url'], PHP_URL_HOST ) );
-				$current_url_host     = trailingslashit( wp_parse_url( home_url( $request_uri ), PHP_URL_HOST ) );
+				$redirection_url_host = trailingslashit( (string) ( wp_parse_url( $results['url'], PHP_URL_HOST ) ?? '' ) );
+				$current_url_host     = trailingslashit( (string) ( wp_parse_url( home_url( $request_uri ), PHP_URL_HOST ) ?? '' ) );
 				$cookie_path          = wp_parse_url( home_url( '/' ), PHP_URL_PATH );
 
 				if ( $redirection_url_host === $current_url_host || '/' === $redirection_url_host ) {

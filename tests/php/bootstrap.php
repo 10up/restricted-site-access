@@ -22,7 +22,7 @@ tests_add_filter(
 	'muplugins_loaded',
 	static function (): void {
 		require dirname( __DIR__, 2 ) . '/restricted_site_access.php';
-		define( 'RSA_TEST_PLUGIN_BASENAME', plugin_basename( 'restricted_site_access.php' ) );
+		define( 'RSA_TEST_PLUGIN_BASENAME', plugin_basename( dirname( __DIR__, 2 ) . '/restricted_site_access.php' ) );
 		define( 'PHP_UNIT_TESTS_ENV', true );
 	}
 );

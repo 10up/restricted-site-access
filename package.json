@@ -27,7 +27,6 @@
     "env": "wp-env",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
-    "postenv:start": "./tests/bin/initialize.sh",
     "start": "wp-scripts start",
     "build": "wp-scripts build"
   },

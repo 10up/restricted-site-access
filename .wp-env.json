@@ -1,8 +1,10 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
 	"core": null,
-	"plugins": [ ".", "./tests/rsa-seeder" ],
-	"multisite": true,
+	"plugins": [".", "./tests/rsa-seeder"],
+	"config": {
+		"WP_ALLOW_MULTISITE": true
+	},
 	"env": {
 		"development": {
 			"config": {
@@ -18,8 +20,12 @@
 				"FS_METHOD": "direct"
 			},
 			"mappings": {
-				".htaccess": "./tests/bin/.htaccess"
+				".htaccess": "./tests/bin/.htaccess",
+				"wp-cli.yml": "./tests/bin/wp-cli.yml"
 			}
 		}
+	},
+	"lifecycleScripts": {
+		"afterStart": "bash ./tests/bin/initialize.sh"
 	}
 }
