@@ -426,6 +426,8 @@ add_action(
 
 					wp_insert_term( 'Now', 'category' );
 
+					flush_rewrite_rules();
+
 					return true;
 				},
 			)
@@ -490,6 +492,8 @@ add_action(
 					update_site_option( 'rsa_options', $mock_rsa_options );
 
 					wp_insert_term( 'Now', 'category' );
+
+					flush_rewrite_rules();
 
 					return true;
 				},
