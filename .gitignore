@@ -11,3 +11,6 @@ assets/js/build
 tests/cypress/screenshots
 tests/cypress/videos
 tests/cypress/reports
+/tests/_output/*
+!/tests/_output/.gitkeep
+/tests/.phpunit.result.cache
