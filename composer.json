@@ -38,7 +38,7 @@
 	},
 	"require": {
 		"10up/wp-compat-validation-tool": "dev-trunk",
-		"mlocati/ip-lib": "dev-master",
+		"mlocati/ip-lib": "^1",
 		"php": ">=7.4"
 	},
 	"repositories": [
