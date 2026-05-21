@@ -266,9 +266,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * @subcommand set-network-mode
 	 *
 	 * @param array $args       Array with single value of what mode to set.
-	 * @param array $assoc_args Associative arguments. Not used.
 	 */
-	public function set_network_mode( $args, $assoc_args ) {
+	public function set_network_mode( $args ) {
 		if ( ! RSA_IS_NETWORK ) {
 			WP_CLI::error( __( 'Cannot set network mode when plugin not activated on network.', 'restricted-site-access' ) );
 		}
@@ -415,7 +414,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		 * )
 		 */
 		$ips_and_labels_array = array();
-		foreach ( $args as $index => $item ) {
+		foreach ( $args as $item ) {
 			$fragments = explode( '=', $item );
 			/**
 			 * If the IP doesn't have a corressponding label,
