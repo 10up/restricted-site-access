@@ -12,9 +12,11 @@
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
 	"require-dev": {
-		"10up/phpcs-composer": "dev-master",
 		"phpunit/phpunit": "9.6.33",
-		"yoast/phpunit-polyfills": "^4.0"
+		"yoast/phpunit-polyfills": "^4.0",
+		"wp-coding-standards/wpcs": "^3.0",
+		"automattic/vipwpcs": "^3.0",
+		"phpcompatibility/phpcompatibility-wp": "^3.0@dev"
 	},
 	"scripts": {
 		"test": "phpunit",
