@@ -128,29 +128,46 @@ import 'jquery-effects-shake';
 			}
 		);
 
-		Cache.add_btn.on( 'click', function() {
-			const newIp = Cache.empty_ip
-				.clone()
-				.appendTo( Cache.ip_list_wrap );
-			newIp.removeAttr( 'id' ).slideDown( 250 );
-		} );
+		Cache.add_btn.on(
+			'click',
+			function() {
+				const newIp = Cache.empty_ip
+					.clone()
+					.appendTo( Cache.ip_list_wrap );
+				newIp.removeAttr( 'id' ).slideDown( 250 );
+			}
+		);
 
-		$( Cache.ip_list_wrap ).on( 'blur', '.ip.code', function() {
-			addIp( $( this ).val(), $( this ).next().val(), $( this ) );
-		} );
+		$( Cache.ip_list_wrap ).on(
+			'blur',
+			'.ip.code',
+			function() {
+				addIp( $( this ).val(), $( this ).next().val(), $( this ) );
+			}
+		);
 
 		const myipBtn = document.getElementById( 'rsa_myip' );
 		if ( null !== myipBtn ) {
-			$( myipBtn ).on( 'click', function() {
-				$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
-			} );
+			$( myipBtn ).on(
+				'click',
+				function() {
+					$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
+				}
+			);
 		}
 
-		$( Cache.ip_list_wrap ).on( 'click', '.remove_btn', function() {
-			$( this.parentNode ).slideUp( 250, function() {
-				$( this ).remove();
-			} );
-		} );
+		$( Cache.ip_list_wrap ).on(
+			'click',
+			'.remove_btn',
+			function() {
+				$( this.parentNode ).slideUp(
+					250,
+					function() {
+						$( this ).remove();
+					}
+				);
+			}
+		);
 	}
 
 	function addIp( ip, comment, obj ) {
@@ -196,7 +213,9 @@ import 'jquery-effects-shake';
 		);
 	}
 
-	$( function() {
-		init();
-	} );
+	$(
+		function() {
+			init();
+		}
+	);
 }( window, jQuery ) );

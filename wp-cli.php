@@ -462,7 +462,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		 * as an indexed array.
 		 */
 		$new_ips = array_map(
-			function( $ip_label_pair ) {
+			function ( $ip_label_pair ) {
 				return $ip_label_pair['ip'];
 			},
 			$filtered_ips_and_labels

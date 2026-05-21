@@ -36,7 +36,7 @@ if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	add_action(
 		'admin_notices',
-		function() {
+		function () {
 			?>
 			<div class="notice notice-error">
 				<p>
@@ -1953,7 +1953,6 @@ class Restricted_Site_Access {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -2188,7 +2187,7 @@ class Restricted_Site_Access {
 				$allowed_ips[] = $ip;
 				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
-			$i++;
+			++$i;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
@@ -2390,7 +2389,7 @@ class Restricted_Site_Access {
 				$allowed_ips[] = $ip;
 				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
-			$i++;
+			++$i;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
