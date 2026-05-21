@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <ruleset name="Project Rules">
-	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Core">
+		<!-- Enough false positives to be ignored. -->
+		<exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+	</rule>
 	<rule ref="WordPress.DB"/>
 	<rule ref="WordPress.Security"/>
 	<rule ref="WordPressVIPMinimum">
