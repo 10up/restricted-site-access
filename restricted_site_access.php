@@ -156,7 +156,7 @@ class Restricted_Site_Access {
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
 
-		// Hide admin bar for selected user roles.
+		// phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected -- Hide admin bar for selected user roles.
 		add_filter( 'show_admin_bar', array( __CLASS__, 'hide_admin_bar_for_roles' ), 10, 1 );
 
 		// Prevent WordPress from auto-resolving 404 URLs.
