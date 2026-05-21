@@ -18,7 +18,7 @@ if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator
 	return;
 }
 
-require_once '10up-lib/wp-compat-validation-tool/src/Validator.php';
+require_once __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php';
 
 $compat_checker = new \RSA_Validator\Validator();
 $compat_checker
