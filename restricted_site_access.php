@@ -146,7 +146,7 @@ class Restricted_Site_Access {
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
 		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ), 10, 1 );
-		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
+		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
@@ -300,14 +300,9 @@ class Restricted_Site_Access {
 	/**
 	 * Set RSA defaults for new site.
 	 *
-	 * @param int    $blog_id Blog ID.
-	 * @param int    $user_id User ID.
-	 * @param string $domain  Site domain.
-	 * @param string $path    Site path.
-	 * @param int    $site_id Site ID. Only relevant on multi-network installs.
-	 * @param array  $meta    Meta data. Used to set initial site options.
+	 * @param int    $blog_id New site/blog ID.
 	 */
-	public static function set_defaults( $blog_id, $user_id, $domain, $path, $site_id, $meta ) {
+	public static function set_defaults( $blog_id ) {
 		if ( 'enforce' === self::get_network_mode() ) {
 			return;
 		}
