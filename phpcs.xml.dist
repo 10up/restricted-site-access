@@ -25,6 +25,7 @@
 	<arg value="s"/>
 
 	<file>.</file>
+	<exclude-pattern>*/10up-lib/wp-compat-validation-tool/*</exclude-pattern>
 	<exclude-pattern>*/assets/js/build/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/tests/*</exclude-pattern>
