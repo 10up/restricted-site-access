@@ -81,7 +81,7 @@ class Restricted_Site_Access {
 	/**
 	 * Settings page slug.
 	 *
-	 * @var array $settings_page The settings page slug.
+	 * @var string $settings_page The settings page slug.
 	 */
 	private static $settings_page = 'reading';
 
