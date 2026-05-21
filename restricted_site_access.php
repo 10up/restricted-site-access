@@ -1445,6 +1445,7 @@ class Restricted_Site_Access {
 	 * @return array Sanitized input
 	 */
 	public static function sanitize_options( $input ) {
+		$new_input             = array();
 		$new_input['approach'] = (int) $input['approach'];
 		if ( $new_input['approach'] < 1 || $new_input['approach'] > 4 ) {
 			$new_input['approach'] = self::$fields['approach']['default'];
