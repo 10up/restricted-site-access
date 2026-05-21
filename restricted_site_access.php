@@ -376,7 +376,7 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	private static function get_config_network_mode() {
-		/**
+		/*
 		 * Get the network mode from the RSA_NETWORK_MODE constant.
 		 * Only allow 'enforce' or 'default'.
 		 */
@@ -391,7 +391,7 @@ class Restricted_Site_Access {
 	 * Get current plugin network mode
 	 */
 	private static function get_network_mode() {
-		/**
+		/*
 		 * Get the network mode from the RSA_NETWORK_MODE constant.
 		 * Only allow 'enforce' or 'default'.
 		 */
@@ -556,7 +556,7 @@ class Restricted_Site_Access {
 		$request_uri = self::get_request_uri( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
-			/**
+			/*
 			 * This conditional prevents a redirect loop if the redirect URL
 			 * belongs to the same domain.
 			 */
@@ -734,7 +734,7 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						/**
+						/*
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
@@ -2280,7 +2280,7 @@ class Restricted_Site_Access {
 		$comments    = (array) self::$rsa_options['comment'];
 		$ip_index    = -1;
 
-		/**
+		/*
 		 * Get the index of the ip address that needs
 		 * to be updated.
 		 */
@@ -2291,21 +2291,21 @@ class Restricted_Site_Access {
 			}
 		}
 
-		/**
+		/*
 		 * Return if `$ip` not found.
 		 */
 		if ( -1 === $ip_index ) {
 			return new WP_Error( 'ip_address_does_not_exist', __( "The IP address doesn't exist.", 'restricted-site-access' ) );
 		}
 
-		/**
+		/*
 		 * Return if the format of `$new_ip` is invalid.
 		 */
 		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
 			return new WP_Error( 'ip_address_is_invalid', __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
 		}
 
-		/**
+		/*
 		 * Return status code 2 if `$ip` doesn't exist in
 		 * `$allowed_ips` array.
 		 */
@@ -2313,14 +2313,14 @@ class Restricted_Site_Access {
 			return new WP_Error( 'ip_address_already_exists', __( 'The IP address already exists.', 'restricted-site-access' ) );
 		}
 
-		/**
+		/*
 		 * Add `$new_ip` to the `$allowed_ips` array.
 		 */
 		if ( false !== $new_ip ) {
 			$allowed_ips[ $ip_index ] = $new_ip;
 		}
 
-		/**
+		/*
 		 * Add `$new_label` to the `$comments` array.
 		 */
 		if ( false !== $new_label ) {

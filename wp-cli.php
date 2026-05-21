@@ -390,7 +390,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	public function ip_add( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
 
-		/**
+		/*
 		 * The input arguments can be of the form:
 		 * wp rsa ip-add 8.8.8.8=Google 9.9.9.9 1.1.1.1=Cloudflare.
 		 *
@@ -416,7 +416,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		$ips_and_labels_array = array();
 		foreach ( $args as $item ) {
 			$fragments = explode( '=', $item );
-			/**
+			/*
 			 * If the IP doesn't have a corressponding label,
 			 * then set label to '[null]:x', where 'x' is an
 			 * integer.
@@ -433,18 +433,18 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			$ips_and_labels_array[] = $structure_ip_label_array;
 		}
 
-		/**
+		/*
 		 * Get all whitelisted IPs saved in DB.
 		 */
 		$current_ips = $this->get_current_ips();
 
-		/**
+		/*
 		 * This will only hold those input IP addresses
 		 * which are not already whitelisted.
 		 */
 		$filtered_ips_and_labels = array();
 
-		/**
+		/*
 		 * A simple for loop to filter the input IP addresses.
 		 */
 		foreach ( $ips_and_labels_array as $ip_label_pair ) {
@@ -456,7 +456,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			}
 		}
 
-		/**
+		/*
 		 * Extract all IP address from the filtered array
 		 * as an indexed array.
 		 */
