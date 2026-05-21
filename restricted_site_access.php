@@ -310,6 +310,7 @@ class Restricted_Site_Access {
 		$network_options = self::get_options( true );
 		$blog_public     = get_site_option( 'blog_public', 2 );
 
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to set options/change DB prefix.
 		switch_to_blog( $blog_id );
 		update_option( 'rsa_options', self::sanitize_options( $network_options ) );
 		update_option( 'blog_public', (int) $blog_public );
@@ -1891,6 +1892,7 @@ class Restricted_Site_Access {
 			$sites = get_sites();
 
 			foreach ( $sites as $site ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to get/set options/change DB prefix.
 				switch_to_blog( $site->blog_id );
 
 				if ( ! get_option( 'rsa_activation_version', false ) && ! get_option( 'rsa_options', false ) ) {
@@ -1920,6 +1922,7 @@ class Restricted_Site_Access {
 			$sites = get_sites();
 
 			foreach ( $sites as $site ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to get/set options/change DB prefix.
 				switch_to_blog( $site->blog_id );
 
 				if ( 2 === (int) get_option( 'blog_public' ) ) {
@@ -2444,6 +2447,7 @@ function restricted_site_access_uninstall() {
 		$sites = get_sites();
 
 		foreach ( $sites as $site ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to get/set options/change DB prefix.
 			switch_to_blog( $site->blog_id );
 
 			if ( 2 === (int) get_option( 'blog_public' ) ) {
