@@ -577,6 +577,7 @@ class Restricted_Site_Access {
 					if ( ! filter_var( $results['url'], FILTER_VALIDATE_URL ) ) {
 						$results['url'] = home_url( $results['url'] );
 					}
+					// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie -- This cookie is necessary to prevent redirection loops, caching handled.
 					setcookie( 'wp-rsa_redirect', self::generate_redirection_cookie( $results['url'] ), 0, $cookie_path );
 				}
 			}
@@ -737,7 +738,7 @@ class Restricted_Site_Access {
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- This cookie is necessary to prevent redirection loops, caching handled.
 						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $request_uri ) ) === $_COOKIE['wp-rsa_redirect'] ) {
 							self::$rsa_options['redirect_url'] = home_url( $request_uri );
 						} else {
@@ -1589,7 +1590,7 @@ class Restricted_Site_Access {
 			<div id="rsa_add_new_ip_fields">
 				<p class="description"><label><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 				<input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add new IP', 'restricted-site-access' ); ?>" style="margin-top: 5px;" />
-				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
+				<?php if ( ! empty( self::get_client_ip_address() ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
 				<p id="rsa-error-container" style="color: #DC3232;"></p>
