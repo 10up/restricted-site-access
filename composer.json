@@ -12,9 +12,11 @@
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",
 	"require-dev": {
-		"10up/phpcs-composer": "dev-master",
 		"phpunit/phpunit": "9.6.33",
-		"yoast/phpunit-polyfills": "^4.0"
+		"yoast/phpunit-polyfills": "^4.0",
+		"wp-coding-standards/wpcs": "^3.0",
+		"automattic/vipwpcs": "^3.0",
+		"phpcompatibility/phpcompatibility-wp": "^3.0@dev"
 	},
 	"scripts": {
 		"test": "phpunit",
@@ -22,10 +24,10 @@
 		"lint": "phpcs --extensions=php -s .",
 		"lint-fix": "phpcbf --extensions=php .",
 		"post-install-cmd": [
-			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator"
+			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator restricted-site-access"
 		],
 		"post-update-cmd": [
-			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator"
+			"./10up-lib/wp-compat-validation-tool/replace-namespace.sh RSA_Validator restricted-site-access"
 		]
 	},
 	"minimum-stability": "dev",
@@ -37,16 +39,10 @@
 		"platform-check": false
 	},
 	"require": {
-		"10up/wp-compat-validation-tool": "dev-trunk",
+		"10up/wp-compat-validation-tool": "0.4.0",
 		"mlocati/ip-lib": "dev-master",
 		"php": ">=7.4"
 	},
-	"repositories": [
-		{
-			"type": "git",
-			"url": "https://github.com/10up/wp-compat-validation-tool.git"
-		}
-	],
 	"extra": {
 		"installer-paths": {
 			"./{$name}/": ["10up/wp-compat-validation-tool"]

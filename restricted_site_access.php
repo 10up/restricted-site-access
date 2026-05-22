@@ -18,7 +18,7 @@ if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator
 	return;
 }
 
-require_once '10up-lib/wp-compat-validation-tool/src/Validator.php';
+require_once __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php';
 
 $compat_checker = new \RSA_Validator\Validator();
 $compat_checker
@@ -36,7 +36,7 @@ if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	add_action(
 		'admin_notices',
-		function() {
+		function () {
 			?>
 			<div class="notice notice-error">
 				<p>
@@ -67,7 +67,7 @@ class Restricted_Site_Access {
 	/**
 	 * Plugin basename.
 	 *
-	 * @var array $basename The plugin base name.
+	 * @var string $basename The plugin base name.
 	 */
 	private static $basename;
 
@@ -81,7 +81,7 @@ class Restricted_Site_Access {
 	/**
 	 * Settings page slug.
 	 *
-	 * @var array $settings_page The settings page slug.
+	 * @var string $settings_page The settings page slug.
 	 */
 	private static $settings_page = 'reading';
 
@@ -146,7 +146,7 @@ class Restricted_Site_Access {
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
 		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ), 10, 1 );
-		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ), 10, 6 );
+		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
@@ -156,7 +156,7 @@ class Restricted_Site_Access {
 		add_filter( 'pre_site_option_blog_public', array( __CLASS__, 'pre_option_blog_public' ), 10, 1 );
 		add_filter( 'application_password_is_api_request', array( __CLASS__, 'is_api_request' ) );
 
-		// Hide admin bar for selected user roles.
+		// phpcs:ignore WordPressVIPMinimum.UserExperience.AdminBarRemoval.RemovalDetected -- Hide admin bar for selected user roles.
 		add_filter( 'show_admin_bar', array( __CLASS__, 'hide_admin_bar_for_roles' ), 10, 1 );
 
 		// Prevent WordPress from auto-resolving 404 URLs.
@@ -300,14 +300,9 @@ class Restricted_Site_Access {
 	/**
 	 * Set RSA defaults for new site.
 	 *
-	 * @param int    $blog_id Blog ID.
-	 * @param int    $user_id User ID.
-	 * @param string $domain  Site domain.
-	 * @param string $path    Site path.
-	 * @param int    $site_id Site ID. Only relevant on multi-network installs.
-	 * @param array  $meta    Meta data. Used to set initial site options.
+	 * @param int    $blog_id New site/blog ID.
 	 */
-	public static function set_defaults( $blog_id, $user_id, $domain, $path, $site_id, $meta ) {
+	public static function set_defaults( $blog_id ) {
 		if ( 'enforce' === self::get_network_mode() ) {
 			return;
 		}
@@ -315,6 +310,7 @@ class Restricted_Site_Access {
 		$network_options = self::get_options( true );
 		$blog_public     = get_site_option( 'blog_public', 2 );
 
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to set options/change DB prefix.
 		switch_to_blog( $blog_id );
 		update_option( 'rsa_options', self::sanitize_options( $network_options ) );
 		update_option( 'blog_public', (int) $blog_public );
@@ -380,7 +376,7 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	private static function get_config_network_mode() {
-		/**
+		/*
 		 * Get the network mode from the RSA_NETWORK_MODE constant.
 		 * Only allow 'enforce' or 'default'.
 		 */
@@ -395,7 +391,7 @@ class Restricted_Site_Access {
 	 * Get current plugin network mode
 	 */
 	private static function get_network_mode() {
-		/**
+		/*
 		 * Get the network mode from the RSA_NETWORK_MODE constant.
 		 * Only allow 'enforce' or 'default'.
 		 */
@@ -560,7 +556,7 @@ class Restricted_Site_Access {
 		$request_uri = self::get_request_uri( $wp );
 
 		if ( is_array( $results ) && ! empty( $results ) ) {
-			/**
+			/*
 			 * This conditional prevents a redirect loop if the redirect URL
 			 * belongs to the same domain.
 			 */
@@ -581,6 +577,7 @@ class Restricted_Site_Access {
 					if ( ! filter_var( $results['url'], FILTER_VALIDATE_URL ) ) {
 						$results['url'] = home_url( $results['url'] );
 					}
+					// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie -- This cookie is necessary to prevent redirection loops, caching handled.
 					setcookie( 'wp-rsa_redirect', self::generate_redirection_cookie( $results['url'] ), 0, $cookie_path );
 				}
 			}
@@ -737,11 +734,11 @@ class Restricted_Site_Access {
 			case 2:
 				if ( ! empty( self::$rsa_options['redirect_url'] ) ) {
 					if ( ! empty( self::$rsa_options['redirect_path'] ) ) {
-						/**
+						/*
 						 * This conditional prevents a redirect loop if the redirect URL
 						 * belongs to the same domain.
 						 */
-						// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- This cookie is necessary to prevent redirection loops, caching handled.
 						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $request_uri ) ) === $_COOKIE['wp-rsa_redirect'] ) {
 							self::$rsa_options['redirect_url'] = home_url( $request_uri );
 						} else {
@@ -1117,12 +1114,13 @@ class Restricted_Site_Access {
 		$script_path       = 'assets/js/build/settings.min.js';
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/settings.min.asset.php';
 		$script_asset      = file_exists( $script_asset_path )
+			// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- file_exists check ensures this is safe.
 			? require $script_asset_path
 			: array(
 				'dependencies' => array(),
 				'version'      => filemtime( $script_path ),
 			);
-		$script_url        = plugins_url( $script_path, __FILE__ );
+		$script_url = plugins_url( $script_path, __FILE__ );
 
 		wp_enqueue_script( 'rsa-settings', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
@@ -1148,12 +1146,13 @@ class Restricted_Site_Access {
 		$script_path       = 'assets/js/build/admin.min.js';
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/admin.min.asset.php';
 		$script_asset      = file_exists( $script_asset_path )
+			// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- file_exists check ensures this is safe.
 			? require $script_asset_path
 			: array(
 				'dependencies' => array(),
 				'version'      => filemtime( $script_path ),
 			);
-		$script_url        = plugins_url( $script_path, __FILE__ );
+		$script_url = plugins_url( $script_path, __FILE__ );
 
 		wp_enqueue_script( 'rsa-admin', $script_url, $script_asset['dependencies'], $script_asset['version'], true );
 
@@ -1450,6 +1449,7 @@ class Restricted_Site_Access {
 	 * @return array Sanitized input
 	 */
 	public static function sanitize_options( $input ) {
+		$new_input             = array();
 		$new_input['approach'] = (int) $input['approach'];
 		if ( $new_input['approach'] < 1 || $new_input['approach'] > 4 ) {
 			$new_input['approach'] = self::$fields['approach']['default'];
@@ -1590,7 +1590,7 @@ class Restricted_Site_Access {
 			<div id="rsa_add_new_ip_fields">
 				<p class="description"><label><?php esc_html_e( 'Enter a single IP address or a range using a subnet prefix', 'restricted-site-access' ); ?></label></p>
 				<input class="button" type="button" id="addip" value="<?php esc_attr_e( 'Add new IP', 'restricted-site-access' ); ?>" style="margin-top: 5px;" />
-				<?php if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) : ?>
+				<?php if ( ! empty( self::get_client_ip_address() ) ) : ?>
 					<input class="button" type="button" id="rsa_myip" value="<?php esc_attr_e( 'Add My Current IP Address', 'restricted-site-access' ); ?>" style="margin-top: 5px;" data-myip="<?php echo esc_attr( self::get_client_ip_address() ); ?>" /><br />
 				<?php endif; ?>
 				<p id="rsa-error-container" style="color: #DC3232;"></p>
@@ -1895,6 +1895,7 @@ class Restricted_Site_Access {
 			$sites = get_sites();
 
 			foreach ( $sites as $site ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to get/set options/change DB prefix.
 				switch_to_blog( $site->blog_id );
 
 				if ( ! get_option( 'rsa_activation_version', false ) && ! get_option( 'rsa_options', false ) ) {
@@ -1924,6 +1925,7 @@ class Restricted_Site_Access {
 			$sites = get_sites();
 
 			foreach ( $sites as $site ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to get/set options/change DB prefix.
 				switch_to_blog( $site->blog_id );
 
 				if ( 2 === (int) get_option( 'blog_public' ) ) {
@@ -1953,7 +1955,6 @@ class Restricted_Site_Access {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -2188,7 +2189,7 @@ class Restricted_Site_Access {
 				$allowed_ips[] = $ip;
 				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
-			$i++;
+			++$i;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
@@ -2279,7 +2280,7 @@ class Restricted_Site_Access {
 		$comments    = (array) self::$rsa_options['comment'];
 		$ip_index    = -1;
 
-		/**
+		/*
 		 * Get the index of the ip address that needs
 		 * to be updated.
 		 */
@@ -2290,21 +2291,21 @@ class Restricted_Site_Access {
 			}
 		}
 
-		/**
+		/*
 		 * Return if `$ip` not found.
 		 */
 		if ( -1 === $ip_index ) {
 			return new WP_Error( 'ip_address_does_not_exist', __( "The IP address doesn't exist.", 'restricted-site-access' ) );
 		}
 
-		/**
+		/*
 		 * Return if the format of `$new_ip` is invalid.
 		 */
 		if ( false !== $new_ip && ! self::is_ip( $new_ip ) ) {
 			return new WP_Error( 'ip_address_is_invalid', __( 'The new IP address format is incorrect.', 'restricted-site-access' ) );
 		}
 
-		/**
+		/*
 		 * Return status code 2 if `$ip` doesn't exist in
 		 * `$allowed_ips` array.
 		 */
@@ -2312,14 +2313,14 @@ class Restricted_Site_Access {
 			return new WP_Error( 'ip_address_already_exists', __( 'The IP address already exists.', 'restricted-site-access' ) );
 		}
 
-		/**
+		/*
 		 * Add `$new_ip` to the `$allowed_ips` array.
 		 */
 		if ( false !== $new_ip ) {
 			$allowed_ips[ $ip_index ] = $new_ip;
 		}
 
-		/**
+		/*
 		 * Add `$new_label` to the `$comments` array.
 		 */
 		if ( false !== $new_label ) {
@@ -2390,7 +2391,7 @@ class Restricted_Site_Access {
 				$allowed_ips[] = $ip;
 				$comments[]    = $i !== $label ? sanitize_text_field( $label ) : '';
 			}
-			$i++;
+			++$i;
 		}
 
 		if ( self::$rsa_options['allowed'] !== $allowed_ips ) {
@@ -2449,6 +2450,7 @@ function restricted_site_access_uninstall() {
 		$sites = get_sites();
 
 		foreach ( $sites as $site ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to get/set options/change DB prefix.
 			switch_to_blog( $site->blog_id );
 
 			if ( 2 === (int) get_option( 'blog_public' ) ) {
