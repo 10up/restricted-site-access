@@ -1114,7 +1114,7 @@ class Restricted_Site_Access {
 		$script_path       = 'assets/js/build/settings.min.js';
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/settings.min.asset.php';
 		$script_asset      = file_exists( $script_asset_path )
-			//phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- file_exists check ensures this is safe.
+			// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- file_exists check ensures this is safe.
 			? require $script_asset_path
 			: array(
 				'dependencies' => array(),
@@ -1146,7 +1146,7 @@ class Restricted_Site_Access {
 		$script_path       = 'assets/js/build/admin.min.js';
 		$script_asset_path = plugin_dir_path( __FILE__ ) . 'assets/js/build/admin.min.asset.php';
 		$script_asset      = file_exists( $script_asset_path )
-			//phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- file_exists check ensures this is safe.
+			// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- file_exists check ensures this is safe.
 			? require $script_asset_path
 			: array(
 				'dependencies' => array(),
