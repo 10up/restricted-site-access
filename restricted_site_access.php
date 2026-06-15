@@ -1555,8 +1555,8 @@ class Restricted_Site_Access {
 				</p>
 			</div>
 			<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
-				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
-				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
+				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range', 'restricted-site-access' ); ?>" />
+				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry', 'restricted-site-access' ); ?>" />
 				<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
 			</div>
 			<div id="ip_list">
@@ -1574,8 +1574,8 @@ class Restricted_Site_Access {
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
 					echo '<div class="rsa_unrestricted_ip_row">
-							<input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" size="20" placeholder="' . esc_attr__( 'IP Address or Range' ) . '" />
-							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" class="newipcomment" size="20" placeholder="' . esc_attr__( 'Identify this entry' ) . '" />
+							<input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" size="20" placeholder="' . esc_attr__( 'IP Address or Range', 'restricted-site-access' ) . '" />
+							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" class="newipcomment" size="20" placeholder="' . esc_attr__( 'Identify this entry', 'restricted-site-access' ) . '" />
 							<a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a>
 						</div>';
 				}
