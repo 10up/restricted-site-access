@@ -1,4 +1,9 @@
 <?php // phpcs:disable WordPress.Files.FileName
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Manages the Restricted Site Access plugin settings.
  *

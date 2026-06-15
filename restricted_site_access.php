@@ -13,6 +13,10 @@
  * Text Domain:       restricted-site-access
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 // Try and include our autoloader.
 if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php' ) ) {
 	return;
