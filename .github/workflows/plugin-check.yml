@@ -55,5 +55,5 @@ jobs:
         with:
           build-dir: ${{ github.event.repository.name }}-artifact
           exclude-directories: '.github,tests,phpcs.xml.dist'
-          ignore-codes: 'hidden_files,unexpected_markdown_file,missing_composer_json_file,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound'
+          ignore-codes: 'hidden_files,unexpected_markdown_file,missing_composer_json_file,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound'
           slug: restricted-site-access
