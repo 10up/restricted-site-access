@@ -13,6 +13,10 @@
  * Text Domain:       restricted-site-access
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 // Try and include our autoloader.
 if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php' ) ) {
 	return;
@@ -20,12 +24,12 @@ if ( ! is_readable( __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator
 
 require_once __DIR__ . '/10up-lib/wp-compat-validation-tool/src/Validator.php';
 
-$compat_checker = new \RSA_Validator\Validator();
-$compat_checker
+$restricted_site_access_compat_checker = new \RSA_Validator\Validator();
+$restricted_site_access_compat_checker
 	->set_plugin_name( 'Restricted Site Access' )
 	->set_php_min_required_version( '7.4' );
 
-if ( ! $compat_checker->is_plugin_compatible() ) {
+if ( ! $restricted_site_access_compat_checker->is_plugin_compatible() ) {
 	return;
 }
 
@@ -1555,8 +1559,8 @@ class Restricted_Site_Access {
 				</p>
 			</div>
 			<div id="ip_list_empty" style="display: none;" class="rsa_unrestricted_ip_row">
-				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range' ); ?>" />
-				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry' ); ?>" />
+				<input type="text" name="rsa_options[allowed][]" class="ip code" value="" size="20" placeholder="<?php esc_attr_e( 'IP Address or Range', 'restricted-site-access' ); ?>" />
+				<input type="text" name="rsa_options[comment][]" value="" class="newipcomment" size="20" placeholder="<?php esc_attr_e( 'Identify this entry', 'restricted-site-access' ); ?>" />
 				<a href="#remove" class="remove_btn"><?php echo esc_html( _x( 'Remove', 'remove IP address action', 'restricted-site-access' ) ); ?></a>
 			</div>
 			<div id="ip_list">
@@ -1574,8 +1578,8 @@ class Restricted_Site_Access {
 			foreach ( $ips as $key => $ip ) {
 				if ( ! empty( $ip ) ) {
 					echo '<div class="rsa_unrestricted_ip_row">
-							<input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" size="20" placeholder="' . esc_attr__( 'IP Address or Range' ) . '" />
-							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" class="newipcomment" size="20" placeholder="' . esc_attr__( 'Identify this entry' ) . '" />
+							<input type="text" name="rsa_options[allowed][]" value="' . esc_attr( $ip ) . '" class="ip code" size="20" placeholder="' . esc_attr__( 'IP Address or Range', 'restricted-site-access' ) . '" />
+							<input type="text" name="rsa_options[comment][]" value="' . ( isset( $comments[ $key ] ) ? esc_attr( wp_unslash( $comments[ $key ] ) ) : '' ) . '" class="newipcomment" size="20" placeholder="' . esc_attr__( 'Identify this entry', 'restricted-site-access' ) . '" />
 							<a href="#remove" class="remove_btn">' . esc_html_x( 'Remove', 'remove IP address action', 'restricted-site-access' ) . '</a>
 						</div>';
 				}
