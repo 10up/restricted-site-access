@@ -279,7 +279,7 @@ This version bumps the WordPress minimum supported version from 6.4 to 6.5.
 This version bumps the WordPress minimum supported version from 5.7 to 6.4.
 
 = 7.5.0 =
-This release changes the default behavior for new installs in regards to IP detection. This shouldn't impact existing installs but there are two filters that can be used to change this behavior. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
+This release changes the default behavior for new installs in regards to IP detection. This shouldn't impact existing installs but there are two filters that can be used to change this behavior. See the [full details](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in).
 
 = 7.4.0 =
 Changes the [Support Level](https://github.com/10up/restricted-site-access#support-level) from `Active` to `Stable`.
