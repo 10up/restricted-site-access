@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for IP allowlist management: append_ips(), update_ips(), remove_ips().
+ * Tests for IP allowlist management: append_ips().
  *
  * @package Restricted_Site_Access
  */
@@ -8,17 +8,31 @@
 class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 
 	/**
-	 * Reset the static options cache before each test so that each test reads
-	 * from the database rather than a previously-populated cache.
+	 * Snapshot of rsa_options before each test so tearDown can restore it.
+	 *
+	 * @var array|false
+	 */
+	private $original_options;
+
+	/**
+	 * Capture pre-test state and reset static cache so each test reads from DB.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		$this->original_options = get_option( 'rsa_options' );
 		$this->reset_rsa_options();
 	}
 
+	/**
+	 * Restore the original option value and reset the static cache.
+	 */
 	public function tearDown(): void {
+		if ( false === $this->original_options ) {
+			delete_option( 'rsa_options' );
+		} else {
+			update_option( 'rsa_options', $this->original_options );
+		}
 		$this->reset_rsa_options();
-		delete_option( 'rsa_options' );
 		parent::tearDown();
 	}
 
@@ -44,9 +58,10 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 	 * The fix changes the guard to `if ( false !== $found_index && ... )` which
 	 * correctly distinguishes "not found" (false) from "found at index 0" (0).
 	 *
-	 * Delete-the-fix test: revert line 2244 to `if ( $found_index && ...` and
-	 * the assertSame( 'updated-label' ) assertion below fails — the DB still
-	 * holds the old label because the update branch was never entered.
+	 * Delete-the-fix test: revert restricted_site_access.php line 2244 to
+	 * `if ( $found_index && ...` and the assertSame( 'updated-label' ) assertion
+	 * below fails — the DB still holds 'first-label' because the update branch
+	 * was never entered.
 	 */
 	public function test_append_ips_updates_label_for_first_ip_in_allowlist() {
 		// Pre-populate the allowlist. '192.168.1.1' lands at index 0 — the
@@ -57,6 +72,15 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 				'allowed' => array( '192.168.1.1', '192.168.1.2' ),
 				'comment' => array( 'first-label', 'second-label' ),
 			)
+		);
+		$this->reset_rsa_options();
+
+		// Confirm the precondition: target IP is genuinely at index 0.
+		$options_before = get_option( 'rsa_options' );
+		$this->assertSame(
+			0,
+			array_search( '192.168.1.1', $options_before['allowed'], true ),
+			'Precondition: 192.168.1.1 must be at index 0 for this test to exercise the bug path.'
 		);
 
 		// Call append_ips() asking for a label change on the first IP.
@@ -93,6 +117,7 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 				'comment' => array( 'original' ),
 			)
 		);
+		$this->reset_rsa_options();
 
 		Restricted_Site_Access::append_ips( array( '10.0.0.1' => 'renamed' ) );
 
@@ -116,6 +141,7 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 				'comment' => array( 'existing' ),
 			)
 		);
+		$this->reset_rsa_options();
 
 		Restricted_Site_Access::append_ips( array( '10.0.0.2' => 'new-entry' ) );
 
