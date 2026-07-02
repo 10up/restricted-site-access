@@ -14,6 +14,7 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 	private function reset_rsa_options() {
 		$reflection = new ReflectionClass( 'Restricted_Site_Access' );
 		$prop       = $reflection->getProperty( 'rsa_options' );
+		// @todo Remove this once the minimum PHP version is 8.1 or later.
 		$prop->setAccessible( true );
 		$prop->setValue( null, null );
 	}
