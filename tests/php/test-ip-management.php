@@ -8,35 +8,6 @@
 class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 
 	/**
-	 * Snapshot of rsa_options before each test so tearDown can restore it.
-	 *
-	 * @var array|false
-	 */
-	private $original_options;
-
-	/**
-	 * Capture pre-test state and reset static cache so each test reads from DB.
-	 */
-	public function setUp(): void {
-		parent::setUp();
-		$this->original_options = get_option( 'rsa_options' );
-		$this->reset_rsa_options();
-	}
-
-	/**
-	 * Restore the original option value and reset the static cache.
-	 */
-	public function tearDown(): void {
-		if ( false === $this->original_options ) {
-			delete_option( 'rsa_options' );
-		} else {
-			update_option( 'rsa_options', $this->original_options );
-		}
-		$this->reset_rsa_options();
-		parent::tearDown();
-	}
-
-	/**
 	 * Reset the private static $rsa_options property so append_ips() re-reads
 	 * the current option from the database on the next call.
 	 */
