@@ -2241,7 +2241,7 @@ class Restricted_Site_Access {
 				$label       = sanitize_text_field( $label );
 				$found_index = array_search( $ip_address, $allowed_ips, true );
 
-				if ( $found_index && $comments[ $found_index ] !== $label ) {
+				if ( false !== $found_index && $comments[ $found_index ] !== $label ) {
 					$comments[ $found_index ] = empty( $label ) ? '' : sanitize_text_field( $label );
 				} elseif ( false === $found_index ) {
 					$allowed_ips[] = $ip_address;
