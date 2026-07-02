@@ -30,10 +30,9 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 	 * The fix changes the guard to `if ( false !== $found_index && ... )` which
 	 * correctly distinguishes "not found" (false) from "found at index 0" (0).
 	 *
-	 * Delete-the-fix test: revert restricted_site_access.php line 2244 to
-	 * `if ( $found_index && ...` and the assertSame( 'updated-label' ) assertion
-	 * below fails — the DB still holds 'first-label' because the update branch
-	 * was never entered.
+	 * Delete-the-fix test: revert the guard back to `if ( $found_index && ... )`
+	 * and the assertSame( 'updated-label' ) assertion below fails — the DB still holds
+	 * 'first-label' because the update branch was never entered.
 	 */
 	public function test_append_ips_updates_label_for_first_ip_in_allowlist() {
 		// Pre-populate the allowlist. '192.168.1.1' lands at index 0 — the
