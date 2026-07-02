@@ -208,9 +208,6 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Changelog ==
 
-= Unreleased =
-* **Fixed:** Fix label updates being dropped for the first IP address in the allow list (props [@thisismyurl](https://github.com/thisismyurl)).
-
 = 7.6.1 - 2025-10-29 =
 * **Fixed:** Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [Vishal Patel](https://profiles.wordpress.org/bhaveshnariya/), [fatjester](https://profiles.wordpress.org/fatjester/), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
 
