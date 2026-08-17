@@ -141,7 +141,7 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 
 			restore_current_blog();
 
-			$rsa::set_defaults( $site->blog_id, null, null, null, null, null );
+			$rsa::set_defaults( $site );
 
 			switch_to_blog( $site->blog_id );
 
@@ -173,7 +173,7 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 
 			restore_current_blog();
 
-			$rsa::set_defaults( $site->blog_id, null, null, null, null, null );
+			$rsa::set_defaults( $site );
 
 			switch_to_blog( $site->blog_id );
 

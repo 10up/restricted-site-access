@@ -150,7 +150,7 @@ class Restricted_Site_Access {
 
 		add_action( 'activate_' . self::$basename, array( __CLASS__, 'activation' ), 10, 1 );
 		add_action( 'deactivate_' . self::$basename, array( __CLASS__, 'deactivation' ), 10, 1 );
-		add_action( 'wpmu_new_blog', array( __CLASS__, 'set_defaults' ) );
+		add_action( 'wp_initialize_site', array( __CLASS__, 'set_defaults' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_script' ) );
 		add_action( 'wp_ajax_rsa_notice_dismiss', array( __CLASS__, 'ajax_notice_dismiss' ) );
 
@@ -302,11 +302,11 @@ class Restricted_Site_Access {
 	}
 
 	/**
-	 * Set RSA defaults for new site.
+	 * Set RSA defaults for a new site.
 	 *
-	 * @param int    $blog_id New site/blog ID.
+	 * @param WP_Site $new_site New site object.
 	 */
-	public static function set_defaults( $blog_id ) {
+	public static function set_defaults( $new_site ) {
 		if ( 'enforce' === self::get_network_mode() ) {
 			return;
 		}
@@ -315,7 +315,7 @@ class Restricted_Site_Access {
 		$blog_public     = get_site_option( 'blog_public', 2 );
 
 		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to set options/change DB prefix.
-		switch_to_blog( $blog_id );
+		switch_to_blog( $new_site->id );
 		update_option( 'rsa_options', self::sanitize_options( $network_options ) );
 		update_option( 'blog_public', (int) $blog_public );
 		restore_current_blog();
