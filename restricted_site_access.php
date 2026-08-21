@@ -304,9 +304,15 @@ class Restricted_Site_Access {
 	/**
 	 * Set RSA defaults for a new site.
 	 *
-	 * @param WP_Site $new_site New site object.
+	 * @param WP_Site $new_site New site object ID.
 	 */
 	public static function set_defaults( $new_site ) {
+		$new_site = get_site( $new_site );
+
+		if ( ! $new_site ) {
+			return;
+		}
+
 		if ( 'enforce' === self::get_network_mode() ) {
 			return;
 		}
