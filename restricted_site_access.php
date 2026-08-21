@@ -304,7 +304,7 @@ class Restricted_Site_Access {
 	/**
 	 * Set RSA defaults for a new site.
 	 *
-	 * @param WP_Site $new_site New site object ID.
+	 * @param WP_Site|int $new_site New site object or ID.
 	 */
 	public static function set_defaults( $new_site ) {
 		$new_site = get_site( $new_site );
