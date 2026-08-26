@@ -5,7 +5,7 @@ Tags:              privacy, restrict, limited, permissions, security
 Requires at least: 6.9
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        7.6.1
+Stable tag:        7.6.2
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -210,6 +210,8 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Changelog ==
 
+= 7.6.2 - 2026-08-27 =
+
 = 7.6.1 - 2025-10-29 =
 * **Fixed:** Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [Vishal Patel](https://profiles.wordpress.org/bhaveshnariya/), [fatjester](https://profiles.wordpress.org/fatjester/), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
 
@@ -259,13 +261,6 @@ Please report security bugs found in the source code of the Restricted Site Acce
 * **Security:** Bump `pac-resolver` from 7.0.0 to 7.0.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
 * **Security:** Bump `socks` from 2.7.1 to 2.8.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
 * **Security:** Bump `ws` from 7.5.9 to 7.5.10 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
-
-= 7.5.0 - 2023-12-14 =
-**Note:** this release changes the default behavior for new installs in regards to IP detection. This shouldn't impact existing installs but there are two filters that can be used to change this behavior. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
-
-* **Fixed:** Update code snippet in the readme (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#291](https://github.com/10up/restricted-site-access/pull/291)).
-* **Security:** For new installs, ensure we only trust the `REMOTE_ADDR` HTTP header by default. Existing installs will still utilize the old list of approved headers but can modify this (and are recommended to) by using the `rsa_trusted_headers` filter (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dustinrue](https://github.com/dustinrue), [@mikhail-net](https://github.com/mikhail-net), [Darius Sveikauskas](https://patchstack.com/) via [#290](https://github.com/10up/restricted-site-access/pull/290)).
-* **Security:** Bump `axios` from 0.25.0 to 1.6.2 and `@wordpress/scripts` from 23.7.2 to 26.19.0 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#293](https://github.com/10up/restricted-site-access/pull/293)).
 
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
