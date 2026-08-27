@@ -15,7 +15,7 @@
     "@wordpress/dependency-extraction-webpack-plugin": "^6.54.0",
     "@wordpress/env": "^11.14.0",
     "@wordpress/scripts": "^34.2.0",
-    "cypress": "^15.18.0",
+    "cypress": "^15.21.1",
     "cypress-file-upload": "^5.0.8",
     "cypress-mochawesome-reporter": "^3.8.4",
     "mochawesome-json-to-md": "^2.3.0"
