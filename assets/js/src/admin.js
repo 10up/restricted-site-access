@@ -1,4 +1,5 @@
 import 'jquery-ui-dialog';
+import jQuery from 'jquery';
 
 /**
  * 10up
