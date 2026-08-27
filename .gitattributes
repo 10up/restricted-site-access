@@ -23,6 +23,4 @@
 /package.json export-ignore
 /phpunit.xml export-ignore
 /README.md export-ignore
-/run-wpacceptance.sh export-ignore
-/wpacceptance.json export-ignore
 /webpack.config.js export-ignore

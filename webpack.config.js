@@ -1,6 +1,6 @@
 const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
-const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
-const path = require( 'path' );
+const defaultConfig                     = require( '@wordpress/scripts/config/webpack.config' );
+const path                              = require( 'path' );
 
 module.exports = {
 	...defaultConfig,
@@ -15,16 +15,18 @@ module.exports = {
 	},
 	plugins: [
 		...defaultConfig.plugins,
-		new DependencyExtractionWebpackPlugin( {
-			requestToExternal( request ) {
-				if ( 'jquery-effects-shake' === request ) {
-					return 'jquery-effects-shake';
-				}
+		new DependencyExtractionWebpackPlugin(
+			{
+					requestToExternal( request ) {
+						if ( 'jquery-effects-shake' === request ) {
+							return 'jquery-effects-shake';
+						}
 
-				if ( 'jquery-ui-dialog' === request ) {
-					return 'jquery-ui-dialog';
-				}
-			},
-		} ),
+						if ( 'jquery-ui-dialog' === request ) {
+							return 'jquery-ui-dialog';
+						}
+				},
+			} 
+		),
 	],
 };

@@ -1,4 +1,9 @@
 <?php // phpcs:disable WordPress.Files.FileName
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Manages the Restricted Site Access plugin settings.
  *
@@ -266,9 +271,8 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	 * @subcommand set-network-mode
 	 *
 	 * @param array $args       Array with single value of what mode to set.
-	 * @param array $assoc_args Associative arguments. Not used.
 	 */
-	public function set_network_mode( $args, $assoc_args ) {
+	public function set_network_mode( $args ) {
 		if ( ! RSA_IS_NETWORK ) {
 			WP_CLI::error( __( 'Cannot set network mode when plugin not activated on network.', 'restricted-site-access' ) );
 		}
@@ -391,7 +395,7 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 	public function ip_add( $args, $assoc_args ) {
 		$this->setup( $args, $assoc_args );
 
-		/**
+		/*
 		 * The input arguments can be of the form:
 		 * wp rsa ip-add 8.8.8.8=Google 9.9.9.9 1.1.1.1=Cloudflare.
 		 *
@@ -415,9 +419,9 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 		 * )
 		 */
 		$ips_and_labels_array = array();
-		foreach ( $args as $index => $item ) {
+		foreach ( $args as $item ) {
 			$fragments = explode( '=', $item );
-			/**
+			/*
 			 * If the IP doesn't have a corressponding label,
 			 * then set label to '[null]:x', where 'x' is an
 			 * integer.
@@ -434,18 +438,18 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			$ips_and_labels_array[] = $structure_ip_label_array;
 		}
 
-		/**
+		/*
 		 * Get all whitelisted IPs saved in DB.
 		 */
 		$current_ips = $this->get_current_ips();
 
-		/**
+		/*
 		 * This will only hold those input IP addresses
 		 * which are not already whitelisted.
 		 */
 		$filtered_ips_and_labels = array();
 
-		/**
+		/*
 		 * A simple for loop to filter the input IP addresses.
 		 */
 		foreach ( $ips_and_labels_array as $ip_label_pair ) {
@@ -457,12 +461,12 @@ class Restricted_Site_Access_CLI extends WP_CLI_Command {
 			}
 		}
 
-		/**
+		/*
 		 * Extract all IP address from the filtered array
 		 * as an indexed array.
 		 */
 		$new_ips = array_map(
-			function( $ip_label_pair ) {
+			function ( $ip_label_pair ) {
 				return $ip_label_pair['ip'];
 			},
 			$filtered_ips_and_labels

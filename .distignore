@@ -20,5 +20,6 @@ package.json
 phpcs.xml
 phpcs.xml.dist
 phpunit.xml
+phpunit.xml.dist
 README.md
 webpack.config.js
