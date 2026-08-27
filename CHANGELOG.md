@@ -480,7 +480,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
-[7.6.1]: https://github.com/10up/restricted-site-access/compare/7.6.1...7.6.2
+[7.6.2]: https://github.com/10up/restricted-site-access/compare/7.6.1...7.6.2
 [7.6.1]: https://github.com/10up/restricted-site-access/compare/7.6.0...7.6.1
 [7.6.0]: https://github.com/10up/restricted-site-access/compare/7.5.3...7.6.0
 [7.5.3]: https://github.com/10up/restricted-site-access/compare/7.5.2...7.5.3
