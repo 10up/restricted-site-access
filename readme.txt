@@ -214,7 +214,7 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 **Note that this version bumps the WordPress minimum supported version from 6.6 to 6.9.**
 
-* **Fixed:** Allow programatic changes to first allow-listed IP address label. (props [@thisismyurl](https://github.com/thisismyurl), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Copilot](https://github.com/apps/copilot-pull-request-reviewer) via [#419](https://github.com/10up/restricted-site-access/pull/419))
+* **Fixed:** Allow programatic changes to first allow-listed IP address label. (props [@thisismyurl](https://github.com/thisismyurl), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#419](https://github.com/10up/restricted-site-access/pull/419))
 * **Changed:** Bump tested up to header to indicate WordPress 6.9 support. (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@dkotter](https://github.com/dkotter) via [#379](https://github.com/10up/restricted-site-access/pull/379))
 * **Changed:** Bump WordPress "tested up to" version 7.0 (props [@phpbits](https://github.com/phpbits), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#404](https://github.com/10up/restricted-site-access/pull/404))
 * **Changed:** Bump tested up to header to indicate WordPress 7.1 support (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))

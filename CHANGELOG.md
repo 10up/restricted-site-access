@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 **Note that this version bumps the WordPress minimum supported version from 6.6 to 6.9.**
 
 ### Fixed
-- Allow programatic changes to first allow-listed IP address label. (props [@thisismyurl](https://github.com/thisismyurl), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc), [@Copilot](https://github.com/apps/copilot-pull-request-reviewer) via [#419](https://github.com/10up/restricted-site-access/pull/419))
+- Allow programatic changes to first allow-listed IP address label. (props [@thisismyurl](https://github.com/thisismyurl), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#419](https://github.com/10up/restricted-site-access/pull/419))
 
 ### Changed
 - Bump tested up to header to indicate WordPress 6.9 support. (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@dkotter](https://github.com/dkotter) via [#379](https://github.com/10up/restricted-site-access/pull/379))
