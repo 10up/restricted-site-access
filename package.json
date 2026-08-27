@@ -12,12 +12,13 @@
   },
   "devDependencies": {
     "@10up/cypress-wp-utils": "^0.6.0",
-    "@wordpress/dependency-extraction-webpack-plugin": "^5.1.0",
-    "@wordpress/env": "^10.37.0",
-    "@wordpress/scripts": "^31.2.0",
-    "cypress": "^15.18.0",
+    "@wordpress/dependency-extraction-webpack-plugin": "^6.54.0",
+    "@wordpress/env": "^11.14.0",
+    "@wordpress/scripts": "^34.2.0",
+    "cypress": "^15.21.1",
     "cypress-file-upload": "^5.0.8",
-    "mochawesome-json-to-md": "^0.7.2"
+    "cypress-mochawesome-reporter": "^3.8.4",
+    "mochawesome-json-to-md": "^2.3.0"
   },
   "scripts": {
     "lint:js": "wp-scripts lint-js assets/js/src",
@@ -29,8 +30,5 @@
     "env:stop": "wp-env stop",
     "start": "wp-scripts start",
     "build": "wp-scripts build"
-  },
-  "dependencies": {
-    "cypress-mochawesome-reporter": "^3.4.0"
   }
 }

@@ -14,19 +14,19 @@ module.exports = {
 		filename: '[name].min.js',
 	},
 	plugins: [
-		...defaultConfig.plugins,
-		new DependencyExtractionWebpackPlugin(
-			{
-					requestToExternal( request ) {
-						if ( 'jquery-effects-shake' === request ) {
-							return 'jquery-effects-shake';
-						}
-
-						if ( 'jquery-ui-dialog' === request ) {
-							return 'jquery-ui-dialog';
-						}
-				},
-			} 
+		...defaultConfig.plugins.filter(
+			(plugin) =>
+				plugin.constructor.name !== "DependencyExtractionWebpackPlugin"
 		),
+		new DependencyExtractionWebpackPlugin({
+			requestToExternal(request) {
+				if ( 'jquery-effects-shake' === request ) {
+					return 'jquery-effects-shake';
+				}
+				if ( 'jquery-ui-dialog' === request ) {
+					return 'jquery-ui-dialog';
+				}
+			},
+		}),
 	],
 };
