@@ -11,7 +11,7 @@
     "role": "developer"
   },
   "devDependencies": {
-    "@10up/cypress-wp-utils": "^0.6.0",
+    "@10up/cypress-wp-utils": "github:10up/cypress-wp-utils#75dfb2431d2da1ab73d7f777e19034cdacecdf60",
     "@wordpress/dependency-extraction-webpack-plugin": "^5.1.0",
     "@wordpress/env": "^10.37.0",
     "@wordpress/scripts": "^31.2.0",
