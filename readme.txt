@@ -5,7 +5,7 @@ Tags:              privacy, restrict, limited, permissions, security
 Requires at least: 6.9
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        7.6.1
+Stable tag:        7.6.2
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -210,6 +210,16 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Changelog ==
 
+= 7.6.2 - 2026-08-27 =
+
+**Note that this version bumps the WordPress minimum supported version from 6.6 to 6.9.**
+
+* **Fixed:** Allow programatic changes to first allow-listed IP address label. (props [@thisismyurl](https://github.com/thisismyurl), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#419](https://github.com/10up/restricted-site-access/pull/419))
+* **Changed:** Bump tested up to header to indicate WordPress 6.9 support. (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@dkotter](https://github.com/dkotter) via [#379](https://github.com/10up/restricted-site-access/pull/379))
+* **Changed:** Bump WordPress "tested up to" version 7.0 (props [@phpbits](https://github.com/phpbits), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#404](https://github.com/10up/restricted-site-access/pull/404))
+* **Changed:** Bump tested up to header to indicate WordPress 7.1 support (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))
+* **Changed:** Increase minimum supported WordPress version from 6.6 to 6.9 (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))
+
 = 7.6.1 - 2025-10-29 =
 * **Fixed:** Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [Vishal Patel](https://profiles.wordpress.org/bhaveshnariya/), [fatjester](https://profiles.wordpress.org/fatjester/), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
 
@@ -231,41 +241,6 @@ Please report security bugs found in the source code of the Restricted Site Acce
 * **Changed:** Bump WordPress minimum from 6.5 to 6.6 (props [@jeffpaul](https://github.com/jeffpaul) via [#351](https://github.com/10up/restricted-site-access/pull/351), [#352](https://github.com/10up/restricted-site-access/pull/352)).
 * **Fixed:** PHP Notice that the function `_load_textdomain_just_in_time` was called incorrectly (props [@kmgalanakis](https://github.com/kmgalanakis), [@dkotter](https://github.com/dkotter) via [#350](https://github.com/10up/restricted-site-access/pull/350)).
 * **Security:** Bump `axios` from 1.7.4 to 1.8.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#346](https://github.com/10up/restricted-site-access/pull/346)).
-
-= 7.5.2 - 2025-02-05 =
-
-**Note that this version bumps the WordPress minimum supported version from 6.4 to 6.5.**
-
-* **Changed:** Bump WordPress "tested up to" version 6.7 (props [@sudip-md](https://github.com/sudip-md), [@jeffpaul](https://github.com/jeffpaul), [@mehidi258](https://github.com/mehidi258) via [#335](https://github.com/10up/restricted-site-access/pull/335), [#336](https://github.com/10up/restricted-site-access/pull/336)).
-* **Changed:** Bump WordPress minimum from 6.4 to 6.5 (props [@sudip-md](https://github.com/sudip-md), [@jeffpaul](https://github.com/jeffpaul), [@mehidi258](https://github.com/mehidi258) via [#335](https://github.com/10up/restricted-site-access/pull/335), [#336](https://github.com/10up/restricted-site-access/pull/336)).
-* **Fixed:** Add missing textdomain to a few strings (props [@NekoJonez](https://github.com/NekoJonez), [@dkotter](https://github.com/dkotter) via [#338](https://github.com/10up/restricted-site-access/pull/338)).
-* **Security:** Bump `axios` from 1.6.7 to 1.7.4 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#326](https://github.com/10up/restricted-site-access/pull/326)).
-* **Security:** Bump `webpack` from 5.90.0 to 5.94.0 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#327](https://github.com/10up/restricted-site-access/pull/327)).
-* **Security:** Bump `ws` from 7.5.10 to 8.18.0 and `@wordpress/scripts` from 27.1.0 to 29.0.0 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#328](https://github.com/10up/restricted-site-access/pull/328)).
-* **Security:** Bump `express` from 4.19.2 to 4.21.2, `send` from 0.18.0 to 0.19.0 and `serve-static` from 1.15.0 to 1.16.2 (props [@dependabot](https://github.com/apps/dependabot), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#340](https://github.com/10up/restricted-site-access/pull/340)).
-* **Security:** Bump `@wordpress/e2e-test-utils-playwright` from 1.7.0 to 1.16.0, `nanoid` from 3.3.7 to 3.3.8, `mocha` from 10.2.0 to 11.0.1 and removes `cookie` (props [@dependabot](https://github.com/apps/dependabot), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#341](https://github.com/10up/restricted-site-access/pull/341)).
-
-= 7.5.1 - 2024-07-09 =
-
-**Note that this version bumps the WordPress minimum supported version from 5.7 to 6.4.**
-
-* **Changed:** Bump WordPress "tested up to" version 6.6 (props [@sudip-md](https://github.com/sudip-md), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#313](https://github.com/10up/restricted-site-access/pull/313), [#318](https://github.com/10up/restricted-site-access/pull/318)).
-* **Changed:** Bump WordPress minimum from 5.7 to 6.4 (props [@sudip-md](https://github.com/sudip-md), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#313](https://github.com/10up/restricted-site-access/pull/313), [#318](https://github.com/10up/restricted-site-access/pull/318)).
-* **Security:** Bump `tj-actions/changed-files` from 32 to 41 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#297](https://github.com/10up/restricted-site-access/pull/297)).
-* **Security:** Bump `express` from 4.18.2 to 4.19.2 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#312](https://github.com/10up/restricted-site-access/pull/312)).
-* **Security:** Bump `follow-redirects` from 1.15.5 to 1.15.6 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#312](https://github.com/10up/restricted-site-access/pull/312)).
-* **Security:** Bump `webpack-dev-middleware` from 5.3.3 to 5.3.4 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#312](https://github.com/10up/restricted-site-access/pull/312)).
-* **Security:** Bump `braces` from 3.0.2 to 3.0.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
-* **Security:** Bump `pac-resolver` from 7.0.0 to 7.0.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
-* **Security:** Bump `socks` from 2.7.1 to 2.8.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
-* **Security:** Bump `ws` from 7.5.9 to 7.5.10 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#319](https://github.com/10up/restricted-site-access/pull/319)).
-
-= 7.5.0 - 2023-12-14 =
-**Note:** this release changes the default behavior for new installs in regards to IP detection. This shouldn't impact existing installs but there are two filters that can be used to change this behavior. See the [readme](https://github.com/10up/restricted-site-access#how-secure-is-this-plug-in) for full details.
-
-* **Fixed:** Update code snippet in the readme (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#291](https://github.com/10up/restricted-site-access/pull/291)).
-* **Security:** For new installs, ensure we only trust the `REMOTE_ADDR` HTTP header by default. Existing installs will still utilize the old list of approved headers but can modify this (and are recommended to) by using the `rsa_trusted_headers` filter (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dustinrue](https://github.com/dustinrue), [@mikhail-net](https://github.com/mikhail-net), [Darius Sveikauskas](https://patchstack.com/) via [#290](https://github.com/10up/restricted-site-access/pull/290)).
-* **Security:** Bump `axios` from 0.25.0 to 1.6.2 and `@wordpress/scripts` from 23.7.2 to 26.19.0 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#293](https://github.com/10up/restricted-site-access/pull/293)).
 
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
