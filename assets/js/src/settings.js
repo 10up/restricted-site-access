@@ -41,22 +41,22 @@ import 'jquery-effects-shake';
 		Cache.restrict_radio = document.getElementById( 'blog-restricted' );
 		Cache.error_field = document.getElementById( 'rsa-error-container' );
 		Cache.table = $(
-			document.getElementById( 'rsa-send-to-login' )
+			document.getElementById( 'rsa-send-to-login' ),
 		).closest( 'table' );
 		Cache.header = Cache.table.prev( 'h2' );
 		Cache.redirect_choice = document.getElementById(
-			'rsa-redirect-visitor'
+			'rsa-redirect-visitor',
 		);
 		Cache.message_choice = document.getElementById( 'rsa-display-message' );
 		Cache.page_choice = document.getElementById( 'rsa-unblocked-page' );
 		Cache.redirect_fields = $(
-			document.querySelectorAll( '.rsa_redirect_field' )
+			document.querySelectorAll( '.rsa_redirect_field' ),
 		).closest( 'tr' );
 		Cache.message_field = $(
-			document.getElementById( 'rsa_message' )
+			document.getElementById( 'rsa_message' ),
 		).closest( 'tr' );
 		Cache.page_field = $( document.getElementById( 'rsa_page' ) ).closest(
-			'tr'
+			'tr',
 		);
 		Cache.submit_btn = $( '#submit' );
 
@@ -96,7 +96,7 @@ import 'jquery-effects-shake';
 				} else {
 					Cache.page_field.hide();
 				}
-			}
+			},
 		);
 
 		$( document.querySelectorAll( '.option-site-visibility input' ) ).on(
@@ -107,67 +107,44 @@ import 'jquery-effects-shake';
 				} else {
 					Cache.table.hide();
 				}
-			}
+			},
 		);
 
-		$( '.rsa-learn-more-link' ).on(
-			'click',
-			function( event ) {
-				event.preventDefault();
-				$( '.rsa-learn-more-content' ).removeClass( 'hide-if-js' );
-				$( this ).addClass( 'hide-if-js' ).removeClass( 'hide-if-no-js' );
-			}
-		);
+		$( '.rsa-learn-more-link' ).on( 'click', function( event ) {
+			event.preventDefault();
+			$( '.rsa-learn-more-content' ).removeClass( 'hide-if-js' );
+			$( this ).addClass( 'hide-if-js' ).removeClass( 'hide-if-no-js' );
+		} );
 
-		$( '.rsa-learn-more-less-link' ).on(
-			'click',
-			function( event ) {
-				event.preventDefault();
-				$( '.rsa-learn-more-content' ).addClass( 'hide-if-js' );
-				$( '.rsa-learn-more-link' ).removeClass( 'hide-if-js' ).addClass( 'hide-if-no-js' );
-			}
-		);
+		$( '.rsa-learn-more-less-link' ).on( 'click', function( event ) {
+			event.preventDefault();
+			$( '.rsa-learn-more-content' ).addClass( 'hide-if-js' );
+			$( '.rsa-learn-more-link' )
+				.removeClass( 'hide-if-js' )
+				.addClass( 'hide-if-no-js' );
+		} );
 
-		Cache.add_btn.on(
-			'click',
-			function() {
-				const newIp = Cache.empty_ip
-					.clone()
-					.appendTo( Cache.ip_list_wrap );
-				newIp.removeAttr( 'id' ).slideDown( 250 );
-			}
-		);
+		Cache.add_btn.on( 'click', function() {
+			const newIp = Cache.empty_ip.clone().appendTo( Cache.ip_list_wrap );
+			newIp.removeAttr( 'id' ).slideDown( 250 );
+		} );
 
-		$( Cache.ip_list_wrap ).on(
-			'blur',
-			'.ip.code',
-			function() {
-				addIp( $( this ).val(), $( this ).next().val(), $( this ) );
-			}
-		);
+		$( Cache.ip_list_wrap ).on( 'blur', '.ip.code', function() {
+			addIp( $( this ).val(), $( this ).next().val(), $( this ) );
+		} );
 
 		const myipBtn = document.getElementById( 'rsa_myip' );
 		if ( null !== myipBtn ) {
-			$( myipBtn ).on(
-				'click',
-				function() {
-					$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
-				}
-			);
+			$( myipBtn ).on( 'click', function() {
+				$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
+			} );
 		}
 
-		$( Cache.ip_list_wrap ).on(
-			'click',
-			'.remove_btn',
-			function() {
-				$( this.parentNode ).slideUp(
-					250,
-					function() {
-						$( this ).remove();
-					}
-				);
-			}
-		);
+		$( Cache.ip_list_wrap ).on( 'click', '.remove_btn', function() {
+			$( this.parentNode ).slideUp( 250, function() {
+				$( this ).remove();
+			} );
+		} );
 	}
 
 	function addIp( ip, comment, obj ) {
@@ -209,13 +186,11 @@ import 'jquery-effects-shake';
 				Cache.submit_btn.prop( 'disabled', false );
 
 				return true;
-			}
+			},
 		);
 	}
 
-	$(
-		function() {
-			init();
-		}
-	);
+	$( function() {
+		init();
+	} );
 }( window, jQuery ) );

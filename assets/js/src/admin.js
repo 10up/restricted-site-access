@@ -102,14 +102,16 @@ import 'jquery-ui-dialog';
 						} );
 					},
 					create() {
-						$( '.ui-dialog-titlebar-close' ).addClass( 'ui-button' );
+						$( '.ui-dialog-titlebar-close' ).addClass(
+							'ui-button',
+						);
 						$( this ).siblings( '.ui-dialog-titlebar' ).hide();
 					},
 				} );
 
 				this.els.buttons = $( this.els.dialog ).dialog(
 					'option',
-					'buttons'
+					'buttons',
 				);
 			},
 
@@ -125,12 +127,12 @@ import 'jquery-ui-dialog';
 				$( '[data-slug="restricted-site-access"]' ).on(
 					'click',
 					'.deactivate a',
-					this.openDialog.bind( this )
+					this.openDialog.bind( this ),
 				);
 				if ( this.els.userMessage ) {
 					this.els.userMessage.addEventListener(
 						'keyup',
-						this.maybeSubmit.bind( this )
+						this.maybeSubmit.bind( this ),
 					);
 				}
 			},
@@ -139,7 +141,7 @@ import 'jquery-ui-dialog';
 				const list = document.getElementById( 'the-list' );
 				if ( list ) {
 					this.variables.disablingURL = list.querySelector(
-						'[data-slug="restricted-site-access"] .deactivate a'
+						'[data-slug="restricted-site-access"] .deactivate a',
 					).href;
 				}
 				this.bindEvents();
