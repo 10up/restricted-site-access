@@ -17,7 +17,7 @@
     "@wordpress/scripts": "^34.2.0",
     "cypress": "^15.18.0",
     "cypress-file-upload": "^5.0.8",
-    "mochawesome-json-to-md": "^0.7.2"
+    "mochawesome-json-to-md": "^2.3.0"
   },
   "scripts": {
     "lint:js": "wp-scripts lint-js assets/js/src",
