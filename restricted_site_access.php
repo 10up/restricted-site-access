@@ -2073,8 +2073,6 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
-		$ip = '';
-
 		// For any active version prior to 7.5.0, we use the default trusted headers.
 		if ( version_compare( get_option( 'rsa_activation_version', '0.0.0' ), '7.5.0', '<' ) ) {
 			$trusted_headers = array(
@@ -2119,22 +2117,37 @@ class Restricted_Site_Access {
 				continue;
 			}
 
-			foreach ( explode(
+			$candidates = explode(
 				',',
 				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
-			) as $ip ) {
-				$ip = trim( $ip ); // just to be safe.
+			);
 
+			/*
+			 * Private and reserved ranges are rejected for the proxy headers, because
+			 * those are supplied by the client.
+			 *
+			 * REMOTE_ADDR is the address of the TCP peer as the web server observed it,
+			 * not a value the request can set, so there is no spoofed claim here to reject.
+			 * Applying the flags to it would only discard legitimate addresses.
+			 */
+			if ( 'REMOTE_ADDR' === $header ) {
+				$filter_flags = 0;
+			} else {
 				/** Hook to filter IP flags. */
 				$filter_flags = apply_filters( 'rsa_get_client_ip_address_filter_flags', FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+			}
 
-				if ( filter_var( $ip, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
-					return $ip;
+			foreach ( $candidates as $candidate ) {
+				$candidate = trim( $candidate );
+
+				if ( filter_var( $candidate, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
+					return $candidate;
 				}
 			}
 		}
 
-		return $ip;
+		// Return an empty string if no valid IP is found.
+		return '';
 	}
 
 	/**
