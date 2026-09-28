@@ -296,6 +296,14 @@ class Restricted_Site_Access {
 			return;
 		}
 
+		// Ensure newly created sites properly store the RSA version.
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to set options/change DB prefix.
+		switch_to_blog( $new_site->id );
+		if ( ! get_option( 'rsa_activation_version', false ) ) {
+			update_option( 'rsa_activation_version', RSA_VERSION );
+		}
+		restore_current_blog();
+
 		if ( 'enforce' === self::get_network_mode() ) {
 			return;
 		}
