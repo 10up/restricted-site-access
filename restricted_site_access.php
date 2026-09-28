@@ -102,13 +102,6 @@ class Restricted_Site_Access {
 	private static $always_visible_fields;
 
 	/**
-	 * The redirection nonce.
-	 *
-	 * @var string
-	 */
-	private static $redirection_nonce;
-
-	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
 	 * @return null|Restricted_Site_Access
@@ -142,7 +135,6 @@ class Restricted_Site_Access {
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
-		add_action( 'init', array( __CLASS__, 'generate_nonce' ) );
 		add_action( 'init', array( __CLASS__, 'populate_fields' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
@@ -165,13 +157,6 @@ class Restricted_Site_Access {
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
 
 		add_filter( 'wp_headers', array( __CLASS__, 'maybe_add_no_cache_headers' ) );
-	}
-
-	/**
-	 * Generates a nonce on init.
-	 */
-	public static function generate_nonce() {
-		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
 	}
 
 	/**
@@ -514,14 +499,11 @@ class Restricted_Site_Access {
 	 */
 	private static function generate_redirection_cookie( $url ) {
 		$cookie_value = sprintf(
-			'rsa_redirect:%1$s%2$s',
-			trailingslashit( $url ),
-			self::$redirection_nonce
+			'rsa_redirect:%1$s',
+			trailingslashit( $url )
 		);
 
-		$hash = md5( $cookie_value );
-
-		return $hash;
+		return hash_hmac( 'sha256', $cookie_value, wp_salt( 'nonce' ) );
 	}
 
 	/**
@@ -747,7 +729,12 @@ class Restricted_Site_Access {
 						 * belongs to the same domain.
 						 */
 						// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- This cookie is necessary to prevent redirection loops, caching handled.
-						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $request_uri ) ) === $_COOKIE['wp-rsa_redirect'] ) {
+						$redirect_cookie = isset( $_COOKIE['wp-rsa_redirect'] ) && is_string( $_COOKIE['wp-rsa_redirect'] )
+							// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- This cookie is necessary to prevent redirection loops, caching handled.
+							? sanitize_text_field( wp_unslash( $_COOKIE['wp-rsa_redirect'] ) )
+							: '';
+
+						if ( '' !== $redirect_cookie && hash_equals( self::generate_redirection_cookie( home_url( $request_uri ) ), $redirect_cookie ) ) {
 							self::$rsa_options['redirect_url'] = home_url( $request_uri );
 						} else {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
