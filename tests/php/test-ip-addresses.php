@@ -233,4 +233,78 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * A candidate that fails validation must never be returned.
+	 *
+	 * The loop variable used to shadow the initialiser, so when nothing
+	 * validated the function returned the last candidate it had just rejected.
+	 * With REMOTE_ADDR listed by the site itself, array_unique() keeps that
+	 * first occurrence and the spoofable header is evaluated last, so the
+	 * rejected value returned was one the visitor supplied.
+	 */
+	public function test_rejected_header_value_is_never_returned() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		add_filter(
+			'rsa_trusted_headers',
+			function() {
+				return array( 'REMOTE_ADDR', 'HTTP_CLIENT_IP' );
+			}
+		);
+
+		$_SERVER['REMOTE_ADDR']    = '127.0.0.1'; // Reserved range.
+		$_SERVER['HTTP_CLIENT_IP'] = '10.1.2.3';  // Private range, visitor supplied.
+
+		$resolved = $rsa::get_ip_from_headers();
+
+		// Never the value the visitor supplied and the validator rejected.
+		$this->assertNotSame( '10.1.2.3', $resolved );
+
+		// REMOTE_ADDR is the connection peer rather than a supplied value, so it
+		// is still usable even though it is in a reserved range.
+		$this->assertSame( '127.0.0.1', $resolved );
+
+		unset( $_SERVER['HTTP_CLIENT_IP'], $_SERVER['REMOTE_ADDR'] );
+	}
+
+	/**
+	 * A proxied site must still resolve its visitors.
+	 *
+	 * Behind nginx, a load balancer or a CDN, REMOTE_ADDR is the proxy and is
+	 * almost always private or reserved. Those are exactly the addresses
+	 * FILTER_FLAG_NO_PRIV_RANGE and FILTER_FLAG_NO_RES_RANGE reject, so applying
+	 * the flags to REMOTE_ADDR would resolve no address at all and the allow list
+	 * would lock out every allowed visitor.
+	 *
+	 * @dataProvider proxied_remote_addr_provider
+	 *
+	 * @param string $remote_addr The address the web server reports for the peer.
+	 * @param string $context     What that deployment looks like, for failure output.
+	 */
+	public function test_private_remote_addr_still_resolves( $remote_addr, $context ) {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$_SERVER['REMOTE_ADDR'] = $remote_addr;
+
+		$this->assertSame( $remote_addr, $rsa::get_ip_from_headers(), $context . ' did not resolve.' );
+
+		unset( $_SERVER['REMOTE_ADDR'] );
+	}
+
+	/**
+	 * Addresses a web server reports for the peer on a proxied install.
+	 *
+	 * @return array
+	 */
+	public function proxied_remote_addr_provider() {
+		return array(
+			array( '127.0.0.1', 'nginx proxying to php-fpm on the same host' ),
+			array( '172.18.0.1', 'a container bridge gateway' ),
+			array( '10.0.4.17', 'a load balancer in a private subnet' ),
+			array( '192.168.1.24', 'a visitor on the LAN of an intranet install' ),
+		);
+	}
+
 }

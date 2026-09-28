@@ -3,7 +3,7 @@
  * Plugin Name:       Restricted Site Access
  * Plugin URI:        https://10up.com/plugins/restricted-site-access-wordpress/
  * Description:       <strong>Limit access your site</strong> to visitors who are logged in or accessing the site from a set of specific IP addresses. Send restricted visitors to the log in page, redirect them, or display a message or page. <strong>Powerful control over redirection</strong>, including <strong>SEO friendly redirect headers</strong>. Great solution for Extranets, publicly hosted Intranets, or parallel development sites.
- * Version:           7.6.2
+ * Version:           7.6.3
  * Author:            10up
  * Author URI:        https://10up.com
  * License:           GPL-2.0-or-later
@@ -59,7 +59,7 @@ if ( ! class_exists( 'IPLib\\Factory' ) ) {
 	return;
 }
 
-define( 'RSA_VERSION', '7.6.2' );
+define( 'RSA_VERSION', '7.6.3' );
 
 /**
  * Class responsible for all plugin funcitonality.
@@ -102,13 +102,6 @@ class Restricted_Site_Access {
 	private static $always_visible_fields;
 
 	/**
-	 * The redirection nonce.
-	 *
-	 * @var string
-	 */
-	private static $redirection_nonce;
-
-	/**
 	 * Handles initializing this class and returning the singleton instance after it's been cached.
 	 *
 	 * @return null|Restricted_Site_Access
@@ -142,7 +135,6 @@ class Restricted_Site_Access {
 
 		add_action( 'parse_request', array( __CLASS__, 'restrict_access' ), 1 );
 		add_action( 'admin_init', array( __CLASS__, 'admin_init' ), 1 );
-		add_action( 'init', array( __CLASS__, 'generate_nonce' ) );
 		add_action( 'init', array( __CLASS__, 'populate_fields' ) );
 		add_action( 'wp_ajax_rsa_ip_check', array( __CLASS__, 'ajax_rsa_ip_check' ) );
 
@@ -165,13 +157,6 @@ class Restricted_Site_Access {
 		add_filter( 'do_redirect_guess_404_permalink', '__return_false' );
 
 		add_filter( 'wp_headers', array( __CLASS__, 'maybe_add_no_cache_headers' ) );
-	}
-
-	/**
-	 * Generates a nonce on init.
-	 */
-	public static function generate_nonce() {
-		self::$redirection_nonce = wp_create_nonce( 'redirection_nonce' );
 	}
 
 	/**
@@ -310,6 +295,14 @@ class Restricted_Site_Access {
 		if ( ! $new_site ) {
 			return;
 		}
+
+		// Ensure newly created sites properly store the RSA version.
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Only used to set options/change DB prefix.
+		switch_to_blog( $new_site->id );
+		if ( ! get_option( 'rsa_activation_version', false ) ) {
+			update_option( 'rsa_activation_version', RSA_VERSION );
+		}
+		restore_current_blog();
 
 		if ( 'enforce' === self::get_network_mode() ) {
 			return;
@@ -514,14 +507,11 @@ class Restricted_Site_Access {
 	 */
 	private static function generate_redirection_cookie( $url ) {
 		$cookie_value = sprintf(
-			'rsa_redirect:%1$s%2$s',
-			trailingslashit( $url ),
-			self::$redirection_nonce
+			'rsa_redirect:%1$s',
+			trailingslashit( $url )
 		);
 
-		$hash = md5( $cookie_value );
-
-		return $hash;
+		return hash_hmac( 'sha256', $cookie_value, wp_salt( 'nonce' ) );
 	}
 
 	/**
@@ -747,7 +737,12 @@ class Restricted_Site_Access {
 						 * belongs to the same domain.
 						 */
 						// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- This cookie is necessary to prevent redirection loops, caching handled.
-						if ( isset( $_COOKIE['wp-rsa_redirect'] ) && self::generate_redirection_cookie( home_url( $request_uri ) ) === $_COOKIE['wp-rsa_redirect'] ) {
+						$redirect_cookie = isset( $_COOKIE['wp-rsa_redirect'] ) && is_string( $_COOKIE['wp-rsa_redirect'] )
+							// phpcs:ignore WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE -- This cookie is necessary to prevent redirection loops, caching handled.
+							? sanitize_text_field( wp_unslash( $_COOKIE['wp-rsa_redirect'] ) )
+							: '';
+
+						if ( '' !== $redirect_cookie && hash_equals( self::generate_redirection_cookie( home_url( $request_uri ) ), $redirect_cookie ) ) {
 							self::$rsa_options['redirect_url'] = home_url( $request_uri );
 						} else {
 							self::$rsa_options['redirect_url'] = untrailingslashit( self::$rsa_options['redirect_url'] ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
@@ -2078,8 +2073,6 @@ class Restricted_Site_Access {
 	 * @return string
 	 */
 	public static function get_ip_from_headers() {
-		$ip = '';
-
 		// For any active version prior to 7.5.0, we use the default trusted headers.
 		if ( version_compare( get_option( 'rsa_activation_version', '0.0.0' ), '7.5.0', '<' ) ) {
 			$trusted_headers = array(
@@ -2124,22 +2117,37 @@ class Restricted_Site_Access {
 				continue;
 			}
 
-			foreach ( explode(
+			$candidates = explode(
 				',',
 				sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) )
-			) as $ip ) {
-				$ip = trim( $ip ); // just to be safe.
+			);
 
+			/*
+			 * Private and reserved ranges are rejected for the proxy headers, because
+			 * those are supplied by the client.
+			 *
+			 * REMOTE_ADDR is the address of the TCP peer as the web server observed it,
+			 * not a value the request can set, so there is no spoofed claim here to reject.
+			 * Applying the flags to it would only discard legitimate addresses.
+			 */
+			if ( 'REMOTE_ADDR' === $header ) {
+				$filter_flags = 0;
+			} else {
 				/** Hook to filter IP flags. */
 				$filter_flags = apply_filters( 'rsa_get_client_ip_address_filter_flags', FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+			}
 
-				if ( filter_var( $ip, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
-					return $ip;
+			foreach ( $candidates as $candidate ) {
+				$candidate = trim( $candidate );
+
+				if ( filter_var( $candidate, FILTER_VALIDATE_IP, $filter_flags ) !== false ) {
+					return $candidate;
 				}
 			}
 		}
 
-		return $ip;
+		// Return an empty string if no valid IP is found.
+		return '';
 	}
 
 	/**

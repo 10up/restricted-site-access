@@ -5,7 +5,7 @@ Tags:              privacy, restrict, limited, permissions, security
 Requires at least: 6.9
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        7.6.2
+Stable tag:        7.6.3
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -210,6 +210,13 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Changelog ==
 
+= 7.6.3 - 2026-09-28 =
+
+* **Fixed:** Remove filter flags from applying to the `REMOTE_ADDR` header (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-jrf7-cq25-hc3x](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jrf7-cq25-hc3x))
+* **Security:** Resolve GHSA-x79x-6v7g-xww7 (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-x79x-6v7g-xww7](https://github.com/10up/restricted-site-access/security/advisories/GHSA-x79x-6v7g-xww7))
+* **Security:** Resolve GHSA-mhr2-3fc8-g999 (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-mhr2-3fc8-g999](https://github.com/10up/restricted-site-access/security/advisories/GHSA-mhr2-3fc8-g999))
+* **Security:** Resolve GHSA-jrf7-cq25-hc3x (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-jrf7-cq25-hc3x](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jrf7-cq25-hc3x))
+
 = 7.6.2 - 2026-08-27 =
 
 **Note that this version bumps the WordPress minimum supported version from 6.6 to 6.9.**
@@ -233,18 +240,12 @@ Please report security bugs found in the source code of the Restricted Site Acce
 * **Security:** Bump `tar-fs` from 3.0.8 to 3.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#359](https://github.com/10up/restricted-site-access/pull/359)).
 * **Security:** Bump `brace-expansion` from 1.1.11 to 1.1.12, `on-headers` from 1.0.2 to 1.1.0 and `compression` from 1.7.4 to 1.8.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#361](https://github.com/10up/restricted-site-access/pull/361)).
 
-= 7.5.3 - 2025-05-19 =
-
-**Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**
-
-* **Changed:** Bump WordPress "tested up to" version 6.8 (props [@kmgalanakis](https://github.com/kmgalanakis), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#349](https://github.com/10up/restricted-site-access/pull/349), [#352](https://github.com/10up/restricted-site-access/pull/352)).
-* **Changed:** Bump WordPress minimum from 6.5 to 6.6 (props [@jeffpaul](https://github.com/jeffpaul) via [#351](https://github.com/10up/restricted-site-access/pull/351), [#352](https://github.com/10up/restricted-site-access/pull/352)).
-* **Fixed:** PHP Notice that the function `_load_textdomain_just_in_time` was called incorrectly (props [@kmgalanakis](https://github.com/kmgalanakis), [@dkotter](https://github.com/dkotter) via [#350](https://github.com/10up/restricted-site-access/pull/350)).
-* **Security:** Bump `axios` from 1.7.4 to 1.8.3 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#346](https://github.com/10up/restricted-site-access/pull/346)).
-
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 7.6.3 =
+**This is a security release, it is recommended to upgrade immediately**
 
 = 7.5.3 =
 **Note that this version bumps the WordPress minimum supported version from 6.5 to 6.6.**

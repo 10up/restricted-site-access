@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.6.3] - 2026-09-28
+**This is a security release, it is recommended to upgrade immediately**
+
+### Fixed
+- Remove filter flags from applying to the `REMOTE_ADDR` header (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-jrf7-cq25-hc3x](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jrf7-cq25-hc3x))
+
+### Security
+- Resolve GHSA-x79x-6v7g-xww7 (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-x79x-6v7g-xww7](https://github.com/10up/restricted-site-access/security/advisories/GHSA-x79x-6v7g-xww7))
+- Resolve GHSA-mhr2-3fc8-g999 (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-mhr2-3fc8-g999](https://github.com/10up/restricted-site-access/security/advisories/GHSA-mhr2-3fc8-g999))
+- Resolve GHSA-jrf7-cq25-hc3x (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-jrf7-cq25-hc3x](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jrf7-cq25-hc3x))
+
+### Developer
+- Bump `@10up/cypress-wp-utils` from 0.6.0 to 0.7.2 (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@dkotter](https://github.com/dkotter) via [#441](https://github.com/10up/restricted-site-access/pull/441))
+- Bump `adm-zip` from 0.5.16 to 0.6.1, `postcss` from 8.5.13 to 8.5.28, `svgo` from 3.3.3 to 3.3.5, `webpack-dev-server` from 4.15.2 to 5.2.6 and `@wordpress/scripts` from 32.0.0 to 36.0.0 (props [@dependabot[bot]](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#444](https://github.com/10up/restricted-site-access/pull/444))
+
 ## [7.6.2] - 2026-08-27
 **Note that this version bumps the WordPress minimum supported version from 6.6 to 6.9.**
 
@@ -478,6 +493,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.6.3]: https://github.com/10up/restricted-site-access/compare/7.6.2...7.6.3
 [7.6.2]: https://github.com/10up/restricted-site-access/compare/7.6.1...7.6.2
 [7.6.1]: https://github.com/10up/restricted-site-access/compare/7.6.0...7.6.1
 [7.6.0]: https://github.com/10up/restricted-site-access/compare/7.5.3...7.6.0
