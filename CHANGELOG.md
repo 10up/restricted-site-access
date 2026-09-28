@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Developer
 - Bump `@10up/cypress-wp-utils` from 0.6.0 to 0.7.2 (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@dkotter](https://github.com/dkotter) via [#441](https://github.com/10up/restricted-site-access/pull/441))
+- Bump `adm-zip` from 0.5.16 to 0.6.1, `postcss` from 8.5.13 to 8.5.28, `svgo` from 3.3.3 to 3.3.5, `webpack-dev-server` from 4.15.2 to 5.2.6 and `@wordpress/scripts` from 32.0.0 to 36.0.0 (props [@dependabot[bot]](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#444](https://github.com/10up/restricted-site-access/pull/444))
 
 ## [7.6.2] - 2026-08-27
 **Note that this version bumps the WordPress minimum supported version from 6.6 to 6.9.**
