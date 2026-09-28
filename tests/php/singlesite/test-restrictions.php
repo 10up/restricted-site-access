@@ -2,6 +2,8 @@
 
 class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCase {
 
+	use PrivateAccess;
+
 	public function test_singlesite_restrict_access_not_restricted() {
 
 		$rsa = Restricted_Site_Access::get_instance();
@@ -314,5 +316,137 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		$this->assertSame( 302, $results['code'] );
 		$this->assertSame( 'https://10up.com/custom-page', $results['url'] );
+	}
+
+	/**
+	 * Put the site into the configuration that exercises the redirect loop
+	 * prevention cookie: restricted, redirecting, and preserving the path.
+	 */
+	private function set_up_redirect_with_path() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$options                  = $rsa::get_options( false );
+		$options['approach']      = 2; // Redirect them to a specified web address.
+		$options['redirect_url']  = 'https://fueled.com';
+		$options['redirect_path'] = 1; // Send them to the same path at the new URL.
+		$options['head_code']     = 302;
+		$options['allowed']       = array();
+
+		update_option( 'rsa_options', $options );
+	}
+
+	/**
+	 * A cookie built the way the plugin used to build it must no longer be
+	 * accepted.
+	 *
+	 * The old value was an unkeyed MD5 over a URL the visitor already knows and
+	 * wp_create_nonce( 'redirection_nonce' ), which is identical for every
+	 * logged out visitor. Anyone able to reproduce that value could mint a
+	 * cookie for any URL on the site and have the restricted page served.
+	 */
+	public function test_singlesite_redirect_cookie_rejects_legacy_nonce_construction() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->set_up_redirect_with_path();
+
+		$this->go_to( home_url( '/custom-page' ) );
+		$wp = $GLOBALS['wp'];
+
+		$request_uri = $rsa::get_request_uri( $wp );
+
+		$_COOKIE['wp-rsa_redirect'] = md5(
+			'rsa_redirect:' . trailingslashit( home_url( $request_uri ) ) . wp_create_nonce( 'redirection_nonce' )
+		);
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		unset( $_COOKIE['wp-rsa_redirect'] );
+
+		// The visitor is still sent away rather than served the restricted page.
+		$this->assertNotEmpty( $results );
+		$this->assertSame( 'https://fueled.com/custom-page', $results['url'] );
+		$this->assertNotSame( home_url( $request_uri ), $results['url'] );
+	}
+
+	/**
+	 * A cookie the plugin never issued must not be accepted.
+	 */
+	public function test_singlesite_redirect_cookie_rejects_arbitrary_value() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->set_up_redirect_with_path();
+
+		$this->go_to( home_url( '/custom-page' ) );
+		$wp = $GLOBALS['wp'];
+
+		$request_uri = $rsa::get_request_uri( $wp );
+
+		$_COOKIE['wp-rsa_redirect'] = str_repeat( 'a', 64 );
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		unset( $_COOKIE['wp-rsa_redirect'] );
+
+		$this->assertNotEmpty( $results );
+		$this->assertSame( 'https://fueled.com/custom-page', $results['url'] );
+		$this->assertNotSame( home_url( $request_uri ), $results['url'] );
+	}
+
+	/**
+	 * A cookie the plugin did issue must still break the redirect loop, or the
+	 * visitor is bounced between the site and the redirect target forever.
+	 */
+	public function test_singlesite_redirect_cookie_still_prevents_the_loop() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->set_up_redirect_with_path();
+
+		$this->go_to( home_url( '/custom-page' ) );
+		$wp = $GLOBALS['wp'];
+
+		$request_uri = $rsa::get_request_uri( $wp );
+
+		$_COOKIE['wp-rsa_redirect'] = $this->call_private_method(
+			$rsa,
+			'generate_redirection_cookie',
+			array( home_url( $request_uri ) )
+		);
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		unset( $_COOKIE['wp-rsa_redirect'] );
+
+		// The redirect target becomes the current URL, which is what stops the loop.
+		$this->assertNotEmpty( $results );
+		$this->assertSame( home_url( $request_uri ), $results['url'] );
+	}
+
+	/**
+	 * A cookie sent as an array must not be passed to hash_equals(), which
+	 * raises a TypeError on anything that is not a string.
+	 */
+	public function test_singlesite_redirect_cookie_rejects_non_string_value() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->set_up_redirect_with_path();
+
+		$this->go_to( home_url( '/custom-page' ) );
+		$wp = $GLOBALS['wp'];
+
+		$_COOKIE['wp-rsa_redirect'] = array( 'first', 'second' );
+
+		$results = $rsa::restrict_access_check( $wp );
+
+		unset( $_COOKIE['wp-rsa_redirect'] );
+
+		$this->assertNotEmpty( $results );
+		$this->assertSame( 'https://fueled.com/custom-page', $results['url'] );
 	}
 }
