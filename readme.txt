@@ -190,6 +190,31 @@ Make sure you add it before the `/* That's all, stop editing! Happy blogging. */
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
+= How are REST API requests handled? =
+
+When the site is restricted, blocked REST API requests (`/wp-json/...` or `?rest_route=...`) receive a JSON error with a `401` status code (`403` for logged-in users without access to the site) instead of the redirect, message or page configured under "Handle restricted visitors". This lets API clients, such as mobile apps, headless front ends and MCP clients, detect that they need to authenticate. The response looks like a core REST API error and is sent with no-cache headers:
+
+`
+{"code":"rest_not_logged_in","message":"This site is restricted. You must be authenticated to access it.","data":{"status":401}}
+`
+
+Visitors with an unrestricted IP address and requests unrestricted by the `restricted_site_access_is_restricted` filter are not affected.
+
+Use the `restricted_site_access_rest_response` filter to change the status, body or headers. For example, to point OAuth clients at your protected resource metadata (RFC 9728):
+
+`
+add_filter( 'restricted_site_access_rest_response', function ( $response, $wp ) {
+	$response['headers']['WWW-Authenticate'] = 'Bearer resource_metadata="' . home_url( '/.well-known/oauth-protected-resource' ) . '"';
+	return $response;
+}, 10, 2 );
+`
+
+To handle REST API requests like any other request, as in earlier versions, use the `restricted_site_access_use_rest_response` filter:
+
+`
+add_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+`
+
 = What does 'Discourage search engines from indexing this site' do? =
 
 When the 'Discourage search engines from indexing this site' option is enabled, it prevents search engines from indexing the site while still permitting access to regular visitors.
