@@ -449,4 +449,108 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$this->assertNotEmpty( $results );
 		$this->assertSame( 'https://fueled.com/custom-page', $results['url'] );
 	}
+
+
+	/**
+	 * Build a WP request object for a REST API route.
+	 *
+	 * @param string $route REST route, e.g. `/wp/v2/posts`.
+	 * @return WP
+	 */
+	private function get_rest_wp( $route = '/' ) {
+		$wp             = new WP();
+		$wp->query_vars = array( 'rest_route' => $route );
+
+		return $wp;
+	}
+
+	public function test_singlesite_is_rest_request() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->assertTrue( $rsa::is_rest_request( $this->get_rest_wp( '/wp/v2/posts' ) ) );
+
+		$this->go_to( home_url( '/' ) );
+		$this->assertFalse( $rsa::is_rest_request( $GLOBALS['wp'] ) );
+
+		$this->assertFalse( $rsa::is_rest_request( null ) );
+	}
+
+	public function test_singlesite_restrict_access_rest_request_returns_json_error() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$options                 = $rsa::get_options( false );
+		$options['redirect_url'] = 'https://fueled.com';
+		$options['message']      = 'You shall not pass!';
+
+		// Every approach should return the same JSON error for REST API requests.
+		foreach ( array( 1, 2, 3 ) as $approach ) {
+			$options['approach'] = $approach;
+			update_option( 'rsa_options', $options );
+
+			$results = $rsa::restrict_access_check( $this->get_rest_wp( '/wp/v2/posts' ) );
+
+			$this->assertArrayHasKey( 'rest_response', $results, "Approach {$approach}" );
+			$this->assertArrayNotHasKey( 'url', $results, "Approach {$approach}" );
+			$this->assertArrayNotHasKey( 'die_message', $results, "Approach {$approach}" );
+
+			$response = $results['rest_response'];
+
+			$this->assertSame( 401, $response['status'] );
+			$this->assertSame( 'rest_not_logged_in', $response['body']['code'] );
+			$this->assertSame( array( 'status' => 401 ), $response['body']['data'] );
+			$this->assertArrayHasKey( 'Cache-Control', $response['headers'] );
+		}
+	}
+
+	public function test_singlesite_restrict_access_rest_request_logged_in() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		wp_set_current_user( 1 );
+
+		$this->assertEmpty( $rsa::restrict_access_check( $this->get_rest_wp() ) );
+
+		wp_set_current_user( 0 );
+	}
+
+	public function test_singlesite_restrict_access_rest_request_legacy_filter() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		add_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+
+		$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+
+		remove_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+
+		// Falls back to the configured approach, which defaults to the login screen.
+		$this->assertArrayNotHasKey( 'rest_response', $results );
+		$this->assertSame( 302, $results['code'] );
+	}
+
+	public function test_singlesite_restrict_access_rest_response_filter() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$add_header = function ( $response ) {
+			$response['headers']['WWW-Authenticate'] = 'Bearer resource_metadata="https://example.org/.well-known/oauth-protected-resource"';
+			return $response;
+		};
+
+		add_filter( 'restricted_site_access_rest_response', $add_header );
+
+		$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+
+		remove_filter( 'restricted_site_access_rest_response', $add_header );
+
+		$this->assertSame(
+			'Bearer resource_metadata="https://example.org/.well-known/oauth-protected-resource"',
+			$results['rest_response']['headers']['WWW-Authenticate']
+		);
+	}
 }
