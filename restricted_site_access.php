@@ -553,6 +553,14 @@ class Restricted_Site_Access {
 		// We do this because ` $wp->request` is defined for a multisite setup but not for a single site.
 		$request_uri = self::get_request_uri( $wp );
 
+		if ( is_array( $results ) && isset( $results['rest_response'] ) ) {
+			// Don't send the response during unit tests.
+			if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
+				self::send_rest_response( $results['rest_response'] );
+			}
+			return;
+		}
+
 		if ( is_array( $results ) && ! empty( $results ) ) {
 			/*
 			 * This conditional prevents a redirect loop if the redirect URL
@@ -620,10 +628,133 @@ class Restricted_Site_Access {
 	}
 
 	/**
+	 * Determine whether the current request is a REST API request.
+	 *
+	 * Runs on `parse_request`, so the `rest_route` query var is already populated for
+	 * both pretty permalink (`/wp-json/...`) and plain (`?rest_route=...`) requests.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param \WP $wp The WordPress request object.
+	 * @return bool Whether the request is for the REST API.
+	 */
+	public static function is_rest_request( $wp ) {
+		return $wp instanceof \WP && ! empty( $wp->query_vars['rest_route'] );
+	}
+
+	/**
+	 * Build the response sent to restricted REST API requests.
+	 *
+	 * Mirrors the shape of core REST API errors so API clients can detect that
+	 * authentication is required.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param \WP $wp The WordPress request object.
+	 * @return array {
+	 *     The response to send.
+	 *
+	 *     @type int   $status  HTTP status code.
+	 *     @type array $body    Response body, encoded as JSON.
+	 *     @type array $headers Response headers, keyed by header name.
+	 * }
+	 */
+	public static function get_rest_response( $wp ) {
+		$status = rest_authorization_required_code();
+
+		$default = array(
+			'status'  => $status,
+			'body'    => array(
+				'code'    => 401 === $status ? 'rest_not_logged_in' : 'rest_forbidden',
+				'message' => 401 === $status
+					? __( 'This site is restricted. You must be logged in to access it.', 'restricted-site-access' )
+					: __( 'This site is restricted. Your account does not have access to it.', 'restricted-site-access' ),
+				'data'    => array( 'status' => $status ),
+			),
+			'headers' => wp_get_nocache_headers(),
+		);
+
+		/**
+		 * Filters the response sent to restricted REST API requests.
+		 *
+		 * Use this to add headers such as `WWW-Authenticate`, or to change the status or body.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param array $response {
+		 *     The response to send.
+		 *
+		 *     @type int   $status  HTTP status code. Default 401, or 403 for logged in users without access.
+		 *                          Must be a 4xx or 5xx code; anything else falls back to the default.
+		 *     @type array $body    Response body, encoded as JSON.
+		 *     @type array $headers Response headers, keyed by header name. A value of false removes the
+		 *                          header; an array of values sends the header once per value.
+		 * }
+		 * @param \WP   $wp       The WordPress request object.
+		 */
+		$response = apply_filters( 'restricted_site_access_rest_response', $default, $wp );
+
+		return self::validate_rest_response( $response, $default );
+	}
+
+	/**
+	 * Make sure a filtered REST response can be sent and still blocks the request.
+	 *
+	 * Anything malformed falls back to the default, so a filter can't turn the
+	 * restriction off by returning the wrong shape. Use the
+	 * `restricted_site_access_is_restricted` filter to let requests through.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $response Filtered response.
+	 * @param array $fallback Default response.
+	 * @return array Response with an error status, an array body and array headers.
+	 */
+	public static function validate_rest_response( $response, $fallback ) {
+		if ( ! is_array( $response ) ) {
+			return $fallback;
+		}
+
+		$status = isset( $response['status'] ) && is_numeric( $response['status'] ) ? (int) $response['status'] : 0;
+
+		return array(
+			'status'  => $status >= 400 && $status <= 599 ? $status : $fallback['status'],
+			'body'    => isset( $response['body'] ) && is_array( $response['body'] ) ? $response['body'] : $fallback['body'],
+			'headers' => isset( $response['headers'] ) && is_array( $response['headers'] ) ? $response['headers'] : $fallback['headers'],
+		);
+	}
+
+	/**
+	 * Send a JSON response to a restricted REST API request and exit.
+	 *
+	 * @since x.x.x
+	 * @codeCoverageIgnore
+	 *
+	 * @param array $response Response from get_rest_response().
+	 */
+	private static function send_rest_response( $response ) {
+		foreach ( $response['headers'] as $name => $value ) {
+			if ( false === $value ) {
+				header_remove( $name );
+				continue;
+			}
+
+			// An array sends the header once per value (e.g. several WWW-Authenticate challenges).
+			foreach ( array_values( (array) $value ) as $index => $line ) {
+				if ( is_scalar( $line ) ) {
+					header( "{$name}: {$line}", 0 === $index );
+				}
+			}
+		}
+
+		wp_send_json( $response['body'], (int) $response['status'] );
+	}
+
+	/**
 	 * Determine whether page should be restricted at point of request.
 	 *
 	 * @param \WP $wp WordPress The main WP request.
-	 * @return array              List of URL and code, otherwise empty.
+	 * @return array              List of URL and code, a die message, or a REST response, otherwise empty.
 	 */
 	public static function restrict_access_check( $wp ) {
 		self::$rsa_options = self::get_options();
@@ -678,6 +809,27 @@ class Restricted_Site_Access {
 
 		$rsa_restrict_approach = apply_filters( 'restricted_site_access_approach', self::$rsa_options['approach'] );
 		do_action( 'restrict_site_access_handling', $rsa_restrict_approach, $wp ); // allow users to hook handling.
+
+		if ( self::is_rest_request( $wp ) ) {
+			/**
+			 * Filters whether restricted REST API requests receive a JSON error response.
+			 *
+			 * By default, blocked REST API requests receive a 401 (or 403 for logged in
+			 * users without access) JSON response instead of the redirect, message or page
+			 * configured for regular visitors, so API clients can tell they need to
+			 * authenticate. Return false to handle REST API requests like any other request.
+			 *
+			 * @since x.x.x
+			 *
+			 * @param bool $use_rest_response Whether to send a JSON error response. Default true.
+			 * @param \WP  $wp                The WordPress request object.
+			 */
+			if ( apply_filters( 'restricted_site_access_use_rest_response', true, $wp ) ) {
+				return array(
+					'rest_response' => self::get_rest_response( $wp ),
+				);
+			}
+		}
 
 		switch ( $rsa_restrict_approach ) {
 			case 4: // Show them a page.

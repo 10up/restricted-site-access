@@ -513,3 +513,36 @@ describe( 'Cases 32 - 34 (Redirect to same path enabled)', () => {
 	} );
 } );
 
+
+describe( 'Handle restricted visitors - REST API requests', () => {
+	before( () => {
+		cy.request( {
+			url: '/wp-json/rsa/v1/seed/restrict-users/send-to-login-screen'
+		} );
+	} );
+
+	it( 'Verify - REST API request receives a 401 JSON error', () => {
+		cy.request( {
+			url: '/wp-json/wp/v2/posts',
+			followRedirect: false,
+			failOnStatusCode: false,
+		} ).then( ( resp ) => {
+			expect( resp.status ).to.eq( 401 );
+			expect( resp.headers[ 'content-type' ] ).to.contain( 'application/json' );
+			expect( resp.headers[ 'cache-control' ] ).to.contain( 'no-store' );
+			expect( resp.body.code ).to.eq( 'rest_not_logged_in' );
+			expect( resp.body.data.status ).to.eq( 401 );
+		} );
+	} );
+
+	it( 'Verify - Plain permalink REST API request receives a 401 JSON error', () => {
+		cy.request( {
+			url: '/?rest_route=/wp/v2/posts',
+			followRedirect: false,
+			failOnStatusCode: false,
+		} ).then( ( resp ) => {
+			expect( resp.status ).to.eq( 401 );
+			expect( resp.body.code ).to.eq( 'rest_not_logged_in' );
+		} );
+	} );
+} );
