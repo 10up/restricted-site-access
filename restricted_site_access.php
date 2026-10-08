@@ -553,7 +553,7 @@ class Restricted_Site_Access {
 		// We do this because ` $wp->request` is defined for a multisite setup but not for a single site.
 		$request_uri = self::get_request_uri( $wp );
 
-		if ( is_array( $results ) && ! empty( $results['rest_response'] ) ) {
+		if ( is_array( $results ) && isset( $results['rest_response'] ) ) {
 			// Don't send the response during unit tests.
 			if ( ! defined( 'PHP_UNIT_TESTS_ENV' ) ) {
 				self::send_rest_response( $results['rest_response'] );
@@ -662,11 +662,13 @@ class Restricted_Site_Access {
 	public static function get_rest_response( $wp ) {
 		$status = rest_authorization_required_code();
 
-		$response = array(
+		$default = array(
 			'status'  => $status,
 			'body'    => array(
 				'code'    => 401 === $status ? 'rest_not_logged_in' : 'rest_forbidden',
-				'message' => __( 'This site is restricted. You must be authenticated to access it.', 'restricted-site-access' ),
+				'message' => 401 === $status
+					? __( 'This site is restricted. You must be logged in to access it.', 'restricted-site-access' )
+					: __( 'This site is restricted. Your account does not have access to it.', 'restricted-site-access' ),
 				'data'    => array( 'status' => $status ),
 			),
 			'headers' => wp_get_nocache_headers(),
@@ -683,12 +685,43 @@ class Restricted_Site_Access {
 		 *     The response to send.
 		 *
 		 *     @type int   $status  HTTP status code. Default 401, or 403 for logged in users without access.
+		 *                          Must be a 4xx or 5xx code; anything else falls back to the default.
 		 *     @type array $body    Response body, encoded as JSON.
-		 *     @type array $headers Response headers, keyed by header name. A value of false removes the header.
+		 *     @type array $headers Response headers, keyed by header name. A value of false removes the
+		 *                          header; an array of values sends the header once per value.
 		 * }
 		 * @param \WP   $wp       The WordPress request object.
 		 */
-		return apply_filters( 'restricted_site_access_rest_response', $response, $wp );
+		$response = apply_filters( 'restricted_site_access_rest_response', $default, $wp );
+
+		return self::validate_rest_response( $response, $default );
+	}
+
+	/**
+	 * Make sure a filtered REST response can be sent and still blocks the request.
+	 *
+	 * Anything malformed falls back to the default, so a filter can't turn the
+	 * restriction off by returning the wrong shape. Use the
+	 * `restricted_site_access_is_restricted` filter to let requests through.
+	 *
+	 * @since x.x.x
+	 *
+	 * @param mixed $response Filtered response.
+	 * @param array $fallback Default response.
+	 * @return array Response with an error status, an array body and array headers.
+	 */
+	public static function validate_rest_response( $response, $fallback ) {
+		if ( ! is_array( $response ) ) {
+			return $fallback;
+		}
+
+		$status = isset( $response['status'] ) && is_numeric( $response['status'] ) ? (int) $response['status'] : 0;
+
+		return array(
+			'status'  => $status >= 400 && $status <= 599 ? $status : $fallback['status'],
+			'body'    => isset( $response['body'] ) && is_array( $response['body'] ) ? $response['body'] : $fallback['body'],
+			'headers' => isset( $response['headers'] ) && is_array( $response['headers'] ) ? $response['headers'] : $fallback['headers'],
+		);
 	}
 
 	/**
@@ -700,13 +733,18 @@ class Restricted_Site_Access {
 	 * @param array $response Response from get_rest_response().
 	 */
 	private static function send_rest_response( $response ) {
-		foreach ( (array) $response['headers'] as $name => $value ) {
+		foreach ( $response['headers'] as $name => $value ) {
 			if ( false === $value ) {
 				header_remove( $name );
 				continue;
 			}
 
-			header( "{$name}: {$value}" );
+			// An array sends the header once per value (e.g. several WWW-Authenticate challenges).
+			foreach ( array_values( (array) $value ) as $index => $line ) {
+				if ( is_scalar( $line ) ) {
+					header( "{$name}: {$line}", 0 === $index );
+				}
+			}
 		}
 
 		wp_send_json( $response['body'], (int) $response['status'] );

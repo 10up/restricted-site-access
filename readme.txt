@@ -195,17 +195,25 @@ Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTR
 When the site is restricted, blocked REST API requests (`/wp-json/...` or `?rest_route=...`) receive a JSON error with a `401` status code (`403` for logged-in users without access to the site) instead of the redirect, message or page configured under "Handle restricted visitors". This lets API clients, such as mobile apps, headless front ends and MCP clients, detect that they need to authenticate. The response looks like a core REST API error and is sent with no-cache headers:
 
 `
-{"code":"rest_not_logged_in","message":"This site is restricted. You must be authenticated to access it.","data":{"status":401}}
+{"code":"rest_not_logged_in","message":"This site is restricted. You must be logged in to access it.","data":{"status":401}}
 `
 
-Visitors with an unrestricted IP address and requests unrestricted by the `restricted_site_access_is_restricted` filter are not affected.
+Visitors with an unrestricted IP address and requests unrestricted by the `restricted_site_access_is_restricted` filter are not affected. REST API requests no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters, so code that used those to handle API requests needs to move to the filters below (or turn this behavior off).
 
-Use the `restricted_site_access_rest_response` filter to change the status, body or headers. For example, to point OAuth clients at your protected resource metadata (RFC 9728):
+Use the `restricted_site_access_rest_response` filter to change the status (any `4xx` or `5xx` code), body or headers. A header set to `false` is removed, and an array of values sends the header once per value. A response in any other shape falls back to the default, so the filter can't lift the restriction by accident. For example, to point OAuth clients at your protected resource metadata (RFC 9728):
 
 `
 add_filter( 'restricted_site_access_rest_response', function ( $response, $wp ) {
 	$response['headers']['WWW-Authenticate'] = 'Bearer resource_metadata="' . home_url( '/.well-known/oauth-protected-resource' ) . '"';
 	return $response;
+}, 10, 2 );
+
+// The metadata itself has to be reachable without logging in.
+add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted, $wp ) {
+	if ( 0 === strpos( $wp->request, '.well-known/oauth-protected-resource' ) ) {
+		return false;
+	}
+	return $is_restricted;
 }, 10, 2 );
 `
 

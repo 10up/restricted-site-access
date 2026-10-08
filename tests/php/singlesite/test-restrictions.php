@@ -553,4 +553,74 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 			$results['rest_response']['headers']['WWW-Authenticate']
 		);
 	}
+
+	public function test_singlesite_rest_response_message_depends_on_status() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$logged_out = $rsa::get_rest_response( $this->get_rest_wp() );
+		$this->assertSame( 401, $logged_out['status'] );
+		$this->assertStringContainsString( 'must be logged in', $logged_out['body']['message'] );
+
+		// A logged-in user who is still restricted (e.g. not a member of a network site) gets a 403.
+		wp_set_current_user( 1 );
+		$logged_in = $rsa::get_rest_response( $this->get_rest_wp() );
+		wp_set_current_user( 0 );
+
+		$this->assertSame( 403, $logged_in['status'] );
+		$this->assertSame( 'rest_forbidden', $logged_in['body']['code'] );
+		$this->assertStringNotContainsString( 'logged in', $logged_in['body']['message'] );
+	}
+
+	public function test_singlesite_malformed_rest_response_filter_falls_back_to_default() {
+		$rsa     = Restricted_Site_Access::get_instance();
+		$default = $rsa::get_rest_response( $this->get_rest_wp() );
+
+		update_option( 'blog_public', 2 );
+
+		$cases = array(
+			'falsy response'     => '__return_false',
+			'string response'    => static function () {
+				return 'nope';
+			},
+			'success status'     => static function ( $response ) {
+				$response['status'] = 200;
+				return $response;
+			},
+			'non-array body'     => static function ( $response ) {
+				$response['body'] = 'nope';
+				return $response;
+			},
+			'non-array headers'  => static function ( $response ) {
+				$response['headers'] = 'nope';
+				return $response;
+			},
+		);
+
+		foreach ( $cases as $label => $filter ) {
+			add_filter( 'restricted_site_access_rest_response', $filter );
+			$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+			remove_filter( 'restricted_site_access_rest_response', $filter );
+
+			$this->assertArrayHasKey( 'rest_response', $results, $label );
+
+			$response = $results['rest_response'];
+
+			$this->assertSame( 401, $response['status'], $label );
+			$this->assertIsArray( $response['body'], $label );
+			$this->assertIsArray( $response['headers'], $label );
+		}
+
+		// A valid change is kept, malformed parts are replaced.
+		$partial = static function ( $response ) {
+			$response['status'] = 403;
+			$response['body']   = 'nope';
+			return $response;
+		};
+		add_filter( 'restricted_site_access_rest_response', $partial );
+		$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+		remove_filter( 'restricted_site_access_rest_response', $partial );
+
+		$this->assertSame( 403, $results['rest_response']['status'] );
+		$this->assertSame( $default['body'], $results['rest_response']['body'] );
+	}
 }
