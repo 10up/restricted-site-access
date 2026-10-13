@@ -243,6 +243,18 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Changelog ==
 
+= 7.6.4 - 2026-10-14 =
+
+**BREAKING:** Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
+
+**Added**
+
+- Restricted REST API requests now return a 401 JSON error (403 for logged-in users without access) instead of the configured redirect, message or page. New `restricted_site_access_use_rest_response` and `restricted_site_access_rest_response` filters ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+
+**Changed**
+
+- **Breaking:** REST API requests to a restricted site no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters. Sites that used those to handle API requests should move to the new filters, or return false from `restricted_site_access_use_rest_response` to keep the old behavior ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+
 = 7.6.3 - 2026-09-28 =
 
 * **Fixed:** Remove filter flags from applying to the `REMOTE_ADDR` header (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-jrf7-cq25-hc3x](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jrf7-cq25-hc3x))
@@ -260,22 +272,12 @@ Please report security bugs found in the source code of the Restricted Site Acce
 * **Changed:** Bump tested up to header to indicate WordPress 7.1 support (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))
 * **Changed:** Increase minimum supported WordPress version from 6.6 to 6.9 (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))
 
-= 7.6.1 - 2025-10-29 =
-* **Fixed:** Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [Vishal Patel](https://profiles.wordpress.org/bhaveshnariya/), [fatjester](https://profiles.wordpress.org/fatjester/), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
-
-= 7.6.0 - 2025-10-27 =
-* **Added:** New setting allowing you to hide the WordPress admin bar on the frontend for specific user roles (props [@sanketio](https://github.com/sanketio), [@fabiankaegy](https://github.com/fabiankaegy), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#362](https://github.com/10up/restricted-site-access/pull/362)).
-* **Added:** New `RSA_NETWORK_MODE` constant to define default setting for network mode for multisite (props [@sanketio](https://github.com/sanketio), [@claytoncollie](https://github.com/claytoncollie), [@dkotter](https://github.com/dkotter) via [#363](https://github.com/10up/restricted-site-access/pull/363)).
-* **Added:** More details on how caching may impact the plugin (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
-* **Fixed:** Ensure IP addresses can be saved properly at the network level (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#367](https://github.com/10up/restricted-site-access/pull/367)).
-* **Security:** Prevent caching of page content when using an IP allow list (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@fabiankaegy](https://github.com/fabiankaegy), [@joemcgill](https://github.com/joemcgill), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
-* **Security:** Bump `cross-spawn` from 7.0.3 to 7.0.6, `@wordpress/scripts` from 29.0.0 to 30.16.0 and `http-proxy-middleware` from 2.0.6 to 2.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#355](https://github.com/10up/restricted-site-access/pull/355)).
-* **Security:** Bump `tar-fs` from 3.0.8 to 3.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#359](https://github.com/10up/restricted-site-access/pull/359)).
-* **Security:** Bump `brace-expansion` from 1.1.11 to 1.1.12, `on-headers` from 1.0.2 to 1.1.0 and `compression` from 1.7.4 to 1.8.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#361](https://github.com/10up/restricted-site-access/pull/361)).
-
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 7.6.4 = 
+**This is a security release, it is recommended to upgrade immediately**.  BREAKING: Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
 
 = 7.6.3 =
 **This is a security release, it is recommended to upgrade immediately**
