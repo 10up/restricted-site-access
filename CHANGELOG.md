@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file, per [the Ke
 ### Changed
 - **Breaking:** REST API requests to a restricted site no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters. Sites that used those to handle API requests should move to the new filters, or return false from `restricted_site_access_use_rest_response` to keep the old behavior ([#447](https://github.com/10up/restricted-site-access/pull/447)).
 
+### Security
+- Resolve GHSA-88hj-qmx6-c77f ([GHSA-88hj-qmx6-c77f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-88hj-qmx6-c77f)).
+
 ### Developer
 - Fix dirty lock file after running `npm i` ([#451](https://github.com/10up/restricted-site-access/pull/451)).
 - Bump `@babel/core` from 7.25.7 to 7.29.7 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
@@ -26,6 +29,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Bump `proxy-addr` from 2.0.7 to 2.0.8 ([#449](https://github.com/10up/restricted-site-access/pull/449)).
 - Bump `shell-quote` from 1.10.0 to 1.12.0 ([#450](https://github.com/10up/restricted-site-access/pull/450)).
 - Bump `source-map-js` from 1.2.1 to 1.2.2 ([#449](https://github.com/10up/restricted-site-access/pull/449)).
+- Bump `mlocati/ip-lib` from 1.18.0 to 1.22.1 ([#453](https://github.com/10up/restricted-site-access/pull/453)).
 
 ## [7.6.3] - 2026-09-28
 **This is a security release, it is recommended to upgrade immediately**

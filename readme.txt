@@ -247,13 +247,9 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 **BREAKING:** Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
 
-**Added**
-
-- Restricted REST API requests now return a 401 JSON error (403 for logged-in users without access) instead of the configured redirect, message or page. New `restricted_site_access_use_rest_response` and `restricted_site_access_rest_response` filters ([#447](https://github.com/10up/restricted-site-access/pull/447)).
-
-**Changed**
-
-- **Breaking:** REST API requests to a restricted site no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters. Sites that used those to handle API requests should move to the new filters, or return false from `restricted_site_access_use_rest_response` to keep the old behavior ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+* **Added:** Restricted REST API requests now return a 401 JSON error (403 for logged-in users without access) instead of the configured redirect, message or page. New `restricted_site_access_use_rest_response` and `restricted_site_access_rest_response` filters ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+* **Changed:** REST API requests to a restricted site no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters. Sites that used those to handle API requests should move to the new filters, or return false from `restricted_site_access_use_rest_response` to keep the old behavior ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+* **Security:** Resolve GHSA-88hj-qmx6-c77f ([GHSA-88hj-qmx6-c77f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-88hj-qmx6-c77f)).
 
 = 7.6.3 - 2026-09-28 =
 
@@ -276,8 +272,8 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Upgrade Notice ==
 
-= 7.6.4 = 
-**This is a security release, it is recommended to upgrade immediately**.  BREAKING: Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
+= 7.6.4 =
+**This is a security release, it is recommended to upgrade immediately**
 
 = 7.6.3 =
 **This is a security release, it is recommended to upgrade immediately**
