@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd6ef2a6a7c8bc05287b1e62d483e407",
+    "content-hash": "67da5bfb1d0a6fffd628f77bdbbbafae",
     "packages": [
         {
             "name": "10up/wp-compat-validation-tool",
@@ -200,16 +200,16 @@
         },
         {
             "name": "mlocati/ip-lib",
-            "version": "dev-master",
+            "version": "1.22.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mlocati/ip-lib.git",
-                "reference": "a2c0e36416a814ca164d873da77b19f6e7749aef"
+                "reference": "f096c0e9ec8bd4691ee45394cfb77c97c6bba272"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mlocati/ip-lib/zipball/a2c0e36416a814ca164d873da77b19f6e7749aef",
-                "reference": "a2c0e36416a814ca164d873da77b19f6e7749aef",
+                "url": "https://api.github.com/repos/mlocati/ip-lib/zipball/f096c0e9ec8bd4691ee45394cfb77c97c6bba272",
+                "reference": "f096c0e9ec8bd4691ee45394cfb77c97c6bba272",
                 "shasum": ""
             },
             "require": {
@@ -219,7 +219,6 @@
                 "ext-pdo_sqlite": "*",
                 "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5 || ^8.5 || ^9.5"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -256,7 +255,7 @@
             ],
             "support": {
                 "issues": "https://github.com/mlocati/ip-lib/issues",
-                "source": "https://github.com/mlocati/ip-lib/tree/master"
+                "source": "https://github.com/mlocati/ip-lib/tree/1.22.1"
             },
             "funding": [
                 {
@@ -268,7 +267,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2023-10-16T17:11:38+00:00"
+            "time": "2026-09-17T09:24:44+00:00"
         }
     ],
     "packages-dev": [
@@ -2908,7 +2907,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "mlocati/ip-lib": 20,
         "phpcompatibility/phpcompatibility-wp": 20
     },
     "prefer-stable": false,
