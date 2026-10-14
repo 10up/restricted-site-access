@@ -633,7 +633,7 @@ class Restricted_Site_Access {
 	 * Runs on `parse_request`, so the `rest_route` query var is already populated for
 	 * both pretty permalink (`/wp-json/...`) and plain (`?rest_route=...`) requests.
 	 *
-	 * @since x.x.x
+	 * @since 7.6.4
 	 *
 	 * @param \WP $wp The WordPress request object.
 	 * @return bool Whether the request is for the REST API.
@@ -648,7 +648,7 @@ class Restricted_Site_Access {
 	 * Mirrors the shape of core REST API errors so API clients can detect that
 	 * authentication is required.
 	 *
-	 * @since x.x.x
+	 * @since 7.6.4
 	 *
 	 * @param \WP $wp The WordPress request object.
 	 * @return array {
@@ -679,7 +679,7 @@ class Restricted_Site_Access {
 		 *
 		 * Use this to add headers such as `WWW-Authenticate`, or to change the status or body.
 		 *
-		 * @since x.x.x
+		 * @since 7.6.4
 		 *
 		 * @param array $response {
 		 *     The response to send.
@@ -704,7 +704,7 @@ class Restricted_Site_Access {
 	 * restriction off by returning the wrong shape. Use the
 	 * `restricted_site_access_is_restricted` filter to let requests through.
 	 *
-	 * @since x.x.x
+	 * @since 7.6.4
 	 *
 	 * @param mixed $response Filtered response.
 	 * @param array $fallback Default response.
@@ -727,7 +727,7 @@ class Restricted_Site_Access {
 	/**
 	 * Send a JSON response to a restricted REST API request and exit.
 	 *
-	 * @since x.x.x
+	 * @since 7.6.4
 	 * @codeCoverageIgnore
 	 *
 	 * @param array $response Response from get_rest_response().
@@ -819,7 +819,7 @@ class Restricted_Site_Access {
 			 * configured for regular visitors, so API clients can tell they need to
 			 * authenticate. Return false to handle REST API requests like any other request.
 			 *
-			 * @since x.x.x
+			 * @since 7.6.4
 			 *
 			 * @param bool $use_rest_response Whether to send a JSON error response. Default true.
 			 * @param \WP  $wp                The WordPress request object.
