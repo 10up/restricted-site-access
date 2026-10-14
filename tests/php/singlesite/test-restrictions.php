@@ -216,6 +216,143 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$wp_rewrite->init();
 	}
 
+	public function test_singlesite_restrict_access_show_them_a_page_requires_only_that_page() {
+		global $wp_rewrite;
+
+		update_option( 'permalink_structure', '/%postname%/' );
+		$wp_rewrite->init();
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$page_id  = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-notice',
+				'post_status' => 'publish',
+			)
+		);
+		$other_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-other-page',
+				'post_status' => 'publish',
+			)
+		);
+		$post_id  = self::factory()->post->create( array( 'post_status' => 'publish' ) );
+
+		$options             = $rsa::get_options( false );
+		$options['approach'] = 4; // Show them a page.
+		$options['page']     = $page_id;
+		update_option( 'rsa_options', $options );
+
+		// Requests for the selected page itself are let through.
+		foreach ( array( get_permalink( $page_id ), trailingslashit( get_permalink( $page_id ) ) . '2/' ) as $url ) {
+			$this->go_to( $url );
+			$this->assertEmpty( $rsa::restrict_access_check( $GLOBALS['wp'] ), $url );
+		}
+
+		$wp             = new WP();
+		$wp->query_vars = array( 'page_id' => (string) $page_id );
+		$this->assertEmpty( $rsa::restrict_access_check( $wp ), 'page_id only' );
+
+		// Adding the selected page's slug or ID to a request for something else must not unlock it.
+		foreach (
+			array(
+				add_query_arg( 'pagename', 'rsa-notice', get_permalink( $post_id ) ),
+				add_query_arg( 'page_id', $page_id, get_permalink( $post_id ) ),
+				add_query_arg( 'page_id', $page_id, get_permalink( $other_id ) ),
+				add_query_arg( 'feed', 'rss2', get_permalink( $page_id ) ),
+			) as $url
+		) {
+			$this->go_to( $url );
+			$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+			$this->assertSame( get_permalink( $page_id ), $results['url'] ?? null, $url );
+		}
+
+		// Query vars that don't come from a permalink, including REST requests when the JSON response is turned off.
+		add_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+
+		foreach (
+			array(
+				array(
+					'rest_route' => '/wp/v2/posts',
+					'pagename'   => 'rsa-notice',
+				),
+				array(
+					'rest_route' => '/wp/v2/posts',
+					'page_id'    => (string) $page_id,
+				),
+				array(
+					'sitemap'  => 'posts',
+					'pagename' => 'rsa-notice',
+				),
+				array(
+					'page_id'  => (string) $page_id,
+					'pagename' => 'rsa-other-page',
+				),
+				array(
+					'post_type' => array( 'post' ),
+					'pagename'  => 'rsa-notice',
+				),
+			) as $query_vars
+		) {
+			$wp             = new WP();
+			$wp->query_vars = $query_vars;
+			$results        = $rsa::restrict_access_check( $wp );
+
+			$this->assertSame( get_permalink( $page_id ), $results['url'] ?? null, wp_json_encode( $query_vars ) );
+		}
+
+		remove_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+	}
+
+	public function test_singlesite_restrict_access_show_them_a_child_page() {
+		global $wp_rewrite;
+
+		update_option( 'permalink_structure', '/%postname%/' );
+		$wp_rewrite->init();
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$parent_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-parent',
+				'post_status' => 'publish',
+			)
+		);
+		$page_id   = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-child-notice',
+				'post_parent' => $parent_id,
+				'post_status' => 'publish',
+			)
+		);
+
+		$options             = $rsa::get_options( false );
+		$options['approach'] = 4; // Show them a page.
+		$options['page']     = $page_id;
+		update_option( 'rsa_options', $options );
+
+		// The child page's permalink matches its full path, so it is served rather than redirecting to itself.
+		$this->go_to( get_permalink( $page_id ) );
+		$this->assertSame( 'rsa-parent/rsa-child-notice', $GLOBALS['wp']->query_vars['pagename'] );
+		$this->assertEmpty( $rsa::restrict_access_check( $GLOBALS['wp'] ) );
+
+		// The bare slug is not that page.
+		$wp             = new WP();
+		$wp->query_vars = array( 'pagename' => 'rsa-child-notice' );
+		$results        = $rsa::restrict_access_check( $wp );
+
+		$this->assertSame( get_permalink( $page_id ), $results['url'] ?? null );
+	}
+
 	public function test_add_remove_set_ips() {
 		$rsa       = Restricted_Site_Access::get_instance();
 		$my_ip     = '127.0.0.1';

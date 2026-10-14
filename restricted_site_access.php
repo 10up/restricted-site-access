@@ -845,14 +845,18 @@ class Restricted_Site_Access {
 					}
 
 					// Are we already on the selected page?
-					$on_selected_page = false;
-					if ( isset( $wp->query_vars['page_id'] ) && absint( $wp->query_vars['page_id'] ) === $page->ID ) {
-						$on_selected_page = true;
-					}
+					$query_vars = array_filter(
+						$wp->query_vars,
+						static function ( $value ) {
+							return '' !== $value && null !== $value;
+						}
+					);
+					unset( $query_vars['page'], $query_vars['cpage'] ); // Pagination of the selected page itself.
 
-					if ( ! $on_selected_page && ( isset( $wp->query_vars['pagename'] ) && $wp->query_vars['pagename'] === $page->post_name ) ) {
-						$on_selected_page = true;
-					}
+					$on_selected_page = 1 === count( $query_vars ) && (
+						( isset( $query_vars['page_id'] ) && absint( $query_vars['page_id'] ) === $page->ID ) ||
+						( isset( $query_vars['pagename'] ) && get_page_uri( $page ) === $query_vars['pagename'] )
+					);
 
 					// There's a separate unpleasant conditional to match the page on front because of the way query vars are (not) filled at this point.
 					if ( $on_selected_page
