@@ -1,11 +1,11 @@
 === Restricted Site Access ===
-Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomnom99
+Contributors:      10up, jakemgold, rcbth, thinkoomph, tlovett1, jeffpaul, nomnom99, dkotter
 Donate link:       https://10up.com/plugins/restricted-site-access-wordpress/
 Tags:              privacy, restrict, limited, permissions, security
 Requires at least: 6.9
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        7.6.3
+Stable tag:        7.6.4
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -190,6 +190,39 @@ Make sure you add it before the `/* That's all, stop editing! Happy blogging. */
 
 Please note that setting `RSA_FORCE_RESTRICTION` will override `RSA_FORBID_RESTRICTION` if both are set.
 
+= How are REST API requests handled? =
+
+When the site is restricted, blocked REST API requests (`/wp-json/...` or `?rest_route=...`) receive a JSON error with a `401` status code (`403` for logged-in users without access to the site) instead of the redirect, message or page configured under "Handle restricted visitors". This lets API clients, such as mobile apps, headless front ends and MCP clients, detect that they need to authenticate. The response looks like a core REST API error and is sent with no-cache headers:
+
+`
+{"code":"rest_not_logged_in","message":"This site is restricted. You must be logged in to access it.","data":{"status":401}}
+`
+
+Visitors with an unrestricted IP address and requests unrestricted by the `restricted_site_access_is_restricted` filter are not affected. REST API requests no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters, so code that used those to handle API requests needs to move to the filters below (or turn this behavior off).
+
+Use the `restricted_site_access_rest_response` filter to change the status (any `4xx` or `5xx` code), body or headers. A header set to `false` is removed, and an array of values sends the header once per value. A response in any other shape falls back to the default, so the filter can't lift the restriction by accident. For example, to point OAuth clients at your protected resource metadata (RFC 9728):
+
+`
+add_filter( 'restricted_site_access_rest_response', function ( $response, $wp ) {
+	$response['headers']['WWW-Authenticate'] = 'Bearer resource_metadata="' . home_url( '/.well-known/oauth-protected-resource' ) . '"';
+	return $response;
+}, 10, 2 );
+
+// The metadata itself has to be reachable without logging in.
+add_filter( 'restricted_site_access_is_restricted', function ( $is_restricted, $wp ) {
+	if ( 0 === strpos( $wp->request, '.well-known/oauth-protected-resource' ) ) {
+		return false;
+	}
+	return $is_restricted;
+}, 10, 2 );
+`
+
+To handle REST API requests like any other request, as in earlier versions, use the `restricted_site_access_use_rest_response` filter:
+
+`
+add_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+`
+
 = What does 'Discourage search engines from indexing this site' do? =
 
 When the 'Discourage search engines from indexing this site' option is enabled, it prevents search engines from indexing the site while still permitting access to regular visitors.
@@ -210,6 +243,14 @@ Please report security bugs found in the source code of the Restricted Site Acce
 
 == Changelog ==
 
+= 7.6.4 - 2026-10-14 =
+
+**BREAKING:** Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
+
+* **Added:** Restricted REST API requests now return a 401 JSON error (403 for logged-in users without access) instead of the configured redirect, message or page. New `restricted_site_access_use_rest_response` and `restricted_site_access_rest_response` filters ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+* **Changed:** REST API requests to a restricted site no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters. Sites that used those to handle API requests should move to the new filters, or return false from `restricted_site_access_use_rest_response` to keep the old behavior ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+* **Security:** Resolve GHSA-88hj-qmx6-c77f ([GHSA-88hj-qmx6-c77f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-88hj-qmx6-c77f)).
+
 = 7.6.3 - 2026-09-28 =
 
 * **Fixed:** Remove filter flags from applying to the `REMOTE_ADDR` header (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [GHSA-jrf7-cq25-hc3x](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jrf7-cq25-hc3x))
@@ -227,22 +268,12 @@ Please report security bugs found in the source code of the Restricted Site Acce
 * **Changed:** Bump tested up to header to indicate WordPress 7.1 support (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))
 * **Changed:** Increase minimum supported WordPress version from 6.6 to 6.9 (props [@phpbits](https://github.com/phpbits), [@jeffpaul](https://github.com/jeffpaul), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#428](https://github.com/10up/restricted-site-access/pull/428))
 
-= 7.6.1 - 2025-10-29 =
-* **Fixed:** Ensure field data is set properly before we use it. Resolves a fatal error with Elementor (props [@ktorktor](https://github.com/ktorktor), [Vishal Patel](https://profiles.wordpress.org/bhaveshnariya/), [fatjester](https://profiles.wordpress.org/fatjester/), [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#371](https://github.com/10up/restricted-site-access/pull/371)).
-
-= 7.6.0 - 2025-10-27 =
-* **Added:** New setting allowing you to hide the WordPress admin bar on the frontend for specific user roles (props [@sanketio](https://github.com/sanketio), [@fabiankaegy](https://github.com/fabiankaegy), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#362](https://github.com/10up/restricted-site-access/pull/362)).
-* **Added:** New `RSA_NETWORK_MODE` constant to define default setting for network mode for multisite (props [@sanketio](https://github.com/sanketio), [@claytoncollie](https://github.com/claytoncollie), [@dkotter](https://github.com/dkotter) via [#363](https://github.com/10up/restricted-site-access/pull/363)).
-* **Added:** More details on how caching may impact the plugin (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
-* **Fixed:** Ensure IP addresses can be saved properly at the network level (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#367](https://github.com/10up/restricted-site-access/pull/367)).
-* **Security:** Prevent caching of page content when using an IP allow list (props [@peterwilsoncc](https://github.com/peterwilsoncc), [@fabiankaegy](https://github.com/fabiankaegy), [@joemcgill](https://github.com/joemcgill), [@jakemgold](https://github.com/jakemgold), [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [GHSA-jfqv-gvp2-qq5f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-jfqv-gvp2-qq5f)).
-* **Security:** Bump `cross-spawn` from 7.0.3 to 7.0.6, `@wordpress/scripts` from 29.0.0 to 30.16.0 and `http-proxy-middleware` from 2.0.6 to 2.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#355](https://github.com/10up/restricted-site-access/pull/355)).
-* **Security:** Bump `tar-fs` from 3.0.8 to 3.0.9 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#359](https://github.com/10up/restricted-site-access/pull/359)).
-* **Security:** Bump `brace-expansion` from 1.1.11 to 1.1.12, `on-headers` from 1.0.2 to 1.1.0 and `compression` from 1.7.4 to 1.8.1 (props [@dependabot](https://github.com/apps/dependabot), [@iamdharmesh](https://github.com/iamdharmesh) via [#361](https://github.com/10up/restricted-site-access/pull/361)).
-
 [View historical changelog details here](https://github.com/10up/restricted-site-access/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 7.6.4 =
+**This is a security release, it is recommended to upgrade immediately**
 
 = 7.6.3 =
 **This is a security release, it is recommended to upgrade immediately**

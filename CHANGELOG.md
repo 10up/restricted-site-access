@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [7.6.4] - 2026-10-14
+**BREAKING:** Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
+
+### Added
+- Restricted REST API requests now return a 401 JSON error (403 for logged-in users without access) instead of the configured redirect, message or page. New `restricted_site_access_use_rest_response` and `restricted_site_access_rest_response` filters ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+
+### Changed
+- **Breaking:** REST API requests to a restricted site no longer go through the `restricted_site_access_message`, `restricted_site_access_redirect_url` or `restricted_site_access_head` filters. Sites that used those to handle API requests should move to the new filters, or return false from `restricted_site_access_use_rest_response` to keep the old behavior ([#447](https://github.com/10up/restricted-site-access/pull/447)).
+
+### Security
+- Resolve GHSA-88hj-qmx6-c77f ([GHSA-88hj-qmx6-c77f](https://github.com/10up/restricted-site-access/security/advisories/GHSA-88hj-qmx6-c77f)).
+
+### Developer
+- Fix dirty lock file after running `npm i` ([#451](https://github.com/10up/restricted-site-access/pull/451)).
+- Bump `@babel/core` from 7.25.7 to 7.29.7 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
+- Bump `brace-expansion` from 2.0.3 to 2.1.7 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
+- Bump `compression` from 1.8.1 to 1.8.2 ([#449](https://github.com/10up/restricted-site-access/pull/449)).
+- Bump `fast-uri` from 3.1.2 to 3.1.8 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
+- Bump `http-cache-semantics` from 4.2.0 to 4.3.0 ([#448](https://github.com/10up/restricted-site-access/pull/448)).
+- Bump `http-proxy-middleware` from 2.0.9 to 2.0.10 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
+- Bump `minimatch` from 9.0.5 to 9.0.9 and from 5.1.6 to 5.1.9 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
+- Bump `postcss-selector-parser` from 7.1.1 to 7.1.6 and from 6.1.2 to 6.1.4 ([#446](https://github.com/10up/restricted-site-access/pull/446)).
+- Bump `proxy-addr` from 2.0.7 to 2.0.8 ([#449](https://github.com/10up/restricted-site-access/pull/449)).
+- Bump `shell-quote` from 1.10.0 to 1.12.0 ([#450](https://github.com/10up/restricted-site-access/pull/450)).
+- Bump `source-map-js` from 1.2.1 to 1.2.2 ([#449](https://github.com/10up/restricted-site-access/pull/449)).
+- Bump `mlocati/ip-lib` from 1.18.0 to 1.22.1 ([#453](https://github.com/10up/restricted-site-access/pull/453)).
+
 ## [7.6.3] - 2026-09-28
 **This is a security release, it is recommended to upgrade immediately**
 
@@ -493,6 +520,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial public release
 
 [Unreleased]: https://github.com/10up/restricted-site-access/compare/trunk...develop
+[7.6.4]: https://github.com/10up/restricted-site-access/compare/7.6.3...7.6.4
 [7.6.3]: https://github.com/10up/restricted-site-access/compare/7.6.2...7.6.3
 [7.6.2]: https://github.com/10up/restricted-site-access/compare/7.6.1...7.6.2
 [7.6.1]: https://github.com/10up/restricted-site-access/compare/7.6.0...7.6.1

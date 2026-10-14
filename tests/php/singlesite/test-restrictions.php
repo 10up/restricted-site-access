@@ -216,6 +216,143 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$wp_rewrite->init();
 	}
 
+	public function test_singlesite_restrict_access_show_them_a_page_requires_only_that_page() {
+		global $wp_rewrite;
+
+		update_option( 'permalink_structure', '/%postname%/' );
+		$wp_rewrite->init();
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$page_id  = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-notice',
+				'post_status' => 'publish',
+			)
+		);
+		$other_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-other-page',
+				'post_status' => 'publish',
+			)
+		);
+		$post_id  = self::factory()->post->create( array( 'post_status' => 'publish' ) );
+
+		$options             = $rsa::get_options( false );
+		$options['approach'] = 4; // Show them a page.
+		$options['page']     = $page_id;
+		update_option( 'rsa_options', $options );
+
+		// Requests for the selected page itself are let through.
+		foreach ( array( get_permalink( $page_id ), trailingslashit( get_permalink( $page_id ) ) . '2/' ) as $url ) {
+			$this->go_to( $url );
+			$this->assertEmpty( $rsa::restrict_access_check( $GLOBALS['wp'] ), $url );
+		}
+
+		$wp             = new WP();
+		$wp->query_vars = array( 'page_id' => (string) $page_id );
+		$this->assertEmpty( $rsa::restrict_access_check( $wp ), 'page_id only' );
+
+		// Adding the selected page's slug or ID to a request for something else must not unlock it.
+		foreach (
+			array(
+				add_query_arg( 'pagename', 'rsa-notice', get_permalink( $post_id ) ),
+				add_query_arg( 'page_id', $page_id, get_permalink( $post_id ) ),
+				add_query_arg( 'page_id', $page_id, get_permalink( $other_id ) ),
+				add_query_arg( 'feed', 'rss2', get_permalink( $page_id ) ),
+			) as $url
+		) {
+			$this->go_to( $url );
+			$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+			$this->assertSame( get_permalink( $page_id ), $results['url'] ?? null, $url );
+		}
+
+		// Query vars that don't come from a permalink, including REST requests when the JSON response is turned off.
+		add_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+
+		foreach (
+			array(
+				array(
+					'rest_route' => '/wp/v2/posts',
+					'pagename'   => 'rsa-notice',
+				),
+				array(
+					'rest_route' => '/wp/v2/posts',
+					'page_id'    => (string) $page_id,
+				),
+				array(
+					'sitemap'  => 'posts',
+					'pagename' => 'rsa-notice',
+				),
+				array(
+					'page_id'  => (string) $page_id,
+					'pagename' => 'rsa-other-page',
+				),
+				array(
+					'post_type' => array( 'post' ),
+					'pagename'  => 'rsa-notice',
+				),
+			) as $query_vars
+		) {
+			$wp             = new WP();
+			$wp->query_vars = $query_vars;
+			$results        = $rsa::restrict_access_check( $wp );
+
+			$this->assertSame( get_permalink( $page_id ), $results['url'] ?? null, wp_json_encode( $query_vars ) );
+		}
+
+		remove_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+	}
+
+	public function test_singlesite_restrict_access_show_them_a_child_page() {
+		global $wp_rewrite;
+
+		update_option( 'permalink_structure', '/%postname%/' );
+		$wp_rewrite->init();
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$parent_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-parent',
+				'post_status' => 'publish',
+			)
+		);
+		$page_id   = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_name'   => 'rsa-child-notice',
+				'post_parent' => $parent_id,
+				'post_status' => 'publish',
+			)
+		);
+
+		$options             = $rsa::get_options( false );
+		$options['approach'] = 4; // Show them a page.
+		$options['page']     = $page_id;
+		update_option( 'rsa_options', $options );
+
+		// The child page's permalink matches its full path, so it is served rather than redirecting to itself.
+		$this->go_to( get_permalink( $page_id ) );
+		$this->assertSame( 'rsa-parent/rsa-child-notice', $GLOBALS['wp']->query_vars['pagename'] );
+		$this->assertEmpty( $rsa::restrict_access_check( $GLOBALS['wp'] ) );
+
+		// The bare slug is not that page.
+		$wp             = new WP();
+		$wp->query_vars = array( 'pagename' => 'rsa-child-notice' );
+		$results        = $rsa::restrict_access_check( $wp );
+
+		$this->assertSame( get_permalink( $page_id ), $results['url'] ?? null );
+	}
+
 	public function test_add_remove_set_ips() {
 		$rsa       = Restricted_Site_Access::get_instance();
 		$my_ip     = '127.0.0.1';
@@ -448,5 +585,179 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		$this->assertNotEmpty( $results );
 		$this->assertSame( 'https://fueled.com/custom-page', $results['url'] );
+	}
+
+
+	/**
+	 * Build a WP request object for a REST API route.
+	 *
+	 * @param string $route REST route, e.g. `/wp/v2/posts`.
+	 * @return WP
+	 */
+	private function get_rest_wp( $route = '/' ) {
+		$wp             = new WP();
+		$wp->query_vars = array( 'rest_route' => $route );
+
+		return $wp;
+	}
+
+	public function test_singlesite_is_rest_request() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$this->assertTrue( $rsa::is_rest_request( $this->get_rest_wp( '/wp/v2/posts' ) ) );
+
+		$this->go_to( home_url( '/' ) );
+		$this->assertFalse( $rsa::is_rest_request( $GLOBALS['wp'] ) );
+
+		$this->assertFalse( $rsa::is_rest_request( null ) );
+	}
+
+	public function test_singlesite_restrict_access_rest_request_returns_json_error() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$options                 = $rsa::get_options( false );
+		$options['redirect_url'] = 'https://fueled.com';
+		$options['message']      = 'You shall not pass!';
+
+		// Every approach should return the same JSON error for REST API requests.
+		foreach ( array( 1, 2, 3 ) as $approach ) {
+			$options['approach'] = $approach;
+			update_option( 'rsa_options', $options );
+
+			$results = $rsa::restrict_access_check( $this->get_rest_wp( '/wp/v2/posts' ) );
+
+			$this->assertArrayHasKey( 'rest_response', $results, "Approach {$approach}" );
+			$this->assertArrayNotHasKey( 'url', $results, "Approach {$approach}" );
+			$this->assertArrayNotHasKey( 'die_message', $results, "Approach {$approach}" );
+
+			$response = $results['rest_response'];
+
+			$this->assertSame( 401, $response['status'] );
+			$this->assertSame( 'rest_not_logged_in', $response['body']['code'] );
+			$this->assertSame( array( 'status' => 401 ), $response['body']['data'] );
+			$this->assertArrayHasKey( 'Cache-Control', $response['headers'] );
+		}
+	}
+
+	public function test_singlesite_restrict_access_rest_request_logged_in() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		wp_set_current_user( 1 );
+
+		$this->assertEmpty( $rsa::restrict_access_check( $this->get_rest_wp() ) );
+
+		wp_set_current_user( 0 );
+	}
+
+	public function test_singlesite_restrict_access_rest_request_legacy_filter() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		add_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+
+		$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+
+		remove_filter( 'restricted_site_access_use_rest_response', '__return_false' );
+
+		// Falls back to the configured approach, which defaults to the login screen.
+		$this->assertArrayNotHasKey( 'rest_response', $results );
+		$this->assertSame( 302, $results['code'] );
+	}
+
+	public function test_singlesite_restrict_access_rest_response_filter() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$add_header = function ( $response ) {
+			$response['headers']['WWW-Authenticate'] = 'Bearer resource_metadata="https://example.org/.well-known/oauth-protected-resource"';
+			return $response;
+		};
+
+		add_filter( 'restricted_site_access_rest_response', $add_header );
+
+		$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+
+		remove_filter( 'restricted_site_access_rest_response', $add_header );
+
+		$this->assertSame(
+			'Bearer resource_metadata="https://example.org/.well-known/oauth-protected-resource"',
+			$results['rest_response']['headers']['WWW-Authenticate']
+		);
+	}
+
+	public function test_singlesite_rest_response_message_depends_on_status() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$logged_out = $rsa::get_rest_response( $this->get_rest_wp() );
+		$this->assertSame( 401, $logged_out['status'] );
+		$this->assertStringContainsString( 'must be logged in', $logged_out['body']['message'] );
+
+		// A logged-in user who is still restricted (e.g. not a member of a network site) gets a 403.
+		wp_set_current_user( 1 );
+		$logged_in = $rsa::get_rest_response( $this->get_rest_wp() );
+		wp_set_current_user( 0 );
+
+		$this->assertSame( 403, $logged_in['status'] );
+		$this->assertSame( 'rest_forbidden', $logged_in['body']['code'] );
+		$this->assertStringNotContainsString( 'logged in', $logged_in['body']['message'] );
+	}
+
+	public function test_singlesite_malformed_rest_response_filter_falls_back_to_default() {
+		$rsa     = Restricted_Site_Access::get_instance();
+		$default = $rsa::get_rest_response( $this->get_rest_wp() );
+
+		update_option( 'blog_public', 2 );
+
+		$cases = array(
+			'falsy response'     => '__return_false',
+			'string response'    => static function () {
+				return 'nope';
+			},
+			'success status'     => static function ( $response ) {
+				$response['status'] = 200;
+				return $response;
+			},
+			'non-array body'     => static function ( $response ) {
+				$response['body'] = 'nope';
+				return $response;
+			},
+			'non-array headers'  => static function ( $response ) {
+				$response['headers'] = 'nope';
+				return $response;
+			},
+		);
+
+		foreach ( $cases as $label => $filter ) {
+			add_filter( 'restricted_site_access_rest_response', $filter );
+			$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+			remove_filter( 'restricted_site_access_rest_response', $filter );
+
+			$this->assertArrayHasKey( 'rest_response', $results, $label );
+
+			$response = $results['rest_response'];
+
+			$this->assertSame( 401, $response['status'], $label );
+			$this->assertIsArray( $response['body'], $label );
+			$this->assertIsArray( $response['headers'], $label );
+		}
+
+		// A valid change is kept, malformed parts are replaced.
+		$partial = static function ( $response ) {
+			$response['status'] = 403;
+			$response['body']   = 'nope';
+			return $response;
+		};
+		add_filter( 'restricted_site_access_rest_response', $partial );
+		$results = $rsa::restrict_access_check( $this->get_rest_wp() );
+		remove_filter( 'restricted_site_access_rest_response', $partial );
+
+		$this->assertSame( 403, $results['rest_response']['status'] );
+		$this->assertSame( $default['body'], $results['rest_response']['body'] );
 	}
 }
