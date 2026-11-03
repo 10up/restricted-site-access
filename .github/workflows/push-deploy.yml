@@ -5,9 +5,8 @@ permissions:
   packages: read
 
 on:
-  push:
-    tags:
-    - "*"
+  release:
+    types: [released]
 
 jobs:
   tag:
