@@ -376,7 +376,7 @@ class Restricted_Site_Access {
 	 *
 	 * @return string
 	 */
-	private static function get_config_network_mode() {
+	public static function get_config_network_mode() {
 		/*
 		 * Get the network mode from the RSA_NETWORK_MODE constant.
 		 * Only allow 'enforce' or 'default'.
@@ -391,7 +391,7 @@ class Restricted_Site_Access {
 	/**
 	 * Get current plugin network mode
 	 */
-	private static function get_network_mode() {
+	public static function get_network_mode() {
 		/*
 		 * Get the network mode from the RSA_NETWORK_MODE constant.
 		 * Only allow 'enforce' or 'default'.
@@ -2605,6 +2605,10 @@ if ( ! defined( 'RSA_IS_NETWORK' ) ) {
 }
 
 Restricted_Site_Access::get_instance();
+
+// Register abilities with the WordPress Abilities API.
+require_once __DIR__ . '/includes/class-restricted-site-access-abilities.php';
+Restricted_Site_Access_Abilities::add_hooks();
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require_once __DIR__ . '/wp-cli.php';

@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file, per [the Keep a Changelog standard](http://keepachangelog.com/).  Moving forward, this project will (more strictly) adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - TBD
+### Added
+- Abilities API support: `get-settings`, `update-settings`, `list-ips`, `add-ips`, `update-ip`, `remove-ips` and, on network-activated multisite, `set-network-mode` abilities in a new `restricted-site-access` category.
 
 ## [7.6.4] - 2026-10-14
 **BREAKING:** Restricted sites now return a 401 JSON error for anonymous REST API requests instead of redirects/HTML. API clients, MCP clients, mobile apps, and headless front ends may need to authenticate or update error handling.
