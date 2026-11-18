@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers the Restricted Site Access abilities.
  *
- * @since x.x.x
+ * @since 7.7.0
  */
 class Restricted_Site_Access_Abilities {
 
@@ -75,7 +75,7 @@ class Restricted_Site_Access_Abilities {
 		/**
 		 * Filter whether Restricted Site Access registers its abilities.
 		 *
-		 * @since x.x.x
+		 * @since 7.7.0
 		 *
 		 * @param bool $enabled Whether to register the abilities. Default true.
 		 */
