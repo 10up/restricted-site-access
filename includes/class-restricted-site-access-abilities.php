@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers the Restricted Site Access abilities.
  *
- * @since 7.7.0
+ * @since x.x.x
  */
 class Restricted_Site_Access_Abilities {
 
@@ -75,7 +75,7 @@ class Restricted_Site_Access_Abilities {
 		/**
 		 * Filter whether Restricted Site Access registers its abilities.
 		 *
-		 * @since 7.7.0
+		 * @since x.x.x
 		 *
 		 * @param bool $enabled Whether to register the abilities. Default true.
 		 */
@@ -200,9 +200,6 @@ class Restricted_Site_Access_Abilities {
 				'output_schema'       => self::get_settings_schema(),
 				'execute_callback'    => array( __CLASS__, 'execute_update_settings' ),
 				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				// The REST API sends abilities marked both destructive and idempotent
-				// through DELETE. This ability overwrites settings, so it stays on POST
-				// by leaving `idempotent` unset.
 				'meta'                => self::get_meta(
 					array(
 						'readonly'    => false,
@@ -329,8 +326,6 @@ class Restricted_Site_Access_Abilities {
 				),
 				'execute_callback'    => array( __CLASS__, 'execute_update_ip' ),
 				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				// Replacing an address removes access for the old one. See the note on
-				// update-settings about leaving `idempotent` unset.
 				'meta'                => self::get_meta(
 					array(
 						'readonly'    => false,
