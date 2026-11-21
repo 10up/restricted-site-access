@@ -47,82 +47,102 @@ class Restricted_Site_Access_Test_Multisite_Abilities extends WP_UnitTestCase {
 	}
 
 	public function test_set_network_mode() {
-		$result = $this->run_ability( 'set-network-mode', array( 'mode' => 'enforce' ) );
+		$result = $this->run_ability(
+			'settings-update',
+			array(
+				'network'      => true,
+				'network_mode' => 'enforce',
+			)
+		);
 
+		$this->assertSame( 'network', $result['scope'] );
 		$this->assertSame( 'enforce', $result['network_mode'] );
-		$this->assertTrue( $result['changed'] );
 		$this->assertSame( 'enforce', get_site_option( 'rsa_mode' ) );
 
-		$result = $this->run_ability( 'set-network-mode', array( 'mode' => 'enforce' ) );
-		$this->assertFalse( $result['changed'] );
+		// Changing only the network mode does not create network options.
+		$this->assertFalse( get_site_option( 'rsa_options' ) );
+	}
+
+	public function test_network_mode_needs_network_scope() {
+		$result = $this->run_ability( 'settings-update', array( 'network_mode' => 'enforce' ) );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'rsa_network_scope_required', $result->get_error_code() );
+		$this->assertSame( 'default', get_site_option( 'rsa_mode' ) );
 	}
 
 	public function test_site_admin_cannot_change_network() {
 		wp_set_current_user( self::$site_admin_id );
 
-		$result = $this->run_ability( 'set-network-mode', array( 'mode' => 'enforce' ) );
+		$result = $this->run_ability( 'settings-update', array( 'network_mode' => 'enforce' ) );
 		$this->assertWPError( $result );
 		$this->assertSame( 'ability_invalid_permissions', $result->get_error_code() );
 
 		$result = $this->run_ability(
-			'update-settings',
+			'settings-update',
 			array(
 				'network' => true,
 				'mode'    => 'message',
 			)
 		);
+		$this->assertWPError( $result );
+		$this->assertSame( 'ability_invalid_permissions', $result->get_error_code() );
+
+		$result = $this->run_ability( 'settings-query', array( 'network' => true ) );
 		$this->assertWPError( $result );
 		$this->assertSame( 'ability_invalid_permissions', $result->get_error_code() );
 	}
 
 	public function test_network_settings_are_separate_from_site_settings() {
 		$result = $this->run_ability(
-			'update-settings',
+			'settings-update',
 			array(
 				'network' => true,
 				'mode'    => 'message',
 				'message' => 'Network message',
+				'ips'     => array( array( 'ip' => '10.0.0.1' ) ),
 			)
 		);
 
 		$this->assertSame( 'network', $result['scope'] );
 		$this->assertSame( 'message', $result['mode'] );
-		$this->assertSame( 'Network message', get_site_option( 'rsa_options' )['message'] );
+		$this->assertSame( array( '10.0.0.1' ), array_column( $result['ips'], 'ip' ) );
+
+		$network_options = get_site_option( 'rsa_options' );
+		$this->assertSame( 'Network message', $network_options['message'] );
+		$this->assertSame( array( '10.0.0.1' ), $network_options['allowed'] );
 		$this->assertFalse( get_option( 'rsa_options' ) );
 
-		$this->run_ability(
-			'add-ips',
-			array(
-				'network' => true,
-				'ips'     => array( array( 'ip' => '10.0.0.1' ) ),
-			)
-		);
-		$this->assertSame( array( '10.0.0.1' ), get_site_option( 'rsa_options' )['allowed'] );
+		$site = $this->run_ability( 'settings-query' );
+		$this->assertSame( 'site', $site['scope'] );
+		$this->assertSame( array(), $site['ips'] );
 	}
 
 	public function test_enforced_network_blocks_site_changes() {
 		update_site_option( 'rsa_mode', 'enforce' );
 
-		$settings = $this->run_ability( 'get-settings' );
+		$settings = $this->run_ability( 'settings-query' );
 		$this->assertTrue( $settings['overridden_by_network'] );
 		$this->assertSame( 'enforce', $settings['network_mode'] );
 
-		$result = $this->run_ability( 'update-settings', array( 'mode' => 'message' ) );
+		$result = $this->run_ability( 'settings-update', array( 'mode' => 'message' ) );
 		$this->assertWPError( $result );
 		$this->assertSame( 'rsa_network_enforced', $result->get_error_code() );
 
-		$result = $this->run_ability( 'add-ips', array( 'ips' => array( array( 'ip' => '10.0.0.1' ) ) ) );
+		$result = $this->run_ability( 'settings-update', array( 'ips' => array( array( 'ip' => '10.0.0.1' ) ) ) );
 		$this->assertWPError( $result );
 		$this->assertSame( 'rsa_network_enforced', $result->get_error_code() );
 
-		// The network settings can still change.
+		// The network settings can still change, and the network mode can be reset.
 		$result = $this->run_ability(
-			'update-settings',
+			'settings-update',
 			array(
-				'network' => true,
-				'mode'    => 'login',
+				'network'      => true,
+				'mode'         => 'login',
+				'network_mode' => 'default',
 			)
 		);
 		$this->assertSame( 'login', $result['mode'] );
+		$this->assertSame( 'default', $result['network_mode'] );
 	}
 }

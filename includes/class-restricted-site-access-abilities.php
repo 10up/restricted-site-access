@@ -55,6 +55,29 @@ class Restricted_Site_Access_Abilities {
 	const STATUS_CODES = array( 301, 302, 307 );
 
 	/**
+	 * Network modes.
+	 *
+	 * @var array
+	 */
+	const NETWORK_MODES = array( 'default', 'enforce' );
+
+	/**
+	 * Input fields that are stored in the `rsa_options` option.
+	 *
+	 * @var array
+	 */
+	const OPTION_FIELDS = array(
+		'mode',
+		'message',
+		'redirect_url',
+		'redirect_same_path',
+		'redirect_status_code',
+		'page_id',
+		'hide_admin_bar_roles',
+		'ips',
+	);
+
+	/**
 	 * Register hooks when the Abilities API is available.
 	 */
 	public static function add_hooks() {
@@ -94,7 +117,7 @@ class Restricted_Site_Access_Abilities {
 			self::CATEGORY,
 			array(
 				'label'       => __( 'Restricted Site Access', 'restricted-site-access' ),
-				'description' => __( 'Abilities that read and change who can access the site: the restriction settings and the list of allowed IP addresses.', 'restricted-site-access' ),
+				'description' => __( 'Abilities that read and change who can access the site: the restriction settings, the allowed IP addresses and the network mode.', 'restricted-site-access' ),
 			)
 		);
 	}
@@ -113,25 +136,11 @@ class Restricted_Site_Access_Abilities {
 			'description' => __( 'Multisite only. True to act on the network-wide settings instead of the current site. Requires the plugin to be network activated.', 'restricted-site-access' ),
 		);
 
-		$ip_property = array(
-			'type'        => 'string',
-			'minLength'   => 1,
-			'description' => __( 'IPv4 or IPv6 address, or a range in CIDR notation, such as 192.168.0.0/24.', 'restricted-site-access' ),
-		);
-
-		$read_meta = self::get_meta(
-			array(
-				'readonly'    => true,
-				'destructive' => false,
-				'idempotent'  => true,
-			)
-		);
-
 		wp_register_ability(
-			self::PREFIX . 'get-settings',
+			self::PREFIX . 'settings-query',
 			array(
-				'label'               => __( 'Get site restriction settings', 'restricted-site-access' ),
-				'description'         => __( 'Returns whether the site is restricted, how restricted visitors are handled (login, redirect, message or page), and any network or code configuration that overrides these settings.', 'restricted-site-access' ),
+				'label'               => __( 'Query site restriction settings', 'restricted-site-access' ),
+				'description'         => __( 'Returns all Restricted Site Access settings: whether the site is restricted, how restricted visitors are handled (login, redirect, message or page), the allowed IP addresses, the network mode, and any network or code configuration that overrides these settings.', 'restricted-site-access' ),
 				'category'            => self::CATEGORY,
 				'input_schema'        => array(
 					'type'                 => 'object',
@@ -142,17 +151,23 @@ class Restricted_Site_Access_Abilities {
 					'additionalProperties' => false,
 				),
 				'output_schema'       => self::get_settings_schema(),
-				'execute_callback'    => array( __CLASS__, 'execute_get_settings' ),
+				'execute_callback'    => array( __CLASS__, 'execute_settings_query' ),
 				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				'meta'                => $read_meta,
+				'meta'                => self::get_meta(
+					array(
+						'readonly'    => true,
+						'destructive' => false,
+						'idempotent'  => true,
+					)
+				),
 			)
 		);
 
 		wp_register_ability(
-			self::PREFIX . 'update-settings',
+			self::PREFIX . 'settings-update',
 			array(
 				'label'               => __( 'Update site restriction settings', 'restricted-site-access' ),
-				'description'         => __( 'Turns site restriction on or off and changes how restricted visitors are handled. Only the fields you send change. Logged-in users and allowed IP addresses always keep access.', 'restricted-site-access' ),
+				'description'         => __( 'Changes Restricted Site Access settings: turns restriction on or off, changes how restricted visitors are handled, replaces the allowed IP addresses, and sets the network mode. Only the fields you send change. Logged-in users and allowed IP addresses always keep access.', 'restricted-site-access' ),
 				'category'            => self::CATEGORY,
 				'input_schema'        => array(
 					'type'                 => 'object',
@@ -193,12 +208,22 @@ class Restricted_Site_Access_Abilities {
 							'items'       => array( 'type' => 'string' ),
 							'description' => __( 'Role slugs that do not see the admin bar on the front end. Replaces the current list.', 'restricted-site-access' ),
 						),
+						'ips'                  => array(
+							'type'        => 'array',
+							'items'       => self::get_ip_schema(),
+							'description' => __( 'Allowed IP addresses and ranges. Replaces the saved list, so send the full list: to add an address, send the current ips plus the new one. An empty list removes every saved address. Addresses from the RSA_IP_WHITELIST constant are not part of this list.', 'restricted-site-access' ),
+						),
+						'network_mode'         => array(
+							'type'        => 'string',
+							'enum'        => self::NETWORK_MODES,
+							'description' => __( 'Multisite only, and only with "network": true. "enforce" applies the network settings to every site and overrides their own settings. "default" lets each site use its own settings, and new sites start from the network settings.', 'restricted-site-access' ),
+						),
 						'network'              => $network_property,
 					),
 					'additionalProperties' => false,
 				),
 				'output_schema'       => self::get_settings_schema(),
-				'execute_callback'    => array( __CLASS__, 'execute_update_settings' ),
+				'execute_callback'    => array( __CLASS__, 'execute_settings_update' ),
 				'permission_callback' => array( __CLASS__, 'can_manage' ),
 				'meta'                => self::get_meta(
 					array(
@@ -208,217 +233,6 @@ class Restricted_Site_Access_Abilities {
 				),
 			)
 		);
-
-		wp_register_ability(
-			self::PREFIX . 'list-ips',
-			array(
-				'label'               => __( 'List allowed IP addresses', 'restricted-site-access' ),
-				'description'         => __( 'Returns the IP addresses and ranges that can access the site while it is restricted. Addresses with source "config" come from the RSA_IP_WHITELIST constant and cannot be changed through abilities.', 'restricted-site-access' ),
-				'category'            => self::CATEGORY,
-				'input_schema'        => array(
-					'type'                 => 'object',
-					'default'              => array(),
-					'properties'           => array(
-						'network' => $network_property,
-					),
-					'additionalProperties' => false,
-				),
-				'output_schema'       => array(
-					'type'       => 'object',
-					'properties' => array(
-						'ips' => self::get_ip_list_schema(),
-					),
-					'required'   => array( 'ips' ),
-				),
-				'execute_callback'    => array( __CLASS__, 'execute_list_ips' ),
-				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				'meta'                => $read_meta,
-			)
-		);
-
-		wp_register_ability(
-			self::PREFIX . 'add-ips',
-			array(
-				'label'               => __( 'Add allowed IP addresses', 'restricted-site-access' ),
-				'description'         => __( 'Adds IP addresses or ranges to the allowed list, each with an optional label. When an address is already listed and a label is sent, the label is updated. Fails without changes when any address is invalid.', 'restricted-site-access' ),
-				'category'            => self::CATEGORY,
-				'input_schema'        => array(
-					'type'                 => 'object',
-					'properties'           => array(
-						'ips'     => array(
-							'type'     => 'array',
-							'minItems' => 1,
-							'maxItems' => 100,
-							'items'    => array(
-								'type'                 => 'object',
-								'properties'           => array(
-									'ip'    => $ip_property,
-									'label' => array(
-										'type'        => 'string',
-										'description' => __( 'Optional note that describes the address.', 'restricted-site-access' ),
-									),
-								),
-								'required'             => array( 'ip' ),
-								'additionalProperties' => false,
-							),
-						),
-						'network' => $network_property,
-					),
-					'required'             => array( 'ips' ),
-					'additionalProperties' => false,
-				),
-				'output_schema'       => array(
-					'type'       => 'object',
-					'properties' => array(
-						'added'     => self::get_string_list_schema( __( 'Addresses added to the list.', 'restricted-site-access' ) ),
-						'updated'   => self::get_string_list_schema( __( 'Addresses already listed whose label changed.', 'restricted-site-access' ) ),
-						'unchanged' => self::get_string_list_schema( __( 'Addresses already listed with the same label.', 'restricted-site-access' ) ),
-						'ips'       => self::get_ip_list_schema(),
-					),
-					'required'   => array( 'added', 'updated', 'unchanged', 'ips' ),
-				),
-				'execute_callback'    => array( __CLASS__, 'execute_add_ips' ),
-				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				'meta'                => self::get_meta(
-					array(
-						'readonly'    => false,
-						'destructive' => false,
-						'idempotent'  => true,
-					)
-				),
-			)
-		);
-
-		wp_register_ability(
-			self::PREFIX . 'update-ip',
-			array(
-				'label'               => __( 'Update an allowed IP address', 'restricted-site-access' ),
-				'description'         => __( 'Replaces an allowed IP address with a new address, changes its label, or both. Send at least one of new_ip or label.', 'restricted-site-access' ),
-				'category'            => self::CATEGORY,
-				'input_schema'        => array(
-					'type'                 => 'object',
-					'properties'           => array(
-						'ip'      => $ip_property,
-						'new_ip'  => $ip_property,
-						'label'   => array(
-							'type'        => 'string',
-							'description' => __( 'New label. Send an empty string to remove the label.', 'restricted-site-access' ),
-						),
-						'network' => $network_property,
-					),
-					'required'             => array( 'ip' ),
-					'additionalProperties' => false,
-				),
-				'output_schema'       => array(
-					'type'       => 'object',
-					'properties' => array(
-						'ip'    => array(
-							'type'        => 'string',
-							'description' => __( 'The address after the update.', 'restricted-site-access' ),
-						),
-						'label' => array(
-							'type'        => 'string',
-							'description' => __( 'The label after the update.', 'restricted-site-access' ),
-						),
-						'ips'   => self::get_ip_list_schema(),
-					),
-					'required'   => array( 'ip', 'label', 'ips' ),
-				),
-				'execute_callback'    => array( __CLASS__, 'execute_update_ip' ),
-				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				'meta'                => self::get_meta(
-					array(
-						'readonly'    => false,
-						'destructive' => true,
-					)
-				),
-			)
-		);
-
-		wp_register_ability(
-			self::PREFIX . 'remove-ips',
-			array(
-				'label'               => __( 'Remove allowed IP addresses', 'restricted-site-access' ),
-				'description'         => __( 'Removes IP addresses or ranges from the allowed list. Addresses that are not listed are reported in not_found.', 'restricted-site-access' ),
-				'category'            => self::CATEGORY,
-				'input_schema'        => array(
-					'type'                 => 'object',
-					'properties'           => array(
-						'ips'     => array(
-							'type'     => 'array',
-							'minItems' => 1,
-							'maxItems' => 100,
-							'items'    => $ip_property,
-						),
-						'network' => $network_property,
-					),
-					'required'             => array( 'ips' ),
-					'additionalProperties' => false,
-				),
-				'output_schema'       => array(
-					'type'       => 'object',
-					'properties' => array(
-						'removed'   => self::get_string_list_schema( __( 'Addresses removed from the list.', 'restricted-site-access' ) ),
-						'not_found' => self::get_string_list_schema( __( 'Addresses that were not in the editable list. This includes addresses from the RSA_IP_WHITELIST constant.', 'restricted-site-access' ) ),
-						'ips'       => self::get_ip_list_schema(),
-					),
-					'required'   => array( 'removed', 'not_found', 'ips' ),
-				),
-				'execute_callback'    => array( __CLASS__, 'execute_remove_ips' ),
-				'permission_callback' => array( __CLASS__, 'can_manage' ),
-				'meta'                => self::get_meta(
-					array(
-						'readonly'    => false,
-						'destructive' => true,
-						'idempotent'  => true,
-					)
-				),
-			)
-		);
-
-		if ( RSA_IS_NETWORK ) {
-			wp_register_ability(
-				self::PREFIX . 'set-network-mode',
-				array(
-					'label'               => __( 'Set network mode', 'restricted-site-access' ),
-					'description'         => __( 'Multisite only. "enforce" applies the network settings to every site and overrides their own settings. "default" lets each site use its own settings, and new sites start from the network settings.', 'restricted-site-access' ),
-					'category'            => self::CATEGORY,
-					'input_schema'        => array(
-						'type'                 => 'object',
-						'properties'           => array(
-							'mode' => array(
-								'type' => 'string',
-								'enum' => array( 'default', 'enforce' ),
-							),
-						),
-						'required'             => array( 'mode' ),
-						'additionalProperties' => false,
-					),
-					'output_schema'       => array(
-						'type'       => 'object',
-						'properties' => array(
-							'network_mode' => array(
-								'type' => 'string',
-								'enum' => array( 'default', 'enforce' ),
-							),
-							'changed'      => array(
-								'type'        => 'boolean',
-								'description' => __( 'False when the network already used this mode.', 'restricted-site-access' ),
-							),
-						),
-						'required'   => array( 'network_mode', 'changed' ),
-					),
-					'execute_callback'    => array( __CLASS__, 'execute_set_network_mode' ),
-					'permission_callback' => array( __CLASS__, 'can_manage_network' ),
-					'meta'                => self::get_meta(
-						array(
-							'readonly'    => false,
-							'destructive' => true,
-						)
-					),
-				)
-			);
-		}
 	}
 
 	/**
@@ -473,10 +287,20 @@ class Restricted_Site_Access_Abilities {
 					'type' => 'integer',
 				),
 				'hide_admin_bar_roles'  => self::get_string_list_schema( __( 'Role slugs that do not see the admin bar on the front end.', 'restricted-site-access' ) ),
+				'ips'                   => array(
+					'type'        => 'array',
+					'items'       => self::get_ip_schema(),
+					'description' => __( 'Allowed IP addresses and ranges saved in the settings.', 'restricted-site-access' ),
+				),
+				'config_ips'            => self::get_string_list_schema( __( 'Allowed IP addresses from the RSA_IP_WHITELIST constant. They are set in code and cannot be changed through abilities.', 'restricted-site-access' ) ),
 				'network_mode'          => array(
 					'type'        => array( 'string', 'null' ),
 					'enum'        => array( 'default', 'enforce', null ),
 					'description' => __( 'Network mode when the plugin is network activated, otherwise null.', 'restricted-site-access' ),
+				),
+				'network_mode_locked'   => array(
+					'type'        => 'boolean',
+					'description' => __( 'True when the RSA_NETWORK_MODE constant fixes the network mode in code, so it cannot be changed.', 'restricted-site-access' ),
 				),
 				'overridden_by_network' => array(
 					'type'        => 'boolean',
@@ -498,7 +322,10 @@ class Restricted_Site_Access_Abilities {
 				'redirect_status_code',
 				'page_id',
 				'hide_admin_bar_roles',
+				'ips',
+				'config_ips',
 				'network_mode',
+				'network_mode_locked',
 				'overridden_by_network',
 				'restriction_constant',
 			),
@@ -506,31 +333,29 @@ class Restricted_Site_Access_Abilities {
 	}
 
 	/**
-	 * JSON Schema of an allowed IP list.
+	 * JSON Schema of one allowed IP address.
+	 *
+	 * The same shape is used for input and output, so a client can send back
+	 * the `ips` list it read.
 	 *
 	 * @return array
 	 */
-	private static function get_ip_list_schema() {
+	private static function get_ip_schema() {
 		return array(
-			'type'        => 'array',
-			'description' => __( 'All allowed IP addresses after the call.', 'restricted-site-access' ),
-			'items'       => array(
-				'type'       => 'object',
-				'properties' => array(
-					'ip'     => array(
-						'type' => 'string',
-					),
-					'label'  => array(
-						'type' => 'string',
-					),
-					'source' => array(
-						'type'        => 'string',
-						'enum'        => array( 'settings', 'config' ),
-						'description' => __( '"settings" for addresses saved in the plugin settings. "config" for addresses from the RSA_IP_WHITELIST constant.', 'restricted-site-access' ),
-					),
+			'type'                 => 'object',
+			'properties'           => array(
+				'ip'    => array(
+					'type'        => 'string',
+					'minLength'   => 1,
+					'description' => __( 'IPv4 or IPv6 address, or a range in CIDR notation, such as 192.168.0.0/24.', 'restricted-site-access' ),
 				),
-				'required'   => array( 'ip', 'label', 'source' ),
+				'label' => array(
+					'type'        => 'string',
+					'description' => __( 'Optional note that describes the address.', 'restricted-site-access' ),
+				),
 			),
+			'required'             => array( 'ip' ),
+			'additionalProperties' => false,
 		);
 	}
 
@@ -555,7 +380,7 @@ class Restricted_Site_Access_Abilities {
 	 * @return bool
 	 */
 	private static function is_network_input( $input ) {
-		return is_array( $input ) && ! empty( $input['network'] );
+		return is_array( $input ) && isset( $input['network'] ) && rest_sanitize_boolean( $input['network'] );
 	}
 
 	/**
@@ -590,7 +415,7 @@ class Restricted_Site_Access_Abilities {
 	 * Permission check for site or network settings.
 	 *
 	 * Site settings need `manage_options`, like the Reading settings screen.
-	 * Network settings need `manage_network_options`.
+	 * Network settings and the network mode need `manage_network_options`.
 	 *
 	 * When network settings are requested but the plugin is not network
 	 * activated, the execute callback returns a descriptive error instead.
@@ -599,7 +424,9 @@ class Restricted_Site_Access_Abilities {
 	 * @return bool
 	 */
 	public static function can_manage( $input = null ) {
-		if ( RSA_IS_NETWORK && self::is_network_input( $input ) ) {
+		$network_mode = is_array( $input ) && isset( $input['network_mode'] );
+
+		if ( RSA_IS_NETWORK && ( $network_mode || self::is_network_input( $input ) ) ) {
 			return current_user_can( 'manage_network_options' );
 		}
 
@@ -615,36 +442,27 @@ class Restricted_Site_Access_Abilities {
 	 */
 	private static function get_scope_error( $network, $write ) {
 		if ( $network && ! RSA_IS_NETWORK ) {
-			return new WP_Error(
-				'rsa_network_unavailable',
-				__( 'Network settings are only available when the plugin is network activated.', 'restricted-site-access' ),
-				array( 'status' => 400 )
-			);
+			return self::network_unavailable_error();
 		}
 
 		if ( $write && ! $network && self::is_site_overridden() ) {
-			return self::site_overridden_error();
+			return new WP_Error(
+				'rsa_network_enforced',
+				__( 'The network enforces its settings on every site, so this site\'s settings cannot be changed. Send "network": true to change the network settings.', 'restricted-site-access' ),
+				array( 'status' => 409 )
+			);
 		}
 
 		return null;
 	}
 
 	/**
-	 * Permission check for network-only abilities.
-	 *
-	 * @return bool
-	 */
-	public static function can_manage_network() {
-		return RSA_IS_NETWORK && current_user_can( 'manage_network_options' );
-	}
-
-	/**
-	 * Execute: get the settings.
+	 * Execute: query the settings.
 	 *
 	 * @param mixed $input Ability input.
 	 * @return array|WP_Error
 	 */
-	public static function execute_get_settings( $input = null ) {
+	public static function execute_settings_query( $input = null ) {
 		$network     = self::is_network_input( $input );
 		$scope_error = self::get_scope_error( $network, false );
 
@@ -654,10 +472,13 @@ class Restricted_Site_Access_Abilities {
 	/**
 	 * Execute: update the settings.
 	 *
+	 * Every field is checked before anything is saved, so a call either makes
+	 * all of its changes or none of them.
+	 *
 	 * @param mixed $input Ability input.
 	 * @return array|WP_Error
 	 */
-	public static function execute_update_settings( $input = null ) {
+	public static function execute_settings_update( $input = null ) {
 		$input   = is_array( $input ) ? $input : array();
 		$network = self::is_network_input( $input );
 		$fields  = array_diff_key( $input, array( 'network' => true ) );
@@ -668,6 +489,14 @@ class Restricted_Site_Access_Abilities {
 				__( 'Send at least one setting to change.', 'restricted-site-access' ),
 				array( 'status' => 400 )
 			);
+		}
+
+		// The network mode is checked first, so a missing network flag is not reported as a site error.
+		if ( isset( $input['network_mode'] ) ) {
+			$network_mode_error = self::get_network_mode_error( (string) $input['network_mode'], $network );
+			if ( $network_mode_error ) {
+				return $network_mode_error;
+			}
 		}
 
 		$scope_error = self::get_scope_error( $network, true );
@@ -706,7 +535,7 @@ class Restricted_Site_Access_Abilities {
 		}
 
 		if ( isset( $input['redirect_same_path'] ) ) {
-			$options['redirect_path'] = $input['redirect_same_path'] ? 1 : 0;
+			$options['redirect_path'] = rest_sanitize_boolean( $input['redirect_same_path'] ) ? 1 : 0;
 		}
 
 		if ( isset( $input['redirect_status_code'] ) ) {
@@ -734,6 +563,15 @@ class Restricted_Site_Access_Abilities {
 			$options['hide_admin_bar_roles'] = $roles;
 		}
 
+		if ( isset( $input['ips'] ) ) {
+			$entries = self::parse_ips( (array) $input['ips'] );
+			if ( is_wp_error( $entries ) ) {
+				return $entries;
+			}
+			$options['allowed'] = array_column( $entries, 'ip' );
+			$options['comment'] = array_column( $entries, 'label' );
+		}
+
 		// The chosen mode must have what it needs, whether it was sent now or saved earlier.
 		$mode = isset( self::MODES[ (int) $options['approach'] ] ) ? self::MODES[ (int) $options['approach'] ] : 'login';
 
@@ -756,211 +594,41 @@ class Restricted_Site_Access_Abilities {
 			}
 		}
 
-		self::save_options( $options, $network );
+		if ( array_intersect_key( $input, array_flip( self::OPTION_FIELDS ) ) ) {
+			self::save_options( $options, $network );
+		}
 
 		if ( isset( $input['restricted'] ) ) {
-			self::save_restricted( (bool) $input['restricted'], $network );
+			self::save_restricted( rest_sanitize_boolean( $input['restricted'] ), $network );
+		}
+
+		if ( isset( $input['network_mode'] ) ) {
+			update_site_option( 'rsa_mode', (string) $input['network_mode'] );
 		}
 
 		return self::prepare_settings( $network );
 	}
 
 	/**
-	 * Execute: list the allowed IP addresses.
+	 * Check that the network mode can be changed.
 	 *
-	 * @param mixed $input Ability input.
-	 * @return array|WP_Error
+	 * @param string $mode    Requested network mode.
+	 * @param bool   $network Whether the network-wide settings were requested.
+	 * @return WP_Error|null Error, or null when the network mode can be changed.
 	 */
-	public static function execute_list_ips( $input = null ) {
-		$network     = self::is_network_input( $input );
-		$scope_error = self::get_scope_error( $network, false );
-
-		return $scope_error ? $scope_error : array( 'ips' => self::get_ip_list( $network ) );
-	}
-
-	/**
-	 * Execute: add allowed IP addresses.
-	 *
-	 * @param mixed $input Ability input.
-	 * @return array|WP_Error
-	 */
-	public static function execute_add_ips( $input = null ) {
-		$input   = is_array( $input ) ? $input : array();
-		$network = self::is_network_input( $input );
-
-		$scope_error = self::get_scope_error( $network, true );
-		if ( $scope_error ) {
-			return $scope_error;
+	private static function get_network_mode_error( $mode, $network ) {
+		if ( ! RSA_IS_NETWORK ) {
+			return self::network_unavailable_error();
 		}
 
-		$requested = array();
-		$invalid   = array();
-
-		foreach ( isset( $input['ips'] ) ? (array) $input['ips'] : array() as $item ) {
-			$ip = isset( $item['ip'] ) ? trim( (string) $item['ip'] ) : '';
-			if ( ! Restricted_Site_Access::is_ip( $ip ) ) {
-				$invalid[] = $ip;
-				continue;
-			}
-			// A later entry for the same address wins.
-			$requested[ $ip ] = isset( $item['label'] ) ? sanitize_text_field( $item['label'] ) : null;
-		}
-
-		if ( ! empty( $invalid ) ) {
-			return self::invalid_ips_error( $invalid );
-		}
-
-		$entries   = self::get_saved_ips( $network );
-		$result    = array(
-			'added'     => array(),
-			'updated'   => array(),
-			'unchanged' => array(),
-		);
-		$has_saved = array();
-
-		foreach ( $entries as $index => $entry ) {
-			$has_saved[ $entry['ip'] ] = $index;
-		}
-
-		foreach ( $requested as $ip => $label ) {
-			$ip = (string) $ip;
-
-			if ( ! isset( $has_saved[ $ip ] ) ) {
-				$entries[]         = array(
-					'ip'    => $ip,
-					'label' => null === $label ? '' : $label,
-				);
-				$has_saved[ $ip ]  = count( $entries ) - 1;
-				$result['added'][] = $ip;
-			} elseif ( null !== $label && $entries[ $has_saved[ $ip ] ]['label'] !== $label ) {
-				$entries[ $has_saved[ $ip ] ]['label'] = $label;
-				$result['updated'][]                   = $ip;
-			} else {
-				$result['unchanged'][] = $ip;
-			}
-		}
-
-		if ( ! empty( $result['added'] ) || ! empty( $result['updated'] ) ) {
-			self::save_ips( $entries, $network );
-		}
-
-		$result['ips'] = self::get_ip_list( $network );
-
-		return $result;
-	}
-
-	/**
-	 * Execute: change an allowed IP address or its label.
-	 *
-	 * @param mixed $input Ability input.
-	 * @return array|WP_Error
-	 */
-	public static function execute_update_ip( $input = null ) {
-		$input   = is_array( $input ) ? $input : array();
-		$network = self::is_network_input( $input );
-
-		$scope_error = self::get_scope_error( $network, true );
-		if ( $scope_error ) {
-			return $scope_error;
-		}
-
-		if ( ! isset( $input['new_ip'] ) && ! isset( $input['label'] ) ) {
+		if ( ! $network ) {
 			return new WP_Error(
-				'rsa_no_changes',
-				__( 'Send new_ip, label, or both.', 'restricted-site-access' ),
+				'rsa_network_scope_required',
+				__( 'The network_mode is a network setting. Send it with "network": true.', 'restricted-site-access' ),
 				array( 'status' => 400 )
 			);
 		}
 
-		$ip      = isset( $input['ip'] ) ? trim( (string) $input['ip'] ) : '';
-		$entries = self::get_saved_ips( $network );
-		$index   = array_search( $ip, array_column( $entries, 'ip' ), true );
-
-		if ( false === $index ) {
-			$message = in_array( $ip, Restricted_Site_Access::get_config_ips(), true )
-				? __( 'This address comes from the RSA_IP_WHITELIST constant and cannot be changed.', 'restricted-site-access' )
-				: __( 'This address is not in the allowed list.', 'restricted-site-access' );
-
-			return new WP_Error( 'rsa_ip_not_found', $message, array( 'status' => 404 ) );
-		}
-
-		if ( isset( $input['new_ip'] ) ) {
-			$new_ip = trim( (string) $input['new_ip'] );
-
-			if ( ! Restricted_Site_Access::is_ip( $new_ip ) ) {
-				return self::invalid_ips_error( array( $new_ip ) );
-			}
-
-			if ( $new_ip !== $ip && in_array( $new_ip, array_column( $entries, 'ip' ), true ) ) {
-				return new WP_Error(
-					'rsa_ip_exists',
-					__( 'The new_ip is already in the allowed list.', 'restricted-site-access' ),
-					array( 'status' => 409 )
-				);
-			}
-
-			$entries[ $index ]['ip'] = $new_ip;
-		}
-
-		if ( isset( $input['label'] ) ) {
-			$entries[ $index ]['label'] = sanitize_text_field( $input['label'] );
-		}
-
-		self::save_ips( $entries, $network );
-
-		return array(
-			'ip'    => $entries[ $index ]['ip'],
-			'label' => $entries[ $index ]['label'],
-			'ips'   => self::get_ip_list( $network ),
-		);
-	}
-
-	/**
-	 * Execute: remove allowed IP addresses.
-	 *
-	 * @param mixed $input Ability input.
-	 * @return array|WP_Error
-	 */
-	public static function execute_remove_ips( $input = null ) {
-		$input   = is_array( $input ) ? $input : array();
-		$network = self::is_network_input( $input );
-
-		$scope_error = self::get_scope_error( $network, true );
-		if ( $scope_error ) {
-			return $scope_error;
-		}
-
-		$to_remove = array_unique( array_map( 'trim', array_map( 'strval', isset( $input['ips'] ) ? (array) $input['ips'] : array() ) ) );
-		$entries   = self::get_saved_ips( $network );
-		$kept      = array();
-		$removed   = array();
-
-		foreach ( $entries as $entry ) {
-			if ( in_array( $entry['ip'], $to_remove, true ) ) {
-				$removed[] = $entry['ip'];
-			} else {
-				$kept[] = $entry;
-			}
-		}
-
-		if ( ! empty( $removed ) ) {
-			self::save_ips( $kept, $network );
-		}
-
-		return array(
-			'removed'   => $removed,
-			'not_found' => array_values( array_diff( $to_remove, $removed ) ),
-			'ips'       => self::get_ip_list( $network ),
-		);
-	}
-
-	/**
-	 * Execute: set the network mode.
-	 *
-	 * @param mixed $input Ability input.
-	 * @return array|WP_Error
-	 */
-	public static function execute_set_network_mode( $input = null ) {
 		if ( '' !== Restricted_Site_Access::get_config_network_mode() ) {
 			return new WP_Error(
 				'rsa_network_mode_locked',
@@ -969,26 +637,56 @@ class Restricted_Site_Access_Abilities {
 			);
 		}
 
-		$mode = is_array( $input ) && isset( $input['mode'] ) ? (string) $input['mode'] : '';
-
-		if ( ! in_array( $mode, array( 'default', 'enforce' ), true ) ) {
+		if ( ! in_array( $mode, self::NETWORK_MODES, true ) ) {
 			return new WP_Error(
 				'rsa_invalid_network_mode',
-				__( 'The mode must be "default" or "enforce".', 'restricted-site-access' ),
+				__( 'The network_mode must be "default" or "enforce".', 'restricted-site-access' ),
 				array( 'status' => 400 )
 			);
 		}
 
-		$changed = Restricted_Site_Access::get_network_mode() !== $mode;
+		return null;
+	}
 
-		if ( $changed ) {
-			update_site_option( 'rsa_mode', $mode );
+	/**
+	 * Validate and clean a list of allowed IP addresses.
+	 *
+	 * When the same address is sent more than once, the last entry wins.
+	 *
+	 * @param array $items List of arrays with `ip` and optional `label` keys.
+	 * @return array|WP_Error List of arrays with `ip` and `label` keys, or an error.
+	 */
+	private static function parse_ips( $items ) {
+		$entries = array();
+		$invalid = array();
+
+		foreach ( $items as $item ) {
+			$ip = is_array( $item ) && isset( $item['ip'] ) ? trim( (string) $item['ip'] ) : '';
+
+			if ( ! Restricted_Site_Access::is_ip( $ip ) ) {
+				$invalid[] = $ip;
+				continue;
+			}
+
+			$entries[ $ip ] = array(
+				'ip'    => $ip,
+				'label' => isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '',
+			);
 		}
 
-		return array(
-			'network_mode' => $mode,
-			'changed'      => $changed,
-		);
+		if ( ! empty( $invalid ) ) {
+			return new WP_Error(
+				'rsa_invalid_ip',
+				sprintf(
+					/* translators: %s: comma-separated list of IP addresses. */
+					__( 'These are not valid IP addresses or ranges: %s.', 'restricted-site-access' ),
+					implode( ', ', $invalid )
+				),
+				array( 'status' => 400 )
+			);
+		}
+
+		return array_values( $entries );
 	}
 
 	/**
@@ -1012,7 +710,10 @@ class Restricted_Site_Access_Abilities {
 			'redirect_status_code'  => (int) $options['head_code'],
 			'page_id'               => (int) $options['page'],
 			'hide_admin_bar_roles'  => array_values( array_map( 'strval', (array) $options['hide_admin_bar_roles'] ) ),
+			'ips'                   => self::get_saved_ips( $options ),
+			'config_ips'            => array_values( Restricted_Site_Access::get_config_ips() ),
 			'network_mode'          => RSA_IS_NETWORK ? Restricted_Site_Access::get_network_mode() : null,
+			'network_mode_locked'   => RSA_IS_NETWORK && '' !== Restricted_Site_Access::get_config_network_mode(),
 			'overridden_by_network' => ! $network && self::is_site_overridden(),
 			'restriction_constant'  => self::get_restriction_constant(),
 		);
@@ -1021,11 +722,10 @@ class Restricted_Site_Access_Abilities {
 	/**
 	 * Get the IP addresses saved in the settings, with their labels.
 	 *
-	 * @param bool $network Whether to read the network-wide settings.
+	 * @param array $options The `rsa_options` values.
 	 * @return array List of arrays with `ip` and `label` keys.
 	 */
-	private static function get_saved_ips( $network ) {
-		$options = Restricted_Site_Access::get_options( $network );
+	private static function get_saved_ips( $options ) {
 		$ips     = array_values( (array) $options['allowed'] );
 		$labels  = isset( $options['comment'] ) ? array_values( (array) $options['comment'] ) : array();
 		$entries = array();
@@ -1038,49 +738,6 @@ class Restricted_Site_Access_Abilities {
 		}
 
 		return $entries;
-	}
-
-	/**
-	 * Get every allowed IP address: saved ones first, then ones from code configuration.
-	 *
-	 * @param bool $network Whether to read the network-wide settings.
-	 * @return array List of arrays with `ip`, `label` and `source` keys.
-	 */
-	private static function get_ip_list( $network ) {
-		$list  = array();
-		$saved = array();
-
-		foreach ( self::get_saved_ips( $network ) as $entry ) {
-			$entry['source'] = 'settings';
-			$list[]          = $entry;
-			$saved[]         = $entry['ip'];
-		}
-
-		foreach ( Restricted_Site_Access::get_config_ips() as $ip ) {
-			if ( ! in_array( $ip, $saved, true ) ) {
-				$list[] = array(
-					'ip'     => $ip,
-					'label'  => '',
-					'source' => 'config',
-				);
-			}
-		}
-
-		return $list;
-	}
-
-	/**
-	 * Save the IP addresses and labels to the settings.
-	 *
-	 * @param array $entries List of arrays with `ip` and `label` keys.
-	 * @param bool  $network Whether to save the network-wide settings.
-	 */
-	private static function save_ips( $entries, $network ) {
-		$options            = Restricted_Site_Access::get_options( $network );
-		$options['allowed'] = array_column( $entries, 'ip' );
-		$options['comment'] = array_column( $entries, 'label' );
-
-		self::save_options( $options, $network );
 	}
 
 	/**
@@ -1134,32 +791,14 @@ class Restricted_Site_Access_Abilities {
 	}
 
 	/**
-	 * Error returned when the network enforces its settings on the current site.
+	 * Error returned when network settings are requested without network activation.
 	 *
 	 * @return WP_Error
 	 */
-	private static function site_overridden_error() {
+	private static function network_unavailable_error() {
 		return new WP_Error(
-			'rsa_network_enforced',
-			__( 'The network enforces its settings on every site, so this site\'s settings cannot be changed. Send "network": true to change the network settings.', 'restricted-site-access' ),
-			array( 'status' => 409 )
-		);
-	}
-
-	/**
-	 * Error returned for invalid IP addresses.
-	 *
-	 * @param array $ips The invalid addresses.
-	 * @return WP_Error
-	 */
-	private static function invalid_ips_error( $ips ) {
-		return new WP_Error(
-			'rsa_invalid_ip',
-			sprintf(
-				/* translators: %s: comma-separated list of IP addresses. */
-				__( 'These are not valid IP addresses or ranges: %s.', 'restricted-site-access' ),
-				implode( ', ', $ips )
-			),
+			'rsa_network_unavailable',
+			__( 'Network settings are only available when the plugin is network activated.', 'restricted-site-access' ),
 			array( 'status' => 400 )
 		);
 	}

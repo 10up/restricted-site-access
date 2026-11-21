@@ -141,15 +141,10 @@ Yes. The plugin registers abilities with the WordPress [Abilities API](https://m
 
 | Ability | What it does |
 | --- | --- |
-| `restricted-site-access/get-settings` | Returns whether the site is restricted, how restricted visitors are handled, and any network or code configuration that overrides the settings. |
-| `restricted-site-access/update-settings` | Turns restriction on or off and changes the mode (`login`, `redirect`, `message` or `page`) and its options. Only the fields you send change. |
-| `restricted-site-access/list-ips` | Lists the allowed IP addresses and their labels. |
-| `restricted-site-access/add-ips` | Adds IP addresses or ranges, with optional labels. |
-| `restricted-site-access/update-ip` | Replaces an IP address, changes its label, or both. |
-| `restricted-site-access/remove-ips` | Removes IP addresses or ranges. |
-| `restricted-site-access/set-network-mode` | Multisite only. Sets the network mode to `default` or `enforce`. |
+| `restricted-site-access/settings-query` | Returns all settings: whether the site is restricted, the mode and its options, the allowed IP addresses, the network mode, and any network or code configuration that overrides the settings. |
+| `restricted-site-access/settings-update` | Changes any of these settings. Only the fields you send change. The `ips` field replaces the whole list of allowed IP addresses. |
 
-Site abilities need the `manage_options` capability. On a network-activated multisite, send `"network": true` to act on the network settings, which needs `manage_network_options`. When the network enforces its settings, site-level changes are refused.
+The abilities need the `manage_options` capability. On a network-activated multisite, send `"network": true` to read or change the network settings, which needs `manage_network_options`. The network mode is changed with `network_mode` and `"network": true`. When the network enforces its settings, site-level changes are refused.
 
 The abilities are available over REST at `/wp-json/wp-abilities/v1/abilities/{name}/run`. To turn them off, use the `restricted_site_access_register_abilities` filter:
 
