@@ -135,6 +135,23 @@ As of version 7.0.0, CLI integration has been added. To see the available comman
 $ wp rsa
 ```
 
+### Can AI agents and other tools manage these settings?
+
+Yes. The plugin registers abilities with the WordPress [Abilities API](https://make.wordpress.org/ai/handbook/projects/abilities-api/), in the `restricted-site-access` category.
+
+| Ability | What it does |
+| --- | --- |
+| `restricted-site-access/settings-query` | Returns all settings: whether the site is restricted, the mode and its options, the allowed IP addresses, the network mode, and any network or code configuration that overrides the settings. |
+| `restricted-site-access/settings-update` | Changes any of these settings. Only the fields you send change. The `ips` field replaces the whole list of allowed IP addresses. |
+
+The abilities need the `manage_options` capability. On a network-activated multisite, send `"network": true` to read or change the network settings, which needs `manage_network_options`. The network mode is changed with `network_mode` and `"network": true`. When the network enforces its settings, site-level changes are refused.
+
+The abilities are available over REST at `/wp-json/wp-abilities/v1/abilities/{name}/run`. To turn them off, use the `restricted_site_access_register_abilities` filter:
+
+```php
+add_filter( 'restricted_site_access_register_abilities', '__return_false' );
+```
+
 ### How can I programmatically define whitelisted IPs?
 
 In 7.0.0, the capacity to define a pipe delimited array of whitelisted IP addresses via constant was introduced.
