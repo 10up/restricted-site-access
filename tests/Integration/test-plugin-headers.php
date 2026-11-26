@@ -409,28 +409,29 @@ class PluginHeadersTests extends TestCase {
 	}
 
 	/**
-	 * Test that the minimum WordPress version in readme matches the Cypress test config.
+	 * Test that the minimum WordPress version in readme matches the test workflow matrix.
 	 */
-	public function test_minimum_wordpress_version_matches_cypress_config() {
-		$cypress_file = self::PLUGIN_ROOT_DIR . '/.github/workflows/cypress.yml';
+	public function test_minimum_wordpress_version_matches_test_workflow() {
+		$workflow_file = self::PLUGIN_ROOT_DIR . '/.github/workflows/test.yml';
 
-		$this->assertFileExists( $cypress_file, 'Cypress workflow file does not exist.' );
+		$this->assertFileExists( $workflow_file, 'Test workflow file does not exist.' );
 
-		$cypress_contents = file_get_contents( $cypress_file );
-		$this->assertNotFalse( $cypress_contents, 'Unable to read cypress.yml.' );
+		$workflow_contents = file_get_contents( $workflow_file );
+		$this->assertNotFalse( $workflow_contents, 'Unable to read test.yml.' );
 
-		// Extract the minimum WordPress version from the "WP minimum" matrix entry in cypress.yml.
-		// Looking for: - {name: 'WP minimum', version: 'WordPress/WordPress#x.x-branch'}
-		$pattern = '/\-\s*\{\s*name:\s*\'WP minimum\'\s*,\s*version:\s*\'WordPress\/WordPress#([\d.]+)\-branch\'/';
-		preg_match( $pattern, $cypress_contents, $cypress_match );
-		$this->assertNotEmpty( $cypress_match, 'Unable to parse minimum WordPress version from the "WP minimum" matrix entry in cypress.yml.' );
-		$cypress_min_wp = $cypress_match[1];
+		// Extract the minimum WordPress version from every "wp" matrix in test.yml (PHPUnit and E2E).
+		// Looking for: wp: [ 'x.x', latest, trunk ]
+		$pattern = '/^\s*wp:\s*\[\s*\'([\d.]+)\'/m';
+		preg_match_all( $pattern, $workflow_contents, $workflow_matches );
+		$this->assertCount( 2, $workflow_matches[1], 'Unable to parse the minimum WordPress version from both "wp" matrix entries (PHPUnit and E2E) in test.yml.' );
 
 		// Get the minimum WordPress version from the readme.
 		$this->assertArrayHasKey( 'Requires at least', self::$defined_readme_headers, "The readme.txt header 'Requires at least' is missing." );
 		$readme_min_wp = self::$defined_readme_headers['Requires at least'];
 
-		$this->assertSame( $readme_min_wp, $cypress_min_wp, "Minimum WordPress version mismatch between cypress.yml ({$cypress_min_wp}) and readme.txt Requires at least ({$readme_min_wp})." );
+		foreach ( $workflow_matches[1] as $workflow_min_wp ) {
+			$this->assertSame( $readme_min_wp, $workflow_min_wp, "Minimum WordPress version mismatch between test.yml ({$workflow_min_wp}) and readme.txt Requires at least ({$readme_min_wp})." );
+		}
 	}
 
 	/**

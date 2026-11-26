@@ -15,7 +15,10 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 		$reflection = new ReflectionClass( 'Restricted_Site_Access' );
 		$prop       = $reflection->getProperty( 'rsa_options' );
 		// @todo Remove this once the minimum PHP version is 8.1 or later.
-		$prop->setAccessible( true );
+		// setAccessible() is needed before PHP 8.1 and deprecated from PHP 8.5.
+		if ( PHP_VERSION_ID < 80100 ) {
+			$prop->setAccessible( true );
+		}
 		$prop->setValue( null, null );
 	}
 

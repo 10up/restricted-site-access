@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/9.3/phpunit.xsd"
-	bootstrap="tests/php/bootstrap.php"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	beStrictAboutOutputDuringTests="true"
@@ -15,10 +15,10 @@
 >
 	<testsuites>
 		<testsuite name="integration">
-			<directory suffix=".php">./tests/php</directory>
-      <exclude>./tests/php/code-coverage.php</exclude>
-			<exclude>./tests/php/multisite</exclude>
-			<exclude>./tests/php/whitelist</exclude>
+			<directory prefix="test-" suffix=".php">tests/Integration</directory>
+			<!-- Network-activated and RSA_IP_WHITELIST tests need their own process; they were never part of this suite. -->
+			<exclude>tests/Integration/multisite</exclude>
+			<exclude>tests/Integration/whitelist</exclude>
 		</testsuite>
 	</testsuites>
 	<coverage processUncoveredFiles="false">

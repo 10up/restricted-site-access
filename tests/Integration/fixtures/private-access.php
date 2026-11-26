@@ -27,7 +27,10 @@ trait PrivateAccess {
 		$reflection = new ReflectionClass( $class_object );
 
 		$property = $reflection->getProperty( $property );
-		$property->setAccessible( true );
+		// setAccessible() is needed before PHP 8.1 and deprecated from PHP 8.5.
+		if ( PHP_VERSION_ID < 80100 ) {
+			$property->setAccessible( true );
+		}
 
 		return $property->getValue( $class_object );
 	}
@@ -46,7 +49,10 @@ trait PrivateAccess {
 		$reflection = new ReflectionClass( $class_object );
 
 		$property = $reflection->getProperty( $property );
-		$property->setAccessible( true );
+		// setAccessible() is needed before PHP 8.1 and deprecated from PHP 8.5.
+		if ( PHP_VERSION_ID < 80100 ) {
+			$property->setAccessible( true );
+		}
 		$property->setValue( $class_object, $value );
 	}
 
@@ -64,7 +70,10 @@ trait PrivateAccess {
 		$reflection = new ReflectionClass( $class_object );
 
 		$method = $reflection->getMethod( $method );
-		$method->setAccessible( true );
+		// setAccessible() is needed before PHP 8.1 and deprecated from PHP 8.5.
+		if ( PHP_VERSION_ID < 80100 ) {
+			$method->setAccessible( true );
+		}
 
 		return $method->invokeArgs( $class_object, $args );
 	}
