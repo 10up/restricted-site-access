@@ -10,10 +10,10 @@ import 'jquery-ui-dialog';
  * @param {Object} window Global window object
  * @param {Object} $      The jQuery object.
  */
-( function( window, $ ) {
+( function ( window, $ ) {
 	'use strict';
 
-	$( '.notice' ).on( 'click', '.notice-dismiss', function( event ) {
+	$( '.notice' ).on( 'click', '.notice-dismiss', function ( event ) {
 		const notice = event.delegateTarget.getAttribute( 'data-rsa-notice' );
 
 		if ( ! notice ) {
@@ -29,9 +29,9 @@ import 'jquery-ui-dialog';
 			url: ajaxurl,
 		} );
 	} );
-}( window, jQuery ) );
+} )( window, jQuery );
 
-( function( window, $ ) {
+( function ( window, $ ) {
 	'use strict';
 	$( () => {
 		const RSADisablePlugin = {
@@ -62,7 +62,7 @@ import 'jquery-ui-dialog';
 			dialogSettings() {
 				const self = this;
 
-				self.close = function() {
+				self.close = function () {
 					$( self.els.dialog ).dialog( 'close' );
 					self.els.userMessage.style.border = '1px solid #ddd';
 					self.els.userMessage.value = '';
@@ -97,12 +97,14 @@ import 'jquery-ui-dialog';
 						},
 					],
 					open() {
-						$( '.ui-widget-overlay' ).bind( 'click', function() {
+						$( '.ui-widget-overlay' ).bind( 'click', function () {
 							self.close();
 						} );
 					},
 					create() {
-						$( '.ui-dialog-titlebar-close' ).addClass( 'ui-button' );
+						$( '.ui-dialog-titlebar-close' ).addClass(
+							'ui-button'
+						);
 						$( this ).siblings( '.ui-dialog-titlebar' ).hide();
 					},
 				} );
@@ -149,4 +151,4 @@ import 'jquery-ui-dialog';
 
 		RSADisablePlugin.init();
 	} );
-}( window, jQuery ) );
+} )( window, jQuery );

@@ -10,7 +10,7 @@ import 'jquery-effects-shake';
  * @param {Object} window Global window object
  * @param {Object} $      The jQuery object.
  */
-( function( window, $ ) {
+( function ( window, $ ) {
 	'use strict';
 	const document = window.document;
 
@@ -78,7 +78,7 @@ import 'jquery-effects-shake';
 
 		$( document.querySelectorAll( '#rsa_handle_fields input' ) ).on(
 			'change',
-			function() {
+			function () {
 				if ( Cache.redirect_choice.checked ) {
 					Cache.redirect_fields.show();
 				} else {
@@ -101,7 +101,7 @@ import 'jquery-effects-shake';
 
 		$( document.querySelectorAll( '.option-site-visibility input' ) ).on(
 			'change',
-			function() {
+			function () {
 				if ( Cache.restrict_radio.checked ) {
 					Cache.table.show();
 				} else {
@@ -110,64 +110,41 @@ import 'jquery-effects-shake';
 			}
 		);
 
-		$( '.rsa-learn-more-link' ).on(
-			'click',
-			function( event ) {
-				event.preventDefault();
-				$( '.rsa-learn-more-content' ).removeClass( 'hide-if-js' );
-				$( this ).addClass( 'hide-if-js' ).removeClass( 'hide-if-no-js' );
-			}
-		);
+		$( '.rsa-learn-more-link' ).on( 'click', function ( event ) {
+			event.preventDefault();
+			$( '.rsa-learn-more-content' ).removeClass( 'hide-if-js' );
+			$( this ).addClass( 'hide-if-js' ).removeClass( 'hide-if-no-js' );
+		} );
 
-		$( '.rsa-learn-more-less-link' ).on(
-			'click',
-			function( event ) {
-				event.preventDefault();
-				$( '.rsa-learn-more-content' ).addClass( 'hide-if-js' );
-				$( '.rsa-learn-more-link' ).removeClass( 'hide-if-js' ).addClass( 'hide-if-no-js' );
-			}
-		);
+		$( '.rsa-learn-more-less-link' ).on( 'click', function ( event ) {
+			event.preventDefault();
+			$( '.rsa-learn-more-content' ).addClass( 'hide-if-js' );
+			$( '.rsa-learn-more-link' )
+				.removeClass( 'hide-if-js' )
+				.addClass( 'hide-if-no-js' );
+		} );
 
-		Cache.add_btn.on(
-			'click',
-			function() {
-				const newIp = Cache.empty_ip
-					.clone()
-					.appendTo( Cache.ip_list_wrap );
-				newIp.removeAttr( 'id' ).slideDown( 250 );
-			}
-		);
+		Cache.add_btn.on( 'click', function () {
+			const newIp = Cache.empty_ip.clone().appendTo( Cache.ip_list_wrap );
+			newIp.removeAttr( 'id' ).slideDown( 250 );
+		} );
 
-		$( Cache.ip_list_wrap ).on(
-			'blur',
-			'.ip.code',
-			function() {
-				addIp( $( this ).val(), $( this ).next().val(), $( this ) );
-			}
-		);
+		$( Cache.ip_list_wrap ).on( 'blur', '.ip.code', function () {
+			addIp( $( this ).val(), $( this ).next().val(), $( this ) );
+		} );
 
 		const myipBtn = document.getElementById( 'rsa_myip' );
 		if ( null !== myipBtn ) {
-			$( myipBtn ).on(
-				'click',
-				function() {
-					$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
-				}
-			);
+			$( myipBtn ).on( 'click', function () {
+				$( '.ip.code:last' ).val( $( this ).data( 'myip' ) ).blur();
+			} );
 		}
 
-		$( Cache.ip_list_wrap ).on(
-			'click',
-			'.remove_btn',
-			function() {
-				$( this.parentNode ).slideUp(
-					250,
-					function() {
-						$( this ).remove();
-					}
-				);
-			}
-		);
+		$( Cache.ip_list_wrap ).on( 'click', '.remove_btn', function () {
+			$( this.parentNode ).slideUp( 250, function () {
+				$( this ).remove();
+			} );
+		} );
 	}
 
 	function addIp( ip, comment, obj ) {
@@ -197,7 +174,7 @@ import 'jquery-effects-shake';
 				ip_address_comment: comment,
 				nonce: rsaSettings.nonce,
 			},
-			function( response ) {
+			function ( response ) {
 				if ( ! response.success ) {
 					$( obj ).effect( 'shake', shakeSpeed ).focus();
 					$( Cache.error_field ).text( response.data );
@@ -213,9 +190,7 @@ import 'jquery-effects-shake';
 		);
 	}
 
-	$(
-		function() {
-			init();
-		}
-	);
-}( window, jQuery ) );
+	$( function () {
+		init();
+	} );
+} )( window, jQuery );
