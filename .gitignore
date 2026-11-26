@@ -8,9 +8,9 @@ assets/js/build
 .idea
 10up-lib
 
-tests/cypress/screenshots
-tests/cypress/videos
-tests/cypress/reports
+/artifacts
+/release
+.wp-env.test.override.json
 /tests/_output/*
 !/tests/_output/.gitkeep
 /tests/.phpunit.result.cache
