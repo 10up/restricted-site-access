@@ -62,7 +62,7 @@ class Restricted_Site_Access_Test_Multisite_Settings extends WP_UnitTestCase {
 
 		restricted_site_access_uninstall();
 
-		$this->assertFalse( get_site_option( 'blog_mode' ) );
+		$this->assertFalse( get_site_option( 'blog_public' ) );
 		$this->assertFalse( get_site_option( 'rsa_options' ) );
 		$this->assertFalse( get_site_option( 'rsa_mode' ) );
 

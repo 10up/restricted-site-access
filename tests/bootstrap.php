@@ -8,17 +8,16 @@
 define( 'TESTS_REPO_ROOT_DIR', dirname( __DIR__ ) );
 
 /*
- * Network-activated mode. Only the WP_TESTS_MULTISITE constant turns it on;
- * the WP_MULTISITE=1 environment variable (npm run test:php:multisite) runs
- * the suite on multisite with the plugin activated per site.
+ * Network-activated mode, for the `network` testsuite (npm run test:php:network).
+ * WP_MULTISITE=1 on its own (npm run test:php:multisite) runs the main suite on
+ * multisite with the plugin activated per site.
  */
-if ( defined( 'WP_TESTS_MULTISITE' ) ) {
+if ( '1' === getenv( 'RSA_TESTS_NETWORK' ) ) {
 	// Tells the plugin it is network active.
 	define( 'RSA_IS_NETWORK', true );
 	define( 'WP_NETWORK_ADMIN', true );
-	if ( ! defined( 'RSA_IP_WHITELIST' ) ) {
-		define( 'RSA_IP_WHITELIST', 123 ); // For a test in the get_config_ips() function.
-	}
+	// Addresses allowed by configuration, read by get_config_ips().
+	define( 'RSA_IP_WHITELIST', '192.168.1.50 |192.168.1.51' );
 }
 
 // Composer autoload also loads the PHPUnit Polyfills the WP test library requires.

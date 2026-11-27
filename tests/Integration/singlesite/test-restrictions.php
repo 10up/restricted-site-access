@@ -4,6 +4,29 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 	use PrivateAccess;
 
+	/**
+	 * $_SERVER as it was before each test.
+	 *
+	 * @var array
+	 */
+	private $server_backup = array();
+
+	/**
+	 * Remember $_SERVER, which the tests change.
+	 */
+	public function set_up() {
+		parent::set_up();
+		$this->server_backup = $_SERVER;
+	}
+
+	/**
+	 * Restore $_SERVER so later tests see the same request.
+	 */
+	public function tear_down() {
+		$_SERVER = $this->server_backup;
+		parent::tear_down();
+	}
+
 	public function test_singlesite_restrict_access_not_restricted() {
 
 		$rsa = Restricted_Site_Access::get_instance();
@@ -105,8 +128,16 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		update_option( 'rsa_options', $options );
 
+		// A visitor from another address is still restricted.
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.2';
+
+		$this->go_to( home_url( '/' ) );
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		$this->assertSame( $url, $results['url'] );
+
 		// Now set the client IP to one of the whitelisted IPs.
-		$_SERVER['HTTP_CLIENT_IP'] = '127.0.0.1';
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 		$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
 
@@ -117,12 +148,6 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$results = $rsa::restrict_access_check( $wp );
 
 		$this->assertEmpty( $results );
-
-		unset( $_SERVER['HTTP_CLIENT_IP'] );
-
-		// Reset the site's whitelist.
-		$options['allowed'] = array();
-		update_option( 'rsa_option', $options );
 
 		// TODO we'll need some way to network activate the plugin as a separate test suite
 		// so we can test the RSA_IS_NETWORK define.
@@ -358,17 +383,18 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		$my_ip     = '127.0.0.1';
 		$not_my_ip = '10.9.8.7';
 
-		$options = $rsa::get_options();
+		$rsa::set_ips( array( '192.0.2.10' ) ); // Start from a non-empty list.
 		$rsa::set_ips( array() ); // Remove all IPs.
+		$options = $rsa::get_options();
 		$this->assertEmpty( $options['allowed'] );
 
 		$rsa::add_ips( array( $my_ip, $not_my_ip ) ); // Add two IPs.
 		$options = $rsa::get_options();
-		$this->assertContains( $my_ip, $options['allowed'] );
+		$this->assertSame( array( $my_ip, $not_my_ip ), $options['allowed'] );
 
 		$rsa::remove_ips( array( $my_ip ) ); // Remove one IP.
 		$options = $rsa::get_options();
-		$this->assertNotContains( $my_ip, $options['allowed'] );
+		$this->assertSame( array( $not_my_ip ), $options['allowed'] );
 
 		$rsa::set_ips( array() ); // Remove all IPs.
 		$options = $rsa::get_options();
@@ -601,17 +627,6 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 		return $wp;
 	}
 
-	public function test_singlesite_is_rest_request() {
-		$rsa = Restricted_Site_Access::get_instance();
-
-		$this->assertTrue( $rsa::is_rest_request( $this->get_rest_wp( '/wp/v2/posts' ) ) );
-
-		$this->go_to( home_url( '/' ) );
-		$this->assertFalse( $rsa::is_rest_request( $GLOBALS['wp'] ) );
-
-		$this->assertFalse( $rsa::is_rest_request( null ) );
-	}
-
 	public function test_singlesite_restrict_access_rest_request_returns_json_error() {
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -639,6 +654,30 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 			$this->assertSame( array( 'status' => 401 ), $response['body']['data'] );
 			$this->assertArrayHasKey( 'Cache-Control', $response['headers'] );
 		}
+	}
+
+	/**
+	 * A REST request from an allowed IP address is let through like any other request.
+	 */
+	public function test_singlesite_rest_request_from_allowed_ip_is_not_blocked() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$options            = $rsa::get_options( false );
+		$options['allowed'] = array( '192.0.2.10' );
+		update_option( 'rsa_options', $options );
+
+		$_SERVER['REMOTE_ADDR'] = '192.0.2.10';
+
+		$this->assertEmpty( $rsa::restrict_access_check( $this->get_rest_wp( '/wp/v2/posts' ) ) );
+
+		// Control: from an address not on the list, the same request is blocked.
+		$_SERVER['REMOTE_ADDR'] = '192.0.2.11';
+
+		$results = $rsa::restrict_access_check( $this->get_rest_wp( '/wp/v2/posts' ) );
+
+		$this->assertSame( 401, $results['rest_response']['status'] );
 	}
 
 	public function test_singlesite_restrict_access_rest_request_logged_in() {
@@ -759,5 +798,181 @@ class Restricted_Site_Access_Test_Singlesite_Restrictions extends WP_UnitTestCas
 
 		$this->assertSame( 403, $results['rest_response']['status'] );
 		$this->assertSame( $default['body'], $results['rest_response']['body'] );
+	}
+
+	/**
+	 * "Redirect them to a specified web address" without an address sends visitors to the login screen.
+	 */
+	public function test_singlesite_redirect_without_address_sends_to_login() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		// Load the request first: go_to() runs the plugin's own redirect handling, which sends a cookie for same-site targets.
+		$this->go_to( home_url( '/' ) );
+
+		$options                 = $rsa::get_options( false );
+		$options['approach']     = 2;
+		$options['redirect_url'] = '';
+		update_option( 'rsa_options', $options );
+
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		$this->assertSame( 302, $results['code'] );
+		$this->assertSame( add_query_arg( 'redirect_to', rawurlencode( '/' ), home_url( 'wp-login.php' ) ), $results['url'] );
+	}
+
+	/**
+	 * "Show them a page" without a selected page shows the restriction message.
+	 */
+	public function test_singlesite_page_approach_without_page_shows_message() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$options             = $rsa::get_options( false );
+		$options['approach'] = 4;
+		$options['page']     = 0;
+		$options['message']  = 'Members only.';
+		update_option( 'rsa_options', $options );
+
+		$this->go_to( home_url( '/' ) );
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		$this->assertArrayNotHasKey( 'url', $results );
+		$this->assertSame( 403, $results['die_code'] );
+		$this->assertStringContainsString( 'Members only.', $results['die_message'] );
+	}
+
+	/**
+	 * "Show them a page" with an unpublished page sends visitors to the login screen.
+	 */
+	public function test_singlesite_page_approach_with_unpublished_page_sends_to_login() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$page_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'draft',
+			)
+		);
+
+		$options             = $rsa::get_options( false );
+		$options['approach'] = 4;
+		$options['page']     = $page_id;
+		update_option( 'rsa_options', $options );
+
+		$this->go_to( home_url( '/' ) );
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		$this->assertSame( 302, $results['code'] );
+		$this->assertSame( add_query_arg( 'redirect_to', rawurlencode( '/' ), home_url( 'wp-login.php' ) ), $results['url'] );
+	}
+
+	/**
+	 * Feeds are restricted like any other request.
+	 */
+	public function test_singlesite_feed_is_restricted() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+
+		$this->go_to( home_url( '/?feed=rss2' ) );
+		$this->assertTrue( is_feed() );
+
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		$this->assertSame( 302, $results['code'] );
+		$this->assertStringStartsWith( home_url( 'wp-login.php' ), $results['url'] );
+	}
+
+	/**
+	 * The documented filters change how restricted visitors are handled.
+	 *
+	 * @dataProvider handling_filter_provider
+	 *
+	 * @param string   $filter   Filter name.
+	 * @param callable $callback Filter callback.
+	 * @param array    $options  Plugin options for the test.
+	 * @param string   $key      Result key to check.
+	 * @param mixed    $expected Expected value; strings are matched as substrings of die_message.
+	 */
+	public function test_singlesite_handling_filters_change_the_outcome( $filter, $callback, $options, $key, $expected ) {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'blog_public', 2 );
+		update_option( 'rsa_options', array_merge( $rsa::get_options( false ), $options ) );
+
+		add_filter( $filter, $callback );
+
+		$this->go_to( home_url( '/' ) );
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		if ( 'die_message' === $key ) {
+			$this->assertStringContainsString( $expected, $results['die_message'] ?? '' );
+		} else {
+			$this->assertSame( $expected, $results[ $key ] ?? null );
+		}
+	}
+
+	/**
+	 * One case per documented handling filter.
+	 *
+	 * @return array
+	 */
+	public function handling_filter_provider() {
+		return array(
+			'restricted_site_access_approach'     => array(
+				'restricted_site_access_approach',
+				static function () {
+					return 3;
+				},
+				array(
+					'approach' => 1,
+					'message'  => 'Approach changed by filter.',
+				),
+				'die_message',
+				'Approach changed by filter.',
+			),
+			'restricted_site_access_redirect_url' => array(
+				'restricted_site_access_redirect_url',
+				static function () {
+					return 'https://example.org/elsewhere';
+				},
+				array(
+					'approach'     => 2,
+					'redirect_url' => 'https://example.com',
+				),
+				'url',
+				'https://example.org/elsewhere',
+			),
+			'restricted_site_access_head'         => array(
+				'restricted_site_access_head',
+				static function () {
+					return 307;
+				},
+				array(
+					'approach'     => 2,
+					'redirect_url' => 'https://example.com',
+					'head_code'    => 302,
+				),
+				'code',
+				307,
+			),
+			'restricted_site_access_message'      => array(
+				'restricted_site_access_message',
+				static function () {
+					return 'Message changed by filter.';
+				},
+				array(
+					'approach' => 3,
+					'message'  => 'Saved message.',
+				),
+				'die_message',
+				'Message changed by filter.',
+			),
+		);
 	}
 }

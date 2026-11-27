@@ -12,13 +12,18 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	cacheResultFile="./tests/.phpunit.result.cache"
+	defaultTestSuite="integration"
 >
 	<testsuites>
 		<testsuite name="integration">
 			<directory prefix="test-" suffix=".php">tests/Integration</directory>
-			<!-- Network-activated and RSA_IP_WHITELIST tests need their own process; they were never part of this suite. -->
 			<exclude>tests/Integration/multisite</exclude>
 			<exclude>tests/Integration/whitelist</exclude>
+		</testsuite>
+		<!-- Network-activated plugin and RSA_IP_WHITELIST: npm run test:php:network (RSA_TESTS_NETWORK=1). -->
+		<testsuite name="network">
+			<directory prefix="test-" suffix=".php">tests/Integration/multisite</directory>
+			<directory prefix="test-" suffix=".php">tests/Integration/whitelist</directory>
 		</testsuite>
 	</testsuites>
 	<coverage processUncoveredFiles="false">

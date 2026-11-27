@@ -4,6 +4,29 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 	use PrivateAccess;
 
+	/**
+	 * $_SERVER as it was before each test.
+	 *
+	 * @var array
+	 */
+	private $server_backup = array();
+
+	/**
+	 * Remember $_SERVER, which the tests change.
+	 */
+	public function set_up() {
+		parent::set_up();
+		$this->server_backup = $_SERVER;
+	}
+
+	/**
+	 * Restore $_SERVER so later tests see the same request.
+	 */
+	public function tear_down() {
+		$_SERVER = $this->server_backup;
+		parent::tear_down();
+	}
+
 	public function test_multisite_restrict_access_not_restricted() {
 
 		$rsa = Restricted_Site_Access::get_instance();
@@ -77,9 +100,6 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 		$rsa = Restricted_Site_Access::get_instance();
 
-		// Tests when RSA_IP_WHITELIST is not set to a string.
-		$this->assertEmpty( $rsa::get_config_ips() );
-
 		$this->assertTrue( RSA_IS_NETWORK );
 
 		// Set network to enforced and restricted.
@@ -105,8 +125,16 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 		update_site_option( 'rsa_options', $options );
 
+		// A visitor from another address is still restricted.
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.2';
+
+		$this->go_to( home_url( '/' ) );
+		$results = $rsa::restrict_access_check( $GLOBALS['wp'] );
+
+		$this->assertSame( $url, $results['url'] );
+
 		// Now set the client IP to one of the whitelisted IPs.
-		$_SERVER['HTTP_CLIENT_IP'] = '127.0.0.1';
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 		$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
 
@@ -118,11 +146,11 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 		$this->assertEmpty( $results );
 
-		unset( $_SERVER['HTTP_CLIENT_IP'] );
+		// Addresses allowed by the RSA_IP_WHITELIST constant are let through too.
+		$_SERVER['REMOTE_ADDR'] = '192.168.1.51';
 
-		// Reset the site's whitelist.
-		$options['allowed'] = array();
-		update_site_option( 'rsa_option', $options );
+		$this->go_to( home_url( '/' ) );
+		$this->assertEmpty( $rsa::restrict_access_check( $GLOBALS['wp'] ) );
 	}
 
 	public function test_multisite_restrict_access_show_them_a_message() {
@@ -156,32 +184,6 @@ class Restricted_Site_Access_Test_Multisite_Restrictions extends WP_UnitTestCase
 
 		$this->assertSame( 403, $results['die_code'] );
 		$this->assertSame( get_bloginfo( 'name' ) . ' - Site Access Restricted', $results['die_title'] );
-		$this->assertContains( 'You shall not pass this multisite!', $results['die_message'] );
-	}
-
-	/**
-	 * Test the network mode constant.
-	 */
-	public function test_multisite_network_mode_constant() {
-
-		$rsa = Restricted_Site_Access::get_instance();
-
-		define( 'RSA_NETWORK_MODE', 'enforce' );
-
-		$network_mode = $this->call_private_method(
-			$rsa,
-			'get_network_mode'
-		);
-
-		$this->assertSame( 'enforce', $network_mode );
-
-		define( 'RSA_NETWORK_MODE', 'not-allowed-value' );
-
-		$network_mode = $this->call_private_method(
-			$rsa,
-			'get_network_mode'
-		);
-
-		$this->assertSame( 'default', $network_mode );
+		$this->assertStringContainsString( 'You shall not pass this multisite!', $results['die_message'] );
 	}
 }

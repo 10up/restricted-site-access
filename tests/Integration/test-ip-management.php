@@ -125,4 +125,55 @@ class Restricted_Site_Access_Test_IP_Management extends WP_UnitTestCase {
 		$idx = array_search( '10.0.0.2', $options['allowed'], true );
 		$this->assertSame( 'new-entry', $options['comment'][ $idx ] );
 	}
+
+	/**
+	 * update_ip_or_label() refuses an address that is not on the list, an invalid
+	 * new address and a new address that is already on the list, and saves nothing.
+	 */
+	public function test_update_ip_or_label_refuses_invalid_changes() {
+		$saved = array(
+			'allowed' => array( '10.0.0.1', '10.0.0.2' ),
+			'comment' => array( 'first', 'second' ),
+		);
+		update_option( 'rsa_options', $saved );
+		$this->reset_rsa_options();
+
+		$cases = array(
+			'ip_address_does_not_exist' => array( '10.0.0.9', '10.0.0.3', false ),
+			'ip_address_is_invalid'     => array( '10.0.0.1', '10.0.0.999', false ),
+			'ip_address_already_exists' => array( '10.0.0.1', '10.0.0.2', false ),
+		);
+
+		foreach ( $cases as $code => $args ) {
+			$result = Restricted_Site_Access::update_ip_or_label( ...$args );
+
+			$this->assertWPError( $result, $code );
+			$this->assertSame( $code, $result->get_error_code() );
+		}
+
+		$options = get_option( 'rsa_options' );
+		$this->assertSame( $saved['allowed'], $options['allowed'] );
+		$this->assertSame( $saved['comment'], $options['comment'] );
+	}
+
+	/**
+	 * update_ip_or_label() changes the address and label of the matching entry only.
+	 */
+	public function test_update_ip_or_label_updates_the_matching_entry() {
+		update_option(
+			'rsa_options',
+			array(
+				'allowed' => array( '10.0.0.1', '10.0.0.2' ),
+				'comment' => array( 'first', 'second' ),
+			)
+		);
+		$this->reset_rsa_options();
+
+		$this->assertTrue( Restricted_Site_Access::update_ip_or_label( '10.0.0.2', '10.0.0.3', 'third' ) );
+
+		$options = get_option( 'rsa_options' );
+
+		$this->assertSame( array( '10.0.0.1', '10.0.0.3' ), $options['allowed'] );
+		$this->assertSame( array( 'first', 'third' ), $options['comment'] );
+	}
 }

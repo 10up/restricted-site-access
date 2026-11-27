@@ -28,6 +28,30 @@ class Restricted_Site_Access_Test_Singlesite_Settings extends WP_UnitTestCase {
 		$this->assertSame( 1, absint( get_option( 'blog_public' ) ) );
 	}
 
+	/**
+	 * Activation stores the plugin version on a site that was never configured,
+	 * which decides the forwarding headers it trusts. A site that already has
+	 * settings but no stored version keeps the behaviour it had before 7.5.0.
+	 */
+	public function test_singlesite_activation_records_version_only_on_unconfigured_site() {
+
+		delete_option( 'rsa_activation_version' );
+		delete_option( 'rsa_options' );
+
+		activate_plugin( RSA_TEST_PLUGIN_BASENAME, '', false );
+
+		$this->assertSame( RSA_VERSION, get_option( 'rsa_activation_version' ) );
+
+		deactivate_plugins( RSA_TEST_PLUGIN_BASENAME, false, false );
+
+		delete_option( 'rsa_activation_version' );
+		update_option( 'rsa_options', array( 'approach' => 1 ) );
+
+		activate_plugin( RSA_TEST_PLUGIN_BASENAME, '', false );
+
+		$this->assertFalse( get_option( 'rsa_activation_version' ) );
+	}
+
 	public function test_singlesite_get_options() {
 
 		$rsa     = Restricted_Site_Access::get_instance();

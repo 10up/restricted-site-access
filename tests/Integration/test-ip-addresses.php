@@ -2,6 +2,29 @@
 
 class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 
+	/**
+	 * $_SERVER as it was before each test.
+	 *
+	 * @var array
+	 */
+	private $server_backup = array();
+
+	/**
+	 * Remember $_SERVER, which the tests change.
+	 */
+	public function set_up() {
+		parent::set_up();
+		$this->server_backup = $_SERVER;
+	}
+
+	/**
+	 * Restore $_SERVER so later tests see the same request headers.
+	 */
+	public function tear_down() {
+		$_SERVER = $this->server_backup;
+		parent::tear_down();
+	}
+
 	public function test_is_ip() {
 
 		$rsa = Restricted_Site_Access::get_instance();
@@ -12,19 +35,27 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 			'192.168.5.2/16',
 			'435:23f::45:23/101',
 			'2a02:6b8::/32',
+			'0.42.42.42',
+			'198.51.100.0/24',
+			'203.0.113.0/24',
+			'182.10.*.*',
+			'2001:db8:3333:4444:5555:6666:*:*',
 		);
 
 		$invalid_ips = array(
 			'',
 			'bad',
 			'/',
-			'0.42.42.42',
 			'999.888.777.666',
-			'198.51.100.0/24',
-			'203.0.113.0/24',
 			'203.0.113.0/ten',
 			'192.0.2.0/33',
 			'2001:800::/129',
+			'172.256.23.4',
+			'172.10.23.4/33',
+			'10.256.*',
+			'2001:db8:3333:4444:5555:6666:7777:888g',
+			'2001:0db8:3333:4444:0000:0000:0000:0000/129',
+			'2001:0db8:3333:4444:0000:0000:0000:::',
 		);
 
 		foreach ( $valid_ips as $valid ) {
@@ -32,12 +63,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		}
 
 		foreach ( $invalid_ips as $invalid ) {
-
-			try {
-				$this->assertFalse( $rsa::is_ip( $invalid ), $invalid . ' was valid.' );
-			} catch ( \Exception $e ) {
-				$this->assertNotEmpty( $e );
-			}
+			$this->assertFalse( $rsa::is_ip( $invalid ), $invalid . ' was valid.' );
 		}
 	}
 
@@ -90,25 +116,106 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 		$this->assertFalse( $rsa::ip_in_range( '2001:db8:3333:4445:5555:6666:7777:8888', '2001:0db8:3333:4444:0000:0000:0000:0000/64' ) );
 	}
 
-	public function test_get_client_ip_address() {
-
+	/**
+	 * Sites first activated before 7.5.0 trust the legacy list of forwarding headers.
+	 *
+	 * Those sites have no `rsa_activation_version`, or one older than 7.5.0.
+	 *
+	 * @dataProvider legacy_forwarding_header_provider
+	 *
+	 * @param string       $header             Forwarding header.
+	 * @param string|false $activation_version Stored activation version, or false for none.
+	 */
+	public function test_legacy_forwarding_headers_are_trusted_before_7_5( $header, $activation_version ) {
 		$rsa = Restricted_Site_Access::get_instance();
 
+		if ( false === $activation_version ) {
+			delete_option( 'rsa_activation_version' );
+		} else {
+			update_option( 'rsa_activation_version', $activation_version );
+		}
+
+		$_SERVER['REMOTE_ADDR'] = '10.0.0.5';
+		$_SERVER[ $header ]     = '93.184.216.34';
+
+		$this->assertSame( '93.184.216.34', $rsa::get_client_ip_address() );
+	}
+
+	/**
+	 * Each legacy forwarding header, for a site with no activation version and one activated on 7.4.0.
+	 *
+	 * @return array
+	 */
+	public function legacy_forwarding_header_provider() {
 		$headers = array(
+			'HTTP_CF_CONNECTING_IP',
 			'HTTP_CLIENT_IP',
 			'HTTP_X_FORWARDED_FOR',
 			'HTTP_X_FORWARDED',
 			'HTTP_X_CLUSTER_CLIENT_IP',
 			'HTTP_FORWARDED_FOR',
 			'HTTP_FORWARDED',
-			'REMOTE_ADDR',
 		);
 
+		$data = array();
 		foreach ( $headers as $header ) {
-			$_SERVER[ $header ] = '127.0.0.1';
-			$this->assertSame( '127.0.0.1', $rsa::get_client_ip_address() );
-			unset( $_SERVER[ $header ] );
+			$data[ $header . ' without activation version' ] = array( $header, false );
+			$data[ $header . ' activated on 7.4.0' ]         = array( $header, '7.4.0' );
 		}
+
+		return $data;
+	}
+
+	/**
+	 * Sites activated on 7.5.0 or later use only REMOTE_ADDR unless headers are trusted by filter.
+	 *
+	 * @dataProvider current_activation_version_provider
+	 *
+	 * @param string $activation_version Stored activation version.
+	 */
+	public function test_forwarding_headers_are_ignored_from_7_5( $activation_version ) {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'rsa_activation_version', $activation_version );
+
+		$_SERVER['REMOTE_ADDR']          = '10.0.0.5';
+		$_SERVER['HTTP_X_FORWARDED_FOR'] = '93.184.216.34';
+		$_SERVER['HTTP_CLIENT_IP']       = '93.184.216.35';
+
+		$this->assertSame( '10.0.0.5', $rsa::get_client_ip_address() );
+	}
+
+	/**
+	 * Activation versions from 7.5.0 on.
+	 *
+	 * @return array
+	 */
+	public function current_activation_version_provider() {
+		return array(
+			'7.5.0'           => array( '7.5.0' ),
+			'current version' => array( RSA_VERSION ),
+		);
+	}
+
+	/**
+	 * Responses get no-cache headers while an IP allow list is set, and only then.
+	 */
+	public function test_no_cache_headers_are_added_only_with_an_allow_list() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$options            = $rsa::get_options( false );
+		$options['allowed'] = array();
+		update_option( 'rsa_options', $options );
+
+		$this->assertArrayNotHasKey( 'Cache-Control', apply_filters( 'wp_headers', array() ) );
+
+		$options['allowed'] = array( '203.0.113.10' );
+		update_option( 'rsa_options', $options );
+
+		$headers = apply_filters( 'wp_headers', array() );
+
+		$this->assertArrayHasKey( 'Cache-Control', $headers );
+		$this->assertStringContainsString( 'no-store', $headers['Cache-Control'] );
 	}
 
 	/**
@@ -185,7 +292,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 
 		$this->assertSame( $remote_ip, $rsa::get_ip_from_headers() );
 
-		foreach ( $headers as $header ) {
+		foreach ( array_keys( $headers ) as $header ) {
 			unset( $_SERVER[ $header ] );
 		}
 	}
@@ -239,7 +346,7 @@ class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
 	 * The loop variable used to shadow the initialiser, so when nothing
 	 * validated the function returned the last candidate it had just rejected.
 	 * With REMOTE_ADDR listed by the site itself, array_unique() keeps that
-	 * first occurrence and the spoofable header is evaluated last, so the
+	 * first occurrence and the client-supplied header is evaluated last, so the
 	 * rejected value returned was one the visitor supplied.
 	 */
 	public function test_rejected_header_value_is_never_returned() {

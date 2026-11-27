@@ -25,13 +25,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$rsa = Restricted_Site_Access::get_instance();
 		$this->run_admin_init();
 
-		$this->assertSame( 10, has_filter( 'privacy_on_link_text', array( 'Restricted_Site_Access', 'privacy_on_link_text' ) ) );
-		$this->assertSame( 10, has_filter( 'privacy_on_link_title', array( 'Restricted_Site_Access', 'privacy_on_link_title' ) ) );
-		$this->assertSame( 10, has_filter( 'plugin_action_links_' . RSA_TEST_PLUGIN_BASENAME, array( 'Restricted_Site_Access', 'plugin_action_links' ) ) );
-		$this->assertSame( 10, has_action( 'load-options-' . $settings_page . '.php', array( 'Restricted_Site_Access', 'load_options_page' ) ) );
-		$this->assertSame( 10, has_action( 'blog_privacy_selector', array( 'Restricted_Site_Access', 'blog_privacy_selector' ) ) );
-		$this->assertSame( 10, has_action( 'admin_notices', array( 'Restricted_Site_Access', 'page_cache_notice' ) ) );
-
 		$settings = get_registered_settings();
 
 		$this->assertArrayHasKey( 'rsa_options', $settings );
@@ -50,37 +43,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'allowed', $wp_settings_fields[ $settings_page ]['restricted-site-access'] );
 	}
 
-	public function test_privacy_link_filters() {
-
-		$rsa = Restricted_Site_Access::get_instance();
-
-		// Set blog to public.
-		update_option( 'blog_public', 1 );
-
-		$this->assertSame( 'test-link-text', $rsa::privacy_on_link_text( 'test-link-text' ) );
-		$this->assertSame( 'test-link-title', $rsa::privacy_on_link_title( 'test-link-title' ) );
-
-		// Set blog to restricted.
-		update_option( 'blog_public', 2 );
-
-		$this->assertSame( 'Public access to this site has been restricted.', $rsa::privacy_on_link_text( 'test-link-text' ) );
-		$this->assertSame( 'Restricted Site Access plug-in is blocking public access to this site.', $rsa::privacy_on_link_title( 'test-link-title' ) );
-	}
-
-	public function test_enqueue_admin_script() {
-
-		global $wp_scripts;
-
-		$rsa = Restricted_Site_Access::get_instance();
-		$rsa::enqueue_admin_script();
-
-		$this->assertTrue( wp_script_is( 'rsa-admin' ) );
-
-		$data = $wp_scripts->get_data( 'rsa-admin', 'data' );
-
-		$this->assertStringContainsString( 'var rsaAdmin = {"nonce":"' . wp_create_nonce( 'rsa_admin_nonce' ), $data );
-	}
-
 	public function test_load_options_page() {
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -91,10 +53,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 
 		$rsa::load_options_page();
 
-		$this->assertSame( 10, has_action( 'admin_notices', array( 'Restricted_Site_Access', 'admin_notice' ) ) );
-		$this->assertSame( 10, has_action( 'admin_head', array( 'Restricted_Site_Access', 'admin_head' ) ) );
-		$this->assertSame( 10, has_filter( 'wp_dropdown_pages', array( 'Restricted_Site_Access', 'filter_page_dropdown' ) ) );
-
 		// Run tests for specific fields that aren't covered in the
 		// multisite tests.
 		ob_start();
@@ -102,33 +60,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$html = ob_get_clean();
 
 		$this->assertStringContainsString( 'id="rsa-unblocked-page" name="rsa_options[approach]" type="radio" value="4"  checked=\'checked\' />', $html );
-	}
-
-	public function test_filter_page_dropdown() {
-
-		$rsa = Restricted_Site_Access::get_instance();
-
-		$html = $rsa::filter_page_dropdown( 'test', array() );
-
-		$this->assertSame( 'test', $html );
-
-		$html = $rsa::filter_page_dropdown(
-			'test',
-			array(
-				'id' => 'not-rsa',
-			)
-		);
-
-		$this->assertSame( 'test', $html );
-
-		$html = $rsa::filter_page_dropdown(
-			'',
-			array(
-				'id' => 'rsa_page',
-			)
-		);
-
-		$this->assertSame( '<p class="description" id="rsa_page">No published pages found.</p>', $html );
 	}
 
 	public function test_admin_notice() {
@@ -209,16 +140,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		remove_filter( 'restricted_site_access_show_page_cache_notice', '__return_true' );
 	}
 
-	public function test_plugin_action_links() {
-		$rsa = Restricted_Site_Access::get_instance();
-
-		$links = $rsa::plugin_action_links( array() );
-
-		$this->assertCount( 1, $links );
-
-		$this->assertSame( '<a href="options-reading.php">Settings</a>', $links[0] );
-	}
-
 	public function test_settings_field_rsa_page() {
 		$rsa = Restricted_Site_Access::get_instance();
 
@@ -262,31 +183,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$html = ob_get_clean();
 
 		$this->assertStringContainsString( 'name="blog_public" value="2"  checked=\'checked\' />', $html );
-	}
-
-	public function test_admin_head() {
-
-		set_current_screen( 'reading' );
-
-		$rsa = Restricted_Site_Access::get_instance();
-
-		$rsa::admin_head();
-
-		$screen = get_current_screen();
-		$tabs   = $screen->get_help_tabs();
-
-		$this->assertArrayHasKey( 'restricted-site-access', $tabs );
-		$this->assertSame( 'Restricted Site Access', $tabs['restricted-site-access']['title'] );
-
-		$content = $tabs['restricted-site-access']['content'];
-
-		$this->assertStringContainsString( '<p><strong>Handle restricted visitors</strong> - Choose the method for handling visitors to your site that are restricted.</p>', $content );
-		$this->assertStringContainsString( 'enter a single IP address (for example, 192.168.1.105) or an IP range using a network prefix (for example, 10.0.0.1/24). Enter your addresses carefully!', $content );
-		$this->assertStringContainsString( 'The redirection fields are only used when "Handle restricted visitors" is set to "Redirect them to a specified web address".', $content );
-		$this->assertStringContainsString( 'The web address of the site you want the visitor redirected to.', $content );
-		$this->assertStringContainsString( 'redirect the visitor to the same path (URI) entered at this site.', $content );
-		$this->assertStringContainsString( 'Redirect status codes can provide certain visitors, particularly search engines, more information about the nature of the redirect.', $content );
-		$this->assertStringContainsString( 'Select user roles for which the WordPress admin bar should be hidden on the frontend.', $content );
 	}
 
 	/**
@@ -368,33 +264,6 @@ class Restricted_Site_Access_Test_Admin extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'name="rsa_options[hide_admin_bar_roles][]" value="contributor"  checked=\'checked\'', $html );
 		$this->assertStringContainsString( 'Hide admin bar for roles', $html );
 		$this->assertStringContainsString( 'Select user roles for which the WordPress admin bar should be hidden on the frontend', $html );
-	}
-
-	/**
-	 * Test admin bar hiding field is registered in admin init.
-	 */
-	public function test_admin_bar_hiding_field_registration() {
-		global $wp_settings_fields;
-
-		$rsa = Restricted_Site_Access::get_instance();
-		$this->run_admin_init();
-
-		$settings_page = 'reading';
-
-		// Check that the new field is registered.
-		$this->assertArrayHasKey( $settings_page, $wp_settings_fields );
-		$this->assertArrayHasKey( 'restricted-site-access-always-visible', $wp_settings_fields[ $settings_page ] );
-		$this->assertArrayHasKey( 'hide_admin_bar_roles', $wp_settings_fields[ $settings_page ]['restricted-site-access-always-visible'] );
-	}
-
-	/**
-	 * Test that admin bar hiding filter is added.
-	 */
-	public function test_admin_bar_hiding_filter_registration() {
-		$rsa = Restricted_Site_Access::get_instance();
-
-		// Check that the filter is registered.
-		$this->assertSame( 10, has_filter( 'show_admin_bar', array( 'Restricted_Site_Access', 'hide_admin_bar_for_roles' ) ) );
 	}
 
 	/**

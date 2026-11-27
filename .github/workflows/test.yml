@@ -87,6 +87,10 @@ jobs:
       - name: Run PHPUnit
         run: npm run ${{ matrix.multisite && 'test:php:multisite' || 'test:php' }}
 
+      - name: Run PHPUnit network suite
+        if: ${{ matrix.multisite }}
+        run: npm run test:php:network
+
   # The same release package the deploy workflow ships (.distignore, no dev dependencies).
   build:
     name: Build release zip
