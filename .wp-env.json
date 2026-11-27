@@ -1,31 +1,13 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
+	"testsEnvironment": false,
 	"core": null,
-	"plugins": [".", "./tests/rsa-seeder"],
+	"plugins": [ "." ],
 	"config": {
-		"WP_ALLOW_MULTISITE": true
-	},
-	"env": {
-		"development": {
-			"config": {
-				"WP_DEVELOPMENT_MODE": "plugin",
-				"WP_ENVIRONMENT_TYPE": "development",
-				"WP_DEBUG": true,
-				"WP_DEBUG_LOG": "/var/www/html/wp-content/plugins/restricted-site-access/tests/_output/debug.log"
-			}
-		},
-		"tests": {
-			"config": {
-				"WP_DEBUG": true,
-				"FS_METHOD": "direct"
-			},
-			"mappings": {
-				".htaccess": "./tests/bin/.htaccess",
-				"wp-cli.yml": "./tests/bin/wp-cli.yml"
-			}
-		}
-	},
-	"lifecycleScripts": {
-		"afterStart": "bash ./tests/bin/initialize.sh"
+		"WP_ALLOW_MULTISITE": true,
+		"WP_DEVELOPMENT_MODE": "plugin",
+		"WP_ENVIRONMENT_TYPE": "development",
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": "/var/www/html/wp-content/plugins/restricted-site-access/tests/_output/debug.log"
 	}
 }

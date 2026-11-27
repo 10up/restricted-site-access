@@ -10,27 +10,29 @@
     "url": "https://10up.com",
     "role": "developer"
   },
+  "engines": {
+    "node": ">=26"
+  },
   "devDependencies": {
-    "@10up/cypress-wp-utils": "^0.7.2",
-    "@wordpress/dependency-extraction-webpack-plugin": "^5.1.0",
-    "@wordpress/env": "^12.0.0",
-    "@wordpress/scripts": "^37.0.0",
-    "cypress": "^15.18.0",
-    "cypress-file-upload": "^5.0.8",
-    "mochawesome-json-to-md": "^0.7.2"
+    "@playwright/test": "1.65.1",
+    "@wordpress/dependency-extraction-webpack-plugin": "7.2.0",
+    "@wordpress/e2e-test-utils-playwright": "3.3.0",
+    "@wordpress/env": "12.2.0",
+    "@wordpress/scripts": "37.2.0"
   },
   "scripts": {
     "lint:js": "wp-scripts lint-js assets/js/src",
-    "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
-    "cypress:run": "cypress run --config-file tests/cypress/config.js",
-    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/restricted-site-access vendor/bin/phpunit -c phpunit.xml.dist",
+    "wp-env": "wp-env",
+    "wp-env:test": "wp-env --config=.wp-env.test.json",
+    "test:php": "wp-env --config=.wp-env.test.json run cli --env-cwd=wp-content/plugins/restricted-site-access vendor/bin/phpunit -c phpunit.xml.dist --exclude-group ms-required",
+    "test:php:multisite": "wp-env --config=.wp-env.test.json run cli --env-cwd=wp-content/plugins/restricted-site-access env WP_MULTISITE=1 vendor/bin/phpunit -c phpunit.xml.dist",
+    "test:php:network": "wp-env --config=.wp-env.test.json run cli --env-cwd=wp-content/plugins/restricted-site-access env WP_MULTISITE=1 RSA_TESTS_NETWORK=1 vendor/bin/phpunit -c phpunit.xml.dist --testsuite network",
+    "test:e2e": "wp-scripts test-playwright --wp-env-config=.wp-env.test.json --config tests/e2e/playwright.config.ts",
+    "test:e2e:debug": "wp-scripts test-playwright --wp-env-config=.wp-env.test.json --config tests/e2e/playwright.config.ts --ui",
     "env": "wp-env",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "start": "wp-scripts start",
     "build": "wp-scripts build"
-  },
-  "dependencies": {
-    "cypress-mochawesome-reporter": "^5.0.0"
   }
 }

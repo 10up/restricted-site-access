@@ -1,0 +1,417 @@
+<?php
+
+class Restricted_Site_Access_Test_IP_Addresses extends WP_UnitTestCase {
+
+	/**
+	 * $_SERVER as it was before each test.
+	 *
+	 * @var array
+	 */
+	private $server_backup = array();
+
+	/**
+	 * Remember $_SERVER, which the tests change.
+	 */
+	public function set_up() {
+		parent::set_up();
+		$this->server_backup = $_SERVER;
+	}
+
+	/**
+	 * Restore $_SERVER so later tests see the same request headers.
+	 */
+	public function tear_down() {
+		$_SERVER = $this->server_backup;
+		parent::tear_down();
+	}
+
+	public function test_is_ip() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$valid_ips = array(
+			'127.0.0.1',
+			'192.168.0.1',
+			'192.168.5.2/16',
+			'435:23f::45:23/101',
+			'2a02:6b8::/32',
+			'0.42.42.42',
+			'198.51.100.0/24',
+			'203.0.113.0/24',
+			'182.10.*.*',
+			'2001:db8:3333:4444:5555:6666:*:*',
+		);
+
+		$invalid_ips = array(
+			'',
+			'bad',
+			'/',
+			'999.888.777.666',
+			'203.0.113.0/ten',
+			'192.0.2.0/33',
+			'2001:800::/129',
+			'172.256.23.4',
+			'172.10.23.4/33',
+			'10.256.*',
+			'2001:db8:3333:4444:5555:6666:7777:888g',
+			'2001:0db8:3333:4444:0000:0000:0000:0000/129',
+			'2001:0db8:3333:4444:0000:0000:0000:::',
+		);
+
+		foreach ( $valid_ips as $valid ) {
+			$this->assertTrue( $rsa::is_ip( $valid ), $valid . ' was not valid.' );
+		}
+
+		foreach ( $invalid_ips as $invalid ) {
+			$this->assertFalse( $rsa::is_ip( $invalid ), $invalid . ' was valid.' );
+		}
+	}
+
+	public function test_ip_in_range() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		// IPv4 tests.
+		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.0/24' ) );
+		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1/32' ) );
+		$this->assertTrue( $rsa::ip_in_range( '127.0.0.1', '127.0.0.1' ) );
+		$this->assertFalse( $rsa::ip_in_range( '192.168.1.1', '127.0.0.0/24' ) );
+
+		// IPv4 single address match.
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.4' ) );
+
+		// IPv4 single address don't match.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.23.5' ) );
+
+		// Invalid IPv4 range.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.23.4/33' ) );
+
+		// IPv4 in subnet range.
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.4/3' ) );
+
+		// IPv4 in pattern range.
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.23.*' ) );
+		$this->assertTrue( $rsa::ip_in_range( '172.10.23.4', '172.10.*.*' ) );
+
+		// IPv4 not in pattern range.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.23.4', '172.10.*.5' ) );
+
+		// IPv4 not in subnet range.
+		$this->assertFalse( $rsa::ip_in_range( '172.10.30.48', '172.10.30.40/28' ) );
+
+		// IPv6 single address match.
+		$this->assertTrue( $rsa::ip_in_range( '2001:0db8:85a3:0000:0000:8a2e:0370:7334', '2001:0db8:85a3:0000:0000:8a2e:0370:7334' ) );
+
+		// IPv6 single address don't match.
+		$this->assertFalse( $rsa::ip_in_range( '2001:0db8:85a3:0000:0000:8a2e:0370:7334', '2001:0db8:85a3:0000:0000:8a2e:0370:7335' ) );
+
+		// IPv6 in subnet range.
+		$this->assertTrue( $rsa::ip_in_range( '2001:db8:3333:4444:5555:6666:7777:8888', '2001:0db8:3333:4444:0000:0000:0000:0000/64' ) );
+		$this->assertTrue( $rsa::ip_in_range( '2001:db8:3333:4444:5555:6666:7777:8888', '2001:0db8:3333:4444::0000/32' ) );
+
+		// IPv6 in pattern range.
+		$this->assertTrue( $rsa::ip_in_range( '2001:db8:3333:4444:5555:6666:7777:8888', '2001:db8:3333:4444:5555:6666:*:*' ) );
+
+		// IPv6 not in subnet range.
+		$this->assertFalse( $rsa::ip_in_range( '2001:db8:3333:4445:5555:6666:7777:8888', '2001:0db8:3333:4444:0000:0000:0000:0000/64' ) );
+	}
+
+	/**
+	 * Sites first activated before 7.5.0 trust the legacy list of forwarding headers.
+	 *
+	 * Those sites have no `rsa_activation_version`, or one older than 7.5.0.
+	 *
+	 * @dataProvider legacy_forwarding_header_provider
+	 *
+	 * @param string       $header             Forwarding header.
+	 * @param string|false $activation_version Stored activation version, or false for none.
+	 */
+	public function test_legacy_forwarding_headers_are_trusted_before_7_5( $header, $activation_version ) {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		if ( false === $activation_version ) {
+			delete_option( 'rsa_activation_version' );
+		} else {
+			update_option( 'rsa_activation_version', $activation_version );
+		}
+
+		$_SERVER['REMOTE_ADDR'] = '10.0.0.5';
+		$_SERVER[ $header ]     = '93.184.216.34';
+
+		$this->assertSame( '93.184.216.34', $rsa::get_client_ip_address() );
+	}
+
+	/**
+	 * Each legacy forwarding header, for a site with no activation version and one activated on 7.4.0.
+	 *
+	 * @return array
+	 */
+	public function legacy_forwarding_header_provider() {
+		$headers = array(
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+		);
+
+		$data = array();
+		foreach ( $headers as $header ) {
+			$data[ $header . ' without activation version' ] = array( $header, false );
+			$data[ $header . ' activated on 7.4.0' ]         = array( $header, '7.4.0' );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Sites activated on 7.5.0 or later use only REMOTE_ADDR unless headers are trusted by filter.
+	 *
+	 * @dataProvider current_activation_version_provider
+	 *
+	 * @param string $activation_version Stored activation version.
+	 */
+	public function test_forwarding_headers_are_ignored_from_7_5( $activation_version ) {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		update_option( 'rsa_activation_version', $activation_version );
+
+		$_SERVER['REMOTE_ADDR']          = '10.0.0.5';
+		$_SERVER['HTTP_X_FORWARDED_FOR'] = '93.184.216.34';
+		$_SERVER['HTTP_CLIENT_IP']       = '93.184.216.35';
+
+		$this->assertSame( '10.0.0.5', $rsa::get_client_ip_address() );
+	}
+
+	/**
+	 * Activation versions from 7.5.0 on.
+	 *
+	 * @return array
+	 */
+	public function current_activation_version_provider() {
+		return array(
+			'7.5.0'           => array( '7.5.0' ),
+			'current version' => array( RSA_VERSION ),
+		);
+	}
+
+	/**
+	 * Responses get no-cache headers while an IP allow list is set, and only then.
+	 */
+	public function test_no_cache_headers_are_added_only_with_an_allow_list() {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$options            = $rsa::get_options( false );
+		$options['allowed'] = array();
+		update_option( 'rsa_options', $options );
+
+		$this->assertArrayNotHasKey( 'Cache-Control', apply_filters( 'wp_headers', array() ) );
+
+		$options['allowed'] = array( '203.0.113.10' );
+		update_option( 'rsa_options', $options );
+
+		$headers = apply_filters( 'wp_headers', array() );
+
+		$this->assertArrayHasKey( 'Cache-Control', $headers );
+		$this->assertStringContainsString( 'no-store', $headers['Cache-Control'] );
+	}
+
+	/**
+	 * Test trusted proxies.
+	 *
+	 * @dataProvider trusted_proxy_provider
+	 *
+	 * @param string $remote_ip Remote IP address.
+	 * @param array  $proxies Proxies to trust.
+	 */
+	public function test_rsa_trusted_proxies( string $remote_ip = '', array $proxies = array() ) {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+
+		add_filter(
+			'rsa_trusted_proxies',
+			function() use ( $proxies ) {
+				return $proxies;
+			}
+		);
+
+		$this->assertSame( $remote_ip, $rsa::get_client_ip_address() );
+
+		unset( $_SERVER['REMOTE_ADDR'] );
+	}
+
+	public function trusted_proxy_provider() {
+		/**
+		 * Data to use in our trusted proxy tests
+		 *
+		 * First key is a string containing our REMOTE_ADDR IP.
+		 * Second is an array of proxy IP addresses.
+		 */
+		return array(
+			// Test that if the REMOTE_ADDR matches our proxy, we return a proper IP.
+			array( '127.0.0.1', array( '127.0.0.1/24' ) ),
+			// Test that if the REMOTE_ADDR doesn't match our proxy, we return an empty string.
+			array( '', array( '10.0.0.0/8' ) ),
+			// Test if we have multiple proxies and one matches, we return a proper IP.
+			array( '127.0.0.1', array( '10.0.0.0/8', '127.0.0.1' ) ),
+		);
+	}
+
+	/**
+	 * Test trusted headers
+	 *
+	 * @dataProvider trusted_headers_provider
+	 *
+	 * @param string $remote_ip Remote IP address.
+	 * @param array  $headers Headers to set.
+	 * @param array  $trusted_headers Headers we want to trust.
+	 */
+	public function test_rsa_trusted_headers( string $remote_ip = '', array $headers = array(), array $trusted_headers = array() ) {
+		$rsa = Restricted_Site_Access::get_instance();
+
+		add_filter(
+			'rsa_get_client_ip_address_filter_flags',
+			function() {
+				return FILTER_FLAG_NO_RES_RANGE;
+			}
+		);
+
+		add_filter(
+			'rsa_trusted_headers',
+			function() use ( $trusted_headers ) {
+				return $trusted_headers;
+			}
+		);
+
+		foreach ( $headers as $header => $ip ) {
+			$_SERVER[ $header ] = $ip;
+		}
+
+		$this->assertSame( $remote_ip, $rsa::get_ip_from_headers() );
+
+		foreach ( array_keys( $headers ) as $header ) {
+			unset( $_SERVER[ $header ] );
+		}
+	}
+
+	public function trusted_headers_provider() {
+		/**
+		 * Data to use in our trusted header tests
+		 *
+		 * First key is a string containing our expected IP.
+		 * Second is an array of headers and the IP they are set to.
+		 * Third is an array of headers to trust.
+		 */
+		return array(
+			// Test that if we don't trust any headers, we get the REMOTE_ADDR value.
+			array(
+				'127.0.0.1',
+				array(
+					'HTTP_CLIENT_IP' => '10.0.0.0',
+					'REMOTE_ADDR'    => '127.0.0.1',
+				),
+				array(),
+			),
+			// Test if we trust a single header, we get that value back.
+			array(
+				'10.0.0.0',
+				array(
+					'HTTP_CLIENT_IP' => '10.0.0.0',
+					'REMOTE_ADDR'    => '127.0.0.1',
+				),
+				array( 'HTTP_CLIENT_IP' ),
+			),
+			// Test if we trust multiple headers, we get the first matched value back.
+			array(
+				'10.0.0.8',
+				array(
+					'HTTP_FORWARDED'   => '10.0.0.0',
+					'HTTP_X_FORWARDED' => '10.0.0.8',
+					'REMOTE_ADDR'      => '127.0.0.1',
+				),
+				array(
+					'HTTP_X_FORWARDED',
+					'HTTP_FORWARDED',
+				),
+			),
+		);
+	}
+
+	/**
+	 * A candidate that fails validation must never be returned.
+	 *
+	 * The loop variable used to shadow the initialiser, so when nothing
+	 * validated the function returned the last candidate it had just rejected.
+	 * With REMOTE_ADDR listed by the site itself, array_unique() keeps that
+	 * first occurrence and the client-supplied header is evaluated last, so the
+	 * rejected value returned was one the visitor supplied.
+	 */
+	public function test_rejected_header_value_is_never_returned() {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		add_filter(
+			'rsa_trusted_headers',
+			function() {
+				return array( 'REMOTE_ADDR', 'HTTP_CLIENT_IP' );
+			}
+		);
+
+		$_SERVER['REMOTE_ADDR']    = '127.0.0.1'; // Reserved range.
+		$_SERVER['HTTP_CLIENT_IP'] = '10.1.2.3';  // Private range, visitor supplied.
+
+		$resolved = $rsa::get_ip_from_headers();
+
+		// Never the value the visitor supplied and the validator rejected.
+		$this->assertNotSame( '10.1.2.3', $resolved );
+
+		// REMOTE_ADDR is the connection peer rather than a supplied value, so it
+		// is still usable even though it is in a reserved range.
+		$this->assertSame( '127.0.0.1', $resolved );
+
+		unset( $_SERVER['HTTP_CLIENT_IP'], $_SERVER['REMOTE_ADDR'] );
+	}
+
+	/**
+	 * A proxied site must still resolve its visitors.
+	 *
+	 * Behind nginx, a load balancer or a CDN, REMOTE_ADDR is the proxy and is
+	 * almost always private or reserved. Those are exactly the addresses
+	 * FILTER_FLAG_NO_PRIV_RANGE and FILTER_FLAG_NO_RES_RANGE reject, so applying
+	 * the flags to REMOTE_ADDR would resolve no address at all and the allow list
+	 * would lock out every allowed visitor.
+	 *
+	 * @dataProvider proxied_remote_addr_provider
+	 *
+	 * @param string $remote_addr The address the web server reports for the peer.
+	 * @param string $context     What that deployment looks like, for failure output.
+	 */
+	public function test_private_remote_addr_still_resolves( $remote_addr, $context ) {
+
+		$rsa = Restricted_Site_Access::get_instance();
+
+		$_SERVER['REMOTE_ADDR'] = $remote_addr;
+
+		$this->assertSame( $remote_addr, $rsa::get_ip_from_headers(), $context . ' did not resolve.' );
+
+		unset( $_SERVER['REMOTE_ADDR'] );
+	}
+
+	/**
+	 * Addresses a web server reports for the peer on a proxied install.
+	 *
+	 * @return array
+	 */
+	public function proxied_remote_addr_provider() {
+		return array(
+			array( '127.0.0.1', 'nginx proxying to php-fpm on the same host' ),
+			array( '172.18.0.1', 'a container bridge gateway' ),
+			array( '10.0.4.17', 'a load balancer in a private subnet' ),
+			array( '192.168.1.24', 'a visitor on the LAN of an intranet install' ),
+		);
+	}
+
+}
