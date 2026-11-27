@@ -37,9 +37,6 @@ type State = {
 		hide_admin_bar_roles?: string[];
 	};
 	user_role?: string;
-	remove_user_role?: boolean;
-	add_role?: { role: string; name: string };
-	deactivate?: boolean;
 };
 
 /**

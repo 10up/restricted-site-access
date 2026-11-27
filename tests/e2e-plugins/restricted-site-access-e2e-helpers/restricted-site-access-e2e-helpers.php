@@ -38,9 +38,6 @@ add_filter(
  * - rsa_mode, blog_public: network (site) options.
  * - rsa_options:           network (site) option, merged onto the plugin defaults.
  * - user_role:             role to give the current user on this site.
- * - remove_user_role:      true removes every role the current user has on this site.
- * - add_role:              array( 'role' => slug, 'name' => display name ), adds a role with the read capability.
- * - deactivate:            true network-deactivates Restricted Site Access.
  */
 add_action(
 	'rest_api_init',
@@ -77,23 +74,9 @@ add_action(
 						update_site_option( 'rsa_options', array_merge( $defaults, $request->get_param( 'rsa_options' ) ) );
 					}
 
-					$add_role = $request->get_param( 'add_role' );
-					if ( is_array( $add_role ) && ! empty( $add_role['role'] ) ) {
-						add_role( sanitize_key( $add_role['role'] ), (string) $add_role['name'], array( 'read' => true ) );
-					}
-
 					if ( null !== $request->get_param( 'user_role' ) ) {
 						$user = wp_get_current_user();
 						$user->set_role( sanitize_key( $request->get_param( 'user_role' ) ) );
-					}
-
-					if ( true === $request->get_param( 'remove_user_role' ) ) {
-						delete_user_meta( get_current_user_id(), $GLOBALS['wpdb']->get_blog_prefix() . 'capabilities' );
-					}
-
-					if ( true === $request->get_param( 'deactivate' ) ) {
-						require_once ABSPATH . 'wp-admin/includes/plugin.php';
-						deactivate_plugins( 'restricted-site-access/restricted_site_access.php', false, true );
 					}
 
 					return rest_ensure_response( array( 'ok' => true ) );

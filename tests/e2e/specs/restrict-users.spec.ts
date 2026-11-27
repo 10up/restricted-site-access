@@ -367,6 +367,81 @@ for ( const group of redirectCases ) {
 	} );
 }
 
+test.describe( 'Handle restricted visitors - Show them a page', () => {
+	test( 'Verify - Visitor is redirected to the selected page, which loads', async ( {
+		baseURL,
+		playwright,
+		requestUtils,
+	} ) => {
+		const [ page ] = ( await requestUtils.rest( {
+			path: '/wp/v2/pages',
+			params: { slug: 'one' },
+		} ) ) as { id: number; link: string }[];
+		await restrictNetwork( requestUtils, { approach: 4, page: page.id } );
+		const visitor = await visitorRequest( playwright, baseURL );
+
+		const elsewhere = await visitor.get( '/two/', { maxRedirects: 0 } );
+
+		expect( elsewhere.status() ).toBe( 302 );
+		expect( redirectTarget( elsewhere ) ).toBe( page.link );
+
+		const selected = await visitor.get( page.link, { maxRedirects: 0 } );
+
+		expect( selected.status() ).toBe( 200 );
+		await visitor.dispose();
+	} );
+} );
+
+test.describe( 'Handle restricted visitors - Application passwords', () => {
+	let uuid = '';
+
+	test.afterAll( async ( { requestUtils } ) => {
+		if ( uuid ) {
+			await requestUtils.rest( {
+				method: 'DELETE',
+				path: `/wp/v2/users/me/application-passwords/${ uuid }`,
+			} );
+		}
+	} );
+
+	test( 'Verify - REST API request with an application password is authenticated', async ( {
+		baseURL,
+		playwright,
+		requestUtils,
+	} ) => {
+		await restrictNetwork( requestUtils, { approach: 1 } );
+		const created = ( await requestUtils.rest( {
+			method: 'POST',
+			path: '/wp/v2/users/me/application-passwords',
+			data: { name: 'rsa-e2e' },
+		} ) ) as { uuid: string; password: string };
+		uuid = created.uuid;
+
+		// Control: without credentials the request is refused.
+		const anonymous = await visitorRequest( playwright, baseURL );
+		const refused = await anonymous.get( '/wp-json/wp/v2/users/me', {
+			maxRedirects: 0,
+		} );
+		expect( refused.status() ).toBe( 401 );
+		await anonymous.dispose();
+
+		const client = await visitorRequest( playwright, baseURL, {
+			Authorization:
+				'Basic ' +
+				Buffer.from( `admin:${ created.password }` ).toString(
+					'base64'
+				),
+		} );
+		const response = await client.get( '/wp-json/wp/v2/users/me', {
+			maxRedirects: 0,
+		} );
+
+		expect( response.status() ).toBe( 200 );
+		expect( ( await response.json() ).slug ).toBe( 'admin' );
+		await client.dispose();
+	} );
+} );
+
 test.describe( 'Handle restricted visitors - REST API requests', () => {
 	test.beforeAll( async ( { requestUtils } ) => {
 		await restrictNetwork( requestUtils, { approach: 1 } );

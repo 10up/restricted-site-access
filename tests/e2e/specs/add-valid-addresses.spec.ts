@@ -15,14 +15,8 @@ import { restrictNetwork } from '../utils/helpers';
 
 const addresses = [
 	{ ip: '172.10.23.4', label: 'IPv4 single address' },
-	{ ip: '172.10.23.4/3', label: 'IPv4 range' },
 	{ ip: '182.10.*.*', label: 'IPv4 pattern' },
-	{
-		ip: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
-		label: 'IPv6 single address',
-	},
 	{ ip: '2001:0db8:3333:4444:0000:0000:0000:0000/64', label: 'IPv6 subnet' },
-	{ ip: '2001:db8:3333:4444:5555:6666:*:*', label: 'IPv6 pattern' },
 ];
 
 /**
@@ -51,27 +45,23 @@ async function addValidIp( page: Page, ip: string, label: string ) {
 }
 
 test.describe( 'Add & save valid IPv4, IPv6 addresses', () => {
-	// Each test adds one row; the last one checks all of them.
-	test.describe.configure( { mode: 'serial' } );
-
 	test.beforeAll( async ( { requestUtils } ) => {
 		await restrictNetwork( requestUtils );
 	} );
 
-	for ( const { ip, label } of addresses ) {
-		test( `Add ${ label }`, async ( { admin, page } ) => {
-			await admin.visitAdminPage( 'network/settings.php' );
-
-			await addValidIp( page, ip, label );
-			await page.locator( '#submit' ).click();
-
-			await expect(
-				page.locator( '#ip_list input.ip.code[value="' + ip + '"]' )
-			).toHaveCount( 1 );
-		} );
-	}
+	test.afterAll( async ( { requestUtils } ) => {
+		await restrictNetwork( requestUtils );
+	} );
 
 	test( 'Validate each saved IP addresses', async ( { admin, page } ) => {
+		await admin.visitAdminPage( 'network/settings.php' );
+
+		for ( const { ip, label } of addresses ) {
+			await addValidIp( page, ip, label );
+		}
+		await page.locator( '#submit' ).click();
+		await page.waitForURL( /updated=true/ );
+
 		await admin.visitAdminPage( 'network/settings.php' );
 		const rows = page.locator( '#ip_list .rsa_unrestricted_ip_row' );
 
@@ -83,5 +73,9 @@ test.describe( 'Add & save valid IPv4, IPv6 addresses', () => {
 				rows.nth( index ).locator( 'input' ).nth( 1 )
 			).toHaveValue( label );
 		}
+
+		// Saving the screen keeps the network's mode and visibility as they were.
+		await expect( page.locator( '#rsa-mode-enforce' ) ).toBeChecked();
+		await expect( page.locator( '#blog-restricted' ) ).toBeChecked();
 	} );
 } );

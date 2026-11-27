@@ -34,17 +34,26 @@ const NETWORK_CONSTANTS = [
 	'BLOG_ID_CURRENT_SITE',
 ];
 
+/** Network option this setup writes once the network is ready for the specs. */
+const READY_OPTION = 'rsa_e2e_network_ready';
+
 /**
- * Whether the test site is a working network for the given URL.
+ * Whether the test site is a network this setup built, for the given URL.
+ *
+ * PHPUnit's multisite runs leave a network of their own in the same database,
+ * so a listed main site alone isn't enough; the marker option is.
  *
  * @param siteUrl Site URL.
- * @return True when WP-CLI lists the main site.
+ * @return True when WP-CLI lists the main site and the marker is set.
  */
 function isNetwork( siteUrl: string ): boolean {
 	try {
-		return wpCli( [ 'site', 'list', '--field=url' ] )
-			.split( '\n' )
-			.includes( siteUrl );
+		return (
+			wpCli( [ 'site', 'list', '--field=url' ] )
+				.split( '\n' )
+				.includes( siteUrl ) &&
+			'1' === wpCli( [ 'site', 'option', 'get', READY_OPTION ] )
+		);
 	} catch {
 		return false;
 	}
@@ -58,7 +67,8 @@ function isNetwork( siteUrl: string ): boolean {
  * than with wp-env's "multisite" option, because that option writes MULTISITE
  * into the wp-config.php wp-env copies the PHPUnit config from, which would
  * turn the single-site PHPUnit run into a multisite one. PHPUnit reinstalls
- * the database, so a run after PHPUnit finds a broken network: reinstall it.
+ * the database, so a run after PHPUnit finds a broken network, or PHPUnit's own
+ * network: reinstall it.
  *
  * Once this has run, re-configuring the environment (a config change or
  * `start --update`) copies MULTISITE into the PHPUnit config as well, and
@@ -109,6 +119,8 @@ function ensureNetwork( siteUrl: string ) {
 		wpCli( [ 'core', 'multisite-convert', '--title=RSA Multisite' ] );
 		// Converting sets the main site's /blog/ permalink structure; rebuild the rules for it.
 		wpCli( [ 'rewrite', 'flush' ] );
+
+		wpCli( [ 'site', 'option', 'update', READY_OPTION, '1' ] );
 
 		if ( ! isNetwork( siteUrl ) ) {
 			throw new Error( 'Could not turn the test site into a network.' );
